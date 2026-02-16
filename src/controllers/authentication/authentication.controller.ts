@@ -72,7 +72,7 @@ function getJwtSecret(): string {
 }
 async function generateRandomPasswordHash(): Promise<string> {
   const randomPassword = crypto.randomUUID() + crypto.randomUUID();
-  return await Bun.password.hash(randomPassword);
+  return await Bun.password.hash(randomPassword, { algorithm: "bcrypt", cost: 10 });
 }
 async function findOrCreateOAuthUser(
   provider: "github" | "google",
