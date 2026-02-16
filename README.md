@@ -1,15 +1,32 @@
-# Elysia with Bun runtime
+# VaniStudio
 
-## Getting Started
-To get started with this template, simply paste this command into your terminal:
+Website of Vani Studio.
+
+## Stack
+
+- **Frontend**: React, Vite, Tailwind CSS, shadcn/ui
+- **Backend**: Elysia, Bun
+- **Database**: PostgreSQL, Drizzle ORM
+
+## Setup
+
 ```bash
-bun create elysia ./elysia-example
+cp .env.example .env
+bun install
 ```
 
 ## Development
-To start the development server run:
+
 ```bash
-bun run dev
+bun run dev        # backend
+bun run dev:fe     # frontend
+bun run db:push    # sync schema to database
+bun run db:studio  # open database viewer
 ```
 
-Open http://localhost:3000/ with your browser to see the result.
+## Build
+
+```bash
+bun run build:fe
+bun run start
+```
