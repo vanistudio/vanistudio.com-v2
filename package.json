@@ -30,6 +30,7 @@
     "react": "^19.2.4",
     "react-day-picker": "^9.13.2",
     "react-hook-form": "^7.71.1",
+    "react-icons": "^5.5.0",
     "react-resizable-panels": "^4",
     "react-router-dom": "^7.13.0",
     "recharts": "2.15.4",
