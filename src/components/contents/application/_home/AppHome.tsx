@@ -1,6 +1,8 @@
 import { ExternalLink, Star, Download, Shield, Zap, Code, Eye } from 'lucide-react';
 import { Icon } from '@iconify/react';
+import { useTheme } from 'next-themes';
 import AppDashed from '@/components/layouts/application/AppDashed';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
 const products = [
@@ -69,6 +71,8 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 }
 
 export default function AppHome() {
+  const { resolvedTheme } = useTheme();
+
   return (
     <div className="flex flex-col w-full">
       <AppDashed withDotGrid noTopBorder>
@@ -99,15 +103,17 @@ export default function AppHome() {
       </AppDashed>
 
       <AppDashed noTopBorder padding="p-0" className="relative">
-        <div className="grid grid-cols-2 sm:grid-cols-4 relative z-10">
+        <div className="grid grid-cols-2 sm:grid-cols-3 relative z-10">
           {[
-            { icon: "solar:bolt-circle-bold-duotone", label: "Hiệu suất cao", desc: "Tối ưu hóa tốc độ và trải nghiệm", color: "text-blue-500" },
-            { icon: "solar:shield-keyhole-bold-duotone", label: "An toàn & Bảo mật", desc: "Bảo vệ dữ liệu người dùng", color: "text-emerald-500" },
-            { icon: "solar:code-square-bold-duotone", label: "Mã nguồn sạch", desc: "Codebase chuẩn, dễ mở rộng", color: "text-purple-500" },
-            { icon: "solar:users-group-rounded-bold-duotone", label: "Cộng đồng", desc: "Hỗ trợ và lắng nghe người dùng", color: "text-amber-500" },
+            { icon: "solar:bolt-circle-bold-duotone", label: "Hiệu suất cao", desc: "Sản phẩm được tối ưu hóa để đảm bảo tốc độ xử lý nhanh nhất, mang lại trải nghiệm mượt mà cho người dùng.", color: "text-blue-500" },
+            { icon: "solar:shield-keyhole-bold-duotone", label: "An toàn & Bảo mật", desc: "Dữ liệu người dùng luôn được mã hóa và bảo vệ nghiêm ngặt, tuân thủ các tiêu chuẩn bảo mật hiện đại.", color: "text-emerald-500" },
+            { icon: "solar:code-square-bold-duotone", label: "Mã nguồn sạch", desc: "Codebase được thiết kế theo kiến trúc chuẩn, dễ bảo trì, mở rộng và tích hợp với các hệ thống khác.", color: "text-purple-500" },
+            { icon: "solar:users-group-rounded-bold-duotone", label: "Cộng đồng lớn mạnh", desc: "Cộng đồng hàng nghìn người dùng luôn sẵn sàng hỗ trợ, chia sẻ kinh nghiệm và đóng góp ý tưởng.", color: "text-amber-500" },
+            { icon: "solar:settings-minimalistic-bold-duotone", label: "Tự động hóa", desc: "Tích hợp quy trình tự động giúp tiết kiệm thời gian, giảm thiểu thao tác thủ công và tăng năng suất.", color: "text-rose-500" },
+            { icon: "solar:headphones-round-sound-bold-duotone", label: "Hỗ trợ nhanh chóng", desc: "Đội ngũ phát triển luôn lắng nghe phản hồi và sẵn sàng hỗ trợ xử lý mọi vấn đề trong thời gian ngắn nhất.", color: "text-cyan-500" },
           ].map((item, i) => (
-            <div key={i} className="p-5 group cursor-default hover:bg-muted-background transition-colors flex flex-col items-center text-center gap-2">
-              <Icon icon={item.icon} className={cn("text-3xl", item.color)} />
+            <div key={i} className="p-5 group cursor-default hover:bg-muted-background transition-colors flex flex-col items-center text-center gap-2.5">
+              <Icon icon={item.icon} className={cn("text-4xl", item.color)} />
               <div className="text-sm font-bold text-foreground">{item.label}</div>
               <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
             </div>
@@ -118,22 +124,71 @@ export default function AppHome() {
       <AppDashed noTopBorder padding="p-3">
         <SectionTitle>Tech Stack</SectionTitle>
       </AppDashed>
-      <AppDashed noTopBorder padding="p-0">
-        <div className="grid grid-cols-3 sm:grid-cols-6 relative z-10">
-          {[
-            { icon: "solar:atom-bold-duotone", label: "React", color: "text-cyan-500" },
-            { icon: "solar:server-square-cloud-bold-duotone", label: "Elysia", color: "text-violet-500" },
-            { icon: "solar:database-bold-duotone", label: "PostgreSQL", color: "text-blue-500" },
-            { icon: "solar:palette-round-bold-duotone", label: "Tailwind", color: "text-sky-500" },
-            { icon: "solar:code-file-bold-duotone", label: "TypeScript", color: "text-blue-400" },
-            { icon: "solar:rocket-2-bold-duotone", label: "Bun", color: "text-amber-500" },
-          ].map((item, i) => (
-            <div key={i} className="p-4 flex flex-col items-center gap-1.5 group cursor-default hover:bg-muted-background transition-colors">
-              <Icon icon={item.icon} className={cn("text-2xl", item.color)} />
-              <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">{item.label}</span>
-            </div>
-          ))}
-        </div>
+      <AppDashed noTopBorder padding="p-4">
+        <TooltipProvider>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {[
+              { id: "js", label: "JavaScript" },
+              { id: "ts", label: "TypeScript" },
+              { id: "php", label: "PHP" },
+              { id: "cs", label: "C#" },
+              { id: "cpp", label: "C/C++" },
+              { id: "go", label: "Go" },
+              { id: "rust", label: "Rust" },
+              { id: "react", label: "React" },
+              { id: "nextjs", label: "Next.js" },
+              { id: "vue", label: "Vue" },
+              { id: "nuxtjs", label: "Nuxt" },
+              { id: "svelte", label: "Svelte" },
+              { id: "angular", label: "Angular" },
+              { id: "remix", label: "Remix" },
+              { id: "astro", label: "Astro" },
+              { id: "gatsby", label: "Gatsby" },
+              { id: "electron", label: "Electron" },
+              { id: "mui", label: "MUI" },
+              { id: "tailwind", label: "Tailwind CSS" },
+              { id: "nodejs", label: "Node.js" },
+              { id: "bun", label: "Bun" },
+              { id: "deno", label: "Deno" },
+              { id: "express", label: "Express" },
+              { id: "elysia", label: "Elysia" },
+              { id: "nestjs", label: "NestJS" },
+              { id: "laravel", label: "Laravel" },
+              { id: "dotnet", label: ".NET" },
+              { id: "redux", label: "Redux" },
+              { id: "prisma", label: "Prisma" },
+              { id: "postgres", label: "PostgreSQL" },
+              { id: "mysql", label: "MySQL" },
+              { id: "mongodb", label: "MongoDB" },
+              { id: "redis", label: "Redis" },
+              { id: "supabase", label: "Supabase" },
+              { id: "firebase", label: "Firebase" },
+              { id: "nginx", label: "Nginx" },
+              { id: "docker", label: "Docker" },
+              { id: "linux", label: "Linux" },
+              { id: "vite", label: "Vite" },
+              { id: "jest", label: "Jest" },
+              { id: "vercel", label: "Vercel" },
+              { id: "cloudflare", label: "Cloudflare" },
+              { id: "git", label: "Git" },
+              { id: "github", label: "GitHub" },
+              { id: "gitlab", label: "GitLab" },
+            ].map((item) => (
+              <Tooltip key={item.id}>
+                <TooltipTrigger asChild>
+                  <img
+                    src={`https://skillicons.dev/icons?i=${item.id}&theme=${resolvedTheme === 'dark' ? 'dark' : 'light'}`}
+                    alt={item.label}
+                    className="size-10 rounded-md cursor-default hover:scale-110 transition-transform"
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{item.label}</p>
+                </TooltipContent>
+              </Tooltip>
+            ))}
+          </div>
+        </TooltipProvider>
       </AppDashed>
 
       <AppDashed noTopBorder padding="p-3">
