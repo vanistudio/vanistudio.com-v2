@@ -23,7 +23,7 @@ const AppDashed: React.FC<AppDashedProps> = ({
   grow = false
 }) => {
   return (
-    <div className={cn("relative w-full overflow-hidden", grow && "flex-grow flex flex-col")}>
+    <div className={cn("relative w-full overflow-hidden", grow && "flex-grow")}>
       {!noTopBorder && (
         <div className="w-full h-px border-dashed-h" />
       )}
