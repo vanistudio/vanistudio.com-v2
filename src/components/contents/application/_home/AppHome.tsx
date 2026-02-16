@@ -1,51 +1,53 @@
-import { ExternalLink, Star, Download, Shield, Zap, Code, Eye } from 'lucide-react';
+import { ArrowUpRight, Pin } from 'lucide-react';
 import { Icon } from '@iconify/react';
 import { useTheme } from 'next-themes';
 import AppDashed from '@/components/layouts/application/AppDashed';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
 
-const products = [
+const projects = [
   {
-    name: "TSBVH Bot",
-    description: "Discord bot quản lý cộng đồng The Strongest Battleground Viet Hub — hệ thống ranking, leaderboard, quản lý clan và nhiều tính năng hơn nữa.",
-    tags: ["Discord Bot", "TypeScript", "MongoDB"],
-    color: "blue",
-    icon: Zap,
-    status: "Active",
+    name: "VaniStudio Web",
+    slug: "/projects/vanistudio-web",
+    description: "Website chính thức của Vani Studio — showcase sản phẩm, quản lý license key và cung cấp thông tin cho cộng đồng.",
+    screenshot: "/images/projects/vanistudio-web.png",
+    background: "/images/projects/bg-vanistudio.avif",
+    status: "Building",
+    statusColor: "text-amber-500",
+    dotColor: "bg-amber-500",
   },
   {
     name: "Vani Injector",
-    description: "Công cụ tự động hóa quy trình đăng nhập và quản lý tài khoản Riot Client, hỗ trợ multi-account switching nhanh chóng và an toàn.",
-    tags: ["Desktop App", "C#", "WPF"],
-    color: "purple",
-    icon: Shield,
+    slug: "/projects/vani-injector",
+    description: "Công cụ tự động hóa quy trình đăng nhập và quản lý multi-account Riot Client nhanh chóng, an toàn.",
+    screenshot: "/images/projects/vani-injector.png",
+    background: "/images/projects/bg-injector.avif",
     status: "Active",
+    statusColor: "text-emerald-500",
+    dotColor: "bg-emerald-500",
   },
   {
-    name: "VaniStudio Web",
-    description: "Website chính thức của Vani Studio — showcase sản phẩm, quản lý license key, và cung cấp thông tin cho cộng đồng.",
-    tags: ["Web App", "React", "Elysia"],
-    color: "emerald",
-    icon: Code,
-    status: "In Development",
+    name: "TSBVH Bot",
+    slug: "/projects/tsbvh-bot",
+    description: "Discord bot quản lý cộng đồng TSBVH — hệ thống ranking, leaderboard, quản lý clan và nhiều tính năng hơn nữa.",
+    screenshot: "/images/projects/tsbvh-bot.png",
+    background: "/images/projects/bg-tsbvh.avif",
+    status: "Active",
+    statusColor: "text-emerald-500",
+    dotColor: "bg-emerald-500",
   },
   {
-    name: "TSBVH Ranking System",
-    description: "Hệ thống phân cấp bậc sức mạnh trong The Strongest Battleground — đánh giá trình độ người chơi từ Stage 0 đến Stage 3.",
-    tags: ["API", "Roblox", "Leaderboard"],
-    color: "amber",
-    icon: Star,
-    status: "Active",
+    name: "Lunel",
+    slug: "/projects/lunel",
+    description: "Dự án đang được phát triển — một sản phẩm mới sắp ra mắt từ Vani Studio. Hãy đón chờ!",
+    screenshot: "/images/projects/soon.png",
+    background: "/images/projects/bg-lunel.avif",
+    status: "Coming Soon",
+    statusColor: "text-red-500",
+    dotColor: "bg-red-500",
   },
 ];
-
-const colorMap: Record<string, { bg: string; border: string; text: string; tagBg: string; tagText: string }> = {
-  blue: { bg: "bg-blue-500/10", border: "border-blue-500/25", text: "text-blue-500", tagBg: "bg-blue-500/10", tagText: "text-blue-500" },
-  purple: { bg: "bg-purple-500/10", border: "border-purple-500/25", text: "text-purple-500", tagBg: "bg-purple-500/10", tagText: "text-purple-500" },
-  emerald: { bg: "bg-emerald-500/10", border: "border-emerald-500/25", text: "text-emerald-500", tagBg: "bg-emerald-500/10", tagText: "text-emerald-500" },
-  amber: { bg: "bg-amber-500/10", border: "border-amber-500/25", text: "text-amber-500", tagBg: "bg-amber-500/10", tagText: "text-amber-500" },
-};
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
@@ -70,6 +72,61 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   );
 }
 
+function ProjectCard({ project }: { project: typeof projects[number] }) {
+  return (
+    <div className="p-3">
+      <Link to={project.slug} className="flex flex-col gap-2 cursor-pointer group w-full">
+        <div className="p-[4px] rounded-[10px] border border-border">
+          <div className="relative w-full bg-muted-background rounded-[6px] border border-border h-[200px] md:h-[200px] sm:h-[170px] overflow-hidden select-none">
+            <div
+              className="absolute inset-0 bg-cover bg-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              style={{ backgroundImage: `url(${project.background})` }}
+            />
+            <h1 className="absolute top-2 left-2 text-xs text-muted-foreground group-hover:text-foreground font-medium transition-all duration-300 group-hover:left-1/2 group-hover:-translate-x-1/2">
+              {project.status}
+            </h1>
+            <div className="bg-background rounded-t-[6px] absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] h-[75%] group-hover:h-[70%] transition-all duration-300 p-[2px] pb-0">
+              <div className="w-full h-full rounded-t-[4px] overflow-hidden">
+                <img
+                  alt={project.name}
+                  loading="lazy"
+                  className="w-full h-full object-cover"
+                  src={project.screenshot}
+                />
+              </div>
+            </div>
+            <div className="absolute top-1 right-1 p-1.5 rounded-[8px] border border-border bg-background text-title">
+              <Pin size={12} />
+            </div>
+          </div>
+        </div>
+        <div className="px-2 flex flex-col gap-1">
+          <div className="flex items-center justify-between">
+            <h3 className="text-[1.10rem] leading-[1.10] text-title font-bold">{project.name}</h3>
+            <div className="flex items-center gap-1 select-none">
+              <div className="relative flex items-center justify-center">
+                <div
+                  className={cn("absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-ping group-hover:hidden rounded-full opacity-40", project.dotColor)}
+                  style={{ width: 10, height: 10 }}
+                />
+                <svg className={cn("relative z-10", project.statusColor)} height="14" width="14" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z" />
+                </svg>
+              </div>
+              <p className={cn("text-sm font-medium", project.statusColor)}>{project.status}</p>
+            </div>
+          </div>
+          <p className="text-sm text-muted-foreground">{project.description}</p>
+          <div className="flex items-center gap-1 select-none">
+            <p className="text-sm text-muted-foreground transition-colors duration-300 group-hover:text-title">View Project</p>
+            <ArrowUpRight size={14} className="text-muted-foreground transition-all duration-300 group-hover:rotate-45 group-hover:text-title" />
+          </div>
+        </div>
+      </Link>
+    </div>
+  );
+}
+
 export default function AppHome() {
   const { resolvedTheme } = useTheme();
 
@@ -86,6 +143,7 @@ export default function AppHome() {
           </div>
         </div>
       </AppDashed>
+
       <AppDashed noTopBorder padding="p-3">
         <SectionTitle>Về Vani Studio</SectionTitle>
       </AppDashed>
@@ -191,6 +249,7 @@ export default function AppHome() {
         </TooltipProvider>
       </AppDashed>
 
+      {/* ── Sản phẩm ── */}
       <AppDashed noTopBorder padding="p-3">
         <SectionTitle>Sản phẩm của chúng tôi</SectionTitle>
       </AppDashed>
@@ -206,47 +265,12 @@ export default function AppHome() {
           </article>
         </div>
       </AppDashed>
-      <AppDashed noTopBorder padding="p-0" className="relative">
-        <div className="absolute top-1/2 left-0 w-full h-px border-dashed-h z-0 hidden sm:block" />
-        <div className="absolute left-1/2 top-0 h-full w-px border-dashed-v z-0 hidden sm:block" />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 relative z-10">
-          {products.map((product, i) => {
-            const colors = colorMap[product.color];
-            return (
-              <div
-                key={i}
-                className="p-4 group cursor-pointer hover:bg-muted-background transition-colors"
-              >
-                <div className="flex flex-col gap-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className={cn("size-10 shrink-0 rounded-lg border flex items-center justify-center shadow-sm", colors.bg, colors.border, colors.text)}>
-                        <product.icon size={20} />
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-foreground text-sm leading-tight">{product.name}</h3>
-                        <span className={cn("text-[10px] px-1.5 py-0.5 rounded-full font-medium mt-0.5 inline-block", colors.tagBg, colors.tagText)}>
-                          {product.status}
-                        </span>
-                      </div>
-                    </div>
-                    <ExternalLink size={14} className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-1" />
-                  </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {product.description}
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {product.tags.map((tag) => (
-                      <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+      <AppDashed noTopBorder padding="p-0">
+        <div className="grid grid-cols-1 sm:grid-cols-2">
+          {projects.map((project) => (
+            <ProjectCard key={project.slug} project={project} />
+          ))}
         </div>
       </AppDashed>
     </div>
