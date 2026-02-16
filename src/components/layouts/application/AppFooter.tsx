@@ -8,20 +8,17 @@ const AppFooter = () => {
       <AppDashed noTopBorder padding="p-8 pb-12">
         <div className="flex flex-col gap-2 justify-center items-center">
           <div className="flex items-center gap-2">
-            <img src='/image.png' className='h-[80px]' />
+            <img src='/vanistudio.png' className='h-[80px]' />
           </div>
           <p className="text-sm text-muted-foreground max-w-[480px] text-center">
             The Strongest Battleground Viet Hub - Nơi giúp bạn tỏa sáng và nhìn được thực lực của bản thân !
           </p>
           <div className="flex gap-3">
-            <a href="//github.com/vanistudio" target='_blank' rel="noreferrer" className="p-2 border border-border rounded-md hover:bg-muted-background transition-colors text-muted-foreground hover:text-foreground text-vanixjnk">
+            <a href="//github.com/vanistudio" target='_blank' rel="noreferrer" className="p-2 border border-border rounded-md hover:bg-muted-background transition-colors text-muted-foreground hover:text-foreground text-primary">
               <SiGithub size={16} />
             </a>
-            <a href="//x.com/vanixjnk" target='_blank' rel="noreferrer" className="p-2 border border-border rounded-md hover:bg-muted-background transition-colors text-muted-foreground hover:text-foreground text-vanixjnk">
+            <a href="//x.com/primary" target='_blank' rel="noreferrer" className="p-2 border border-border rounded-md hover:bg-muted-background transition-colors text-muted-foreground hover:text-foreground text-primary">
               <SiX size={16} />
-            </a>
-            <a href="//discord.com/tsbvh" target='_blank' rel="noreferrer" className="p-2 border border-border rounded-md hover:bg-muted-background transition-colors text-muted-foreground hover:text-foreground text-vanixjnk">
-              <SiDiscord size={16} />
             </a>
           </div>
         </div>

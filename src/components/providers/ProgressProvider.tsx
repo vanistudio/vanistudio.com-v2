@@ -4,7 +4,7 @@ const ProgressProviders = ({ children }: { children: React.ReactNode }) => {
   return (
     <ProgressProvider
       height="4px"
-      color="var(--vanixjnk)"
+      color="var(--primary)"
       options={{ showSpinner: true }}
     >
       {children}
