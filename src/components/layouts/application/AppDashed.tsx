@@ -9,6 +9,7 @@ interface AppDashedProps {
   noBottomBorder?: boolean;
   padding?: string;
   maxWidth?: string;
+  grow?: boolean;
 }
 
 const AppDashed: React.FC<AppDashedProps> = ({ 
@@ -18,10 +19,11 @@ const AppDashed: React.FC<AppDashedProps> = ({
   noTopBorder = false,
   noBottomBorder = false,
   padding = "p-3",
-  maxWidth = "max-w-5xl"
+  maxWidth = "max-w-5xl",
+  grow = false
 }) => {
   return (
-    <div className="relative w-full overflow-hidden">
+    <div className={cn("relative w-full overflow-hidden", grow && "flex-grow flex flex-col")}>
       {!noTopBorder && (
         <div className="w-full h-px border-dashed-h" />
       )}
@@ -30,7 +32,8 @@ const AppDashed: React.FC<AppDashedProps> = ({
         className={cn(
           maxWidth, "md:mx-auto mx-5 relative",
           padding,
-          className
+          className,
+          grow && "flex-grow"
         )}
         style={{
           backgroundImage: 'repeating-linear-gradient(to bottom, var(--border-color) 0px, var(--border-color) 6px, transparent 6px, transparent 14px), repeating-linear-gradient(to bottom, var(--border-color) 0px, var(--border-color) 6px, transparent 6px, transparent 14px)',

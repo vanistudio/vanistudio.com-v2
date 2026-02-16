@@ -21,7 +21,7 @@ export default function AuthLogin() {
         </div>
       </AppDashed>
 
-      <AppDashed noTopBorder padding="p-6">
+      <AppDashed noTopBorder padding="p-6" grow>
         <div className="flex flex-col gap-3 max-w-[380px] mx-auto w-full">
           <button
             className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg border border-border bg-background hover:bg-muted-background transition-colors text-sm font-medium text-foreground cursor-pointer"
