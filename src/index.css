@@ -1,8 +1,22 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
+
+@layer base {
+  :root {
+    --border-color: oklch(82.656% 0.00009 271.152);
+    --text-title: oklch(0.145 0 0);
+    --muted-background: oklch(0.97 0 0);
+  }
+  .dark {
+    --border-color: oklch(1 0 0 / 15%);
+    --text-title: oklch(0.985 0 0);
+    --muted-background: oklch(0.269 0 0);
+  }
+}
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -121,4 +135,35 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@layer utilities {
+  .bg-dot-grid {
+    background-image: radial-gradient(var(--border-color) 1.25px, transparent 1.25px);
+    background-size: 7.5px 7.5px;
+}
+
+  .border-dashed-h {
+    background-image: repeating-linear-gradient(to right, var(--border-color) 0px, var(--border-color) 6px, transparent 6px, transparent 14px);
+    background-size: 100% 1px;
+    background-repeat: no-repeat;
+  }
+
+  .border-dashed-v {
+    background-image: repeating-linear-gradient(to bottom, var(--border-color) 0px, var(--border-color) 6px, transparent 6px, transparent 14px);
+    background-size: 1px 100%;
+    background-repeat: no-repeat;
+  }
+  
+  .text-title {
+    color: var(--text-title);
+  }
+  
+  .bg-muted-background {
+    background-color: var(--muted-background);
+  }
+}
+
+::-webkit-scrollbar {
+  display: none
 }
