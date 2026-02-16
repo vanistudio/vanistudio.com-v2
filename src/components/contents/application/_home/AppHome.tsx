@@ -113,7 +113,7 @@ export default function AppHome() {
             { icon: "solar:headphones-round-sound-bold-duotone", label: "Hỗ trợ nhanh chóng", desc: "Đội ngũ phát triển luôn lắng nghe phản hồi và sẵn sàng hỗ trợ xử lý mọi vấn đề trong thời gian ngắn nhất.", color: "text-cyan-500" },
           ].map((item, i) => (
             <div key={i} className="p-5 group cursor-default hover:bg-muted-background transition-colors flex flex-col items-center text-center gap-2.5">
-              <Icon icon={item.icon} className={cn("text-4xl", item.color)} />
+              <Icon icon={item.icon} className={cn("text-5xl", item.color)} />
               <div className="text-sm font-bold text-foreground">{item.label}</div>
               <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
             </div>
@@ -179,7 +179,7 @@ export default function AppHome() {
                   <img
                     src={`https://skillicons.dev/icons?i=${item.id}&theme=${resolvedTheme === 'dark' ? 'dark' : 'light'}`}
                     alt={item.label}
-                    className="size-10 rounded-md cursor-default"
+                    className="size-12 rounded-md cursor-default"
                   />
                 </TooltipTrigger>
                 <TooltipContent>
