@@ -1,9 +1,12 @@
 import { useState } from "react";
+import axios from "axios";
 import AppDashed from "@/components/layouts/application/AppDashed";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/components/providers/AuthProvider";
 
 export default function AppOnboarding() {
   const navigate = useNavigate();
+  const { refresh } = useAuth();
   const [form, setForm] = useState({ username: "", fullName: "", phoneNumber: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -14,15 +17,9 @@ export default function AppOnboarding() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/auth/onboarding", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(form),
-      });
-
-      const data = await res.json();
+      const { data } = await axios.post("/api/auth/onboarding", form);
       if (data.success) {
+        await refresh();
         navigate("/");
       } else {
         setError(data.error || "Có lỗi xảy ra");
