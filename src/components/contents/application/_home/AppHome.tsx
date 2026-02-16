@@ -49,8 +49,8 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-2 justify-center">
       <h2 className="text-sm font-bold text-title">
-        <span className="relative px-1.5 py-1 font-medium tracking-widest text-vanixjnk">
-          <span className="absolute inset-0 border border-dashed border-vanixjnk bg-vanixjnk/10" />
+        <span className="relative px-1.5 py-1 font-medium tracking-widest text-primary">
+          <span className="absolute inset-0 border border-dashed border-primary bg-primary/10" />
           {children}
           {[
             "top-[-2px] left-[-2px]",
@@ -58,7 +58,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
             "bottom-[-2px] left-[-2px]",
             "bottom-[-2px] right-[-2px]",
           ].map((pos, i) => (
-            <svg key={i} className={`absolute ${pos} fill-vanixjnk`} height="5" viewBox="0 0 5 5" width="5">
+            <svg key={i} className={`absolute ${pos} fill-primary`} height="5" viewBox="0 0 5 5" width="5">
               <path d="M2 0h1v2h2v1h-2v2h-1v-2h-2v-1h2z" />
             </svg>
           ))}

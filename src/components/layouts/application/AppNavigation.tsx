@@ -48,9 +48,7 @@ export default function AppNavigation() {
       <AppDashed withDotGrid>
         <div className="flex items-stretch justify-between">
           <div className="flex items-end gap-3 px-1">
-            <div className="border border-border rounded-[12px] p-[4px] bg-background hover:brightness-90 transition duration-300 group">
-              <img src="/image1.png" alt="" className="w-[100px] h-[100px] rounded-[8px]" />
-            </div>
+            <img src="/vanistudio.png" alt="" className="w-[100px] h-[100px] rounded-[8px]" />
             <div className="flex flex-col justify-between py-1 select-none">
               <div className="space-y-0.5">
                 <h1 className="text-[1.55rem] font-bold leading-[1.08] text-title">
@@ -68,7 +66,7 @@ export default function AppNavigation() {
             {navLinks.map((link) => {
               const isExternal = link.href.startsWith("http");
               const className = "hover:text-foreground transition-colors px-2 py-1 cursor-pointer flex items-center gap-1.5";
-              
+
               if (isExternal) {
                 return (
                   <a key={link.name} href={link.href} target="_blank" rel="noopener noreferrer" className={className}>
@@ -77,7 +75,7 @@ export default function AppNavigation() {
                   </a>
                 );
               }
-              
+
               return (
                 <Link key={link.name} to={link.href} className={className}>
                   <link.icon size={20} className="" />
