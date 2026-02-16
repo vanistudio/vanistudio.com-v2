@@ -2,6 +2,8 @@ import { Elysia } from "elysia";
 import { staticPlugin } from "@elysiajs/static";
 import cors from "@elysiajs/cors";
 import { join } from "path";
+import { db } from "@/configs/database.config";
+import { sql } from "drizzle-orm";
 
 export const systemStatus = {
   startedAt: new Date(),
@@ -70,6 +72,9 @@ async function startServer() {
       console.error("➥ Cổng không hợp lệ trong ENV. Hãy đặt giá trị từ 1 đến 65535.");
       process.exit(1);
     }
+    await db.execute(sql`SELECT 1`);
+    console.log("🐘 PostgreSQL đã kết nối thành công!");
+
     const server = app.listen(envPort);
     console.log(`🦊 Elysia đang chạy tại http://localhost:${envPort}`);
     const gracefulShutdown = async () => {
