@@ -7,6 +7,7 @@ import AppRefund from '@/components/contents/application/_refund/AppRefund';
 import AppShipping from '@/components/contents/application/_shipping/AppShipping';
 import AppWarranty from '@/components/contents/application/_warranty/AppWarranty';
 import AppPayment from '@/components/contents/application/_payment/AppPayment';
+import AppTerms from '@/components/contents/application/_terms/AppTerms';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="shipping" element={<AppShipping />} />
           <Route path="warranty" element={<AppWarranty />} />
           <Route path="payment" element={<AppPayment />} />
+          <Route path="terms" element={<AppTerms />} />
         </Route>
       </Routes>
     </Router>
