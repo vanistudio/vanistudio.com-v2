@@ -110,7 +110,7 @@ export default function AppWarranty() {
           <p>Khi cần hỗ trợ bảo hành, khách hàng vui lòng liên hệ:</p>
           <ul>
             <li><span className="text-foreground font-medium">Email:</span>{" "}
-              <a href="mailto:contact@vanistudio.com" className="text-primary hover:underline">contact@vanistudio.com</a>
+              <a href="mailto:vanixjnk@gmail.com" className="text-primary hover:underline">vanixjnk@gmail.com</a>
             </li>
             <li><span className="text-foreground font-medium">Discord:</span>{" "}
               <a href="https://discord.gg/tsbvh" target="_blank" rel="noreferrer" className="text-primary hover:underline">discord.gg/tsbvh</a>

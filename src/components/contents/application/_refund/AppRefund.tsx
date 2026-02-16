@@ -69,7 +69,7 @@ export default function AppRefund() {
               <tbody>
                 <tr>
                   <td className="text-foreground font-medium">1. Gửi yêu cầu</td>
-                  <td>Khách hàng gửi yêu cầu hoàn tiền bằng văn bản đến email <a href="mailto:contact@vanistudio.com" className="text-primary hover:underline">contact@vanistudio.com</a>, nêu rõ lý do và cung cấp bằng chứng liên quan (nếu có).</td>
+                  <td>Khách hàng gửi yêu cầu hoàn tiền bằng văn bản đến email <a href="mailto:vanixjnk@gmail.com" className="text-primary hover:underline">vanixjnk@gmail.com</a>, nêu rõ lý do và cung cấp bằng chứng liên quan (nếu có).</td>
                   <td>—</td>
                 </tr>
                 <tr>
@@ -109,7 +109,7 @@ export default function AppRefund() {
           <p>Mọi yêu cầu hoàn tiền hoặc thắc mắc về chính sách, vui lòng liên hệ:</p>
           <ul>
             <li><span className="text-foreground font-medium">Email:</span>{" "}
-              <a href="mailto:contact@vanistudio.com" className="text-primary hover:underline">contact@vanistudio.com</a>
+              <a href="mailto:vanixjnk@gmail.com" className="text-primary hover:underline">vanixjnk@gmail.com</a>
             </li>
             <li><span className="text-foreground font-medium">Discord:</span>{" "}
               <a href="https://discord.gg/tsbvh" target="_blank" rel="noreferrer" className="text-primary hover:underline">discord.gg/tsbvh</a>

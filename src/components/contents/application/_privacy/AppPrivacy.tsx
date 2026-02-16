@@ -72,7 +72,7 @@ export default function AppPrivacy() {
           </p>
           <p>
             Nếu khách hàng muốn xóa toàn bộ dữ liệu cá nhân, vui lòng gửi yêu cầu đến email:{" "}
-            <a href="mailto:contact@vanistudio.com" className="text-primary hover:underline font-medium">contact@vanistudio.com</a>
+            <a href="mailto:vanixjnk@gmail.com" className="text-primary hover:underline font-medium">vanixjnk@gmail.com</a>
           </p>
 
           <h3 className="text-title text-base font-bold">4. Thông tin liên hệ</h3>
@@ -82,7 +82,7 @@ export default function AppPrivacy() {
           <ul>
             <li><span className="text-foreground font-medium">Đơn vị:</span> Vani Studio</li>
             <li><span className="text-foreground font-medium">Email:</span>{" "}
-              <a href="mailto:contact@vanistudio.com" className="text-primary hover:underline">contact@vanistudio.com</a>
+              <a href="mailto:vanixjnk@gmail.com" className="text-primary hover:underline">vanixjnk@gmail.com</a>
             </li>
             <li><span className="text-foreground font-medium">Discord:</span>{" "}
               <a href="https://discord.gg/tsbvh" target="_blank" rel="noreferrer" className="text-primary hover:underline">discord.gg/tsbvh</a>
