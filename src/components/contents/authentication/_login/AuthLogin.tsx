@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 export default function AuthLogin() {
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full flex-grow">
       <AppDashed noTopBorder withDotGrid>
         <div className="flex flex-col items-center justify-center gap-3 py-4">
           <Link to="/">

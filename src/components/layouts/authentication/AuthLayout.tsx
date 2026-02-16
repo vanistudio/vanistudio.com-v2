@@ -25,7 +25,6 @@ const AuthLayout = () => {
       <main className="flex-grow flex flex-col">
         <Outlet />
       </main>
-
       <AuthFooter />
     </div>
   );
