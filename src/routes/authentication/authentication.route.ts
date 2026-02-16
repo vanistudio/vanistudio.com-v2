@@ -10,6 +10,13 @@ const COOKIE_OPTIONS = {
   maxAge: 7 * 24 * 60 * 60, 
 };
 
+const REDIRECT = {
+  home: "/",
+  login: "/auth/login",
+  onboarding: "/onboarding",
+  loginError: (err: string) => `/auth/login?error=${err}`,
+};
+
 export const authRoutes = new Elysia({ prefix: "/api/auth" })
   .get("/github", ({ redirect }) => {
     const url = authController.getGithubAuthUrl();
@@ -18,15 +25,15 @@ export const authRoutes = new Elysia({ prefix: "/api/auth" })
   .get("/github/callback", async ({ query, cookie, redirect }) => {
     try {
       const code = query.code;
-      if (!code) return redirect("/auth/login?error=no_code");
+      if (!code) return redirect(REDIRECT.loginError("no_code"));
 
       const { token, needsOnboarding } = await authController.handleGithubCallback(code);
       cookie[COOKIE_NAME].set({ value: token, ...COOKIE_OPTIONS });
 
-      return redirect(needsOnboarding ? "/onboarding" : "/");
+      return redirect(needsOnboarding ? REDIRECT.onboarding : REDIRECT.home);
     } catch (error) {
       console.error("GitHub callback error:", error);
-      return redirect("/auth/login?error=github_failed");
+      return redirect(REDIRECT.loginError("github_failed"));
     }
   })
   .get("/google", ({ redirect }) => {
@@ -36,15 +43,15 @@ export const authRoutes = new Elysia({ prefix: "/api/auth" })
   .get("/google/callback", async ({ query, cookie, redirect }) => {
     try {
       const code = query.code;
-      if (!code) return redirect("/auth/login?error=no_code");
+      if (!code) return redirect(REDIRECT.loginError("no_code"));
 
       const { token, needsOnboarding } = await authController.handleGoogleCallback(code);
       cookie[COOKIE_NAME].set({ value: token, ...COOKIE_OPTIONS });
 
-      return redirect(needsOnboarding ? "/onboarding" : "/");
+      return redirect(needsOnboarding ? REDIRECT.onboarding : REDIRECT.home);
     } catch (error) {
       console.error("Google callback error:", error);
-      return redirect("/auth/login?error=google_failed");
+      return redirect(REDIRECT.loginError("google_failed"));
     }
   })
   .get("/me", async ({ cookie }) => {

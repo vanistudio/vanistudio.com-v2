@@ -1,5 +1,12 @@
 import axios from "axios";
 
+const AUTH_BASE = "/api/auth";
+
+export const authRoutes = {
+  github: `${AUTH_BASE}/github`,
+  google: `${AUTH_BASE}/google`,
+};
+
 export interface AuthUser {
   id: string;
   username: string | null;
