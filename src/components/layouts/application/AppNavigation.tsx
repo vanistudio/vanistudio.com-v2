@@ -1,13 +1,11 @@
 import { useState, useRef } from "react";
 import { useScroll, useMotionValueEvent } from "framer-motion";
+import { Icon } from "@iconify/react";
 import AppDashed from "./AppDashed";
 import AppHeader from "./AppHeader";
-import { SiDiscord } from "react-icons/si";
-import { FaRankingStar } from "react-icons/fa6";
-import { IoHome } from "react-icons/io5";
 import AppMenuConfig from "./AppMenuConfig";
 import { Link } from "react-router-dom";
-import { BiSolidDashboard } from "react-icons/bi";
+
 export default function AppNavigation() {
   const [isFloating, setIsFloating] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
@@ -21,10 +19,10 @@ export default function AppNavigation() {
   });
 
   const navLinks = [
-    { name: "Home", href: "/", icon: IoHome },
-    { name: "Ranking", href: "/ranking", icon: FaRankingStar },
-    { name: "Discord", href: "https://discord.gg/tsbvh", icon: SiDiscord },
-    { name: "Dashboard", href: "/dashboard", icon: BiSolidDashboard },
+    { name: "Trang chủ", href: "/", icon: "solar:home-smile-bold-duotone" },
+    { name: "Sản phẩm", href: "/products", icon: "solar:box-bold-duotone" },
+    { name: "Dịch vụ", href: "/services", icon: "solar:code-square-bold-duotone" },
+    { name: "Liên hệ", href: "/contact", icon: "solar:chat-round-dots-bold-duotone" },
   ];
 
   return (
@@ -54,7 +52,7 @@ export default function AppNavigation() {
                 <h1 className="text-[1.55rem] font-bold leading-[1.08] text-title">
                   Vani Studio
                 </h1>
-                <p className="text-muted-foreground text-sm">The Strongest Battleground Viet Hub</p>
+                <p className="text-muted-foreground text-sm">Thiết kế và phát triển phần mềm</p>
               </div>
             </div>
           </div>
@@ -70,7 +68,7 @@ export default function AppNavigation() {
               if (isExternal) {
                 return (
                   <a key={link.name} href={link.href} target="_blank" rel="noopener noreferrer" className={className}>
-                    <link.icon size={20} className="" />
+                    <Icon icon={link.icon} className="text-xl" />
                     <span className="hidden sm:inline">{link.name}</span>
                   </a>
                 );
@@ -78,7 +76,7 @@ export default function AppNavigation() {
 
               return (
                 <Link key={link.name} to={link.href} className={className}>
-                  <link.icon size={20} className="" />
+                  <Icon icon={link.icon} className="text-xl" />
                   <span className="hidden sm:inline">{link.name}</span>
                 </Link>
               );

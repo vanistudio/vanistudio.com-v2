@@ -1,11 +1,12 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { IconType } from "react-icons";
+import { Icon } from "@iconify/react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
+
 interface NavLink {
   name: string;
   href: string;
-  icon: IconType;
+  icon: string;
 }
 
 interface AppMenuConfigProps {
@@ -27,7 +28,7 @@ const AppMenuConfig = ({ isFloating, navLinks }: AppMenuConfigProps) => {
           >
             <div className="max-w-5xl w-full flex items-center justify-between px-4">
               <Link to="/" className="flex items-center gap-2 select-none">
-                <img src="/image.png" alt="Logo" className="h-[50px]" />
+                <img src="/vanistudio.png" alt="Logo" className="h-[50px]" />
               </Link>
               <div className="flex items-center gap-1">
                 <div className="flex items-center gap-2 mr-2">
@@ -35,7 +36,7 @@ const AppMenuConfig = ({ isFloating, navLinks }: AppMenuConfigProps) => {
                     const isExternal = link.href.startsWith("http");
                     const content = (
                       <>
-                        <link.icon size={20} className="" />
+                        <Icon icon={link.icon} className="text-xl" />
                         <span className="hidden lg:inline">{link.name}</span>
                       </>
                     );
@@ -69,7 +70,7 @@ const AppMenuConfig = ({ isFloating, navLinks }: AppMenuConfigProps) => {
             {navLinks.map((link) => {
               const isExternal = link.href.startsWith("http");
               const content = (
-                <link.icon size={24} />
+                <Icon icon={link.icon} className="text-2xl" />
               );
               const className = cn(
                 "p-3 rounded-xl transition-all",

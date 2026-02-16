@@ -1,10 +1,7 @@
 import { useState, useRef } from "react";
 import { Outlet } from "react-router-dom";
 import { useScroll, useMotionValueEvent } from "framer-motion";
-import { SiDiscord } from "react-icons/si";
-import { FaRankingStar } from "react-icons/fa6";
-import { IoHome } from "react-icons/io5";
-import { BiSolidDashboard } from "react-icons/bi";
+import { Icon } from "@iconify/react";
 import { Link } from "react-router-dom";
 import AppDashed from "./AppDashed";
 import AppHeader from "./AppHeader";
@@ -12,10 +9,10 @@ import AppMenuConfig from "./AppMenuConfig";
 import AppFooter from "./AppFooter";
 
 const navLinks = [
-  { name: "Home", href: "/", icon: IoHome },
-  { name: "Ranking", href: "/ranking", icon: FaRankingStar },
-  { name: "Discord", href: "https://zalo.me/0935974907", icon: SiDiscord },
-  { name: "Dashboard", href: "/dashboard", icon: BiSolidDashboard },
+  { name: "Trang chủ", href: "/", icon: "solar:home-smile-bold-duotone" },
+  { name: "Sản phẩm", href: "/products", icon: "solar:box-bold-duotone" },
+  { name: "Dịch vụ", href: "/services", icon: "solar:code-square-bold-duotone" },
+  { name: "Liên hệ", href: "/contact", icon: "solar:chat-round-dots-bold-duotone" },
 ];
 
 const AppLayout = () => {
@@ -59,7 +56,7 @@ const AppLayout = () => {
               if (isExternal) {
                 return (
                   <a key={link.name} href={link.href} target="_blank" rel="noopener noreferrer" className={className}>
-                    <link.icon size={20} className="" />
+                    <Icon icon={link.icon} className="text-xl" />
                     <span className="hidden sm:inline">{link.name}</span>
                   </a>
                 );
@@ -67,7 +64,7 @@ const AppLayout = () => {
 
               return (
                 <Link key={link.name} to={link.href} className={className}>
-                  <link.icon size={20} className="" />
+                  <Icon icon={link.icon} className="text-xl" />
                   <span className="hidden sm:inline">{link.name}</span>
                 </Link>
               );
