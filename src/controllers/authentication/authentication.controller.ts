@@ -5,7 +5,6 @@ import { googleOAuthService, type GoogleConfig } from "@/services/google.service
 import { eq, and } from "drizzle-orm";
 import type { OAuthUserInfo } from "@/services/types";
 
-// JWT helpers using jose (built into Bun)
 function base64url(str: string): string {
   return btoa(str).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
@@ -50,8 +49,6 @@ function verifyJwt(token: string, secret: string): Record<string, unknown> | nul
     return null;
   }
 }
-
-// Configs from env
 function getGithubConfig(): GitHubConfig {
   return {
     clientId: process.env.APP_GITHUB_CLIENT_ID || "",
@@ -73,19 +70,14 @@ function getJwtSecret(): string {
   if (!secret) throw new Error("APP_JWT_SECRET is not defined");
   return secret;
 }
-
-// Generate random password hash for OAuth users
 async function generateRandomPasswordHash(): Promise<string> {
   const randomPassword = crypto.randomUUID() + crypto.randomUUID();
   return await Bun.password.hash(randomPassword);
 }
-
-// Find or create user from OAuth info
 async function findOrCreateOAuthUser(
   provider: "github" | "google",
   userInfo: OAuthUserInfo
 ) {
-  // Check if user already exists with this provider + providerId
   const [existing] = await db
     .select()
     .from(users)
@@ -96,7 +88,6 @@ async function findOrCreateOAuthUser(
     return { user: existing, isNew: false };
   }
 
-  // Check if user exists with same email
   if (userInfo.email) {
     const [byEmail] = await db
       .select()
@@ -105,7 +96,6 @@ async function findOrCreateOAuthUser(
       .limit(1);
 
     if (byEmail) {
-      // Link existing account to this provider
       const [updated] = await db
         .update(users)
         .set({ provider, providerId: userInfo.id, avatarUrl: userInfo.avatar || byEmail.avatarUrl })
@@ -114,8 +104,6 @@ async function findOrCreateOAuthUser(
       return { user: updated, isNew: false };
     }
   }
-
-  // Create new user
   const passwordHash = await generateRandomPasswordHash();
   const [newUser] = await db
     .insert(users)
@@ -131,22 +119,15 @@ async function findOrCreateOAuthUser(
 
   return { user: newUser, isNew: true };
 }
-
-// Create JWT token for user
 function createToken(userId: string, needsOnboarding: boolean): string {
   return signJwt({ userId, needsOnboarding }, getJwtSecret());
 }
-
-// Verify token and get user ID
 export function verifyToken(token: string): { userId: string; needsOnboarding: boolean } | null {
   const payload = verifyJwt(token, getJwtSecret());
   if (!payload || !payload.userId) return null;
   return { userId: payload.userId as string, needsOnboarding: !!payload.needsOnboarding };
 }
-
-// Controller methods
 export const authController = {
-  // GitHub OAuth
   getGithubAuthUrl() {
     const config = getGithubConfig();
     return githubOAuthService.getAuthUrl(config);
@@ -160,8 +141,6 @@ export const authController = {
     const token = createToken(user.id, needsOnboarding);
     return { token, needsOnboarding };
   },
-
-  // Google OAuth
   getGoogleAuthUrl() {
     const config = getGoogleConfig();
     return googleOAuthService.getAuthUrl(config);
@@ -175,10 +154,7 @@ export const authController = {
     const token = createToken(user.id, needsOnboarding);
     return { token, needsOnboarding };
   },
-
-  // Onboarding
   async completeOnboarding(userId: string, data: { username: string; fullName: string; phoneNumber: string }) {
-    // Check if username is already taken
     const [existingUsername] = await db
       .select()
       .from(users)
@@ -199,13 +175,9 @@ export const authController = {
       })
       .where(eq(users.id, userId))
       .returning();
-
-    // Issue new token without needsOnboarding flag
     const token = createToken(updated.id, false);
     return { user: updated, token };
   },
-
-  // Get current user
   async getMe(userId: string) {
     const [user] = await db
       .select({

@@ -7,11 +7,10 @@ const COOKIE_OPTIONS = {
   secure: process.env.NODE_ENV === "production",
   sameSite: "lax" as const,
   path: "/",
-  maxAge: 7 * 24 * 60 * 60, // 7 days
+  maxAge: 7 * 24 * 60 * 60, 
 };
 
 export const authRoutes = new Elysia({ prefix: "/api/auth" })
-  // GitHub OAuth
   .get("/github", ({ redirect }) => {
     const url = authController.getGithubAuthUrl();
     return redirect(url);
@@ -30,8 +29,6 @@ export const authRoutes = new Elysia({ prefix: "/api/auth" })
       return redirect("/auth/login?error=github_failed");
     }
   })
-
-  // Google OAuth
   .get("/google", ({ redirect }) => {
     const url = authController.getGoogleAuthUrl();
     return redirect(url);
@@ -50,8 +47,6 @@ export const authRoutes = new Elysia({ prefix: "/api/auth" })
       return redirect("/auth/login?error=google_failed");
     }
   })
-
-  // Get current user
   .get("/me", async ({ cookie }) => {
     const token = cookie[COOKIE_NAME]?.value as string | undefined;
     if (!token) return { success: false, error: "Chưa đăng nhập" };
@@ -64,8 +59,6 @@ export const authRoutes = new Elysia({ prefix: "/api/auth" })
 
     return { success: true, user, needsOnboarding: payload.needsOnboarding };
   })
-
-  // Complete onboarding
   .post("/onboarding", async ({ body, cookie }) => {
     const token = cookie[COOKIE_NAME]?.value as string | undefined;
     if (!token) return { success: false, error: "Chưa đăng nhập" };
@@ -87,8 +80,6 @@ export const authRoutes = new Elysia({ prefix: "/api/auth" })
       phoneNumber: t.String({ minLength: 1, maxLength: 20 }),
     }),
   })
-
-  // Logout
   .post("/logout", ({ cookie }) => {
     cookie[COOKIE_NAME].set({ value: "", ...COOKIE_OPTIONS, maxAge: 0 });
     return { success: true };
