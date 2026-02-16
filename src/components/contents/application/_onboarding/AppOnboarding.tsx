@@ -1,8 +1,8 @@
 import { useState } from "react";
-import axios from "axios";
 import AppDashed from "@/components/layouts/application/AppDashed";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/providers/AuthProvider";
+import { authProxy } from "@/proxies/authentication.proxy";
 
 export default function AppOnboarding() {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ export default function AppOnboarding() {
     setLoading(true);
 
     try {
-      const { data } = await axios.post("/api/auth/onboarding", form);
+      const data = await authProxy.completeOnboarding(form);
       if (data.success) {
         await refresh();
         navigate("/");

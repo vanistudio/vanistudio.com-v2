@@ -1,17 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
-
-interface AuthUser {
-  id: string;
-  username: string | null;
-  email: string;
-  displayName: string | null;
-  fullName: string | null;
-  phoneNumber: string | null;
-  avatarUrl: string | null;
-  provider: string;
-  role: string;
-  createdAt: string;
-}
+import { authProxy, type AuthUser } from "@/proxies/authentication.proxy";
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -38,8 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUser = async () => {
     try {
-      const res = await fetch("/api/auth/me", { credentials: "include" });
-      const data = await res.json();
+      const data = await authProxy.getMe();
       if (data.success && data.user) {
         setUser(data.user);
         setNeedsOnboarding(data.needsOnboarding || !data.user.username);
@@ -57,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+      await authProxy.logout();
     } catch {}
     setUser(null);
     setNeedsOnboarding(false);
