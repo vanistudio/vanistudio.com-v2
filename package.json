@@ -11,6 +11,8 @@
   "dependencies": {
     "@base-ui/react": "^1.1.0",
     "@bprogress/react": "^1.2.7",
+    "@elysiajs/cors": "^1.4.1",
+    "@elysiajs/static": "^1.4.7",
     "@hookform/resolvers": "^5.2.2",
     "@tailwindcss/vite": "^4.1.18",
     "@types/react": "^19.2.13",
