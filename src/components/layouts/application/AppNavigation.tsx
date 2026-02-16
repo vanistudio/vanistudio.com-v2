@@ -33,7 +33,7 @@ export default function AppNavigation() {
       <AppMenuConfig isFloating={isFloating} navLinks={navLinks} />
       <div className="relative z-50 bg-background">
         <div
-          className="max-w-[800px] mx-5 md:mx-auto relative p-3"
+          className="max-w-6xl mx-5 md:mx-auto relative p-3"
           style={{
             backgroundImage:
               "repeating-linear-gradient(to bottom, var(--border-color) 0px, var(--border-color) 6px, transparent 6px, transparent 14px), repeating-linear-gradient(to bottom, var(--border-color) 0px, var(--border-color) 6px, transparent 6px, transparent 14px)",
