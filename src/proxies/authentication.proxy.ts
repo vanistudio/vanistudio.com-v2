@@ -1,44 +1,13 @@
-import axios from "axios";
+import { Elysia } from "elysia";
+import { verifyToken } from "@/controllers/authentication/authentication.controller";
 
-const AUTH_BASE = "/api/auth";
+const COOKIE_NAME = "vani_auth";
 
-export const authRoutes = {
-  github: `${AUTH_BASE}/github`,
-  google: `${AUTH_BASE}/google`,
-};
-
-export interface AuthUser {
-  id: string;
-  username: string | null;
-  email: string;
-  displayName: string | null;
-  fullName: string | null;
-  phoneNumber: string | null;
-  avatarUrl: string | null;
-  provider: string;
-  role: string;
-  createdAt: string;
-}
-
-export interface OnboardingData {
-  username: string;
-  fullName: string;
-  phoneNumber: string;
-}
-
-export const authProxy = {
-  async getMe(): Promise<{ success: boolean; user?: AuthUser; needsOnboarding?: boolean; error?: string }> {
-    const { data } = await axios.get("/api/auth/me");
-    return data;
-  },
-
-  async completeOnboarding(form: OnboardingData): Promise<{ success: boolean; user?: AuthUser; error?: string }> {
-    const { data } = await axios.post("/api/auth/onboarding", form);
-    return data;
-  },
-
-  async logout(): Promise<{ success: boolean }> {
-    const { data } = await axios.post("/api/auth/logout");
-    return data;
-  },
-};
+export const authProxy = new Elysia({ name: "auth-proxy" })
+  .derive({ as: "global" }, ({ cookie }) => {
+    const token = cookie[COOKIE_NAME]?.value as string | undefined;
+    if (!token) return { auth: null };
+    const payload = verifyToken(token);
+    if (!payload) return { auth: null };
+    return { auth: { userId: payload.userId, needsOnboarding: payload.needsOnboarding } };
+  });

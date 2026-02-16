@@ -1,5 +1,6 @@
 import { Elysia, t } from "elysia";
-import { authController, verifyToken } from "@/controllers/authentication/authentication.controller";
+import { authController } from "@/controllers/authentication/authentication.controller";
+import { authProxy } from "@/proxies/authentication.proxy";
 
 const COOKIE_NAME = "vani_auth";
 const COOKIE_OPTIONS = {
@@ -18,6 +19,7 @@ const REDIRECT = {
 };
 
 export const authRoutes = new Elysia({ prefix: "/api/auth" })
+  .use(authProxy)
   .get("/github", ({ redirect }) => {
     const url = authController.getGithubAuthUrl();
     return redirect(url);
@@ -54,27 +56,19 @@ export const authRoutes = new Elysia({ prefix: "/api/auth" })
       return redirect(REDIRECT.loginError("google_failed"));
     }
   })
-  .get("/me", async ({ cookie }) => {
-    const token = cookie[COOKIE_NAME]?.value as string | undefined;
-    if (!token) return { success: false, error: "Chưa đăng nhập" };
+  .get("/me", async ({ auth }) => {
+    if (!auth) return { success: false, error: "Chưa đăng nhập" };
 
-    const payload = verifyToken(token);
-    if (!payload) return { success: false, error: "Token không hợp lệ" };
-
-    const user = await authController.getMe(payload.userId);
+    const user = await authController.getMe(auth.userId);
     if (!user) return { success: false, error: "Không tìm thấy người dùng" };
 
-    return { success: true, user, needsOnboarding: payload.needsOnboarding };
+    return { success: true, user, needsOnboarding: auth.needsOnboarding };
   })
-  .post("/onboarding", async ({ body, cookie }) => {
-    const token = cookie[COOKIE_NAME]?.value as string | undefined;
-    if (!token) return { success: false, error: "Chưa đăng nhập" };
-
-    const payload = verifyToken(token);
-    if (!payload) return { success: false, error: "Token không hợp lệ" };
+  .post("/onboarding", async ({ body, cookie, auth }) => {
+    if (!auth) return { success: false, error: "Chưa đăng nhập" };
 
     try {
-      const { user, token: newToken } = await authController.completeOnboarding(payload.userId, body);
+      const { user, token: newToken } = await authController.completeOnboarding(auth.userId, body);
       cookie[COOKIE_NAME].set({ value: newToken, ...COOKIE_OPTIONS });
       return { success: true, user };
     } catch (error: any) {
