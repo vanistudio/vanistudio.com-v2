@@ -11,7 +11,7 @@ const AppFooter = () => {
             <img src='/vanistudio.png' className='h-[80px]' />
           </div>
           <p className="text-sm text-muted-foreground max-w-[480px] text-center">
-            The Strongest Battleground Viet Hub - Nơi giúp bạn tỏa sáng và nhìn được thực lực của bản thân !
+            Thiết kế và phát triển Website để giúp cho việc kiếm tiền online của bạn trở nên tự động hóa và hiệu quả hơn. 
           </p>
           <div className="flex gap-3">
             <a href="//github.com/vanistudio" target='_blank' rel="noreferrer" className="p-2 border border-border rounded-md hover:bg-muted-background transition-colors text-muted-foreground hover:text-foreground text-primary">
@@ -26,7 +26,7 @@ const AppFooter = () => {
       <AppDashed noTopBorder padding="p-4">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-muted-foreground tracking-widest">
+            <span className="text-xs font-medium text-muted-foreground tracking-widest">
               © {currentYear}{" "}
               <a href="//vanistudio.com" target='_blank' rel="noreferrer">
                 Vani Studio
@@ -35,9 +35,9 @@ const AppFooter = () => {
               • All rights reserved
             </span>
           </div>
-          <div className="flex gap-4 text-sm font-medium tracking-widest text-muted-foreground">
+          <div className="flex gap-4 text-xs font-medium tracking-widest text-muted-foreground">
             <span className="hover:text-title transition-colors cursor-default">
-              TSBVH
+              Vani
             </span>
           </div>
         </div>
