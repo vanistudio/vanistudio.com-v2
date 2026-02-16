@@ -1,0 +1,27 @@
+import { pgTable, text, timestamp, boolean, uuid, integer } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
+import { users } from "./user.schema";
+
+export const licenses = pgTable("licenses", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  key: text("key").notNull().unique(),
+  productName: text("product_name").notNull(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+  status: text("status", { enum: ["active", "expired", "revoked", "unused"] }).default("unused").notNull(),
+  maxActivations: integer("max_activations").default(1).notNull(),
+  currentActivations: integer("current_activations").default(0).notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }),
+  activatedAt: timestamp("activated_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const licensesRelations = relations(licenses, ({ one }) => ({
+  user: one(users, {
+    fields: [licenses.userId],
+    references: [users.id],
+  }),
+}));
+
+export type License = typeof licenses.$inferSelect;
+export type NewLicense = typeof licenses.$inferInsert;
