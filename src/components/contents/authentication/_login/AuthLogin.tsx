@@ -1,7 +1,11 @@
 import { Icon } from '@iconify/react';
 import AppDashed from '@/components/layouts/application/AppDashed';
 import { Link } from 'react-router-dom';
-import { authRoutes } from '@/services/authentication.service';
+
+const AUTH_ROUTES = {
+  github: '/api/auth/github',
+  google: '/api/auth/google',
+};
 
 export default function AuthLogin() {
   return (
@@ -9,7 +13,7 @@ export default function AuthLogin() {
       <AppDashed noTopBorder padding="p-6">
         <div className="flex flex-col gap-3 max-w-[380px] mx-auto w-full min-h-[400px] justify-center">
           <a
-            href={authRoutes.github}
+            href={AUTH_ROUTES.github}
             className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg border border-border bg-background hover:bg-muted-background transition-colors text-sm font-medium text-foreground cursor-pointer no-underline"
           >
             <Icon icon="mdi:github" className="text-xl" />
@@ -17,7 +21,7 @@ export default function AuthLogin() {
           </a>
 
           <a
-            href={authRoutes.google}
+            href={AUTH_ROUTES.google}
             className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg border border-border bg-background hover:bg-muted-background transition-colors text-sm font-medium text-foreground cursor-pointer no-underline"
           >
             <Icon icon="flat-color-icons:google" className="text-xl" />

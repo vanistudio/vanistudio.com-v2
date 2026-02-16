@@ -2,7 +2,7 @@ import { useState } from "react";
 import AppDashed from "@/components/layouts/application/AppDashed";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/providers/AuthProvider";
-import { authApi } from "@/services/authentication.service";
+import { api } from "@/lib/api";
 
 export default function AppOnboarding() {
   const navigate = useNavigate();
@@ -17,12 +17,12 @@ export default function AppOnboarding() {
     setLoading(true);
 
     try {
-      const data = await authApi.completeOnboarding(form);
-      if (data.success) {
+      const { data } = await api.api.auth.onboarding.post(form);
+      if (data?.success) {
         await refresh();
         navigate("/");
       } else {
-        setError(data.error || "Có lỗi xảy ra");
+        setError(data?.error || "Có lỗi xảy ra");
       }
     } catch {
       setError("Không thể kết nối đến máy chủ");

@@ -1,5 +1,18 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
-import { authApi, type AuthUser } from "@/services/authentication.service";
+import { api } from "@/lib/api";
+
+interface AuthUser {
+  id: string;
+  username: string | null;
+  email: string;
+  displayName: string | null;
+  fullName: string | null;
+  phoneNumber: string | null;
+  avatarUrl: string | null;
+  provider: string;
+  role: string;
+  createdAt: Date | string;
+}
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -26,9 +39,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUser = async () => {
     try {
-      const data = await authApi.getMe();
-      if (data.success && data.user) {
-        setUser(data.user);
+      const { data } = await api.api.auth.me.get();
+      if (data?.success && data.user) {
+        setUser(data.user as AuthUser);
         setNeedsOnboarding(data.needsOnboarding || !data.user.username);
       } else {
         setUser(null);
@@ -44,7 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      await authApi.logout();
+      await api.api.auth.logout.post();
     } catch {}
     setUser(null);
     setNeedsOnboarding(false);

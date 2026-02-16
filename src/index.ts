@@ -66,6 +66,8 @@ const app = new Elysia()
     }
     return Bun.file(join(process.cwd(), "dist/public/index.html"));
   });
+
+export type App = typeof app;
 async function startServer() {
   try {
     const envPort = parseInt(process.env.APP_PORT || "3000", 10);
