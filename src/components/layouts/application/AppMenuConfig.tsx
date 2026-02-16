@@ -23,9 +23,9 @@ const AppMenuConfig = ({ isFloating, navLinks }: AppMenuConfigProps) => {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -100, opacity: 0 }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed top-2 left-0 right-0 z-[110] w-full max-w-6xl mx-auto rounded-xl border border-border bg-background backdrop-blur-xl shadow-xl hidden md:flex items-center justify-center py-2 pointer-events-auto"
+            className="fixed top-2 left-0 right-0 z-[110] w-full max-w-5xl mx-auto rounded-xl border border-border bg-background backdrop-blur-xl shadow-xl hidden md:flex items-center justify-center py-2 pointer-events-auto"
           >
-            <div className="max-w-6xl w-full flex items-center justify-between px-4">
+            <div className="max-w-5xl w-full flex items-center justify-between px-4">
               <Link to="/" className="flex items-center gap-2 select-none">
                 <img src="/image.png" alt="Logo" className="h-[50px]" />
               </Link>

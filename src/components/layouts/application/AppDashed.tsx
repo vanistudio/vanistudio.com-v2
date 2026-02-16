@@ -18,7 +18,7 @@ const AppDashed: React.FC<AppDashedProps> = ({
   noTopBorder = false,
   noBottomBorder = false,
   padding = "p-3",
-  maxWidth = "max-w-6xl"
+  maxWidth = "max-w-5xl"
 }) => {
   return (
     <div className="relative w-full overflow-hidden">
