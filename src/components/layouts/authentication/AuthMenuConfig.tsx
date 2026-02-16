@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "@iconify/react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/components/providers/AuthProvider";
 
 interface NavLink {
   name: string;
@@ -15,6 +16,8 @@ interface AuthMenuConfigProps {
 }
 
 const AuthMenuConfig = ({ isFloating, navLinks }: AuthMenuConfigProps) => {
+  const { isAuthenticated } = useAuth();
+
   return (
     <AnimatePresence>
       {isFloating && (
@@ -57,6 +60,13 @@ const AuthMenuConfig = ({ isFloating, navLinks }: AuthMenuConfigProps) => {
                     );
                   })}
                 </div>
+                <Link
+                  to={isAuthenticated ? "/dashboard" : "/auth/login"}
+                  className="flex items-center gap-1.5 text-sm font-bold text-primary-foreground bg-primary hover:bg-primary/90 transition-colors px-4 py-1.5 rounded-full cursor-pointer"
+                >
+                  <Icon icon={isAuthenticated ? "solar:widget-bold-duotone" : "solar:login-bold-duotone"} className="text-xl" />
+                  <span className="hidden lg:inline">{isAuthenticated ? "Dashboard" : "Đăng nhập"}</span>
+                </Link>
               </div>
             </div>
           </motion.div>
@@ -92,6 +102,16 @@ const AuthMenuConfig = ({ isFloating, navLinks }: AuthMenuConfigProps) => {
                 </Link>
               );
             })}
+            <Link
+              to={isAuthenticated ? "/dashboard" : "/auth/login"}
+              className={cn(
+                "p-3 rounded-xl transition-all",
+                "text-primary-foreground bg-primary hover:bg-primary/90",
+                "flex items-center justify-center"
+              )}
+            >
+              <Icon icon={isAuthenticated ? "solar:widget-bold-duotone" : "solar:login-bold-duotone"} className="text-2xl" />
+            </Link>
           </motion.div>
         </>
       )}

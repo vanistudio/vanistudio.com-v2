@@ -5,11 +5,13 @@ import AppDashed from "@/components/layouts/application/AppDashed";
 import AuthHeader from "./AuthHeader";
 import AuthMenuConfig from "./AuthMenuConfig";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/components/providers/AuthProvider";
 
 export default function AuthNavigation() {
   const [isFloating, setIsFloating] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll();
+  const { isAuthenticated } = useAuth();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     if (navRef.current) {
@@ -79,6 +81,13 @@ export default function AuthNavigation() {
                 </Link>
               );
             })}
+            <Link
+              to={isAuthenticated ? "/dashboard" : "/auth/login"}
+              className="hover:text-foreground transition-colors px-2 py-1 cursor-pointer flex items-center gap-1.5 text-primary"
+            >
+              <Icon icon={isAuthenticated ? "solar:widget-bold-duotone" : "solar:login-bold-duotone"} className="text-xl" />
+              <span className="hidden sm:inline">{isAuthenticated ? "Dashboard" : "Đăng nhập"}</span>
+            </Link>
           </div>
         </AppDashed>
       </div>
