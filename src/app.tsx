@@ -10,6 +10,7 @@ import AppPayment from '@/components/contents/application/_payment/AppPayment';
 import AppTerms from '@/components/contents/application/_terms/AppTerms';
 import AuthLayout from '@/components/layouts/authentication/AuthLayout';
 import AuthLogin from '@/components/contents/authentication/_login/AuthLogin';
+import AppOnboarding from '@/components/contents/application/_onboarding/AppOnboarding';
 
 function App() {
   return (
@@ -27,6 +28,9 @@ function App() {
         </Route>
         <Route path="/auth" element={<AuthLayout />}>
           <Route path="login" element={<AuthLogin />} />
+        </Route>
+        <Route path="/onboarding" element={<AuthLayout />}>
+          <Route index element={<AppOnboarding />} />
         </Route>
       </Routes>
     </Router>

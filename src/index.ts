@@ -3,6 +3,7 @@ import cors from "@elysiajs/cors";
 import { join } from "path";
 import { db } from "@/configs/index.config";
 import { sql } from "drizzle-orm";
+import { routes } from "@/routes/index.route";
 
 export const systemStatus = {
   startedAt: new Date(),
@@ -53,6 +54,7 @@ const app = new Elysia()
       exposeHeaders: ["Set-Cookie"],
     })
   )
+  .use(routes)
   .get("/assets/*", ({ path }) => Bun.file(join(process.cwd(), "dist/public", path)))
   .get("/", () => Bun.file(join(process.cwd(), "dist/public/index.html")))
   .get("*", ({ path }) => {
