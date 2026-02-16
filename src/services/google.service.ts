@@ -54,9 +54,7 @@ export const googleOAuthService = {
                     },
                 }
             );
-
             const googleUser = googleUserRes.data;
-
             return {
                 id: googleUser.id,
                 email: googleUser.email,
