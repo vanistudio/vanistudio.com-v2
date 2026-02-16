@@ -1,7 +1,6 @@
 import { ExternalLink, Star, Download, Shield, Zap, Code, Eye } from 'lucide-react';
 import AppDashed from '@/components/layouts/application/AppDashed';
 import { cn } from '@/lib/utils';
-import AppNavigation from '@/components/layouts/application/AppNavigation';
 
 const products = [
   {
@@ -71,7 +70,17 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 export default function AppHome() {
   return (
     <div className="flex flex-col w-full">
-      <AppNavigation />
+      <AppDashed withDotGrid noTopBorder>
+        <div className="flex flex-col items-center justify-center gap-3 py-4">
+          <img src="/vanistudio.png" alt="" className="w-[100px] h-[100px] rounded-[8px]" />
+          <div className="text-center select-none space-y-1">
+            <h1 className="text-[1.55rem] font-bold leading-[1.08] text-title">
+              Vani Studio
+            </h1>
+            <p className="text-muted-foreground text-sm">Thiết kế và phát triển phần mềm</p>
+          </div>
+        </div>
+      </AppDashed>
       <AppDashed noTopBorder padding="p-3">
         <SectionTitle>Về Vani Studio</SectionTitle>
       </AppDashed>
