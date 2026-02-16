@@ -95,7 +95,7 @@ export default function AppShipping() {
           <h3 className="text-title text-base font-bold">4. Hỗ trợ sau giao nhận</h3>
           <ul>
             <li>
-              <span className="text-foreground font-medium">Hỗ trợ kỹ thuật:</span> Sau khi bàn giao, Vani Studio cam kết cung cấp dịch vụ hỗ trợ kỹ thuật trong suốt thời gian bảo hành đã thỏa thuận. Khách hàng có thể liên hệ qua email hoặc Discord.
+              <span className="text-foreground font-medium">Hỗ trợ kỹ thuật:</span> Sau khi bàn giao, Vani Studio cam kết cung cấp dịch vụ hỗ trợ kỹ thuật trong suốt thời gian bảo hành đã thỏa thuận. Khách hàng có thể liên hệ qua email hoặc Zalo.
             </li>
             <li>
               <span className="text-foreground font-medium">Hướng dẫn sử dụng:</span> Vani Studio cung cấp dịch vụ hướng dẫn và đào tạo sử dụng phần mềm, đảm bảo khách hàng có thể vận hành sản phẩm một cách hiệu quả nhất.
@@ -108,8 +108,8 @@ export default function AppShipping() {
             <li><span className="text-foreground font-medium">Email:</span>{" "}
               <a href="mailto:vanixjnk@gmail.com" className="text-primary hover:underline">vanixjnk@gmail.com</a>
             </li>
-            <li><span className="text-foreground font-medium">Discord:</span>{" "}
-              <a href="https://discord.gg/tsbvh" target="_blank" rel="noreferrer" className="text-primary hover:underline">discord.gg/tsbvh</a>
+            <li><span className="text-foreground font-medium">Zalo:</span>{" "}
+              <a href="https://zalo.me/0935974907" target="_blank" rel="noreferrer" className="text-primary hover:underline">zalo.me/0935974907</a>
             </li>
           </ul>
         </article>

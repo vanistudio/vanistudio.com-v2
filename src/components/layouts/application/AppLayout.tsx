@@ -14,7 +14,7 @@ import AppFooter from "./AppFooter";
 const navLinks = [
   { name: "Home", href: "/", icon: IoHome },
   { name: "Ranking", href: "/ranking", icon: FaRankingStar },
-  { name: "Discord", href: "https://discord.gg/tsbvh", icon: SiDiscord },
+  { name: "Discord", href: "https://zalo.me/0935974907", icon: SiDiscord },
   { name: "Dashboard", href: "/dashboard", icon: BiSolidDashboard },
 ];
 

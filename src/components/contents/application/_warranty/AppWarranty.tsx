@@ -112,12 +112,12 @@ export default function AppWarranty() {
             <li><span className="text-foreground font-medium">Email:</span>{" "}
               <a href="mailto:vanixjnk@gmail.com" className="text-primary hover:underline">vanixjnk@gmail.com</a>
             </li>
-            <li><span className="text-foreground font-medium">Discord:</span>{" "}
-              <a href="https://discord.gg/tsbvh" target="_blank" rel="noreferrer" className="text-primary hover:underline">discord.gg/tsbvh</a>
+            <li><span className="text-foreground font-medium">Zalo:</span>{" "}
+              <a href="https://zalo.me/0935974907" target="_blank" rel="noreferrer" className="text-primary hover:underline">zalo.me/0935974907</a>
             </li>
           </ul>
           <p>
-            Vani Studio sẽ phản hồi qua email, Discord hoặc phương tiện liên lạc đã được thỏa thuận trong hợp đồng.
+            Vani Studio sẽ phản hồi qua email, Zalo hoặc phương tiện liên lạc đã được thỏa thuận trong hợp đồng.
           </p>
         </article>
       </AppDashed>
