@@ -1,4 +1,5 @@
 import { ExternalLink, Star, Download, Shield, Zap, Code, Eye } from 'lucide-react';
+import { Icon } from '@iconify/react';
 import AppDashed from '@/components/layouts/application/AppDashed';
 import { cn } from '@/lib/utils';
 
@@ -98,33 +99,46 @@ export default function AppHome() {
       </AppDashed>
 
       <AppDashed noTopBorder padding="p-0" className="relative">
-        <div className="absolute top-1/2 left-0 w-full h-px border-dashed-h z-0 hidden sm:block" />
-        <div className="absolute left-1/2 top-0 h-full w-px border-dashed-v z-0 hidden sm:block" />
-        <div className="grid grid-cols-1 sm:grid-cols-2 relative z-10">
+        <div className="grid grid-cols-2 sm:grid-cols-4 relative z-10">
           {[
-            { icon: Zap, label: "Hiệu suất cao", desc: "Tối ưu hóa tốc độ và trải nghiệm", color: "text-blue-500", bg: "bg-blue-500/10", border: "border-blue-500/25" },
-            { icon: Shield, label: "An toàn & Bảo mật", desc: "Bảo vệ dữ liệu người dùng", color: "text-emerald-500", bg: "bg-emerald-500/10", border: "border-emerald-500/25" },
-            { icon: Code, label: "Mã nguồn sạch", desc: "Codebase chuẩn, dễ mở rộng", color: "text-purple-500", bg: "bg-purple-500/10", border: "border-purple-500/25" },
-            { icon: Star, label: "Cộng đồng", desc: "Hỗ trợ và lắng nghe người dùng", color: "text-amber-500", bg: "bg-amber-500/10", border: "border-amber-500/25" },
+            { icon: "solar:bolt-circle-bold-duotone", label: "Hiệu suất cao", desc: "Tối ưu hóa tốc độ và trải nghiệm", color: "text-blue-500" },
+            { icon: "solar:shield-keyhole-bold-duotone", label: "An toàn & Bảo mật", desc: "Bảo vệ dữ liệu người dùng", color: "text-emerald-500" },
+            { icon: "solar:code-square-bold-duotone", label: "Mã nguồn sạch", desc: "Codebase chuẩn, dễ mở rộng", color: "text-purple-500" },
+            { icon: "solar:users-group-rounded-bold-duotone", label: "Cộng đồng", desc: "Hỗ trợ và lắng nghe người dùng", color: "text-amber-500" },
           ].map((item, i) => (
-            <div key={i} className="p-4 group cursor-default hover:bg-muted-background transition-colors">
-              <div className="flex items-start gap-3">
-                <div className={cn("size-9 shrink-0 rounded-lg flex items-center justify-center shadow-sm", item.bg, item.border, item.color, "border")}>
-                  <item.icon size={18} />
-                </div>
-                <div className="text-sm">
-                  <div className="font-bold text-foreground mb-0.5">{item.label}</div>
-                  <p className="text-muted-foreground">{item.desc}</p>
-                </div>
-              </div>
+            <div key={i} className="p-5 group cursor-default hover:bg-muted-background transition-colors flex flex-col items-center text-center gap-2">
+              <Icon icon={item.icon} className={cn("text-3xl", item.color)} />
+              <div className="text-sm font-bold text-foreground">{item.label}</div>
+              <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
             </div>
           ))}
         </div>
       </AppDashed>
+
+      <AppDashed noTopBorder padding="p-3">
+        <SectionTitle>Tech Stack</SectionTitle>
+      </AppDashed>
+      <AppDashed noTopBorder padding="p-0">
+        <div className="grid grid-cols-3 sm:grid-cols-6 relative z-10">
+          {[
+            { icon: "solar:atom-bold-duotone", label: "React", color: "text-cyan-500" },
+            { icon: "solar:server-square-cloud-bold-duotone", label: "Elysia", color: "text-violet-500" },
+            { icon: "solar:database-bold-duotone", label: "PostgreSQL", color: "text-blue-500" },
+            { icon: "solar:palette-round-bold-duotone", label: "Tailwind", color: "text-sky-500" },
+            { icon: "solar:code-file-bold-duotone", label: "TypeScript", color: "text-blue-400" },
+            { icon: "solar:rocket-2-bold-duotone", label: "Bun", color: "text-amber-500" },
+          ].map((item, i) => (
+            <div key={i} className="p-4 flex flex-col items-center gap-1.5 group cursor-default hover:bg-muted-background transition-colors">
+              <Icon icon={item.icon} className={cn("text-2xl", item.color)} />
+              <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">{item.label}</span>
+            </div>
+          ))}
+        </div>
+      </AppDashed>
+
       <AppDashed noTopBorder padding="p-3">
         <SectionTitle>Sản phẩm của chúng tôi</SectionTitle>
       </AppDashed>
-
       <AppDashed noTopBorder padding="p-3">
         <div className="flex items-center gap-2 justify-center">
           <article className="prose dark:prose-invert prose-sm text-center max-w-[560px] text-muted-foreground">
