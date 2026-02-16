@@ -2,7 +2,7 @@ import { useState } from "react";
 import AppDashed from "@/components/layouts/application/AppDashed";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/providers/AuthProvider";
-import { authProxy } from "@/proxies/authentication.proxy";
+import { authApi } from "@/services/authentication.service";
 
 export default function AppOnboarding() {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ export default function AppOnboarding() {
     setLoading(true);
 
     try {
-      const data = await authProxy.completeOnboarding(form);
+      const data = await authApi.completeOnboarding(form);
       if (data.success) {
         await refresh();
         navigate("/");

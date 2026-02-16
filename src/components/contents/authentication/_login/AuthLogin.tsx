@@ -1,7 +1,7 @@
 import { Icon } from '@iconify/react';
 import AppDashed from '@/components/layouts/application/AppDashed';
 import { Link } from 'react-router-dom';
-import { authRoutes } from '@/proxies/authentication.proxy';
+import { authRoutes } from '@/services/authentication.service';
 
 export default function AuthLogin() {
   return (

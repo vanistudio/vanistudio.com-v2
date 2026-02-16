@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
-import { authProxy, type AuthUser } from "@/proxies/authentication.proxy";
+import { authApi, type AuthUser } from "@/services/authentication.service";
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -26,7 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUser = async () => {
     try {
-      const data = await authProxy.getMe();
+      const data = await authApi.getMe();
       if (data.success && data.user) {
         setUser(data.user);
         setNeedsOnboarding(data.needsOnboarding || !data.user.username);
@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      await authProxy.logout();
+      await authApi.logout();
     } catch {}
     setUser(null);
     setNeedsOnboarding(false);
