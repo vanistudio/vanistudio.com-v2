@@ -248,8 +248,6 @@ export default function AppHome() {
           </div>
         </TooltipProvider>
       </AppDashed>
-
-      {/* ── Sản phẩm ── */}
       <AppDashed noTopBorder padding="p-3">
         <SectionTitle>Sản phẩm của chúng tôi</SectionTitle>
       </AppDashed>
