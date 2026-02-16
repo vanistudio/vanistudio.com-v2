@@ -1,5 +1,4 @@
 import { Elysia } from "elysia";
-import { staticPlugin } from "@elysiajs/static";
 import cors from "@elysiajs/cors";
 import { join } from "path";
 import { db } from "@/configs/index.config";
