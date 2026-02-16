@@ -179,7 +179,7 @@ export default function AppHome() {
                   <img
                     src={`https://skillicons.dev/icons?i=${item.id}&theme=${resolvedTheme === 'dark' ? 'dark' : 'light'}`}
                     alt={item.label}
-                    className="size-10 rounded-md cursor-default hover:scale-110 transition-transform"
+                    className="size-10 rounded-md cursor-default"
                   />
                 </TooltipTrigger>
                 <TooltipContent>
