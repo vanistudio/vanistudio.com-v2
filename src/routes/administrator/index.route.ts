@@ -3,9 +3,11 @@ import { usersRoutes } from "./users.route";
 import { categoriesRoutes } from "./categories.route";
 import { productsRoutes } from "./products.route";
 import { databaseRoutes } from "./database.route";
+import { settingsRoutes } from "./settings.route";
 
 export const adminRoutes = new Elysia({ prefix: "/api/admin" })
   .use(usersRoutes)
   .use(categoriesRoutes)
   .use(productsRoutes)
-  .use(databaseRoutes);
+  .use(databaseRoutes)
+  .use(settingsRoutes);
