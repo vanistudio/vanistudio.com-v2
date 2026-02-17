@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { usePageTitle } from "@/hooks/use-page-title";
 import { useNavigate, useParams } from "react-router-dom";
@@ -37,25 +38,32 @@ function generateSlug(name: string) {
     .replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
-function Section({ title, icon, children }: { title: string; icon: string; children: React.ReactNode }) {
+function Section({ title, icon, description, children }: { title: string; icon: string; description?: string; children: React.ReactNode }) {
   return (
-    <AppDashed noTopBorder padding="p-4">
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Icon icon={icon} className="text-base text-primary" />
-          <span className="text-sm font-semibold text-title">{title}</span>
+    <AppDashed noTopBorder padding="p-5">
+      <div className="space-y-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
+              <Icon icon={icon} className="text-sm text-primary" />
+            </div>
+            <span className="text-sm font-semibold text-title">{title}</span>
+          </div>
+          {description && <p className="text-xs text-muted-foreground mt-1 ml-9">{description}</p>}
         </div>
+        <Separator />
         {children}
       </div>
     </AppDashed>
   );
 }
 
-function Field({ label, children, span = 1 }: { label: string; children: React.ReactNode; span?: number }) {
+function Field({ label, hint, children, span = 1 }: { label: string; hint?: string; children: React.ReactNode; span?: number }) {
   return (
-    <div className={`space-y-1 ${span === 2 ? "col-span-2" : ""}`}>
-      <Label className="text-xs">{label}</Label>
+    <div className={`space-y-1.5 ${span === 2 ? "col-span-2" : span === 3 ? "col-span-3" : ""}`}>
+      <Label className="text-xs font-medium">{label}</Label>
       {children}
+      {hint && <p className="text-[10px] text-muted-foreground/70">{hint}</p>}
     </div>
   );
 }
@@ -132,8 +140,6 @@ export default function ProductForm() {
     }
   };
 
-  const inp = "h-8 text-sm";
-
   if (loading) {
     return (
       <div className="flex flex-col w-full">
@@ -159,44 +165,47 @@ export default function ProductForm() {
               <p className="text-xs text-muted-foreground">Điền thông tin sản phẩm mã nguồn</p>
             </div>
           </div>
-          <Button size="sm" className="h-8 text-xs gap-1.5" disabled={submitting} onClick={handleSubmit}>
-            <Icon icon="solar:check-circle-bold-duotone" className="text-sm" />
-            {submitting ? "Đang lưu..." : isEditing ? "Cập nhật" : "Tạo sản phẩm"}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" className="text-xs" onClick={() => navigate("/admin/products")}>
+              Hủy
+            </Button>
+            <Button size="sm" className="text-xs gap-1.5" disabled={submitting} onClick={handleSubmit}>
+              <Icon icon="solar:check-circle-bold-duotone" className="text-sm" />
+              {submitting ? "Đang lưu..." : isEditing ? "Cập nhật" : "Tạo sản phẩm"}
+            </Button>
+          </div>
         </div>
       </AppDashed>
-
-      <Section title="Thông tin cơ bản" icon="solar:document-bold-duotone">
-        <div className="grid grid-cols-2 gap-3">
+      <Section title="Thông tin cơ bản" icon="solar:document-bold-duotone" description="Tên, mô tả sản phẩm hiển thị trên trang chủ">
+        <div className="grid grid-cols-2 gap-4">
           <Field label="Tên sản phẩm *">
-            <Input className={inp} placeholder="VaniStudio Pro" value={form.name}
-              onChange={(e) => { set("name", e.target.value); set("slug", generateSlug(e.target.value)); }} />
+            <Input className="text-sm" placeholder="VaniStudio Pro" value={form.name}
+              onChange={(e) => { set("name", e.target.value); if (!isEditing) set("slug", generateSlug(e.target.value)); }} />
           </Field>
-          <Field label="Slug *">
-            <Input className={inp} placeholder="vanistudio-pro" value={form.slug} onChange={(e) => set("slug", e.target.value)} />
+          <Field label="Slug *" hint="URL-friendly, tự động theo tên">
+            <Input className="text-sm font-mono" placeholder="vanistudio-pro" value={form.slug} onChange={(e) => set("slug", e.target.value)} />
           </Field>
           <Field label="Tagline" span={2}>
-            <Input className={inp} placeholder="Mô tả ngắn 1 dòng..." value={form.tagline} onChange={(e) => set("tagline", e.target.value)} />
+            <Input className="text-sm" placeholder="Mô tả ngắn gọn 1 dòng cho sản phẩm..." value={form.tagline} onChange={(e) => set("tagline", e.target.value)} />
           </Field>
-          <Field label="Mô tả" span={2}>
-            <Textarea className="text-sm min-h-[80px]" placeholder="Mô tả chi tiết sản phẩm..." value={form.description} onChange={(e) => set("description", e.target.value)} />
+          <Field label="Mô tả chi tiết" span={2}>
+            <Textarea className="text-sm min-h-[80px] resize-y" placeholder="Mô tả chi tiết về sản phẩm, tính năng nổi bật..." value={form.description} onChange={(e) => set("description", e.target.value)} />
           </Field>
         </div>
       </Section>
-
-      <Section title="Phân loại" icon="solar:tag-bold-duotone">
-        <div className="grid grid-cols-3 gap-3">
+      <Section title="Phân loại" icon="solar:tag-bold-duotone" description="Chuyên mục, loại sản phẩm và trạng thái xuất bản">
+        <div className="grid grid-cols-3 gap-4">
           <Field label="Chuyên mục">
             <Select value={form.categoryId} onValueChange={(v) => set("categoryId", v)}>
-              <SelectTrigger className={inp}><SelectValue placeholder="Chọn..." /></SelectTrigger>
+              <SelectTrigger className="w-full text-sm"><SelectValue placeholder="Chọn chuyên mục..." /></SelectTrigger>
               <SelectContent>
                 {categories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
               </SelectContent>
             </Select>
           </Field>
-          <Field label="Loại">
+          <Field label="Loại sản phẩm">
             <Select value={form.type} onValueChange={(v) => set("type", v)}>
-              <SelectTrigger className={inp}><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-full text-sm"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="free">Miễn phí</SelectItem>
                 <SelectItem value="premium">Premium</SelectItem>
@@ -206,7 +215,7 @@ export default function ProductForm() {
           </Field>
           <Field label="Trạng thái">
             <Select value={form.status} onValueChange={(v) => set("status", v)}>
-              <SelectTrigger className={inp}><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-full text-sm"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="draft">Nháp</SelectItem>
                 <SelectItem value="published">Xuất bản</SelectItem>
@@ -216,116 +225,119 @@ export default function ProductForm() {
           </Field>
         </div>
       </Section>
-
-      <Section title="Media" icon="solar:gallery-bold-duotone">
-        <div className="grid grid-cols-2 gap-3">
-          <Field label="Thumbnail URL">
-            <Input className={inp} placeholder="https://..." value={form.thumbnail} onChange={(e) => set("thumbnail", e.target.value)} />
+      <Section title="Giá cả" icon="solar:wallet-bold-duotone" description="Thiết lập giá bán và khuyến mãi">
+        <div className="grid grid-cols-3 gap-4">
+          <Field label="Giá gốc" hint="Nhập 0 cho sản phẩm miễn phí">
+            <Input className="text-sm" type="number" placeholder="0" value={form.price} onChange={(e) => set("price", e.target.value)} />
           </Field>
-          <Field label="Cover Image URL">
-            <Input className={inp} placeholder="https://..." value={form.coverImage} onChange={(e) => set("coverImage", e.target.value)} />
+          <Field label="Giá khuyến mãi" hint="Để trống nếu không giảm giá">
+            <Input className="text-sm" type="number" placeholder="—" value={form.salePrice} onChange={(e) => set("salePrice", e.target.value)} />
           </Field>
-          <Field label="Video URL" span={2}>
-            <Input className={inp} placeholder="https://youtube.com/..." value={form.videoUrl} onChange={(e) => set("videoUrl", e.target.value)} />
-          </Field>
-        </div>
-      </Section>
-
-      <Section title="Demo & Source" icon="solar:link-circle-bold-duotone">
-        <div className="grid grid-cols-2 gap-3">
-          <Field label="Demo URL">
-            <Input className={inp} placeholder="https://demo.example.com" value={form.demoUrl} onChange={(e) => set("demoUrl", e.target.value)} />
-          </Field>
-          <Field label="Source URL">
-            <Input className={inp} placeholder="https://github.com/..." value={form.sourceUrl} onChange={(e) => set("sourceUrl", e.target.value)} />
-          </Field>
-          <Field label="Documentation URL">
-            <Input className={inp} placeholder="https://docs.example.com" value={form.documentationUrl} onChange={(e) => set("documentationUrl", e.target.value)} />
-          </Field>
-        </div>
-      </Section>
-
-      <Section title="Tech Stack & Tags" icon="solar:code-square-bold-duotone">
-        <div className="grid grid-cols-2 gap-3">
-          <Field label="Tech Stack (phân cách bằng dấu phẩy)">
-            <Input className={inp} placeholder="React, TypeScript, Tailwind CSS" value={form.techStack} onChange={(e) => set("techStack", e.target.value)} />
-          </Field>
-          <Field label="Frameworks (phân cách bằng dấu phẩy)">
-            <Input className={inp} placeholder="Vite, ElysiaJS" value={form.frameworks} onChange={(e) => set("frameworks", e.target.value)} />
-          </Field>
-          <Field label="Tags (phân cách bằng dấu phẩy)" span={2}>
-            <Input className={inp} placeholder="dashboard, admin, saas" value={form.tags} onChange={(e) => set("tags", e.target.value)} />
-          </Field>
-        </div>
-      </Section>
-
-      <Section title="Giá cả" icon="solar:wallet-bold-duotone">
-        <div className="grid grid-cols-3 gap-3">
-          <Field label="Giá (VND)">
-            <Input className={inp} type="number" placeholder="0" value={form.price} onChange={(e) => set("price", e.target.value)} />
-          </Field>
-          <Field label="Giá khuyến mãi">
-            <Input className={inp} type="number" placeholder="Để trống nếu ko giảm giá" value={form.salePrice} onChange={(e) => set("salePrice", e.target.value)} />
-          </Field>
-          <Field label="Tiền tệ">
+          <Field label="Đơn vị tiền tệ">
             <Select value={form.currency} onValueChange={(v) => set("currency", v)}>
-              <SelectTrigger className={inp}><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-full text-sm"><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="VND">VND</SelectItem>
-                <SelectItem value="USD">USD</SelectItem>
+                <SelectItem value="VND">VND - Việt Nam Đồng</SelectItem>
+                <SelectItem value="USD">USD - US Dollar</SelectItem>
               </SelectContent>
             </Select>
           </Field>
         </div>
       </Section>
-
-      <Section title="Thông số kỹ thuật" icon="solar:settings-bold-duotone">
-        <div className="grid grid-cols-2 gap-3">
+      <Section title="Media" icon="solar:gallery-bold-duotone" description="Hình ảnh và video giới thiệu sản phẩm">
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Thumbnail URL">
+            <Input className="text-sm" placeholder="https://cdn.example.com/thumb.jpg" value={form.thumbnail} onChange={(e) => set("thumbnail", e.target.value)} />
+          </Field>
+          <Field label="Cover Image URL">
+            <Input className="text-sm" placeholder="https://cdn.example.com/cover.jpg" value={form.coverImage} onChange={(e) => set("coverImage", e.target.value)} />
+          </Field>
+          <Field label="Video giới thiệu" span={2} hint="YouTube, Vimeo hoặc link video trực tiếp">
+            <Input className="text-sm" placeholder="https://youtube.com/watch?v=..." value={form.videoUrl} onChange={(e) => set("videoUrl", e.target.value)} />
+          </Field>
+        </div>
+      </Section>
+      <Section title="Demo & Source" icon="solar:link-circle-bold-duotone" description="Liên kết demo, mã nguồn và tài liệu">
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Demo URL">
+            <Input className="text-sm" placeholder="https://demo.example.com" value={form.demoUrl} onChange={(e) => set("demoUrl", e.target.value)} />
+          </Field>
+          <Field label="Source URL">
+            <Input className="text-sm" placeholder="https://github.com/..." value={form.sourceUrl} onChange={(e) => set("sourceUrl", e.target.value)} />
+          </Field>
+          <Field label="Documentation URL" span={2}>
+            <Input className="text-sm" placeholder="https://docs.example.com" value={form.documentationUrl} onChange={(e) => set("documentationUrl", e.target.value)} />
+          </Field>
+        </div>
+      </Section>
+      <Section title="Tech Stack & Tags" icon="solar:code-square-bold-duotone" description="Công nghệ sử dụng và từ khóa tìm kiếm">
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Tech Stack" hint="Phân cách bằng dấu phẩy">
+            <Input className="text-sm" placeholder="React, TypeScript, Tailwind CSS" value={form.techStack} onChange={(e) => set("techStack", e.target.value)} />
+          </Field>
+          <Field label="Frameworks" hint="Phân cách bằng dấu phẩy">
+            <Input className="text-sm" placeholder="Vite, ElysiaJS" value={form.frameworks} onChange={(e) => set("frameworks", e.target.value)} />
+          </Field>
+          <Field label="Tags" span={2} hint="Phân cách bằng dấu phẩy, dùng cho tìm kiếm">
+            <Input className="text-sm" placeholder="dashboard, admin, saas, starter-kit" value={form.tags} onChange={(e) => set("tags", e.target.value)} />
+          </Field>
+        </div>
+      </Section>
+      <Section title="Thông số kỹ thuật" icon="solar:settings-bold-duotone" description="Phiên bản, tương thích và yêu cầu hệ thống">
+        <div className="grid grid-cols-2 gap-4">
           <Field label="Phiên bản">
-            <Input className={inp} placeholder="1.0.0" value={form.version} onChange={(e) => set("version", e.target.value)} />
+            <Input className="text-sm font-mono" placeholder="1.0.0" value={form.version} onChange={(e) => set("version", e.target.value)} />
           </Field>
           <Field label="Kích thước file">
-            <Input className={inp} placeholder="25 MB" value={form.fileSize} onChange={(e) => set("fileSize", e.target.value)} />
+            <Input className="text-sm" placeholder="25 MB" value={form.fileSize} onChange={(e) => set("fileSize", e.target.value)} />
           </Field>
           <Field label="Tương thích">
-            <Input className={inp} placeholder="Node 18+, Bun 1.x" value={form.compatibility} onChange={(e) => set("compatibility", e.target.value)} />
+            <Input className="text-sm" placeholder="Node 18+, Bun 1.x" value={form.compatibility} onChange={(e) => set("compatibility", e.target.value)} />
           </Field>
-          <Field label="Yêu cầu">
-            <Input className={inp} placeholder="PostgreSQL 15+" value={form.requirements} onChange={(e) => set("requirements", e.target.value)} />
+          <Field label="Yêu cầu hệ thống">
+            <Input className="text-sm" placeholder="PostgreSQL 15+, Redis" value={form.requirements} onChange={(e) => set("requirements", e.target.value)} />
           </Field>
         </div>
       </Section>
-
-      <Section title="Tính năng (mỗi dòng 1 tính năng)" icon="solar:star-bold-duotone">
+      <Section title="Tính năng" icon="solar:star-bold-duotone" description="Liệt kê tính năng chính, mỗi dòng một tính năng">
         <Field label="Danh sách tính năng" span={2}>
-          <Textarea className="text-sm min-h-[100px]" placeholder="Đăng nhập OAuth&#10;Dashboard thống kê&#10;Quản lý người dùng&#10;..." value={form.features} onChange={(e) => set("features", e.target.value)} />
+          <Textarea className="text-sm min-h-[120px] resize-y" placeholder={"Đăng nhập OAuth (Google, GitHub)\nDashboard thống kê realtime\nQuản lý người dùng & phân quyền\nThanh toán tích hợp\n..."} value={form.features} onChange={(e) => set("features", e.target.value)} />
         </Field>
       </Section>
-
-      <Section title="Bảo hành & Hỗ trợ" icon="solar:shield-check-bold-duotone">
-        <div className="grid grid-cols-2 gap-3">
-          <Field label="Bảo hành (tháng)">
-            <Input className={inp} type="number" placeholder="3" value={form.warrantyMonths} onChange={(e) => set("warrantyMonths", e.target.value)} />
+      <Section title="Bảo hành & Hỗ trợ" icon="solar:shield-check-bold-duotone" description="Chính sách bảo hành và thông tin liên hệ hỗ trợ">
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Bảo hành (tháng)" hint="Mặc định 3 tháng">
+            <Input className="text-sm" type="number" placeholder="3" value={form.warrantyMonths} onChange={(e) => set("warrantyMonths", e.target.value)} />
           </Field>
           <Field label="Email hỗ trợ">
-            <Input className={inp} placeholder="support@vanistudio.com" value={form.supportEmail} onChange={(e) => set("supportEmail", e.target.value)} />
+            <Input className="text-sm" placeholder="support@vanistudio.com" value={form.supportEmail} onChange={(e) => set("supportEmail", e.target.value)} />
           </Field>
         </div>
       </Section>
-
-      <Section title="SEO" icon="solar:magnifer-bold-duotone">
-        <div className="grid grid-cols-2 gap-3">
-          <Field label="Meta Title">
-            <Input className={inp} placeholder="Tự động theo tên" value={form.metaTitle} onChange={(e) => set("metaTitle", e.target.value)} />
+      <Section title="SEO" icon="solar:magnifer-bold-duotone" description="Tối ưu hiển thị trên công cụ tìm kiếm">
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Meta Title" hint="Để trống sẽ dùng tên sản phẩm">
+            <Input className="text-sm" placeholder="VaniStudio Pro — Premium Source Code" value={form.metaTitle} onChange={(e) => set("metaTitle", e.target.value)} />
           </Field>
-          <Field label="Meta Keywords">
-            <Input className={inp} placeholder="source code, react, admin" value={form.metaKeywords} onChange={(e) => set("metaKeywords", e.target.value)} />
+          <Field label="Meta Keywords" hint="Phân cách bằng dấu phẩy">
+            <Input className="text-sm" placeholder="source code, react, admin" value={form.metaKeywords} onChange={(e) => set("metaKeywords", e.target.value)} />
           </Field>
           <Field label="Meta Description" span={2}>
-            <Textarea className="text-sm" placeholder="Mô tả cho công cụ tìm kiếm..." value={form.metaDescription} onChange={(e) => set("metaDescription", e.target.value)} />
+            <Textarea className="text-sm resize-y" placeholder="Mô tả ngắn gọn cho Google Search Results..." value={form.metaDescription} onChange={(e) => set("metaDescription", e.target.value)} />
           </Field>
         </div>
       </Section>
+      <AppDashed noTopBorder padding="p-4">
+        <div className="flex items-center justify-end gap-2">
+          <Button variant="outline" size="sm" className="text-xs" onClick={() => navigate("/admin/products")}>
+            Hủy bỏ
+          </Button>
+          <Button size="sm" className="text-xs gap-1.5" disabled={submitting} onClick={handleSubmit}>
+            <Icon icon="solar:check-circle-bold-duotone" className="text-sm" />
+            {submitting ? "Đang lưu..." : isEditing ? "Cập nhật sản phẩm" : "Tạo sản phẩm"}
+          </Button>
+        </div>
+      </AppDashed>
     </div>
   );
 }
