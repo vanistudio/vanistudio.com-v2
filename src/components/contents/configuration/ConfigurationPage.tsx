@@ -112,8 +112,6 @@ export default function ConfigurationPage() {
     setStepRaw(s);
     try { localStorage.setItem(STORAGE_KEY, String(s)); } catch {}
   };
-
-  // Auto-advance past login/profile steps after OAuth redirect
   useEffect(() => {
     if (authLoading) return;
     if (step === 2 && isAuthenticated) {
@@ -185,8 +183,6 @@ export default function ConfigurationPage() {
       <AppDashed noTopBorder padding="p-6">
         <div className="flex flex-col gap-6 max-w-[560px] mx-auto w-full">
           <StepTimeline current={step} />
-
-          {/* ── Step 0: Giới thiệu ── */}
           {step === 0 && (
             <div className="flex flex-col gap-6 items-center text-center min-h-[400px] justify-center">
               <div className="flex justify-center">
@@ -205,8 +201,6 @@ export default function ConfigurationPage() {
               </Button>
             </div>
           )}
-
-          {/* ── Step 1: Nhập Config Key ── */}
           {step === 1 && (
             <div className="flex flex-col gap-5 min-h-[400px] justify-center">
               <div className="text-center space-y-1">
@@ -245,8 +239,6 @@ export default function ConfigurationPage() {
               </div>
             </div>
           )}
-
-          {/* ── Step 2: Đăng nhập OAuth ── */}
           {step === 2 && (
             <div className="flex flex-col gap-5 min-h-[400px] justify-center">
               <div className="text-center space-y-1">
@@ -273,8 +265,6 @@ export default function ConfigurationPage() {
               </div>
             </div>
           )}
-
-          {/* ── Step 3: Hoàn tất hồ sơ Admin ── */}
           {step === 3 && (
             <div className="flex flex-col gap-5 min-h-[400px] justify-center">
               <div className="text-center space-y-1">
@@ -341,8 +331,6 @@ export default function ConfigurationPage() {
               </Button>
             </div>
           )}
-
-          {/* ── Step 4: Thông tin Website ── */}
           {step === 4 && (
             <div className="flex flex-col gap-5">
               <div className="text-center space-y-1">
@@ -481,8 +469,6 @@ export default function ConfigurationPage() {
               </Button>
             </div>
           )}
-
-          {/* ── Step 5: Hoàn tất ── */}
           {step === 5 && (
             <div className="flex flex-col gap-6 items-center text-center min-h-[400px] justify-center">
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
