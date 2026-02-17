@@ -9,10 +9,10 @@ import { sileo, Toaster } from "sileo";
 import "sileo/styles.css";
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
+    <Toaster position="top-center" />
     <ProgressProviders>
       <ConsoleProvider />
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-        <Toaster position="top-center" />
         <App />
       </ThemeProvider>
     </ProgressProviders>
