@@ -6,7 +6,6 @@ import { usePageTitle } from "@/hooks/use-page-title";
 
 export default function NotFound() {
   usePageTitle("404");
-
   return (
     <div className="min-h-screen bg-background flex flex-col font-sans antialiased">
       <div className="flex-grow flex flex-col items-center justify-center">

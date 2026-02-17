@@ -11,6 +11,8 @@ import { usePageTitle } from "@/hooks/use-page-title";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
+import FileUploadDialog from "@/components/vani/FileUploadDialog";
+import MultiFileUpload from "@/components/vani/MultiFileUpload";
 
 interface Category {
   id: string;
@@ -21,7 +23,7 @@ interface Category {
 const initialForm = {
   name: "", slug: "", tagline: "", description: "", content: "",
   categoryId: "", type: "premium", status: "draft",
-  thumbnail: "", coverImage: "", videoUrl: "",
+  thumbnail: "", coverImage: "", images: [] as string[], videoUrl: "",
   demoUrl: "", sourceUrl: "", documentationUrl: "",
   techStack: "", tags: "", frameworks: "",
   price: "0", salePrice: "", currency: "VND",
@@ -91,7 +93,9 @@ export default function ProductForm() {
             name: p.name || "", slug: p.slug || "", tagline: p.tagline || "",
             description: p.description || "", content: p.content || "",
             categoryId: p.categoryId || "", type: p.type || "premium", status: p.status || "draft",
-            thumbnail: p.thumbnail || "", coverImage: p.coverImage || "", videoUrl: p.videoUrl || "",
+            thumbnail: p.thumbnail || "", coverImage: p.coverImage || "",
+            images: Array.isArray(p.images) ? p.images : [],
+            videoUrl: p.videoUrl || "",
             demoUrl: p.demoUrl || "", sourceUrl: p.sourceUrl || "", documentationUrl: p.documentationUrl || "",
             techStack: (p.techStack || []).join(", "), tags: (p.tags || []).join(", "),
             frameworks: (p.frameworks || []).join(", "),
@@ -246,14 +250,17 @@ export default function ProductForm() {
       </Section>
       <Section title="Media" icon="solar:gallery-bold-duotone" description="Hình ảnh và video giới thiệu sản phẩm">
         <div className="grid grid-cols-2 gap-4">
-          <Field label="Thumbnail URL">
-            <Input className="text-sm" placeholder="https://cdn.example.com/thumb.jpg" value={form.thumbnail} onChange={(e) => set("thumbnail", e.target.value)} />
+          <Field label="Thumbnail">
+            <FileUploadDialog value={form.thumbnail} onChange={(url) => set("thumbnail", url)} label="Upload" />
           </Field>
-          <Field label="Cover Image URL">
-            <Input className="text-sm" placeholder="https://cdn.example.com/cover.jpg" value={form.coverImage} onChange={(e) => set("coverImage", e.target.value)} />
+          <Field label="Cover Image">
+            <FileUploadDialog value={form.coverImage} onChange={(url) => set("coverImage", url)} label="Upload" />
           </Field>
           <Field label="Video giới thiệu" span={2} hint="YouTube, Vimeo hoặc link video trực tiếp">
             <Input className="text-sm" placeholder="https://youtube.com/watch?v=..." value={form.videoUrl} onChange={(e) => set("videoUrl", e.target.value)} />
+          </Field>
+          <Field label="Ảnh demo sản phẩm" span={2} hint="Upload nhiều ảnh screenshot, demo giao diện">
+            <MultiFileUpload value={form.images} onChange={(urls) => setForm((f) => ({ ...f, images: urls }))} />
           </Field>
         </div>
       </Section>
