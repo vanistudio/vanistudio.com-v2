@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { usePageTitle } from "@/hooks/use-page-title";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
+import FileUploadDialog from "@/components/vani/FileUploadDialog";
 
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
@@ -159,11 +160,11 @@ export default function AdminSettings() {
                 <Input className="text-sm" placeholder="Mô tả ngắn gọn về website..." value={form.siteDescription} onChange={(e) => set("siteDescription", e.target.value)} />
               </Field>
               <div className="grid grid-cols-2 gap-4">
-                <Field label="Logo URL">
-                  <Input className="text-sm" placeholder="https://..." value={form.siteLogo} onChange={(e) => set("siteLogo", e.target.value)} />
+                <Field label="Logo">
+                  <FileUploadDialog value={form.siteLogo} onChange={(url) => set("siteLogo", url)} label="Upload" />
                 </Field>
-                <Field label="Favicon URL">
-                  <Input className="text-sm" placeholder="https://..." value={form.siteFavicon} onChange={(e) => set("siteFavicon", e.target.value)} />
+                <Field label="Favicon">
+                  <FileUploadDialog value={form.siteFavicon} onChange={(url) => set("siteFavicon", url)} label="Upload" accept="image/*,.ico" />
                 </Field>
               </div>
               <Field label="Ngôn ngữ">
@@ -207,8 +208,8 @@ export default function AdminSettings() {
           <div>
             <SectionHeader icon="solar:share-bold-duotone" title="Open Graph / Social" />
             <div className="space-y-4">
-              <Field label="OG Image URL" hint="Ảnh hiển thị khi chia sẻ trên mạng xã hội (1200x630)">
-                <Input className="text-sm" placeholder="https://..." value={form.siteOgImage} onChange={(e) => set("siteOgImage", e.target.value)} />
+              <Field label="OG Image" hint="Ảnh hiển thị khi chia sẻ trên mạng xã hội (1200x630)">
+                <FileUploadDialog value={form.siteOgImage} onChange={(url) => set("siteOgImage", url)} label="Upload" />
               </Field>
               <div className="grid grid-cols-2 gap-4">
                 <Field label="OG Type">
