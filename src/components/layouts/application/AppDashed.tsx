@@ -25,7 +25,7 @@ const AppDashed: React.FC<AppDashedProps> = ({
   scrollable = false
 }) => {
   return (
-    <div className={cn("relative w-full", scrollable ? "overflow-x-auto" : "overflow-hidden", grow && "flex-grow")}>
+    <div className={cn("relative w-full overflow-hidden", grow && "flex-grow")}>
       {!noTopBorder && (
         <div className="w-full h-px border-dashed-h" />
       )}
@@ -47,7 +47,7 @@ const AppDashed: React.FC<AppDashedProps> = ({
         {withDotGrid && (
           <div className="absolute inset-0 bg-dot-grid z-[-1] opacity-40" />
         )}
-        <div className="relative z-10 h-full">
+        <div className={cn("relative z-10 h-full", scrollable && "overflow-x-auto")}>
           {children}
         </div>
       </div>

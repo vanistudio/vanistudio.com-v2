@@ -258,7 +258,7 @@ export default function AdminCategories() {
             </p>
           </div>
         ) : (
-          <div className="min-w-[600px]">
+          <div className="w-max min-w-full">
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}

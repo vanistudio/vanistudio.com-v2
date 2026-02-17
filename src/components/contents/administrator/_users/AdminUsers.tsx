@@ -188,7 +188,7 @@ export default function AdminUsers() {
             </p>
           </div>
         ) : (
-          <div className="min-w-[640px]">
+          <div className="w-max min-w-full">
             <div className="flex items-center gap-4 px-4 py-2 border-b border-border text-[11px] font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap">
               <div className="w-10 shrink-0" />
               <div className="flex-1">Người dùng</div>
