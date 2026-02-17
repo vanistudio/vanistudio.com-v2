@@ -1,5 +1,9 @@
 import { Elysia } from "elysia";
 import { usersRoutes } from "./users.route";
+import { categoriesRoutes } from "./categories.route";
+import { productsRoutes } from "./products.route";
 
 export const adminRoutes = new Elysia({ prefix: "/api/admin" })
-  .use(usersRoutes);
+  .use(usersRoutes)
+  .use(categoriesRoutes)
+  .use(productsRoutes);
