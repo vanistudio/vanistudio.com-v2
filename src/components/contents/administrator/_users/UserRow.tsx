@@ -112,8 +112,6 @@ export default function UserRow({ user, onToggleActive, onChangeRole, onDelete }
           )}
         </div>
       </div>
-
-      {/* Provider + Date */}
       <div className="hidden sm:flex items-center gap-4 shrink-0">
         <TooltipProvider delayDuration={200}>
           <Tooltip>
@@ -140,14 +138,12 @@ export default function UserRow({ user, onToggleActive, onChangeRole, onDelete }
           </Tooltip>
         </TooltipProvider>
       </div>
-
-      {/* Actions */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
             size="icon"
-            className="size-8 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+            className="size-8 shrink-0"
           >
             <Icon icon="solar:menu-dots-bold" className="text-base" />
           </Button>

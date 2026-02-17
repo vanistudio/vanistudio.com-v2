@@ -100,8 +100,6 @@ export default function AdminCategories() {
       toast.error("Lỗi kết nối");
     }
   };
-
-  // ── Stats ──
   const stats = useMemo(() => {
     const total = categories.length;
     const active = categories.filter((c) => c.isActive).length;
@@ -114,8 +112,6 @@ export default function AdminCategories() {
       { label: "Có mô tả", value: withDesc, icon: "solar:document-text-bold-duotone", color: "bg-amber-500/10" },
     ];
   }, [categories]);
-
-  // ── Columns ──
   const columns = useMemo<ColumnDef<Category>[]>(() => [
     {
       accessorKey: "name",
@@ -214,7 +210,6 @@ export default function AdminCategories() {
 
   return (
     <div className="flex flex-col w-full">
-      {/* Header */}
       <AppDashed noTopBorder padding="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -232,11 +227,7 @@ export default function AdminCategories() {
           </Button>
         </div>
       </AppDashed>
-
-      {/* Stats */}
       <AdminStats items={stats} />
-
-      {/* Inline Form */}
       {showForm && (
         <AppDashed noTopBorder padding="p-4">
           <div className="space-y-3 max-w-lg">
@@ -278,8 +269,6 @@ export default function AdminCategories() {
           </div>
         </AppDashed>
       )}
-
-      {/* DataTable */}
       <AppDashed noTopBorder padding="p-0">
         <DataTable
           columns={columns}
