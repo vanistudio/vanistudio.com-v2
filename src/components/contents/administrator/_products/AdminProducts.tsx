@@ -226,7 +226,7 @@ export default function AdminProducts() {
             </p>
           </div>
         ) : (
-          <>
+          <div className="min-w-[700px]">
             {/* Table header */}
             <div className="flex items-center gap-4 px-4 py-2 border-b border-border text-[11px] font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap">
               <div className="w-10 shrink-0" />
@@ -321,7 +321,7 @@ export default function AdminProducts() {
                 Hiển thị {filteredProducts.length} / {products.length} sản phẩm
               </span>
             </div>
-          </>
+          </div>
         )}
       </AppDashed>
     </div>

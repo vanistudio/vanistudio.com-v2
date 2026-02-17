@@ -117,7 +117,7 @@ export default function AdminDatabase() {
             </p>
           </div>
         ) : (
-          <>
+          <div className="min-w-[540px]">
             <div className="grid grid-cols-[1fr_100px_120px_120px] gap-2 px-4 py-2 border-b border-border">
               <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Tên bảng</span>
               <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider text-right">Số hàng</span>
@@ -160,7 +160,7 @@ export default function AdminDatabase() {
                 Hiển thị {filteredTables.length} / {tables.length} bảng
               </span>
             </div>
-          </>
+          </div>
         )}
       </AppDashed>
     </div>
