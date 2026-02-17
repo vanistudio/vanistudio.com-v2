@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { usePageTitle } from "@/hooks/use-page-title";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
 
@@ -61,17 +61,44 @@ function Field({ label, children, span = 1 }: { label: string; children: React.R
 }
 
 export default function ProductForm() {
-  usePageTitle("Thêm sản phẩm");
+  const { id } = useParams();
+  const isEditing = Boolean(id);
+  usePageTitle(isEditing ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm");
   const navigate = useNavigate();
   const [form, setForm] = useState(initialForm);
   const [categories, setCategories] = useState<Category[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(isEditing);
 
   useEffect(() => {
     api.api.admin.categories.get().then(({ data }) => {
       if (data?.success) setCategories((data as any).categories || []);
     });
-  }, []);
+    if (id) {
+      setLoading(true);
+      api.api.admin.products({ id }).get().then(({ data }: any) => {
+        if (data?.success && data.product) {
+          const p = data.product;
+          setForm({
+            name: p.name || "", slug: p.slug || "", tagline: p.tagline || "",
+            description: p.description || "", content: p.content || "",
+            categoryId: p.categoryId || "", type: p.type || "premium", status: p.status || "draft",
+            thumbnail: p.thumbnail || "", coverImage: p.coverImage || "", videoUrl: p.videoUrl || "",
+            demoUrl: p.demoUrl || "", sourceUrl: p.sourceUrl || "", documentationUrl: p.documentationUrl || "",
+            techStack: (p.techStack || []).join(", "), tags: (p.tags || []).join(", "),
+            frameworks: (p.frameworks || []).join(", "),
+            price: String(p.price || 0), salePrice: p.salePrice ? String(p.salePrice) : "",
+            currency: p.currency || "VND",
+            version: p.version || "1.0.0", compatibility: p.compatibility || "",
+            requirements: p.requirements || "", fileSize: p.fileSize || "",
+            features: (p.features || []).join("\n"),
+            warrantyMonths: String(p.warrantyMonths || 3), supportEmail: p.supportEmail || "",
+            metaTitle: p.metaTitle || "", metaDescription: p.metaDescription || "", metaKeywords: p.metaKeywords || "",
+          });
+        }
+      }).finally(() => setLoading(false));
+    }
+  }, [id]);
 
   const set = (key: string, value: string) => setForm((f) => ({ ...f, [key]: value }));
 
@@ -89,12 +116,14 @@ export default function ProductForm() {
         features: form.features ? form.features.split("\n").filter(Boolean) : [],
         warrantyMonths: parseInt(form.warrantyMonths) || 3,
       };
-      const { data } = await api.api.admin.products.post(payload as any);
-      if (data?.success) {
-        toast.success("Tạo sản phẩm thành công");
-        navigate("/admin/products");
+      if (isEditing && id) {
+        const { data } = await api.api.admin.products({ id }).patch(payload as any);
+        if (data?.success) { toast.success("Cập nhật thành công"); navigate("/admin/products"); }
+        else toast.error((data as any)?.error || "Thất bại");
       } else {
-        toast.error((data as any)?.error || "Thất bại");
+        const { data } = await api.api.admin.products.post(payload as any);
+        if (data?.success) { toast.success("Tạo sản phẩm thành công"); navigate("/admin/products"); }
+        else toast.error((data as any)?.error || "Thất bại");
       }
     } catch {
       toast.error("Lỗi kết nối");
@@ -105,6 +134,18 @@ export default function ProductForm() {
 
   const inp = "h-8 text-sm";
 
+  if (loading) {
+    return (
+      <div className="flex flex-col w-full">
+        <AppDashed noTopBorder padding="p-0">
+          <div className="flex items-center justify-center py-20">
+            <Icon icon="solar:spinner-bold-duotone" className="text-2xl text-muted-foreground animate-spin" />
+          </div>
+        </AppDashed>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col w-full">
       <AppDashed noTopBorder padding="p-4">
@@ -114,13 +155,13 @@ export default function ProductForm() {
               <Icon icon="solar:arrow-left-bold" className="text-sm" />
             </Button>
             <div>
-              <h1 className="text-lg font-bold text-title">Thêm sản phẩm mới</h1>
+              <h1 className="text-lg font-bold text-title">{isEditing ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm mới"}</h1>
               <p className="text-xs text-muted-foreground">Điền thông tin sản phẩm mã nguồn</p>
             </div>
           </div>
           <Button size="sm" className="h-8 text-xs gap-1.5" disabled={submitting} onClick={handleSubmit}>
             <Icon icon="solar:check-circle-bold-duotone" className="text-sm" />
-            {submitting ? "Đang tạo..." : "Tạo sản phẩm"}
+            {submitting ? "Đang lưu..." : isEditing ? "Cập nhật" : "Tạo sản phẩm"}
           </Button>
         </div>
       </AppDashed>

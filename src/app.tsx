@@ -17,6 +17,7 @@ import AppOnboarding from '@/components/contents/application/_onboarding/AppOnbo
 import ConfigurationPage from '@/components/contents/configuration/ConfigurationPage';
 import AdminUsers from '@/components/contents/administrator/_users/AdminUsers';
 import AdminCategories from '@/components/contents/administrator/_categories/AdminCategories';
+import CategoryForm from '@/components/contents/administrator/_categories/CategoryForm';
 import AdminProducts from '@/components/contents/administrator/_products/AdminProducts';
 import ProductForm from '@/components/contents/administrator/_products/ProductForm';
 
@@ -47,8 +48,11 @@ function App() {
           <Route path="/admin" element={<ConfigGuard><AdminGuard><AdminLayout /></AdminGuard></ConfigGuard>}>
             <Route path="users" element={<AdminUsers />} />
             <Route path="categories" element={<AdminCategories />} />
+            <Route path="categories/create" element={<CategoryForm />} />
+            <Route path="categories/:id/edit" element={<CategoryForm />} />
             <Route path="products" element={<AdminProducts />} />
-            <Route path="products/new" element={<ProductForm />} />
+            <Route path="products/create" element={<ProductForm />} />
+            <Route path="products/:id/edit" element={<ProductForm />} />
           </Route>
         </Routes>
       </AuthProvider>
