@@ -6,10 +6,53 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { usePageTitle } from "@/hooks/use-page-title";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
+
+const ICON_OPTIONS = [
+  { value: "solar:code-square-bold-duotone", label: "Code" },
+  { value: "solar:laptop-bold-duotone", label: "Laptop" },
+  { value: "solar:monitor-bold-duotone", label: "Monitor" },
+  { value: "solar:smartphone-bold-duotone", label: "Smartphone" },
+  { value: "solar:server-bold-duotone", label: "Server" },
+  { value: "solar:database-bold-duotone", label: "Database" },
+  { value: "solar:cloud-bold-duotone", label: "Cloud" },
+  { value: "solar:shield-check-bold-duotone", label: "Shield" },
+  { value: "solar:lock-bold-duotone", label: "Lock" },
+  { value: "solar:palette-bold-duotone", label: "Palette" },
+  { value: "solar:pen-bold-duotone", label: "Pen" },
+  { value: "solar:cart-large-bold-duotone", label: "Cart" },
+  { value: "solar:wallet-bold-duotone", label: "Wallet" },
+  { value: "solar:chart-bold-duotone", label: "Chart" },
+  { value: "solar:graph-up-bold-duotone", label: "Graph" },
+  { value: "solar:user-bold-duotone", label: "User" },
+  { value: "solar:users-group-rounded-bold-duotone", label: "Users" },
+  { value: "solar:chat-round-dots-bold-duotone", label: "Chat" },
+  { value: "solar:letter-bold-duotone", label: "Mail" },
+  { value: "solar:camera-bold-duotone", label: "Camera" },
+  { value: "solar:gallery-bold-duotone", label: "Gallery" },
+  { value: "solar:music-notes-bold-duotone", label: "Music" },
+  { value: "solar:video-frame-bold-duotone", label: "Video" },
+  { value: "solar:gamepad-bold-duotone", label: "Game" },
+  { value: "solar:rocket-bold-duotone", label: "Rocket" },
+  { value: "solar:star-bold-duotone", label: "Star" },
+  { value: "solar:heart-bold-duotone", label: "Heart" },
+  { value: "solar:bolt-bold-duotone", label: "Bolt" },
+  { value: "solar:settings-bold-duotone", label: "Settings" },
+  { value: "solar:tuning-2-bold-duotone", label: "Tuning" },
+  { value: "solar:bookmark-bold-duotone", label: "Bookmark" },
+  { value: "solar:folder-bold-duotone", label: "Folder" },
+  { value: "solar:document-text-bold-duotone", label: "Document" },
+  { value: "solar:clipboard-bold-duotone", label: "Clipboard" },
+  { value: "solar:link-circle-bold-duotone", label: "Link" },
+  { value: "solar:magnifer-bold-duotone", label: "Search" },
+  { value: "solar:map-point-bold-duotone", label: "Map" },
+  { value: "solar:box-bold-duotone", label: "Box" },
+  { value: "solar:gift-bold-duotone", label: "Gift" },
+];
 
 function generateSlug(name: string) {
   return name.toLowerCase()
@@ -152,9 +195,30 @@ export default function CategoryForm() {
             </div>
             <Separator className="mb-4" />
             <div className="space-y-4">
-              <Field label="Icon (Iconify ID)" hint="Tìm icon tại icones.js.org — VD: solar:code-square-bold-duotone">
+              <Field label="Icon" hint="Chọn icon hiển thị cho chuyên mục">
                 <div className="flex items-center gap-3">
-                  <Input className="text-sm font-mono flex-1" placeholder="solar:code-square-bold-duotone" value={form.icon} onChange={(e) => set("icon", e.target.value)} />
+                  <Select value={form.icon} onValueChange={(v) => set("icon", v)}>
+                    <SelectTrigger className="w-full text-sm">
+                      <SelectValue placeholder="Chọn icon...">
+                        {form.icon && (
+                          <span className="flex items-center gap-2">
+                            <Icon icon={form.icon} className="text-base" />
+                            {ICON_OPTIONS.find((o) => o.value === form.icon)?.label || form.icon}
+                          </span>
+                        )}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[280px]">
+                      {ICON_OPTIONS.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          <span className="flex items-center gap-2">
+                            <Icon icon={opt.value} className="text-base text-muted-foreground" />
+                            {opt.label}
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center shrink-0 border border-border">
                     <Icon icon={form.icon || "solar:question-circle-bold-duotone"} className="text-xl text-muted-foreground" />
                   </div>
