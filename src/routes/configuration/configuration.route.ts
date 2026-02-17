@@ -7,6 +7,16 @@ export const configRoutes = new Elysia({ prefix: "/api/config" })
   .get("/status", async () => {
     return configController.getStatus();
   })
+  .post("/verify-key", async ({ body }) => {
+    const envKey = process.env.APP_CONFIGURATION_KEY;
+    if (!envKey) return { success: false, error: "APP_CONFIGURATION_KEY chưa được cài đặt trong .env" };
+    if (body.key !== envKey) return { success: false, error: "Mã cấu hình không chính xác" };
+    return { success: true };
+  }, {
+    body: t.Object({
+      key: t.String({ minLength: 1 }),
+    }),
+  })
   .post("/setup", async ({ body, auth }) => {
     if (!auth) return { success: false, error: "Bạn cần đăng nhập trước khi cài đặt" };
 
