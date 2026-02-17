@@ -5,11 +5,13 @@ import './index.css';
 import { ProgressProviders } from './components/providers/ProgressProvider';
 import { ConsoleProvider } from './components/providers/ConsoleProvider';
 import { ThemeProvider } from './components/providers/ThemeProvider';
+import { sileo, Toaster } from "sileo";
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ProgressProviders>
       <ConsoleProvider />
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <Toaster position="top-center" />
         <App />
       </ThemeProvider>
     </ProgressProviders>

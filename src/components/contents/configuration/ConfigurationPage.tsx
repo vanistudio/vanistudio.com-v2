@@ -32,19 +32,23 @@ const STEPS = [
   { label: "Hoàn tất", icon: "solar:check-circle-bold-duotone" },
 ];
 
-function StepTimeline({ current }: { current: number }) {
+function StepTimeline({ current, onStepClick }: { current: number; onStepClick: (step: number) => void }) {
   return (
     <div className="flex items-center justify-center gap-0 select-none">
       {STEPS.map((s, i) => {
         const done = i < current;
         const active = i === current;
+        const clickable = done;
         return (
           <div key={i} className="flex items-center">
-            <div className="flex flex-col items-center gap-1">
+            <div
+              className={`flex flex-col items-center gap-1 ${clickable ? "cursor-pointer group" : ""}`}
+              onClick={() => clickable && onStepClick(i)}
+            >
               <div
                 className={`w-9 h-9 rounded-full flex items-center justify-center border-2 transition-all text-lg ${
                   done
-                    ? "bg-primary border-primary text-primary-foreground"
+                    ? "bg-primary border-primary text-primary-foreground group-hover:bg-primary/80"
                     : active
                       ? "border-primary text-primary bg-primary/10"
                       : "border-border text-muted-foreground"
@@ -182,7 +186,7 @@ export default function ConfigurationPage() {
     <div className="flex flex-col w-full">
       <AppDashed noTopBorder padding="p-6">
         <div className="flex flex-col gap-6 max-w-[560px] mx-auto w-full">
-          <StepTimeline current={step} />
+          <StepTimeline current={step} onStepClick={(s) => setStep(s)} />
           {step === 0 && (
             <div className="flex flex-col gap-6 items-center text-center min-h-[400px] justify-center">
               <div className="flex justify-center">
