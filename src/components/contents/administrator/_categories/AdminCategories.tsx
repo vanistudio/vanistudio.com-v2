@@ -103,7 +103,7 @@ function SortableRow({
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="size-8 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+          <Button variant="ghost" size="icon" className="size-8 shrink-0">
             <Icon icon="solar:menu-dots-bold" className="text-base" />
           </Button>
         </DropdownMenuTrigger>
@@ -216,7 +216,6 @@ export default function AdminCategories() {
 
   return (
     <div className="flex flex-col w-full">
-      {/* Header */}
       <AppDashed noTopBorder padding="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -234,10 +233,7 @@ export default function AdminCategories() {
           </Button>
         </div>
       </AppDashed>
-
       <AdminStats items={stats} />
-
-      {/* Search */}
       <AppDashed noTopBorder padding="p-3">
         <div className="relative">
           <Icon icon="solar:magnifer-linear" className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground text-sm" />
@@ -249,8 +245,6 @@ export default function AdminCategories() {
           />
         </div>
       </AppDashed>
-
-      {/* Category List */}
       <AppDashed noTopBorder padding="p-0">
         {loading ? (
           <div className="flex items-center justify-center py-20">
@@ -287,8 +281,6 @@ export default function AdminCategories() {
                 </div>
               </SortableContext>
             </DndContext>
-
-            {/* Footer */}
             <div className="flex items-center justify-between px-4 py-2 border-t border-border">
               <span className="text-[11px] text-muted-foreground">
                 Hiển thị {filteredCategories.length} / {categories.length} chuyên mục
