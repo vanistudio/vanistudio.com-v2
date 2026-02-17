@@ -167,3 +167,8 @@
 ::-webkit-scrollbar {
   display: none
 }
+
+[data-sileo-viewport] {
+  z-index: 9999 !important;
+  position: fixed !important;
+}

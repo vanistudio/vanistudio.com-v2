@@ -5,8 +5,9 @@ import './index.css';
 import { ProgressProviders } from './components/providers/ProgressProvider';
 import { ConsoleProvider } from './components/providers/ConsoleProvider';
 import { ThemeProvider } from './components/providers/ThemeProvider';
-import { sileo, Toaster } from "sileo";
+import { Toaster } from "sileo";
 import "sileo/styles.css";
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Toaster position="top-center" />
@@ -18,3 +19,4 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </ProgressProviders>
   </React.StrictMode>
 );
+

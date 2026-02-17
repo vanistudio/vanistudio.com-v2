@@ -237,12 +237,6 @@ export default function ConfigurationPage() {
                 />
               </div>
 
-              {error && (
-                <div className="text-sm text-destructive text-center bg-destructive/10 border border-destructive/20 rounded-lg px-4 py-2">
-                  {error}
-                </div>
-              )}
-
               <div className="flex gap-3">
                 <Button variant="outline" size="lg" className="flex-1" onClick={() => setStep(0)}>
                   <Icon icon="solar:arrow-left-linear" className="text-lg" />
@@ -328,13 +322,6 @@ export default function ConfigurationPage() {
                   />
                 </div>
               </div>
-
-              {error && (
-                <div className="text-sm text-destructive text-center bg-destructive/10 border border-destructive/20 rounded-lg px-4 py-2">
-                  {error}
-                </div>
-              )}
-
               <Button
                 size="lg"
                 className="w-full"
@@ -467,13 +454,6 @@ export default function ConfigurationPage() {
                   />
                 </div>
               </div>
-
-              {error && (
-                <div className="text-sm text-destructive text-center bg-destructive/10 border border-destructive/20 rounded-lg px-4 py-2">
-                  {error}
-                </div>
-              )}
-
               <Button
                 size="lg"
                 className="w-full"
