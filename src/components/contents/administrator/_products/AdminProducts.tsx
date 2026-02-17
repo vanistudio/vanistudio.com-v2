@@ -211,7 +211,7 @@ export default function AdminProducts() {
       </AppDashed>
 
       {/* Product List */}
-      <AppDashed noTopBorder padding="p-0">
+      <AppDashed noTopBorder padding="p-0" scrollable>
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <Icon icon="solar:spinner-bold-duotone" className="text-2xl text-muted-foreground animate-spin" />
@@ -231,7 +231,7 @@ export default function AdminProducts() {
             <div className="flex items-center gap-4 px-4 py-2 border-b border-border text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
               <div className="w-10 shrink-0" />
               <div className="flex-1">Sản phẩm</div>
-              <div className="hidden sm:flex items-center gap-4 shrink-0">
+              <div className="flex items-center gap-4 shrink-0">
                 <div className="w-[70px]">Loại</div>
                 <div className="w-[90px]">Giá</div>
                 <div className="w-[80px]">Trạng thái</div>
@@ -265,7 +265,7 @@ export default function AdminProducts() {
                   </div>
 
                   {/* Details */}
-                  <div className="hidden sm:flex items-center gap-4 shrink-0">
+                  <div className="flex items-center gap-4 shrink-0">
                     <div className="w-[70px]">
                       <Badge variant="secondary" className="text-[10px] px-1.5 py-0">{typeMap[p.type] || p.type}</Badge>
                     </div>

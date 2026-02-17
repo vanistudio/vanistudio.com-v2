@@ -104,7 +104,7 @@ export default function AdminDatabase() {
           />
         </div>
       </AppDashed>
-      <AppDashed noTopBorder padding="p-0">
+      <AppDashed noTopBorder padding="p-0" scrollable>
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <Icon icon="solar:spinner-bold-duotone" className="text-2xl text-muted-foreground animate-spin" />
@@ -118,7 +118,7 @@ export default function AdminDatabase() {
           </div>
         ) : (
           <>
-            <div className="hidden sm:grid grid-cols-[1fr_100px_120px_120px] gap-2 px-4 py-2 border-b border-border">
+            <div className="grid grid-cols-[1fr_100px_120px_120px] gap-2 px-4 py-2 border-b border-border">
               <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Tên bảng</span>
               <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider text-right">Số hàng</span>
               <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider text-right">Dữ liệu</span>
@@ -126,28 +126,24 @@ export default function AdminDatabase() {
             </div>
             <div className="divide-y divide-border">
               {filteredTables.map((table) => (
-                <div key={table.name} className="flex sm:grid sm:grid-cols-[1fr_100px_120px_120px] items-center gap-2 sm:gap-2 px-4 py-3 hover:bg-muted/30 transition-colors">
+                <div key={table.name} className="grid grid-cols-[1fr_100px_120px_120px] items-center gap-2 px-4 py-3 hover:bg-muted/30 transition-colors">
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-8 h-8 rounded-md bg-muted flex items-center justify-center shrink-0">
                       <Icon icon="solar:database-bold-duotone" className="text-sm text-muted-foreground" />
                     </div>
                     <div className="min-w-0">
                       <span className="text-sm font-semibold text-foreground font-mono">{table.name}</span>
-                      <div className="sm:hidden flex items-center gap-3 mt-0.5">
-                        <span className="text-[11px] text-muted-foreground">{table.rows.toLocaleString()} hàng</span>
-                        <span className="text-[11px] text-muted-foreground">{table.totalSize}</span>
-                      </div>
                     </div>
                   </div>
-                  <div className="hidden sm:flex justify-end">
+                  <div className="flex justify-end">
                     <Badge variant="secondary" className="text-[11px] px-2 py-0 font-mono">
                       {table.rows.toLocaleString()}
                     </Badge>
                   </div>
-                  <div className="hidden sm:block text-right">
+                  <div className="text-right">
                     <span className="text-xs text-muted-foreground font-mono">{table.size}</span>
                   </div>
-                  <div className="hidden sm:flex flex-col items-end gap-1">
+                  <div className="flex flex-col items-end gap-1">
                     <span className="text-xs text-foreground font-mono font-medium">{table.totalSize}</span>
                     <div className="w-full bg-muted rounded-full h-1">
                       <div

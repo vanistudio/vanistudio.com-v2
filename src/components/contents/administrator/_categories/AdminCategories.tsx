@@ -97,7 +97,7 @@ function SortableRow({
           <p className="text-xs text-muted-foreground truncate mt-0.5 max-w-[400px]">{cat.description}</p>
         )}
       </div>
-      <div className="hidden sm:flex items-center gap-4 shrink-0">
+      <div className="flex items-center gap-4 shrink-0">
         <span className="text-xs text-muted-foreground font-mono">#{cat.sortOrder}</span>
         <span className="text-[11px] text-muted-foreground/70 w-[70px]">{timeAgo(cat.createdAt)}</span>
       </div>
@@ -245,7 +245,7 @@ export default function AdminCategories() {
           />
         </div>
       </AppDashed>
-      <AppDashed noTopBorder padding="p-0">
+      <AppDashed noTopBorder padding="p-0" scrollable>
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <Icon icon="solar:spinner-bold-duotone" className="text-2xl text-muted-foreground animate-spin" />

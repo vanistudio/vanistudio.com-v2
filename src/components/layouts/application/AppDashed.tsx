@@ -10,6 +10,7 @@ interface AppDashedProps {
   padding?: string;
   maxWidth?: string;
   grow?: boolean;
+  scrollable?: boolean;
 }
 
 const AppDashed: React.FC<AppDashedProps> = ({ 
@@ -20,10 +21,11 @@ const AppDashed: React.FC<AppDashedProps> = ({
   noBottomBorder = false,
   padding = "p-3",
   maxWidth = "max-w-5xl",
-  grow = false
+  grow = false,
+  scrollable = false
 }) => {
   return (
-    <div className={cn("relative w-full overflow-hidden", grow && "flex-grow")}>
+    <div className={cn("relative w-full", scrollable ? "overflow-x-auto" : "overflow-hidden", grow && "flex-grow")}>
       {!noTopBorder && (
         <div className="w-full h-px border-dashed-h" />
       )}

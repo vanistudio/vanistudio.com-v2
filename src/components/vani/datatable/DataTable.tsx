@@ -116,7 +116,7 @@ export function DataTable<TData, TValue>({
   const textSize = compact ? "text-xs" : "text-sm";
 
   return (
-    <div className={cn("w-full", className)}>
+    <div className={cn("w-full min-w-0", className)}>
       {showToolbar && (
         toolbar ? toolbar(table) : (
           <DataTableToolbar
@@ -129,8 +129,8 @@ export function DataTable<TData, TValue>({
         )
       )}
 
-      <div className="w-full overflow-auto">
-        <table className="w-full caption-bottom">
+      <div className="w-full overflow-x-auto" style={{ WebkitOverflowScrolling: "touch" }}>
+        <table className="w-full caption-bottom" style={{ minWidth: "600px" }}>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id} className="border-b border-border">

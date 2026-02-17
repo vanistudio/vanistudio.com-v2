@@ -173,7 +173,7 @@ export default function AdminUsers() {
         </div>
       </AppDashed>
 
-      <AppDashed noTopBorder padding="p-0">
+      <AppDashed noTopBorder padding="p-0" scrollable>
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <Icon icon="solar:spinner-bold-duotone" className="text-2xl text-muted-foreground animate-spin" />
@@ -192,7 +192,7 @@ export default function AdminUsers() {
             <div className="flex items-center gap-4 px-4 py-2 border-b border-border text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
               <div className="w-10 shrink-0" />
               <div className="flex-1">Người dùng</div>
-              <div className="hidden sm:flex items-center gap-4 shrink-0">
+              <div className="flex items-center gap-4 shrink-0">
                 <div className="w-[90px]">Nhà cung cấp</div>
                 <div className="w-[80px]">Tham gia</div>
               </div>

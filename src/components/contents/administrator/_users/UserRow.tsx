@@ -112,7 +112,7 @@ export default function UserRow({ user, onToggleActive, onChangeRole, onDelete }
           )}
         </div>
       </div>
-      <div className="hidden sm:flex items-center gap-4 shrink-0">
+      <div className="flex items-center gap-4 shrink-0">
         <TooltipProvider delayDuration={200}>
           <Tooltip>
             <TooltipTrigger asChild>
