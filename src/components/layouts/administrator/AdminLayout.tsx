@@ -6,7 +6,6 @@ export default function AdminLayout() {
   return (
     <div className="min-h-screen bg-background flex flex-col font-sans antialiased">
       <AdminHeader />
-
       <main className="flex-grow flex flex-col items-center pt-3">
         <div className="w-full">
           <Outlet />

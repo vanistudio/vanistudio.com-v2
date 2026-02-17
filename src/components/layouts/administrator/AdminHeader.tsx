@@ -199,10 +199,7 @@ export default function AdminHeader() {
           </SheetContent>
         </Sheet>
         <Link to="/admin" className="flex items-center gap-2 shrink-0 mr-2 md:mr-6">
-          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-            <Icon icon="solar:shield-user-bold-duotone" className="text-base text-primary" />
-          </div>
-          <span className="text-sm font-bold text-title hidden sm:block">Admin</span>
+          <img src="/vanistudio.png" alt="Logo" className="h-10" />
         </Link>
         <nav className="hidden md:flex items-center gap-0.5 flex-grow">
           {navEntries.map((entry) =>
