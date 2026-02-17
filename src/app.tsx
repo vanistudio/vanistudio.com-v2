@@ -20,6 +20,7 @@ import AdminCategories from '@/components/contents/administrator/_categories/Adm
 import CategoryForm from '@/components/contents/administrator/_categories/CategoryForm';
 import AdminProducts from '@/components/contents/administrator/_products/AdminProducts';
 import ProductForm from '@/components/contents/administrator/_products/ProductForm';
+import AdminDatabase from '@/components/contents/administrator/_database/AdminDatabase';
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
             <Route path="products" element={<AdminProducts />} />
             <Route path="products/create" element={<ProductForm />} />
             <Route path="products/:id/edit" element={<ProductForm />} />
+            <Route path="database" element={<AdminDatabase />} />
           </Route>
         </Routes>
       </AuthProvider>
