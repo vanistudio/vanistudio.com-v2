@@ -47,3 +47,14 @@ export function SetupGuard({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+export function AdminGuard({ children }: { children: React.ReactNode }) {
+  const { user, isAuthenticated, loading } = useAuth();
+
+  if (loading) return null;
+
+  if (!isAuthenticated || user?.role !== "admin") {
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>;
+}
