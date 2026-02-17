@@ -1,10 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { ColumnDef } from "@tanstack/react-table";
 import AppDashed from "@/components/layouts/application/AppDashed";
 import { Icon } from "@iconify/react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { DataTable } from "@/components/vani/datatable";
+import AdminStats from "@/components/vani/AdminStats";
 import { usePageTitle } from "@/hooks/use-page-title";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
@@ -92,8 +101,120 @@ export default function AdminCategories() {
     }
   };
 
+  // ── Stats ──
+  const stats = useMemo(() => {
+    const total = categories.length;
+    const active = categories.filter((c) => c.isActive).length;
+    const withIcon = categories.filter((c) => c.icon).length;
+    const withDesc = categories.filter((c) => c.description).length;
+    return [
+      { label: "Tổng chuyên mục", value: total, icon: "solar:folder-bold-duotone", color: "bg-blue-500/10" },
+      { label: "Đang hoạt động", value: active, icon: "solar:check-circle-bold-duotone", color: "bg-emerald-500/10" },
+      { label: "Có icon", value: withIcon, icon: "solar:pallete-2-bold-duotone", color: "bg-violet-500/10" },
+      { label: "Có mô tả", value: withDesc, icon: "solar:document-text-bold-duotone", color: "bg-amber-500/10" },
+    ];
+  }, [categories]);
+
+  // ── Columns ──
+  const columns = useMemo<ColumnDef<Category>[]>(() => [
+    {
+      accessorKey: "name",
+      header: "Chuyên mục",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const cat = row.original;
+        return (
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center shrink-0">
+              <Icon icon={cat.icon || "solar:folder-bold-duotone"} className="text-base text-muted-foreground" />
+            </div>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-foreground">{cat.name}</span>
+                <Badge variant="secondary" className="text-[10px] px-1.5 py-0">{cat.slug}</Badge>
+              </div>
+              {cat.description && <p className="text-xs text-muted-foreground truncate max-w-[300px]">{cat.description}</p>}
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "isActive",
+      header: "Trạng thái",
+      size: 110,
+      cell: ({ getValue }) => {
+        const active = getValue<boolean>();
+        return (
+          <div className="flex items-center gap-1.5">
+            <div className={`size-2 rounded-full ${active ? "bg-emerald-500" : "bg-red-500"}`} />
+            <span className="text-xs text-muted-foreground">{active ? "Hoạt động" : "Ẩn"}</span>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "sortOrder",
+      header: "Thứ tự",
+      size: 80,
+      cell: ({ getValue }) => (
+        <span className="text-xs text-muted-foreground font-mono">#{getValue<number>()}</span>
+      ),
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Ngày tạo",
+      size: 120,
+      cell: ({ getValue }) => (
+        <span className="text-xs text-muted-foreground">
+          {new Date(getValue<string>()).toLocaleDateString("vi-VN")}
+        </span>
+      ),
+    },
+    {
+      id: "actions",
+      size: 50,
+      enableHiding: false,
+      cell: ({ row }) => {
+        const cat = row.original;
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="size-7">
+                <Icon icon="solar:menu-dots-bold" className="text-base" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-40">
+              <DropdownMenuItem onClick={() => handleEdit(cat)}>
+                <Icon icon="solar:pen-bold-duotone" className="mr-2 text-base" />
+                Chỉnh sửa
+              </DropdownMenuItem>
+              <DropdownMenuItem className="text-destructive" onClick={() => handleDelete(cat.id)}>
+                <Icon icon="solar:trash-bin-trash-bold-duotone" className="mr-2 text-base" />
+                Xóa
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ], []);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col w-full">
+        <AppDashed noTopBorder padding="p-0">
+          <div className="flex items-center justify-center py-20">
+            <Icon icon="solar:spinner-bold-duotone" className="text-2xl text-muted-foreground animate-spin" />
+          </div>
+        </AppDashed>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col w-full">
+      {/* Header */}
       <AppDashed noTopBorder padding="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -112,6 +233,10 @@ export default function AdminCategories() {
         </div>
       </AppDashed>
 
+      {/* Stats */}
+      <AdminStats items={stats} />
+
+      {/* Inline Form */}
       {showForm && (
         <AppDashed noTopBorder padding="p-4">
           <div className="space-y-3 max-w-lg">
@@ -139,7 +264,10 @@ export default function AdminCategories() {
             </div>
             <div className="space-y-1">
               <Label className="text-xs">Icon (Iconify ID)</Label>
-              <Input className="h-8 text-sm" placeholder="solar:code-square-bold-duotone" value={form.icon} onChange={(e) => setForm((f) => ({ ...f, icon: e.target.value }))} />
+              <div className="flex items-center gap-2">
+                <Input className="h-8 text-sm flex-1" placeholder="solar:code-square-bold-duotone" value={form.icon} onChange={(e) => setForm((f) => ({ ...f, icon: e.target.value }))} />
+                {form.icon && <Icon icon={form.icon} className="text-lg text-muted-foreground shrink-0" />}
+              </div>
             </div>
             <div className="flex gap-2">
               <Button size="sm" className="h-8 text-xs" onClick={handleSubmit}>
@@ -151,42 +279,18 @@ export default function AdminCategories() {
         </AppDashed>
       )}
 
+      {/* DataTable */}
       <AppDashed noTopBorder padding="p-0">
-        {loading ? (
-          <div className="flex items-center justify-center py-16">
-            <Icon icon="solar:spinner-bold-duotone" className="text-2xl text-muted-foreground animate-spin" />
-          </div>
-        ) : categories.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 gap-2">
-            <Icon icon="solar:folder-bold-duotone" className="text-4xl text-muted-foreground/40" />
-            <p className="text-sm text-muted-foreground">Chưa có chuyên mục nào</p>
-          </div>
-        ) : (
-          <div className="divide-y divide-border">
-            {categories.map((cat) => (
-              <div key={cat.id} className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors group">
-                <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center shrink-0">
-                  <Icon icon={cat.icon || "solar:folder-bold-duotone"} className="text-lg text-muted-foreground" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-foreground">{cat.name}</span>
-                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0">{cat.slug}</Badge>
-                  </div>
-                  {cat.description && <p className="text-xs text-muted-foreground truncate">{cat.description}</p>}
-                </div>
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button variant="ghost" size="icon" className="size-7" onClick={() => handleEdit(cat)}>
-                    <Icon icon="solar:pen-bold-duotone" className="text-sm" />
-                  </Button>
-                  <Button variant="ghost" size="icon" className="size-7 text-destructive" onClick={() => handleDelete(cat.id)}>
-                    <Icon icon="solar:trash-bin-trash-bold-duotone" className="text-sm" />
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        <DataTable
+          columns={columns}
+          data={categories}
+          searchKey="name"
+          searchPlaceholder="Tìm chuyên mục..."
+          compact
+          showPagination={false}
+          emptyIcon="solar:folder-bold-duotone"
+          emptyMessage="Chưa có chuyên mục nào"
+        />
       </AppDashed>
     </div>
   );
