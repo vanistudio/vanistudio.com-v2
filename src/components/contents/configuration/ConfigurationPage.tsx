@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { api } from "@/lib/api";
 import { Icon } from "@iconify/react";
+import { sileo } from "sileo";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -119,6 +120,7 @@ export default function ConfigurationPage() {
   useEffect(() => {
     if (authLoading) return;
     if (step === 2 && isAuthenticated) {
+      sileo.success({ title: "Đăng nhập thành công", description: "Tài khoản đã được xác thực" });
       setStep(needsOnboarding ? 3 : 4);
     }
     if (step === 3 && isAuthenticated && !needsOnboarding) {
@@ -132,11 +134,14 @@ export default function ConfigurationPage() {
     try {
       const { data } = await api.api.config["verify-key"].post({ key: configKey });
       if (data?.success) {
+        sileo.success({ title: "Xác thực thành công", description: "Mã cấu hình hợp lệ, tiếp tục đăng nhập" });
         setStep(2);
       } else {
+        sileo.error({ title: "Xác thực thất bại", description: data?.error || "Mã cấu hình không chính xác" });
         setError(data?.error || "Mã không hợp lệ");
       }
     } catch {
+      sileo.error({ title: "Lỗi kết nối", description: "Không thể kết nối đến máy chủ" });
       setError("Không thể kết nối đến máy chủ");
     } finally {
       setLoading(false);
@@ -149,12 +154,15 @@ export default function ConfigurationPage() {
     try {
       const { data } = await api.api.auth.onboarding.post(profile);
       if (data?.success) {
+        sileo.success({ title: "Lưu hồ sơ thành công", description: "Thông tin Admin đã được cập nhật" });
         await refresh();
         setStep(4);
       } else {
+        sileo.error({ title: "Lưu hồ sơ thất bại", description: data?.error || "Có lỗi xảy ra" });
         setError(data?.error || "Có lỗi xảy ra");
       }
     } catch {
+      sileo.error({ title: "Lỗi kết nối", description: "Không thể kết nối đến máy chủ" });
       setError("Không thể kết nối đến máy chủ");
     } finally {
       setLoading(false);
@@ -167,13 +175,16 @@ export default function ConfigurationPage() {
     try {
       const { data } = await api.api.config.setup.post(site);
       if (data?.success) {
+        sileo.success({ title: "Cài đặt thành công", description: "Website đã được thiết lập hoàn tất" });
         await refresh();
         localStorage.removeItem(STORAGE_KEY);
         setStepRaw(5);
       } else {
+        sileo.error({ title: "Cài đặt thất bại", description: data?.error || "Có lỗi xảy ra" });
         setError(data?.error || "Có lỗi xảy ra");
       }
     } catch {
+      sileo.error({ title: "Lỗi kết nối", description: "Không thể kết nối đến máy chủ" });
       setError("Không thể kết nối đến máy chủ");
     } finally {
       setLoading(false);
