@@ -30,10 +30,10 @@ function App() {
             <Route path="payment" element={<AppPayment />} />
             <Route path="terms" element={<AppTerms />} />
           </Route>
-          <Route path="/auth" element={<AuthLayout />}>
+          <Route path="/auth" element={<ConfigGuard><AuthLayout /></ConfigGuard>}>
             <Route path="login" element={<GuestGuard><AuthLogin /></GuestGuard>} />
           </Route>
-          <Route path="/onboarding" element={<AuthLayout />}>
+          <Route path="/onboarding" element={<ConfigGuard><AuthLayout /></ConfigGuard>}>
             <Route index element={<AuthGuard><AppOnboarding /></AuthGuard>} />
           </Route>
           <Route path="/configuration" element={<AuthLayout />}>
