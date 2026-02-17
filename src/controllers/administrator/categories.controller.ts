@@ -1,6 +1,6 @@
 import { db } from "@/configs/index.config";
 import { categories } from "@/schemas/category.schema";
-import { eq, desc, asc } from "drizzle-orm";
+import { eq, desc, asc, sql } from "drizzle-orm";
 
 export const categoriesController = {
   async getAll() {
@@ -26,7 +26,7 @@ export const categoriesController = {
       description: data.description || null,
       icon: data.icon || null,
       coverImage: data.coverImage || null,
-      sortOrder: data.sortOrder ?? 0,
+      sortOrder: data.sortOrder ?? await db.select({ max: sql<number>`coalesce(max(${categories.sortOrder}), -1) + 1` }).from(categories).then(([r]) => r.max),
       metaTitle: data.metaTitle || null,
       metaDescription: data.metaDescription || null,
     }).returning();

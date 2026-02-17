@@ -77,7 +77,7 @@ export default function CategoryForm() {
   usePageTitle(isEditing ? "Chỉnh sửa chuyên mục" : "Thêm chuyên mục");
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({ name: "", slug: "", description: "", icon: "", isActive: true, sortOrder: "0" });
+  const [form, setForm] = useState({ name: "", slug: "", description: "", icon: "", isActive: true, sortOrder: "" });
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(isEditing);
 
@@ -107,7 +107,8 @@ export default function CategoryForm() {
     if (!form.name || !form.slug) return toast.error("Tên và slug là bắt buộc");
     setSubmitting(true);
     try {
-      const payload = { ...form, sortOrder: parseInt(form.sortOrder) || 0 } as any;
+      const sortOrder = form.sortOrder.trim() !== "" ? parseInt(form.sortOrder) : undefined;
+      const payload = { ...form, sortOrder } as any;
       if (isEditing && id) {
         const { data } = await api.api.admin.categories({ id }).patch(payload);
         if (data?.success) { toast.success("Cập nhật thành công"); navigate("/admin/categories"); }
