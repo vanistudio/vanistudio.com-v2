@@ -5,14 +5,14 @@ import './index.css';
 import { ProgressProviders } from './components/providers/ProgressProvider';
 import { ConsoleProvider } from './components/providers/ConsoleProvider';
 import { ThemeProvider } from './components/providers/ThemeProvider';
-import { sileo, Toaster } from "sileo";
-import "sileo/styles.css";
+import { Toaster } from "@/components/ui/sonner";
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <Toaster position="top-center" options={{ fill: "black", styles: { description: "text-white/75!" } } } />
     <ProgressProviders>
       <ConsoleProvider />
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <Toaster position="top-center" richColors />
         <App />
       </ThemeProvider>
     </ProgressProviders>

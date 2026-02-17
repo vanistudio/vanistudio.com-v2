@@ -1,6 +1,7 @@
 import { Elysia, t } from "elysia";
 import { authController } from "@/controllers/authentication/authentication.controller";
 import { authProxy } from "@/proxies/authentication.proxy";
+import { configProxy } from "@/proxies/configuration.proxy";
 
 const COOKIE_NAME = "vani_auth";
 const COOKIE_OPTIONS = {
@@ -15,16 +16,18 @@ const REDIRECT = {
   home: "/",
   login: "/auth/login",
   onboarding: "/onboarding",
+  configuration: "/configuration",
   loginError: (err: string) => `/auth/login?error=${err}`,
 };
 
 export const authRoutes = new Elysia({ prefix: "/api/auth" })
   .use(authProxy)
+  .use(configProxy)
   .get("/github", ({ redirect }) => {
     const url = authController.getGithubAuthUrl();
     return redirect(url);
   })
-  .get("/github/callback", async ({ query, cookie, redirect }) => {
+  .get("/github/callback", async ({ query, cookie, redirect, needsSetup }) => {
     try {
       const code = query.code;
       if (!code) return redirect(REDIRECT.loginError("no_code"));
@@ -32,6 +35,7 @@ export const authRoutes = new Elysia({ prefix: "/api/auth" })
       const { token, needsOnboarding } = await authController.handleGithubCallback(code);
       cookie[COOKIE_NAME].set({ value: token, ...COOKIE_OPTIONS });
 
+      if (needsSetup) return redirect(REDIRECT.configuration);
       return redirect(needsOnboarding ? REDIRECT.onboarding : REDIRECT.home);
     } catch (error) {
       console.error("GitHub callback error:", error);
@@ -42,7 +46,7 @@ export const authRoutes = new Elysia({ prefix: "/api/auth" })
     const url = authController.getGoogleAuthUrl();
     return redirect(url);
   })
-  .get("/google/callback", async ({ query, cookie, redirect }) => {
+  .get("/google/callback", async ({ query, cookie, redirect, needsSetup }) => {
     try {
       const code = query.code;
       if (!code) return redirect(REDIRECT.loginError("no_code"));
@@ -50,6 +54,7 @@ export const authRoutes = new Elysia({ prefix: "/api/auth" })
       const { token, needsOnboarding } = await authController.handleGoogleCallback(code);
       cookie[COOKIE_NAME].set({ value: token, ...COOKIE_OPTIONS });
 
+      if (needsSetup) return redirect(REDIRECT.configuration);
       return redirect(needsOnboarding ? REDIRECT.onboarding : REDIRECT.home);
     } catch (error) {
       console.error("Google callback error:", error);

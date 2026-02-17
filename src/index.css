@@ -166,18 +166,3 @@
 ::-webkit-scrollbar {
   display: none
 }
-[data-sileo-viewport] {
-  z-index: 9999 !important;
-}
-.dark [data-sileo-toast] [data-sileo-svg] path {
-  fill: black !important;
-}
-.dark [data-sileo-description] {
-  color: rgba(255, 255, 255, 0.75) !important;
-}
-:root:not(.dark) [data-sileo-toast] [data-sileo-svg] path {
-  fill: white !important;
-}
-:root:not(.dark) [data-sileo-description] {
-  color: rgba(0, 0, 0, 0.75) !important;
-}
