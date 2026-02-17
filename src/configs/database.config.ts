@@ -2,6 +2,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as userSchema from "@/schemas/user.schema";
 import * as licenseSchema from "@/schemas/license.schema";
+import * as settingSchema from "@/schemas/setting.schema";
 
 const connectionString = process.env.APP_POSTGRESQL_URI;
 
@@ -15,6 +16,7 @@ export const db = drizzle(client, {
   schema: {
     ...userSchema,
     ...licenseSchema,
+    ...settingSchema,
   },
 });
 
