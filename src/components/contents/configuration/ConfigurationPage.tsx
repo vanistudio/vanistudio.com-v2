@@ -102,15 +102,15 @@ export default function ConfigurationPage() {
   const [profile, setProfile] = useState({ username: "", fullName: "", phoneNumber: "" });
 
   const [site, setSite] = useState({
-    siteName: "",
-    siteUrl: "",
-    siteTagline: "",
-    siteDescription: "",
+    siteName: "Vani Studio",
+    siteUrl: "https://vanistudio.com",
+    siteTagline: "Thiết kế và phát triển phần mềm",
+    siteDescription: "Vani Studio chuyên thiết kế và phát triển phần mềm, website, ứng dụng di động",
     siteLanguage: "vi",
-    siteMetaTitle: "",
-    siteMetaDescription: "",
-    siteMetaKeywords: "",
-    siteMetaAuthor: "",
+    siteMetaTitle: "Vani Studio - Thiết kế và phát triển phần mềm",
+    siteMetaDescription: "Vani Studio cung cấp dịch vụ thiết kế web, phần mềm chuyên nghiệp tại Việt Nam",
+    siteMetaKeywords: "thiết kế web, phần mềm, studio, lập trình",
+    siteMetaAuthor: "Vani Studio",
   });
 
   const setStep = (s: number) => {
@@ -176,7 +176,6 @@ export default function ConfigurationPage() {
       const { data } = await api.api.config.setup.post(site);
       if (data?.success) {
         sileo.success({ title: "Cài đặt thành công", description: "Website đã được thiết lập hoàn tất" });
-        await refresh();
         localStorage.removeItem(STORAGE_KEY);
         setStepRaw(5);
       } else {
@@ -475,7 +474,7 @@ export default function ConfigurationPage() {
                   Website của bạn đã sẵn sàng. Bạn có thể bắt đầu sử dụng ngay bây giờ.
                 </p>
               </div>
-              <Button size="lg" className="w-full max-w-[320px]" onClick={() => navigate("/")}>
+              <Button size="lg" className="w-full max-w-[320px]" onClick={async () => { await refresh(); navigate("/"); }}>
                 Đến Trang chủ
                 <Icon icon="solar:arrow-right-linear" className="text-lg" />
               </Button>

@@ -2,7 +2,6 @@ import { db } from "@/configs/index.config";
 import { settings } from "@/schemas/setting.schema";
 import { users } from "@/schemas/user.schema";
 import { eq } from "drizzle-orm";
-import { invalidateSetupCache } from "@/proxies/configuration.proxy";
 
 async function hasSettings(): Promise<boolean> {
   const [row] = await db.select({ id: settings.id }).from(settings).limit(1);
@@ -66,7 +65,6 @@ export const configController = {
       .where(eq(users.id, userId))
       .returning();
 
-    invalidateSetupCache();
 
     return { setting, admin };
   },
