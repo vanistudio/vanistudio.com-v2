@@ -59,4 +59,14 @@ export const categoriesController = {
     if (!deleted) throw new Error("Không tìm thấy chuyên mục");
     return deleted;
   },
+
+  async reorder(items: { id: string; sortOrder: number }[]) {
+    const now = new Date();
+    for (const item of items) {
+      await db.update(categories)
+        .set({ sortOrder: item.sortOrder, updatedAt: now })
+        .where(eq(categories.id, item.id));
+    }
+    return { updated: items.length };
+  },
 };

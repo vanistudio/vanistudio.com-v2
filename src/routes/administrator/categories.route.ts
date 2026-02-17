@@ -31,6 +31,21 @@ export const categoriesRoutes = new Elysia({ prefix: "/categories" })
       metaDescription: t.Optional(t.String()),
     }),
   })
+  .patch("/reorder", async ({ body }) => {
+    try {
+      const result = await categoriesController.reorder(body.items);
+      return { success: true, ...result };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
+  }, {
+    body: t.Object({
+      items: t.Array(t.Object({
+        id: t.String(),
+        sortOrder: t.Number(),
+      })),
+    }),
+  })
   .patch("/:id", async ({ params, body }) => {
     try {
       const category = await categoriesController.update(params.id, body);
