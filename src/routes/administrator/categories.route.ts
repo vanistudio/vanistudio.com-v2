@@ -38,6 +38,18 @@ export const categoriesRoutes = new Elysia({ prefix: "/categories" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
+  }, {
+    body: t.Partial(t.Object({
+      name: t.String(),
+      slug: t.String(),
+      description: t.String(),
+      icon: t.String(),
+      coverImage: t.String(),
+      sortOrder: t.Number(),
+      isActive: t.Boolean(),
+      metaTitle: t.String(),
+      metaDescription: t.String(),
+    })),
   })
   .delete("/:id", async ({ params }) => {
     try {
