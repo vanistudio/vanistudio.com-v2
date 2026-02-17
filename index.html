@@ -1,12 +1,32 @@
 <!DOCTYPE html>
-<html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vani Studio</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<html lang="{{siteLanguage}}">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{siteMetaTitle}}</title>
+  <meta name="description" content="{{siteMetaDescription}}" />
+  <meta name="keywords" content="{{siteMetaKeywords}}" />
+  <meta name="author" content="{{siteMetaAuthor}}" />
+  <meta name="robots" content="{{siteMetaRobots}}" />
+  <link rel="canonical" href="{{siteCanonicalUrl}}" />
+  <meta property="og:type" content="{{siteOgType}}" />
+  <meta property="og:title" content="{{siteMetaTitle}}" />
+  <meta property="og:description" content="{{siteMetaDescription}}" />
+  <meta property="og:url" content="{{siteUrl}}" />
+  <meta property="og:site_name" content="{{siteName}}" />
+  <meta property="og:locale" content="{{siteOgLocale}}" />
+  <meta property="og:image" content="{{siteOgImage}}" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="{{siteMetaTitle}}" />
+  <meta name="twitter:description" content="{{siteMetaDescription}}" />
+  <meta name="twitter:image" content="{{siteOgImage}}" />
+  <meta name="theme-color" content="#000000" />
+  {{siteCustomHeadCode}}
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+  {{siteCustomBodyCode}}
+</body>
 </html>

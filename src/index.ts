@@ -4,14 +4,13 @@ import { join } from "path";
 import { db } from "@/configs/index.config";
 import { sql } from "drizzle-orm";
 import { routes } from "@/routes/index.route";
+import { getSiteSettings } from "@/services/settings.service";
 
 export const systemStatus = {
   startedAt: new Date(),
   onlineUsers: 0,
 };
-
 const wsConnections = new Set<unknown>();
-
 function broadcastOnlineCount() {
   const message = JSON.stringify({
     type: "online_count",
@@ -24,6 +23,26 @@ function broadcastOnlineCount() {
       }
     } catch {
     }
+  });
+}
+
+async function serveHtml() {
+  const htmlPath = join(process.cwd(), "dist/public/index.html");
+  const file = Bun.file(htmlPath);
+
+  if (!(await file.exists())) return new Response("Not Found", { status: 404 });
+
+  let html = await file.text();
+  const s = await getSiteSettings();
+
+  html = html.replace(/\{\{(\w+)\}\}/g, (_, key) => {
+    const val = s[key] ?? "";
+    if (key === "siteCustomHeadCode" || key === "siteCustomBodyCode") return val;
+    return val.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  });
+
+  return new Response(html, {
+    headers: { "Content-Type": "text/html; charset=utf-8" },
   });
 }
 
@@ -56,7 +75,7 @@ const app = new Elysia()
   )
   .use(routes)
   .get("/assets/*", ({ path }) => Bun.file(join(process.cwd(), "dist/public", path)))
-  .get("/", () => Bun.file(join(process.cwd(), "dist/public/index.html")))
+  .get("/", () => serveHtml())
   .get("*", ({ path }) => {
     if (path.startsWith('/api') || path.startsWith('/_vanixjnk')) {
        return;
@@ -64,7 +83,7 @@ const app = new Elysia()
     if (path.includes('.')) {
         return Bun.file(join(process.cwd(), "dist/public", path));
     }
-    return Bun.file(join(process.cwd(), "dist/public/index.html"));
+    return serveHtml();
   });
 
 export type App = typeof app;
