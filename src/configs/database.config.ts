@@ -11,6 +11,7 @@ if (!connectionString) {
 }
 
 const client = postgres(connectionString);
+export const pgClient = client;
 
 export const db = drizzle(client, {
   schema: {

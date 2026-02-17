@@ -1,5 +1,4 @@
-import { db } from "@/configs/index.config";
-import { sql } from "drizzle-orm";
+import { pgClient } from "@/configs/database.config";
 
 interface TableInfo {
   name: string;
@@ -12,9 +11,9 @@ interface TableInfo {
 
 export const databaseController = {
   async getTables(): Promise<{ tables: TableInfo[]; databaseSize: string }> {
-    const tablesResult = await db.execute(sql`
+    const tablesResult = await pgClient`
       SELECT
-        relname AS name,
+        c.relname AS name,
         n_live_tup AS rows,
         pg_size_pretty(pg_relation_size(c.oid)) AS size,
         pg_relation_size(c.oid) AS size_bytes,
@@ -26,13 +25,13 @@ export const databaseController = {
       WHERE c.relkind = 'r'
         AND n.nspname = 'public'
       ORDER BY pg_total_relation_size(c.oid) DESC
-    `);
+    `;
 
-    const dbSizeResult = await db.execute(sql`
+    const dbSizeResult = await pgClient`
       SELECT pg_size_pretty(pg_database_size(current_database())) AS size
-    `);
+    `;
 
-    const tables: TableInfo[] = (tablesResult.rows || tablesResult).map((row: any) => ({
+    const tables: TableInfo[] = tablesResult.map((row: any) => ({
       name: row.name,
       rows: Number(row.rows || 0),
       size: row.size,
@@ -41,7 +40,7 @@ export const databaseController = {
       totalSizeBytes: Number(row.total_size_bytes || 0),
     }));
 
-    const databaseSize = (dbSizeResult.rows || dbSizeResult)[0]?.size || "0 bytes";
+    const databaseSize = dbSizeResult[0]?.size || "0 bytes";
 
     return { tables, databaseSize };
   },
