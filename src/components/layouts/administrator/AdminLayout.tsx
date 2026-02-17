@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import AppFooter from "@/components/layouts/application/AppFooter";
+import AdminFooter from "@/components/layouts/administrator/AdminFooter";
 import AdminHeader from "@/components/layouts/administrator/AdminHeader";
 
 export default function AdminLayout() {
@@ -23,7 +23,7 @@ export default function AdminLayout() {
           />
         </div>
       </main>
-      <AppFooter />
+      <AdminFooter />
     </div>
   );
 }
