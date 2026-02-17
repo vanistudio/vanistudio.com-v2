@@ -134,7 +134,6 @@ export default function AdminProducts() {
 
   return (
     <div className="flex flex-col w-full">
-      {/* Header */}
       <AppDashed noTopBorder padding="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -152,10 +151,7 @@ export default function AdminProducts() {
           </Button>
         </div>
       </AppDashed>
-
       <AdminStats items={stats} />
-
-      {/* Search + Filter */}
       <AppDashed noTopBorder padding="p-3">
         <div className="flex items-center gap-2">
           <div className="relative flex-1">
@@ -169,14 +165,8 @@ export default function AdminProducts() {
           </div>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="text-xs gap-1.5 shrink-0">
+              <Button variant="outline" className="text-xs gap-1.5 shrink-0">
                 <Icon icon="solar:filter-bold-duotone" className="text-sm" />
-                Bộ lọc
-                {activeFilterCount > 0 && (
-                  <Badge variant="default" className="size-4 p-0 flex items-center justify-center text-[9px] rounded-full ml-0.5">
-                    {activeFilterCount}
-                  </Badge>
-                )}
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end" className="w-[240px] p-3">
