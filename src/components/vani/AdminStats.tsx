@@ -18,8 +18,8 @@ export default function AdminStats({ items }: AdminStatsProps) {
       <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-border">
         {items.map((item, i) => (
           <div key={i} className="px-4 py-3 flex items-center gap-3">
-            <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${item.color ?? "bg-primary/10"}`}>
-              <Icon icon={item.icon} className="text-lg" />
+            <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-${item.color ?? "primary"}/10`}>
+              <Icon icon={item.icon} className={`text-lg text-${item.color ?? "primary"}`} />
             </div>
             <div>
               <p className="text-lg font-bold text-title leading-tight">{item.value}</p>
