@@ -22,3 +22,28 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
   return <>{children}</>;
 }
+
+export function ConfigGuard({ children }: { children: React.ReactNode }) {
+  const { needsSetup, loading } = useAuth();
+
+  if (loading) return null;
+
+  if (needsSetup) {
+    return <Navigate to="/configuration" replace />;
+  }
+
+  return <>{children}</>;
+}
+
+export function SetupGuard({ children }: { children: React.ReactNode }) {
+  const { needsSetup, loading } = useAuth();
+
+  if (loading) return null;
+
+  if (!needsSetup) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>;
+}
+

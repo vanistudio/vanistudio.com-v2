@@ -19,6 +19,7 @@ interface AuthContextType {
   loading: boolean;
   isAuthenticated: boolean;
   needsOnboarding: boolean;
+  needsSetup: boolean;
   refresh: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -28,6 +29,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   isAuthenticated: false,
   needsOnboarding: false,
+  needsSetup: false,
   refresh: async () => {},
   logout: async () => {},
 });
@@ -36,20 +38,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
+  const [needsSetup, setNeedsSetup] = useState(false);
 
-  const fetchUser = async () => {
+  const fetchAll = async () => {
     try {
-      const { data } = await api.api.auth.me.get();
-      if (data?.success && data.user) {
-        setUser(data.user as AuthUser);
-        setNeedsOnboarding(data.needsOnboarding || !data.user.username);
+      const [authRes, configRes] = await Promise.all([
+        api.api.auth.me.get(),
+        api.api.config.status.get(),
+      ]);
+
+      if (authRes.data?.success && authRes.data.user) {
+        setUser(authRes.data.user as AuthUser);
+        setNeedsOnboarding(authRes.data.needsOnboarding || !authRes.data.user.username);
       } else {
         setUser(null);
         setNeedsOnboarding(false);
       }
+
+      setNeedsSetup(configRes.data?.needsSetup ?? false);
     } catch {
       setUser(null);
       setNeedsOnboarding(false);
+      setNeedsSetup(false);
     } finally {
       setLoading(false);
     }
@@ -64,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    fetchUser();
+    fetchAll();
   }, []);
 
   return (
@@ -74,7 +84,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loading,
         isAuthenticated: !!user,
         needsOnboarding,
-        refresh: fetchUser,
+        needsSetup,
+        refresh: fetchAll,
         logout,
       }}
     >
