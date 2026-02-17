@@ -94,7 +94,7 @@ function SortableRow({
           )}
         </div>
         {cat.description && (
-          <p className="text-xs text-muted-foreground truncate mt-0.5 max-w-[400px]">{cat.description}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{cat.description}</p>
         )}
       </div>
       <div className="flex items-center gap-4 shrink-0">

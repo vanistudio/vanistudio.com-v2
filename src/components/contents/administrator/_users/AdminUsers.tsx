@@ -189,7 +189,7 @@ export default function AdminUsers() {
           </div>
         ) : (
           <>
-            <div className="flex items-center gap-4 px-4 py-2 border-b border-border text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+            <div className="flex items-center gap-4 px-4 py-2 border-b border-border text-[11px] font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap">
               <div className="w-10 shrink-0" />
               <div className="flex-1">Người dùng</div>
               <div className="flex items-center gap-4 shrink-0">

@@ -79,7 +79,7 @@ export default function UserRow({ user, onToggleActive, onChangeRole, onDelete }
   const displayName = user.fullName || user.displayName || user.username || "—";
 
   return (
-    <div className="flex items-center gap-4 px-4 py-3 hover:bg-muted/30 transition-colors group">
+    <div className="flex items-center gap-4 px-4 py-3 hover:bg-muted/30 transition-colors group whitespace-nowrap">
       {/* Avatar + Status indicator */}
       <div className="relative shrink-0">
         <Avatar className="size-10">
@@ -94,7 +94,7 @@ export default function UserRow({ user, onToggleActive, onChangeRole, onDelete }
       {/* User info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-foreground truncate">{displayName}</span>
+          <span className="text-sm font-semibold text-foreground">{displayName}</span>
           {user.role === "admin" && (
             <Badge variant="default" className="text-[10px] px-1.5 py-0 font-semibold">
               <Icon icon="solar:shield-check-bold" className="text-[10px] mr-0.5" />
@@ -103,11 +103,11 @@ export default function UserRow({ user, onToggleActive, onChangeRole, onDelete }
           )}
         </div>
         <div className="flex items-center gap-1.5 mt-0.5">
-          <span className="text-xs text-muted-foreground truncate">{user.email}</span>
+          <span className="text-xs text-muted-foreground">{user.email}</span>
           {user.username && (
             <>
               <span className="text-muted-foreground/40 text-[10px]">•</span>
-              <span className="text-xs text-muted-foreground/70 truncate">@{user.username}</span>
+              <span className="text-xs text-muted-foreground/70">@{user.username}</span>
             </>
           )}
         </div>
