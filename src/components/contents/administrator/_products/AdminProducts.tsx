@@ -122,10 +122,10 @@ export default function AdminProducts() {
     const draft = products.filter((p) => p.status === "draft").length;
     const featured = products.filter((p) => p.isFeatured).length;
     return [
-      { label: "Tổng sản phẩm", value: total, icon: "solar:box-bold-duotone", color: "blue-500" },
-      { label: "Đã xuất bản", value: published, icon: "solar:check-circle-bold-duotone", color: "emerald-500" },
-      { label: "Bản nháp", value: draft, icon: "solar:pen-new-square-bold-duotone", color: "amber-500" },
-      { label: "Nổi bật", value: featured, icon: "solar:star-bold-duotone", color: "violet-500" },
+      { label: "Tổng sản phẩm", value: total, icon: "solar:box-bold-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
+      { label: "Đã xuất bản", value: published, icon: "solar:check-circle-bold-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
+      { label: "Bản nháp", value: draft, icon: "solar:pen-new-square-bold-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
+      { label: "Nổi bật", value: featured, icon: "solar:star-bold-duotone", bgColor: "bg-violet-500/10", textColor: "text-violet-500" },
     ];
   }, [products]);
 

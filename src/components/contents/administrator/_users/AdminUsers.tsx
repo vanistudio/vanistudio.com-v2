@@ -78,10 +78,10 @@ export default function AdminUsers() {
     const active = users.filter((u) => u.isActive).length;
     const inactive = total - active;
     return [
-      { label: "Tổng người dùng", value: total, icon: "solar:users-group-rounded-bold-duotone", color: "blue-500" },
-      { label: "Admin", value: admins, icon: "solar:shield-user-bold-duotone", color: "amber-500" },
-      { label: "Đang hoạt động", value: active, icon: "solar:check-circle-bold-duotone", color: "emerald-500" },
-      { label: "Vô hiệu hóa", value: inactive, icon: "solar:close-circle-bold-duotone", color: "red-500" },
+      { label: "Tổng người dùng", value: total, icon: "solar:users-group-rounded-bold-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
+      { label: "Admin", value: admins, icon: "solar:shield-user-bold-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
+      { label: "Đang hoạt động", value: active, icon: "solar:check-circle-bold-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
+      { label: "Vô hiệu hóa", value: inactive, icon: "solar:close-circle-bold-duotone", bgColor: "bg-red-500/10", textColor: "text-red-500" },
     ];
   }, [users]);
 

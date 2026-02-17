@@ -83,10 +83,10 @@ export default function AdminCategories() {
     const withIcon = categories.filter((c) => c.icon).length;
     const withDesc = categories.filter((c) => c.description).length;
     return [
-      { label: "Tổng chuyên mục", value: total, icon: "solar:folder-bold-duotone", color: "blue-500" },
-      { label: "Đang hoạt động", value: active, icon: "solar:check-circle-bold-duotone", color: "emerald-500" },
-      { label: "Có icon", value: withIcon, icon: "solar:pallete-2-bold-duotone", color: "violet-500" },
-      { label: "Có mô tả", value: withDesc, icon: "solar:document-text-bold-duotone", color: "amber-500" },
+      { label: "Tổng chuyên mục", value: total, icon: "solar:folder-bold-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
+      { label: "Đang hoạt động", value: active, icon: "solar:check-circle-bold-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
+      { label: "Có icon", value: withIcon, icon: "solar:pallete-2-bold-duotone", bgColor: "bg-violet-500/10", textColor: "text-violet-500" },
+      { label: "Có mô tả", value: withDesc, icon: "solar:document-text-bold-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
     ];
   }, [categories]);
 
