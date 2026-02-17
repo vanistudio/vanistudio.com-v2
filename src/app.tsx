@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from '@/components/layouts/application/AppLayout';
+import AdminLayout from '@/components/layouts/administrator/AdminLayout';
 import RouterProgressHandler from '@/components/providers/RouteProvider';
 import { AuthProvider } from '@/components/providers/AuthProvider';
 import { GuestGuard, AuthGuard, ConfigGuard, SetupGuard, AdminGuard } from '@/components/providers/AuthGuard';
@@ -15,6 +16,9 @@ import AuthLogin from '@/components/contents/authentication/_login/AuthLogin';
 import AppOnboarding from '@/components/contents/application/_onboarding/AppOnboarding';
 import ConfigurationPage from '@/components/contents/configuration/ConfigurationPage';
 import AdminUsers from '@/components/contents/administrator/_users/AdminUsers';
+import AdminCategories from '@/components/contents/administrator/_categories/AdminCategories';
+import AdminProducts from '@/components/contents/administrator/_products/AdminProducts';
+import ProductForm from '@/components/contents/administrator/_products/ProductForm';
 
 function App() {
   return (
@@ -40,8 +44,11 @@ function App() {
           <Route path="/configuration" element={<AuthLayout />}>
             <Route index element={<SetupGuard><ConfigurationPage /></SetupGuard>} />
           </Route>
-          <Route path="/admin" element={<ConfigGuard><Layout /></ConfigGuard>}>
-            <Route path="users" element={<AdminGuard><AdminUsers /></AdminGuard>} />
+          <Route path="/admin" element={<ConfigGuard><AdminGuard><AdminLayout /></AdminGuard></ConfigGuard>}>
+            <Route path="users" element={<AdminUsers />} />
+            <Route path="categories" element={<AdminCategories />} />
+            <Route path="products" element={<AdminProducts />} />
+            <Route path="products/new" element={<ProductForm />} />
           </Route>
         </Routes>
       </AuthProvider>
