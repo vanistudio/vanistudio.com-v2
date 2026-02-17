@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { usePageTitle } from "@/hooks/use-page-title";
 import AppDashed from "@/components/layouts/application/AppDashed";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/providers/AuthProvider";
@@ -7,6 +8,7 @@ import { api } from "@/lib/api";
 export default function AppOnboarding() {
   const navigate = useNavigate();
   const { refresh } = useAuth();
+  usePageTitle("Hoàn tất hồ sơ");
   const [form, setForm] = useState({ username: "", fullName: "", phoneNumber: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);

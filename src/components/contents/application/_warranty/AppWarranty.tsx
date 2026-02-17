@@ -1,4 +1,5 @@
 import AppDashed from '@/components/layouts/application/AppDashed';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
@@ -24,6 +25,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 }
 
 export default function AppWarranty() {
+  usePageTitle("Chính sách Bảo hành");
   return (
     <div className="flex flex-col w-full">
       <AppDashed noTopBorder padding="p-3">

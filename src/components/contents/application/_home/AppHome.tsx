@@ -5,6 +5,7 @@ import AppDashed from '@/components/layouts/application/AppDashed';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 const projects = [
   {
@@ -129,6 +130,7 @@ function ProjectCard({ project }: { project: typeof projects[number] }) {
 
 export default function AppHome() {
   const { resolvedTheme } = useTheme();
+  usePageTitle("Trang chủ");
 
   return (
     <div className="flex flex-col w-full">

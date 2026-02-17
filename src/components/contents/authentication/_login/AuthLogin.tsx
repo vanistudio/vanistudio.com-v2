@@ -1,6 +1,7 @@
 import { Icon } from '@iconify/react';
 import AppDashed from '@/components/layouts/application/AppDashed';
 import { Link } from 'react-router-dom';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 const AUTH_ROUTES = {
   github: '/api/auth/github',
@@ -8,6 +9,7 @@ const AUTH_ROUTES = {
 };
 
 export default function AuthLogin() {
+  usePageTitle("Đăng nhập");
   return (
     <div className="flex flex-col w-full">
       <AppDashed noTopBorder padding="p-6">

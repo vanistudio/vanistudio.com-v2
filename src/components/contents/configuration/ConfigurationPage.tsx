@@ -5,6 +5,7 @@ import { useAuth } from "@/components/providers/AuthProvider";
 import { api } from "@/lib/api";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
+import { usePageTitle } from "@/hooks/use-page-title";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -98,6 +99,7 @@ export default function ConfigurationPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [configKey, setConfigKey] = useState("");
+  usePageTitle("Cấu hình");
 
   const [profile, setProfile] = useState({ username: "", fullName: "", phoneNumber: "" });
 
@@ -121,7 +123,6 @@ export default function ConfigurationPage() {
     if (authLoading) return;
     if (isAuthenticated) {
       if (step < 2) {
-        // User đã đăng nhập, skip các bước trước
         setStep(needsOnboarding ? 3 : 4);
       } else if (step === 2) {
         toast.success("Đăng nhập thành công", { description: "Tài khoản đã được xác thực" });
