@@ -22,6 +22,7 @@ import AdminProducts from '@/components/contents/administrator/_products/AdminPr
 import ProductForm from '@/components/contents/administrator/_products/ProductForm';
 import AdminDatabase from '@/components/contents/administrator/_database/AdminDatabase';
 import AdminSettings from '@/components/contents/administrator/_settings/AdminSettings';
+import NotFound from '@/components/contents/application/_notfound/NotFound';
 
 function App() {
   return (
@@ -58,6 +59,7 @@ function App() {
             <Route path="database" element={<AdminDatabase />} />
             <Route path="settings" element={<AdminSettings />} />
           </Route>
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </AuthProvider>
     </Router>
