@@ -1,6 +1,6 @@
 import { db } from "@/configs/index.config";
 import { blogPosts } from "@/schemas/blog.schema";
-import { eq, desc, asc, like, or, sql } from "drizzle-orm";
+import { eq, desc, asc, like, or, and, sql } from "drizzle-orm";
 
 function estimateReadingTime(content: string): number {
   const words = content.trim().split(/\s+/).length;
@@ -39,10 +39,16 @@ export const blogController = {
 
     query = query.orderBy(asc(blogPosts.sortOrder), desc(blogPosts.createdAt));
 
+    const whereClause = conditions.length > 1
+      ? and(...conditions.filter(Boolean) as any)
+      : conditions.length === 1
+        ? conditions[0]
+        : undefined;
+
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(blogPosts)
-      .where(conditions.length > 0 ? conditions[0] : undefined);
+      .where(whereClause);
 
     const total = Number(countResult?.count || 0);
     const data = await query.limit(limit).offset(offset);
@@ -75,6 +81,8 @@ export const blogController = {
     canonicalUrl?: string;
     ogImage?: string;
     isFeatured?: boolean;
+    authorName?: string;
+    authorAvatar?: string;
   }) {
     const [existing] = await db.select({ id: blogPosts.id }).from(blogPosts).where(eq(blogPosts.slug, data.slug)).limit(1);
     if (existing) throw new Error("Slug đã tồn tại");

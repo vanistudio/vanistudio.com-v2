@@ -21,6 +21,7 @@ export const blogPosts = pgTable("blog_posts", {
   // ── Author ──
   authorId: uuid("author_id").references(() => users.id, { onDelete: "set null" }),
   authorName: text("author_name"),
+  authorAvatar: text("author_avatar"),
 
   // ── SEO ──
   metaTitle: text("meta_title"),

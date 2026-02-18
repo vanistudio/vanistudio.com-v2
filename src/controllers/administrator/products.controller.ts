@@ -1,7 +1,7 @@
 import { db } from "@/configs/index.config";
 import { products } from "@/schemas/product.schema";
 import { categories } from "@/schemas/category.schema";
-import { eq, desc, asc, like, or, sql } from "drizzle-orm";
+import { eq, desc, asc, like, or, and, sql } from "drizzle-orm";
 
 export const productsController = {
   async getAll(options: {
@@ -42,10 +42,16 @@ export const productsController = {
 
     query = query.orderBy(asc(products.sortOrder), desc(products.createdAt));
 
+    const whereClause = conditions.length > 1
+      ? and(...conditions.filter(Boolean) as any)
+      : conditions.length === 1
+        ? conditions[0]
+        : undefined;
+
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(products)
-      .where(conditions.length > 0 ? conditions[0] : undefined);
+      .where(whereClause);
 
     const total = Number(countResult?.count || 0);
     const data = await query.limit(limit).offset(offset);

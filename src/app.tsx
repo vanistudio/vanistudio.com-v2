@@ -22,6 +22,8 @@ import AdminProducts from '@/components/contents/administrator/_products/AdminPr
 import ProductForm from '@/components/contents/administrator/_products/ProductForm';
 import AdminDatabase from '@/components/contents/administrator/_database/AdminDatabase';
 import AdminSettings from '@/components/contents/administrator/_settings/AdminSettings';
+import AdminBlog from '@/components/contents/administrator/_blog/AdminBlog';
+import BlogForm from '@/components/contents/administrator/_blog/BlogForm';
 import NotFound from '@/components/contents/application/_notfound/NotFound';
 
 function App() {
@@ -58,6 +60,9 @@ function App() {
             <Route path="products/:id/edit" element={<ProductForm />} />
             <Route path="database" element={<AdminDatabase />} />
             <Route path="settings" element={<AdminSettings />} />
+            <Route path="blog" element={<AdminBlog />} />
+            <Route path="blog/create" element={<BlogForm />} />
+            <Route path="blog/:id/edit" element={<BlogForm />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

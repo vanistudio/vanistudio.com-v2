@@ -165,7 +165,7 @@ export default function FileUploadDialog({
                   <p className="text-xs text-muted-foreground mt-0.5">hoặc click để chọn file</p>
                 </div>
                 <p className="text-[10px] text-muted-foreground/60 mt-1">
-                  JPG, PNG, WebP, SVG, GIF, ICO • Tối đa 5MB
+                  JPG, PNG, WebP, SVG, GIF, ICO • Tối đa 50MB
                 </p>
               </div>
             )}
