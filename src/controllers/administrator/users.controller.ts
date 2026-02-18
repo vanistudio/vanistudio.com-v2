@@ -1,6 +1,6 @@
 import { db } from "@/configs/index.config";
 import { users } from "@/schemas/user.schema";
-import { eq, desc, asc, like, or, sql } from "drizzle-orm";
+import { eq, desc, asc, like, or, and, sql } from "drizzle-orm";
 
 export const usersController = {
   async getUsers(options: {
@@ -62,10 +62,16 @@ export const usersController = {
     const sortDir = options.sortOrder === "asc" ? asc : desc;
     query = query.orderBy(sortDir(sortColumn));
 
+    const whereClause = conditions.length > 1
+      ? and(...conditions.filter(Boolean) as any)
+      : conditions.length === 1
+        ? conditions[0]
+        : undefined;
+
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(users)
-      .where(conditions.length > 0 ? conditions[0] : undefined);
+      .where(whereClause);
 
     const total = Number(countResult?.count || 0);
     const data = await query.limit(limit).offset(offset);
