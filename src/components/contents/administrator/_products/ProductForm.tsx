@@ -334,17 +334,6 @@ export default function ProductForm() {
           </Field>
         </div>
       </Section>
-      <AppDashed noTopBorder padding="p-4">
-        <div className="flex items-center justify-end gap-2">
-          <Button variant="outline" size="sm" className="text-xs" onClick={() => navigate("/admin/products")}>
-            Hủy bỏ
-          </Button>
-          <Button size="sm" className="text-xs gap-1.5" disabled={submitting} onClick={handleSubmit}>
-            <Icon icon="solar:check-circle-bold-duotone" className="text-sm" />
-            {submitting ? "Đang lưu..." : isEditing ? "Cập nhật sản phẩm" : "Tạo sản phẩm"}
-          </Button>
-        </div>
-      </AppDashed>
     </div>
   );
 }
