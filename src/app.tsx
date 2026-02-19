@@ -27,6 +27,7 @@ import BlogForm from '@/components/contents/administrator/_blog/BlogForm';
 import AdminProjects from '@/components/contents/administrator/_projects/AdminProjects';
 import ProjectForm from '@/components/contents/administrator/_projects/ProjectForm';
 import NotFound from '@/components/contents/application/_notfound/NotFound';
+import ProductDetail from '@/components/contents/application/_products/ProductDetail';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
         <Routes>
           <Route path="/" element={<ConfigGuard><Layout /></ConfigGuard>}>
             <Route index element={<AppHome />} />
+            <Route path="products/:slug" element={<ProductDetail />} />
             <Route path="privacy" element={<AppPrivacy />} />
             <Route path="refund" element={<AppRefund />} />
             <Route path="shipping" element={<AppShipping />} />

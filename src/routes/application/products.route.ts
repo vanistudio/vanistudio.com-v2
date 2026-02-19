@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
 import { db } from "@/configs/index.config";
 import { products } from "@/schemas/product.schema";
-import { eq, desc, asc } from "drizzle-orm";
+import { eq, desc, asc, and, sql } from "drizzle-orm";
 
 export const productsPublicRoutes = new Elysia({ prefix: "/products" })
   .get("/", async ({ query }) => {
@@ -31,6 +31,24 @@ export const productsPublicRoutes = new Elysia({ prefix: "/products" })
         .limit(limit);
 
       return { success: true, products: data };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
+  })
+  .get("/:slug", async ({ params }) => {
+    try {
+      const [product] = await db.select().from(products)
+        .where(and(eq(products.slug, params.slug), eq(products.status, "published")))
+        .limit(1);
+
+      if (!product) return { success: false, error: "Không tìm thấy sản phẩm" };
+
+      // Increment view count
+      await db.update(products)
+        .set({ viewCount: sql`${products.viewCount} + 1` })
+        .where(eq(products.id, product.id));
+
+      return { success: true, product };
     } catch (error: any) {
       return { success: false, error: error.message };
     }
