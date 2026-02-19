@@ -32,6 +32,7 @@ interface License {
   maxActivations: number;
   currentActivations: number;
   notes: string | null;
+  domain: string | null;
   expiresAt: string | null;
   activatedAt: string | null;
   createdAt: string;
@@ -221,6 +222,7 @@ export default function AdminLicenses() {
               <div className="flex-1">Sản phẩm</div>
               <div className="flex items-center gap-4 shrink-0">
                 <div className="w-[140px]">Người dùng</div>
+                <div className="w-[120px]">Domain</div>
                 <div className="w-[80px]">Trạng thái</div>
                 <div className="w-[60px] text-right">Kích hoạt</div>
                 <div className="w-[70px] text-right">Ngày tạo</div>
@@ -256,6 +258,9 @@ export default function AdminLicenses() {
                       ) : (
                         <span className="text-xs text-muted-foreground">Chưa gán</span>
                       )}
+                    </div>
+                    <div className="w-[120px]">
+                      <span className="text-xs text-muted-foreground">{l.domain || "—"}</span>
                     </div>
                     <div className="w-[80px]">
                       <div className="flex items-center gap-1.5">

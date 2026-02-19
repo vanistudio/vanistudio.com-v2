@@ -256,17 +256,6 @@ export default function LicenseForm() {
         </div>
       </Section>
 
-      <AppDashed noTopBorder padding="p-4">
-        <div className="flex items-center justify-end gap-2">
-          <Button variant="outline" size="sm" className="text-xs" onClick={() => navigate("/admin/licenses")}>
-            Hủy bỏ
-          </Button>
-          <Button size="sm" className="text-xs gap-1.5" disabled={submitting} onClick={handleSubmit}>
-            <Icon icon="solar:check-circle-bold-duotone" className="text-sm" />
-            {submitting ? "Đang lưu..." : isEditing ? "Cập nhật license" : "Tạo license"}
-          </Button>
-        </div>
-      </AppDashed>
     </div>
   );
 }
