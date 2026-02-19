@@ -38,6 +38,8 @@ import ToolCheckDomain from '@/components/contents/application/_tools/ToolCheckD
 import AdminServices from '@/components/contents/administrator/_services/AdminServices';
 import ServiceForm from '@/components/contents/administrator/_services/ServiceForm';
 import ServiceList from '@/components/contents/application/_services/ServiceList';
+import AdminLicenses from '@/components/contents/administrator/_licenses/AdminLicenses';
+import LicenseForm from '@/components/contents/administrator/_licenses/LicenseForm';
 
 function App() {
   return (
@@ -91,6 +93,9 @@ function App() {
             <Route path="services" element={<AdminServices />} />
             <Route path="services/create" element={<ServiceForm />} />
             <Route path="services/:id/edit" element={<ServiceForm />} />
+            <Route path="licenses" element={<AdminLicenses />} />
+            <Route path="licenses/create" element={<LicenseForm />} />
+            <Route path="licenses/:id/edit" element={<LicenseForm />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
