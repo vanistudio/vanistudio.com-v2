@@ -166,7 +166,7 @@ export default function ProjectList() {
       <AppDashed noTopBorder padding="p-0">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Icon icon="solar:spinner-bold-duotone" className="text-2xl text-muted-foreground animate-spin" />
+            <Icon icon="svg-spinners:ring-resize" className="text-2xl text-muted-foreground animate-spin" />
           </div>
         ) : projects.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 gap-2">

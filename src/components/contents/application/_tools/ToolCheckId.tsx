@@ -94,7 +94,7 @@ export default function ToolCheckId() {
               />
               <Button onClick={extractId} disabled={loading || !input.trim()}>
                 {loading ? (
-                  <Icon icon="solar:spinner-bold-duotone" className="text-base animate-spin" />
+                  <Icon icon="svg-spinners:ring-resize" className="text-base animate-spin" />
                 ) : (
                   <Icon icon="solar:magnifer-bold-duotone" className="text-base" />
                 )}

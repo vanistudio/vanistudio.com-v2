@@ -122,7 +122,7 @@ export default function ToolCheckDomain() {
               />
               <Button onClick={checkDomain} disabled={loading || !domain.trim()}>
                 {loading ? (
-                  <Icon icon="solar:spinner-bold-duotone" className="text-base animate-spin" />
+                  <Icon icon="svg-spinners:ring-resize" className="text-base animate-spin" />
                 ) : (
                   <Icon icon="solar:magnifer-bold-duotone" className="text-base" />
                 )}

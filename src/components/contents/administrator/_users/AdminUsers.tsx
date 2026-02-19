@@ -176,7 +176,7 @@ export default function AdminUsers() {
       <AppDashed noTopBorder padding="p-0" scrollable>
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Icon icon="solar:spinner-bold-duotone" className="text-2xl text-muted-foreground animate-spin" />
+            <Icon icon="svg-spinners:ring-resize" className="text-2xl text-muted-foreground animate-spin" />
           </div>
         ) : filteredUsers.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-2">

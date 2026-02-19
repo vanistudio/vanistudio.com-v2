@@ -156,7 +156,7 @@ export default function ProductDetail() {
       <div className="flex flex-col w-full">
         <AppDashed noTopBorder>
           <div className="flex items-center justify-center py-32">
-            <Icon icon="solar:spinner-bold-duotone" className="text-3xl text-muted-foreground animate-spin" />
+            <Icon icon="svg-spinners:ring-resize" className="text-3xl text-muted-foreground animate-spin" />
           </div>
         </AppDashed>
       </div>

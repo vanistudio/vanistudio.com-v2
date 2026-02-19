@@ -97,7 +97,7 @@ export default function ToolCheckLiveUid() {
               <Button onClick={checkUids} disabled={loading || !input.trim()} size="sm">
                 {loading ? (
                   <>
-                    <Icon icon="solar:spinner-bold-duotone" className="text-base animate-spin mr-1.5" />
+                    <Icon icon="svg-spinners:ring-resize" className="text-base animate-spin mr-1.5" />
                     Đang kiểm tra...
                   </>
                 ) : (

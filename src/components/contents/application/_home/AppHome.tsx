@@ -298,7 +298,7 @@ export default function AppHome() {
       <AppDashed noTopBorder padding="p-0">
         {loading ? (
           <div className="flex items-center justify-center py-16">
-            <Icon icon="solar:spinner-bold-duotone" className="text-2xl text-muted-foreground animate-spin" />
+            <Icon icon="svg-spinners:ring-resize" className="text-2xl text-muted-foreground animate-spin" />
           </div>
         ) : products.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-2">

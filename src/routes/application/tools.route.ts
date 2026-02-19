@@ -12,28 +12,6 @@ export const toolsPublicRoutes = new Elysia({ prefix: "/tools" })
       const target = query.target;
       if (!target) return { success: false, error: "Thiếu target" };
 
-      async function getExtras(uid: string, html?: string) {
-        let avatar: string | undefined;
-        let cover: string | undefined;
-        if (html) {
-          const avatarMatch = html.match(/og:image["'\s]+content=["']([^"']+)["']/)
-            || html.match(/profilePic[^"]*"uri":"([^"]+)"/)
-            || html.match(/"profilePicLarge":\{[^}]*"uri":"([^"]+)"/)
-            || html.match(/"profilePhoto":\{[^}]*"image":\{[^}]*"uri":"([^"]+)"/)
-            || html.match(/"photo_image":\{[^}]*"uri":"([^"]+)"/);
-          if (avatarMatch?.[1]) {
-            avatar = avatarMatch[1].replace(/\\\//g, '/').replace(/&amp;/g, '&');
-          }
-          const coverMatch = html.match(/coverPhotoUrl":"([^"]+)"/)
-            || html.match(/cover_photo[^"]*"uri":"([^"]+)"/)
-            || html.match(/"coverPhoto":\{[^}]*"uri":"([^"]+)"/);
-          if (coverMatch?.[1]) {
-            cover = coverMatch[1].replace(/\\\//g, '/').replace(/&amp;/g, '&');
-          }
-        }
-        if (!avatar) avatar = `https://graph.facebook.com/${uid}/picture?type=large`;
-        return { avatar, cover };
-      }
       const BAD_NAMES = ['error', 'facebook', 'page not found', 'content not found', 'log in', 'đăng nhập', 'sign up', 'đăng ký'];
       function cleanName(raw?: string) {
         if (!raw) return undefined;
@@ -46,9 +24,6 @@ export const toolsPublicRoutes = new Elysia({ prefix: "/tools" })
 
       if (/^\d{5,}$/.test(target)) {
         let name: string | undefined;
-        let avatar: string | undefined;
-        let cover: string | undefined;
-        // mbasic has simpler HTML, less aggressive blocking
         try {
           const html = await ky.get(`https://mbasic.facebook.com/profile.php?id=${target}`, {
             headers: { "User-Agent": UA_MOBILE, "Accept": "text/html", "Accept-Language": "en-US,en;q=0.9" },
@@ -57,40 +32,19 @@ export const toolsPublicRoutes = new Elysia({ prefix: "/tools" })
           }).text();
           const nameMatch = html.match(/<title>([^<]+)<\/title>/);
           name = cleanName(nameMatch?.[1]);
-          // mbasic profile pics are in <img> tags with the profile URL
-          const imgMatch = html.match(/profpic[^>]*src="([^"]+)"/) || html.match(/profilePhoto[^>]*src="([^"]+)"/);
-          if (imgMatch?.[1]) {
-            avatar = imgMatch[1].replace(/&amp;/g, '&');
-          }
         } catch {}
-        // Try desktop for og:image + cover
-        try {
-          const html = await ky.get(`https://www.facebook.com/profile.php?id=${target}`, {
-            headers: { "User-Agent": UA_DESKTOP, "Accept": "text/html", "Accept-Language": "en-US,en;q=0.9" },
-            redirect: "follow",
-            throwHttpErrors: false,
-          }).text();
-          if (!name) {
-            const nameMatch = html.match(/<title>([^<]+)<\/title>/);
-            name = cleanName(nameMatch?.[1]);
-          }
-          const extras = await getExtras(target, html);
-          if (!avatar && extras.avatar) avatar = extras.avatar;
-          if (extras.cover) cover = extras.cover;
-        } catch {}
-        if (!avatar) avatar = `https://graph.facebook.com/${target}/picture?type=large`;
-        return { success: true, uid: target, name, avatar, cover };
+        return { success: true, uid: target, name, avatar: `http://graph.facebook.com/${target}/picture?type=large` };
       }
       try {
         const graphData = await ky.get(`https://graph.facebook.com/${target}/picture?redirect=false`, {
           headers: { "User-Agent": UA_DESKTOP },
+          throwHttpErrors: false,
         }).json<any>();
         if (graphData?.data?.url) {
           const uidMatch = graphData.data.url.match(/\/(\d{5,})_/);
           if (uidMatch?.[1]) {
             const uid = uidMatch[1];
-            const extras = await getExtras(uid);
-            return { success: true, uid, ...extras };
+            return { success: true, uid, avatar: `http://graph.facebook.com/${uid}/picture?type=large` };
           }
         }
       } catch {}
@@ -98,6 +52,7 @@ export const toolsPublicRoutes = new Elysia({ prefix: "/tools" })
         const mobileHtml = await ky.get(`https://m.facebook.com/${target}`, {
           headers: { "User-Agent": UA_MOBILE, "Accept": "text/html", "Accept-Language": "en-US,en;q=0.9" },
           redirect: "follow",
+          throwHttpErrors: false,
         }).text();
         const mobilePatterns = [
           /\/profile\/timeline\/stream\/\?profile_id=(\d+)/,
@@ -107,7 +62,6 @@ export const toolsPublicRoutes = new Elysia({ prefix: "/tools" })
           /fb:\/\/profile\/(\d+)/,
           /\"entity_id\":\"(\d+)\"/,
           /\"actorID\":\"(\d+)\"/,
-          /data-store="[^"]*\\"id\\":(\d+)/,
           /subject_id=(\d+)/,
           /\"profileID\":\"(\d+)\"/,
           /page_id=(\d+)/,
@@ -117,8 +71,7 @@ export const toolsPublicRoutes = new Elysia({ prefix: "/tools" })
           if (match?.[1] && match[1].length >= 5) {
             const nameMatch = mobileHtml.match(/<title>([^<]+)<\/title>/);
             const name = cleanName(nameMatch?.[1]);
-            const extras = await getExtras(match[1], mobileHtml);
-            return { success: true, uid: match[1], name, ...extras };
+            return { success: true, uid: match[1], name, avatar: `http://graph.facebook.com/${match[1]}/picture?type=large` };
           }
         }
       } catch {}
@@ -126,6 +79,7 @@ export const toolsPublicRoutes = new Elysia({ prefix: "/tools" })
         const html = await ky.get(`https://www.facebook.com/${target}`, {
           headers: { "User-Agent": UA_DESKTOP, "Accept": "text/html", "Accept-Language": "en-US,en;q=0.9" },
           redirect: "follow",
+          throwHttpErrors: false,
         }).text();
         const patterns = [
           /\"userID\":\"(\d+)\"/,
@@ -144,12 +98,11 @@ export const toolsPublicRoutes = new Elysia({ prefix: "/tools" })
           if (match?.[1] && match[1].length >= 5) {
             const nameMatch = html.match(/<title>([^<]+)<\/title>/);
             const name = cleanName(nameMatch?.[1]);
-            const extras = await getExtras(match[1], html);
-            return { success: true, uid: match[1], name, ...extras };
+            return { success: true, uid: match[1], name, avatar: `http://graph.facebook.com/${match[1]}/picture?type=large` };
           }
         }
       } catch {}
-      return { success: false, error: "Không tìm thấy UID. Facebook có thể đang chặn yêu cầu, hãy thử lại sau." };
+      return { success: false, error: "Không tìm thấy UID. Hãy kiểm tra lại link hoặc username." };
     } catch (error: any) {
       return { success: false, error: error.message };
     }
