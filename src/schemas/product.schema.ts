@@ -5,8 +5,6 @@ import { users } from "./user.schema";
 
 export const products = pgTable("products", {
   id: uuid("id").defaultRandom().primaryKey(),
-
-  // ── Thông tin cơ bản ──
   name: text("name").notNull(),
   slug: text("slug").notNull().unique(),
   tagline: text("tagline"),
