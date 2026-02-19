@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Icon } from '@iconify/react';
-import { ArrowLeft, ExternalLink, Github, Figma, FileText, History, Download, Shield, Mail, Star, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, ExternalLink, FileText, History, Download, Shield, Mail, Star, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
 import AppDashed from '@/components/layouts/application/AppDashed';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -21,7 +21,6 @@ interface Product {
   images: string[];
   videoUrl: string | null;
   demoUrl: string | null;
-  sourceUrl: string | null;
   documentationUrl: string | null;
   changelogUrl: string | null;
   type: string;
@@ -191,7 +190,6 @@ export default function ProductDetail() {
   ];
   const links = [
     product.demoUrl && { icon: <ExternalLink size={14} />, label: "Live Demo", href: product.demoUrl },
-    product.sourceUrl && { icon: <Github size={14} />, label: "Source Code", href: product.sourceUrl },
     product.documentationUrl && { icon: <FileText size={14} />, label: "Tài liệu", href: product.documentationUrl },
     product.changelogUrl && { icon: <History size={14} />, label: "Changelog", href: product.changelogUrl },
   ].filter(Boolean) as { icon: React.ReactNode; label: string; href: string }[];
@@ -329,7 +327,7 @@ export default function ProductDetail() {
       )}
 
       {/* Video */}
-      {product.videoUrl && (
+      {product.videoUrl && product.videoUrl.trim() !== '' && (
         <AppDashed noTopBorder padding="p-5">
           <div className="flex flex-col gap-3">
             <h2 className="text-sm font-bold text-title">Video giới thiệu</h2>
