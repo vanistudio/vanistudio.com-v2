@@ -11,15 +11,39 @@ export const toolsPublicRoutes = new Elysia({ prefix: "/tools" })
     try {
       const target = query.target;
       if (!target) return { success: false, error: "Thiếu target" };
+
+      async function getExtras(uid: string, html?: string) {
+        let avatar: string | undefined;
+        let cover: string | undefined;
+        if (html) {
+          const avatarMatch = html.match(/og:image["'\s]+content=["']([^"']+)["']/)
+            || html.match(/profilePic[^"]*"uri":"([^"]+)"/)
+            || html.match(/"profilePicLarge":\{[^}]*"uri":"([^"]+)"/)
+            || html.match(/"profilePhoto":\{[^}]*"image":\{[^}]*"uri":"([^"]+)"/)
+            || html.match(/"photo_image":\{[^}]*"uri":"([^"]+)"/);
+          if (avatarMatch?.[1]) {
+            avatar = avatarMatch[1].replace(/\\\//g, '/').replace(/&amp;/g, '&');
+          }
+          const coverMatch = html.match(/coverPhotoUrl":"([^"]+)"/)
+            || html.match(/cover_photo[^"]*"uri":"([^"]+)"/)
+            || html.match(/"coverPhoto":\{[^}]*"uri":"([^"]+)"/);
+          if (coverMatch?.[1]) {
+            cover = coverMatch[1].replace(/\\\//g, '/').replace(/&amp;/g, '&');
+          }
+        }
+        if (!avatar) avatar = `https://graph.facebook.com/${uid}/picture?type=large`;
+        return { avatar, cover };
+      }
       try {
         const graphData = await ky.get(`https://graph.facebook.com/${target}/picture?redirect=false`, {
           headers: { "User-Agent": UA_DESKTOP },
         }).json<any>();
-
         if (graphData?.data?.url) {
           const uidMatch = graphData.data.url.match(/\/(\d{5,})_/);
           if (uidMatch?.[1]) {
-            return { success: true, uid: uidMatch[1] };
+            const uid = uidMatch[1];
+            const extras = await getExtras(uid);
+            return { success: true, uid, ...extras };
           }
         }
       } catch {}
@@ -28,7 +52,6 @@ export const toolsPublicRoutes = new Elysia({ prefix: "/tools" })
           headers: { "User-Agent": UA_MOBILE, "Accept": "text/html", "Accept-Language": "en-US,en;q=0.9" },
           redirect: "follow",
         }).text();
-
         const mobilePatterns = [
           /\/profile\/timeline\/stream\/\?profile_id=(\d+)/,
           /owner_id=(\d+)/,
@@ -42,13 +65,13 @@ export const toolsPublicRoutes = new Elysia({ prefix: "/tools" })
           /\"profileID\":\"(\d+)\"/,
           /page_id=(\d+)/,
         ];
-
         for (const pattern of mobilePatterns) {
           const match = mobileHtml.match(pattern);
           if (match?.[1] && match[1].length >= 5) {
             const nameMatch = mobileHtml.match(/<title>([^<]+)<\/title>/);
             const name = nameMatch?.[1]?.replace(/ \| Facebook$/, '').replace(/ - Facebook$/, '').trim() || undefined;
-            return { success: true, uid: match[1], name };
+            const extras = await getExtras(match[1], mobileHtml);
+            return { success: true, uid: match[1], name, ...extras };
           }
         }
       } catch {}
@@ -57,7 +80,6 @@ export const toolsPublicRoutes = new Elysia({ prefix: "/tools" })
           headers: { "User-Agent": UA_DESKTOP, "Accept": "text/html", "Accept-Language": "en-US,en;q=0.9" },
           redirect: "follow",
         }).text();
-
         const patterns = [
           /\"userID\":\"(\d+)\"/,
           /\"entity_id\":\"(\d+)\"/,
@@ -70,13 +92,13 @@ export const toolsPublicRoutes = new Elysia({ prefix: "/tools" })
           /\"id\":\"(\d{5,})\"/,
           /profile_id=(\d+)/,
         ];
-
         for (const pattern of patterns) {
           const match = html.match(pattern);
           if (match?.[1] && match[1].length >= 5) {
             const nameMatch = html.match(/<title>([^<]+)<\/title>/);
             const name = nameMatch?.[1]?.replace(/ \| Facebook$/, '').replace(/ - Facebook$/, '').trim() || undefined;
-            return { success: true, uid: match[1], name };
+            const extras = await getExtras(match[1], html);
+            return { success: true, uid: match[1], name, ...extras };
           }
         }
       } catch {}
