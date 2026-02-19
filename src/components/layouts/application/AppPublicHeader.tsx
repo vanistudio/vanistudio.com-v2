@@ -20,6 +20,17 @@ const navEntries: NavEntry[] = [
   { name: "Sản phẩm", href: "/products", icon: "solar:box-bold-duotone" },
   { name: "Dịch vụ", href: "/services", icon: "solar:code-square-bold-duotone" },
   { name: "Liên hệ", href: "/contact", icon: "solar:chat-round-dots-bold-duotone" },
+  {
+    name: "Chính sách", icon: "solar:document-text-bold-duotone",
+    children: [
+      { name: "Điều khoản", href: "/terms", icon: "solar:clipboard-text-bold-duotone" },
+      { name: "Bảo mật", href: "/privacy", icon: "solar:shield-keyhole-bold-duotone" },
+      { name: "Hoàn tiền", href: "/refund", icon: "solar:wallet-money-bold-duotone" },
+      { name: "Giao nhận", href: "/shipping", icon: "solar:box-bold-duotone" },
+      { name: "Bảo hành", href: "/warranty", icon: "solar:shield-check-bold-duotone" },
+      { name: "Thanh toán", href: "/payment", icon: "solar:card-bold-duotone" },
+    ],
+  },
 ];
 
 function NavGroupPopover({ group, isLinkActive }: { group: NavGroup; isLinkActive: (href: string) => boolean }) {
