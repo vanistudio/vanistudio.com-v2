@@ -151,6 +151,15 @@ export default function CategoryForm() {
               <p className="text-xs text-muted-foreground">Điền thông tin chuyên mục sản phẩm</p>
             </div>
           </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" className="text-xs" onClick={() => navigate("/admin/categories")}>
+              Hủy
+            </Button>
+            <Button size="sm" className="text-xs gap-1.5" disabled={submitting} onClick={handleSubmit}>
+              <Icon icon="solar:check-circle-bold-duotone" className="text-sm" />
+              {submitting ? "Đang lưu..." : isEditing ? "Cập nhật" : "Tạo chuyên mục"}
+            </Button>
+          </div>
         </div>
       </AppDashed>
       <AppDashed noTopBorder padding="p-5">
@@ -251,17 +260,6 @@ export default function CategoryForm() {
               </div>
             </div>
           </div>
-        </div>
-      </AppDashed>
-      <AppDashed noTopBorder padding="p-4">
-        <div className="flex items-center justify-end gap-2">
-          <Button variant="outline" size="sm" className="text-xs" onClick={() => navigate("/admin/categories")}>
-            Hủy bỏ
-          </Button>
-          <Button size="sm" className="text-xs gap-1.5" disabled={submitting} onClick={handleSubmit}>
-            <Icon icon="solar:check-circle-bold-duotone" className="text-sm" />
-            {submitting ? "Đang lưu..." : isEditing ? "Cập nhật chuyên mục" : "Tạo chuyên mục"}
-          </Button>
         </div>
       </AppDashed>
     </div>

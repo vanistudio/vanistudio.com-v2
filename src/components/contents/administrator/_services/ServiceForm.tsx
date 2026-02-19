@@ -321,17 +321,6 @@ export default function ServiceForm() {
           </Field>
         </div>
       </Section>
-      <AppDashed noTopBorder padding="p-4">
-        <div className="flex items-center justify-end gap-2">
-          <Button variant="outline" size="sm" className="text-xs" onClick={() => navigate("/admin/services")}>
-            Hủy bỏ
-          </Button>
-          <Button size="sm" className="text-xs gap-1.5" disabled={submitting} onClick={handleSubmit}>
-            <Icon icon="solar:check-circle-bold-duotone" className="text-sm" />
-            {submitting ? "Đang lưu..." : isEditing ? "Cập nhật dịch vụ" : "Tạo dịch vụ"}
-          </Button>
-        </div>
-      </AppDashed>
     </div>
   );
 }
