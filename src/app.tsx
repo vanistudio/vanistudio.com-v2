@@ -35,6 +35,9 @@ import Tool2FA from '@/components/contents/application/_tools/Tool2FA';
 import ToolCheckId from '@/components/contents/application/_tools/ToolCheckId';
 import ToolCheckLiveUid from '@/components/contents/application/_tools/ToolCheckLiveUid';
 import ToolCheckDomain from '@/components/contents/application/_tools/ToolCheckDomain';
+import AdminServices from '@/components/contents/administrator/_services/AdminServices';
+import ServiceForm from '@/components/contents/administrator/_services/ServiceForm';
+import ServiceList from '@/components/contents/application/_services/ServiceList';
 
 function App() {
   return (
@@ -52,6 +55,7 @@ function App() {
             <Route path="tools/check-id" element={<ToolCheckId />} />
             <Route path="tools/check-live-uid" element={<ToolCheckLiveUid />} />
             <Route path="tools/check-domain" element={<ToolCheckDomain />} />
+            <Route path="services" element={<ServiceList />} />
             <Route path="privacy" element={<AppPrivacy />} />
             <Route path="refund" element={<AppRefund />} />
             <Route path="shipping" element={<AppShipping />} />
@@ -84,6 +88,9 @@ function App() {
             <Route path="projects" element={<AdminProjects />} />
             <Route path="projects/create" element={<ProjectForm />} />
             <Route path="projects/:id/edit" element={<ProjectForm />} />
+            <Route path="services" element={<AdminServices />} />
+            <Route path="services/create" element={<ServiceForm />} />
+            <Route path="services/:id/edit" element={<ServiceForm />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
