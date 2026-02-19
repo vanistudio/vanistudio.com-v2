@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { ArrowUpRight, Pin } from 'lucide-react';
 import { Icon } from '@iconify/react';
 import { useTheme } from 'next-themes';
@@ -6,49 +7,33 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 import { usePageTitle } from '@/hooks/use-page-title';
+import { api } from '@/lib/api';
+import { Badge } from '@/components/ui/badge';
 
-const projects = [
-  {
-    name: "VaniStudio Web",
-    slug: "/projects/vanistudio-web",
-    description: "Website chính thức của Vani Studio — showcase sản phẩm, quản lý license key và cung cấp thông tin cho cộng đồng.",
-    screenshot: "/images/projects/vanistudio-web.png",
-    background: "https://cdn.vectorstock.com/i/1000v/11/04/retro-marble-background-groovy-70s-wavy-pattern-vector-47221104.jpg",
-    status: "Building",
-    statusColor: "text-amber-500",
-    dotColor: "bg-amber-500",
-  },
-  {
-    name: "Vani Injector",
-    slug: "/projects/vani-injector",
-    description: "Công cụ tự động hóa quy trình đăng nhập và quản lý multi-account Riot Client nhanh chóng, an toàn.",
-    screenshot: "/images/projects/vani-injector.png",
-    background: "https://cdn.vectorstock.com/i/1000v/11/04/retro-marble-background-groovy-70s-wavy-pattern-vector-47221104.jpg",
-    status: "Active",
-    statusColor: "text-emerald-500",
-    dotColor: "bg-emerald-500",
-  },
-  {
-    name: "TSBVH Bot",
-    slug: "/projects/tsbvh-bot",
-    description: "Discord bot quản lý cộng đồng TSBVH — hệ thống ranking, leaderboard, quản lý clan và nhiều tính năng hơn nữa.",
-    screenshot: "/images/projects/tsbvh-bot.png",
-    background: "https://img.freepik.com/premium-vector/abstract-hand-drawn-psychedelic-groovy-background-retro-wavy-pattern-texture-design_92086-696.jpg",
-    status: "Active",
-    statusColor: "text-emerald-500",
-    dotColor: "bg-emerald-500",
-  },
-  {
-    name: "Lunel",
-    slug: "/projects/lunel",
-    description: "Dự án đang được phát triển — một sản phẩm mới sắp ra mắt từ Vani Studio. Hãy đón chờ!",
-    screenshot: "/images/projects/soon.png",
-    background: "https://img.freepik.com/premium-vector/abstract-hand-drawn-psychedelic-groovy-background-retro-wavy-pattern-texture-design_92086-696.jpg",
-    status: "Coming Soon",
-    statusColor: "text-red-500",
-    dotColor: "bg-red-500",
-  },
-];
+interface Product {
+  id: string;
+  name: string;
+  slug: string;
+  tagline: string | null;
+  description: string | null;
+  thumbnail: string | null;
+  coverImage: string | null;
+  type: string;
+  status: string;
+  price: string;
+  salePrice: string | null;
+  currency: string;
+  techStack: string[];
+  tags: string[];
+  isFeatured: boolean;
+  version: string | null;
+}
+
+const typeMap: Record<string, { label: string; color: string; dotColor: string }> = {
+  free: { label: "Miễn phí", color: "text-emerald-500", dotColor: "bg-emerald-500" },
+  premium: { label: "Premium", color: "text-amber-500", dotColor: "bg-amber-500" },
+  enterprise: { label: "Enterprise", color: "text-purple-500", dotColor: "bg-purple-500" },
+};
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
@@ -73,54 +58,87 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   );
 }
 
-function ProjectCard({ project }: { project: typeof projects[number] }) {
+function ProductCard({ product }: { product: Product }) {
+  const typeInfo = typeMap[product.type] || typeMap.premium;
+  const hasDiscount = product.salePrice && Number(product.salePrice) < Number(product.price);
+
   return (
     <div className="p-3">
-      <Link to={project.slug} className="flex flex-col gap-2 cursor-pointer group w-full">
+      <Link to={`/products/${product.slug}`} className="flex flex-col gap-2 cursor-pointer group w-full">
         <div className="p-[4px] rounded-[10px] border border-border">
           <div className="relative w-full bg-muted-background rounded-[6px] border border-border h-[200px] md:h-[200px] sm:h-[170px] overflow-hidden select-none">
             <div
-              className="absolute inset-0 bg-cover bg-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-              style={{ backgroundImage: `url(${project.background})` }}
+              className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
             />
             <h1 className="absolute top-2 left-2 text-xs text-muted-foreground group-hover:text-foreground font-medium transition-all duration-300 group-hover:left-1/2 group-hover:-translate-x-1/2">
-              {project.status}
+              {typeInfo.label}
             </h1>
             <div className="bg-background rounded-t-[6px] absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] h-[75%] group-hover:h-[70%] transition-all duration-300 p-[2px] pb-0">
               <div className="w-full h-full rounded-t-[4px] overflow-hidden">
-                <img
-                  alt={project.name}
-                  loading="lazy"
-                  className="w-full h-full object-cover"
-                  src={project.screenshot}
-                />
+                {product.thumbnail ? (
+                  <img
+                    alt={product.name}
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                    src={product.thumbnail}
+                  />
+                ) : product.coverImage ? (
+                  <img
+                    alt={product.name}
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                    src={product.coverImage}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-muted/30">
+                    <Icon icon="solar:box-bold-duotone" className="text-4xl text-muted-foreground/30" />
+                  </div>
+                )}
               </div>
             </div>
-            <div className="absolute top-1 right-1 p-1.5 rounded-[8px] border border-border bg-background text-title">
-              <Pin size={12} />
-            </div>
+            {product.isFeatured && (
+              <div className="absolute top-1 right-1 p-1.5 rounded-[8px] border border-border bg-background text-title">
+                <Pin size={12} />
+              </div>
+            )}
           </div>
         </div>
         <div className="px-2 flex flex-col gap-1">
           <div className="flex items-center justify-between">
-            <h3 className="text-[1.10rem] leading-[1.10] text-title font-bold">{project.name}</h3>
+            <h3 className="text-[1.10rem] leading-[1.10] text-title font-bold">{product.name}</h3>
             <div className="flex items-center gap-1 select-none">
               <div className="relative flex items-center justify-center">
                 <div
-                  className={cn("absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-ping group-hover:hidden rounded-full opacity-40", project.dotColor)}
+                  className={cn("absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-ping group-hover:hidden rounded-full opacity-40", typeInfo.dotColor)}
                   style={{ width: 10, height: 10 }}
                 />
-                <svg className={cn("relative z-10", project.statusColor)} height="14" width="14" viewBox="0 0 24 24" fill="currentColor">
+                <svg className={cn("relative z-10", typeInfo.color)} height="14" width="14" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z" />
                 </svg>
               </div>
-              <p className={cn("text-sm font-medium", project.statusColor)}>{project.status}</p>
+              <p className={cn("text-sm font-medium", typeInfo.color)}>{typeInfo.label}</p>
             </div>
           </div>
-          <p className="text-sm text-muted-foreground">{project.description}</p>
-          <div className="flex items-center gap-1 select-none">
-            <p className="text-sm text-muted-foreground transition-colors duration-300 group-hover:text-title">View Project</p>
-            <ArrowUpRight size={14} className="text-muted-foreground transition-all duration-300 group-hover:rotate-45 group-hover:text-title" />
+          <p className="text-sm text-muted-foreground line-clamp-2">{product.tagline || product.description}</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1 select-none">
+              <p className="text-sm text-muted-foreground transition-colors duration-300 group-hover:text-title">Xem chi tiết</p>
+              <ArrowUpRight size={14} className="text-muted-foreground transition-all duration-300 group-hover:rotate-45 group-hover:text-title" />
+            </div>
+            {product.type === "free" ? (
+              <Badge variant="secondary" className="text-[10px] font-medium">Miễn phí</Badge>
+            ) : Number(product.price) > 0 && (
+              <div className="flex items-center gap-1.5">
+                {hasDiscount && (
+                  <span className="text-[11px] text-muted-foreground line-through">
+                    {Number(product.price).toLocaleString("vi-VN")}đ
+                  </span>
+                )}
+                <span className="text-sm font-semibold text-primary">
+                  {Number(hasDiscount ? product.salePrice : product.price).toLocaleString("vi-VN")}đ
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </Link>
@@ -131,6 +149,17 @@ function ProjectCard({ project }: { project: typeof projects[number] }) {
 export default function AppHome() {
   const { resolvedTheme } = useTheme();
   usePageTitle("Trang chủ");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (api.api.app.products as any).get({ query: { limit: "20" } })
+      .then(({ data }: any) => {
+        if (data?.success) setProducts(data.products || []);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <div className="flex flex-col w-full">
@@ -267,11 +296,22 @@ export default function AppHome() {
       </AppDashed>
 
       <AppDashed noTopBorder padding="p-0">
-        <div className="grid grid-cols-1 sm:grid-cols-2">
-          {projects.map((project) => (
-            <ProjectCard key={project.slug} project={project} />
-          ))}
-        </div>
+        {loading ? (
+          <div className="flex items-center justify-center py-16">
+            <Icon icon="solar:spinner-bold-duotone" className="text-2xl text-muted-foreground animate-spin" />
+          </div>
+        ) : products.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 gap-2">
+            <Icon icon="solar:box-bold-duotone" className="text-4xl text-muted-foreground/30" />
+            <p className="text-sm text-muted-foreground">Chưa có sản phẩm nào</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
       </AppDashed>
     </div>
   );
