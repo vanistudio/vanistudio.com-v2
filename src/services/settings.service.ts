@@ -23,8 +23,6 @@ export async function getSiteSettings(): Promise<Record<string, string>> {
       siteOgImage: "",
       siteOgType: "website",
       siteOgLocale: "vi_VN",
-      siteCustomHeadCode: "",
-      siteCustomBodyCode: "",
     };
   }
 
@@ -43,8 +41,6 @@ export async function getSiteSettings(): Promise<Record<string, string>> {
     siteOgImage: row.siteOgImage || "",
     siteOgType: row.siteOgType || "website",
     siteOgLocale: row.siteOgLocale || "vi_VN",
-    siteCustomHeadCode: row.siteCustomHeadCode || "",
-    siteCustomBodyCode: row.siteCustomBodyCode || "",
   };
 
   return cachedSettings;

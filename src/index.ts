@@ -37,7 +37,6 @@ async function serveHtml() {
 
   html = html.replace(/\{\{(\w+)\}\}/g, (_, key) => {
     const val = s[key] ?? "";
-    if (key === "siteCustomHeadCode" || key === "siteCustomBodyCode") return val;
     return val.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   });
 

@@ -36,17 +36,14 @@ export const productsController = {
       conditions.push(eq(products.type, options.type as any));
     }
 
-    for (const c of conditions) {
-      if (c) query = query.where(c);
-    }
-
-    query = query.orderBy(asc(products.sortOrder), desc(products.createdAt));
-
     const whereClause = conditions.length > 1
       ? and(...conditions.filter(Boolean) as any)
       : conditions.length === 1
         ? conditions[0]
         : undefined;
+
+    if (whereClause) query = query.where(whereClause);
+    query = query.orderBy(asc(products.sortOrder), desc(products.createdAt));
 
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })

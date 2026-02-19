@@ -48,11 +48,13 @@ export const usersController = {
       conditions.push(eq(users.role, options.role));
     }
 
-    if (conditions.length > 0) {
-      for (const condition of conditions) {
-        if (condition) query = query.where(condition);
-      }
-    }
+    const whereClause = conditions.length > 1
+      ? and(...conditions.filter(Boolean) as any)
+      : conditions.length === 1
+        ? conditions[0]
+        : undefined;
+
+    if (whereClause) query = query.where(whereClause);
 
     const sortColumn = options.sortBy === "email" ? users.email
       : options.sortBy === "role" ? users.role
@@ -61,12 +63,6 @@ export const usersController = {
 
     const sortDir = options.sortOrder === "asc" ? asc : desc;
     query = query.orderBy(sortDir(sortColumn));
-
-    const whereClause = conditions.length > 1
-      ? and(...conditions.filter(Boolean) as any)
-      : conditions.length === 1
-        ? conditions[0]
-        : undefined;
 
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })

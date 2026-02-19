@@ -1,3 +1,7 @@
 export * from "./user.schema";
 export * from "./license.schema";
 export * from "./setting.schema";
+export * from "./category.schema";
+export * from "./product.schema";
+export * from "./blog.schema";
+export * from "./project.schema";

@@ -33,17 +33,14 @@ export const blogController = {
       conditions.push(eq(blogPosts.category, options.category));
     }
 
-    for (const c of conditions) {
-      if (c) query = query.where(c);
-    }
-
-    query = query.orderBy(asc(blogPosts.sortOrder), desc(blogPosts.createdAt));
-
     const whereClause = conditions.length > 1
       ? and(...conditions.filter(Boolean) as any)
       : conditions.length === 1
         ? conditions[0]
         : undefined;
+
+    if (whereClause) query = query.where(whereClause);
+    query = query.orderBy(asc(blogPosts.sortOrder), desc(blogPosts.createdAt));
 
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
