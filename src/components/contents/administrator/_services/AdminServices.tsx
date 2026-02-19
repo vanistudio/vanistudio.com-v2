@@ -1,12 +1,20 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import AppDashed from "@/components/layouts/application/AppDashed";
-import AdminStats from "@/components/vani/AdminStats";
 import { Icon } from "@iconify/react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuSeparator, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
+} from "@/components/ui/tooltip";
+import AdminStats from "@/components/vani/AdminStats";
 import { usePageTitle } from "@/hooks/use-page-title";
 import { useNavigate } from "react-router-dom";
 import { api } from "@/lib/api";
@@ -31,50 +39,54 @@ interface Service {
   createdAt: string;
 }
 
-const statusMap: Record<string, { label: string; variant: "default" | "secondary" | "outline" | "destructive" }> = {
-  published: { label: "Công khai", variant: "default" },
-  draft: { label: "Nháp", variant: "secondary" },
-  archived: { label: "Lưu trữ", variant: "outline" },
+const statusMap: Record<string, { label: string; color: string }> = {
+  draft: { label: "Nháp", color: "bg-yellow-500" },
+  published: { label: "Đã xuất bản", color: "bg-emerald-500" },
+  archived: { label: "Đã lưu trữ", color: "bg-zinc-400" },
 };
 
 function formatPrice(price: string, currency: string) {
-  const num = Number(price);
-  if (!num) return "Liên hệ";
-  return num.toLocaleString("vi-VN") + " " + currency;
+  const num = parseInt(price);
+  if (num === 0) return "Liên hệ";
+  return new Intl.NumberFormat("vi-VN").format(num) + " " + currency;
+}
+
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "Vừa xong";
+  if (mins < 60) return `${mins}p trước`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h trước`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days}d trước`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months} tháng trước`;
+  return `${Math.floor(months / 12)} năm trước`;
 }
 
 export default function AdminServices() {
-  usePageTitle("Quản lý dịch vụ");
+  usePageTitle("Quản lý Dịch vụ");
   const navigate = useNavigate();
+
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [stats, setStats] = useState({ total: 0, published: 0, draft: 0, featured: 0 });
 
   const fetchServices = useCallback(async () => {
     setLoading(true);
     try {
-      const params: any = { limit: "100" };
-      if (search) params.search = search;
-      if (statusFilter !== "all") params.status = statusFilter;
-      const { data } = await (api.api.admin.services as any).get({ query: params });
-      if (data?.success) {
-        setServices(data.services || []);
-        const all = data.services || [];
-        setStats({
-          total: data.pagination?.total || all.length,
-          published: all.filter((s: Service) => s.status === "published").length,
-          draft: all.filter((s: Service) => s.status === "draft").length,
-          featured: all.filter((s: Service) => s.isFeatured).length,
-        });
-      }
+      const { data } = await (api.api.admin.services as any).get({
+        query: { page: "1", limit: "500" },
+      });
+      if (data?.success) setServices(data.services || []);
     } catch {
       toast.error("Không thể tải danh sách dịch vụ");
     } finally {
       setLoading(false);
     }
-  }, [search, statusFilter]);
+  }, []);
 
   useEffect(() => { fetchServices(); }, [fetchServices]);
 
@@ -82,116 +94,221 @@ export default function AdminServices() {
     if (!confirm("Xóa dịch vụ này?")) return;
     try {
       const { data } = await (api.api.admin.services as any)({ id }).delete();
-      if (data?.success) { toast.success("Đã xóa"); fetchServices(); }
-      else toast.error(data?.error || "Xóa thất bại");
+      if (data?.success) { toast.success("Đã xóa dịch vụ"); fetchServices(); }
+      else toast.error(data?.error || "Thất bại");
     } catch { toast.error("Lỗi kết nối"); }
   };
 
+  const filteredServices = useMemo(() => {
+    return services.filter((s) => {
+      if (search) {
+        const q = search.toLowerCase();
+        if (!`${s.name} ${s.tagline || ""} ${s.slug}`.toLowerCase().includes(q)) return false;
+      }
+      if (statusFilter !== "all" && s.status !== statusFilter) return false;
+      return true;
+    });
+  }, [services, search, statusFilter]);
+
+  const stats = useMemo(() => {
+    const total = services.length;
+    const published = services.filter((s) => s.status === "published").length;
+    const draft = services.filter((s) => s.status === "draft").length;
+    const featured = services.filter((s) => s.isFeatured).length;
+    return [
+      { label: "Tổng dịch vụ", value: total, icon: "solar:widget-5-bold-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
+      { label: "Đã xuất bản", value: published, icon: "solar:check-circle-bold-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
+      { label: "Bản nháp", value: draft, icon: "solar:pen-new-square-bold-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
+      { label: "Nổi bật", value: featured, icon: "solar:star-bold-duotone", bgColor: "bg-violet-500/10", textColor: "text-violet-500" },
+    ];
+  }, [services]);
+
+  const activeFilterCount = statusFilter !== "all" ? 1 : 0;
+  const clearFilters = () => { setStatusFilter("all"); };
+
   return (
     <div className="flex flex-col w-full">
-      <AdminStats items={[
-        { label: "Tổng dịch vụ", value: stats.total, icon: "solar:widget-5-bold-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
-        { label: "Công khai", value: stats.published, icon: "solar:eye-bold-duotone", bgColor: "bg-green-500/10", textColor: "text-green-500" },
-        { label: "Bản nháp", value: stats.draft, icon: "solar:pen-new-square-bold-duotone", bgColor: "bg-yellow-500/10", textColor: "text-yellow-500" },
-        { label: "Nổi bật", value: stats.featured, icon: "solar:star-bold-duotone", bgColor: "bg-purple-500/10", textColor: "text-purple-500" },
-      ]} />
-
-      <AppDashed noTopBorder padding="p-3">
-        <div className="flex items-center gap-2 flex-wrap">
-          <div className="relative flex-1 min-w-[200px]">
-            <Icon icon="solar:magnifer-linear" className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground text-sm" />
-            <Input className="text-sm pl-8 h-8" placeholder="Tìm dịch vụ..." value={search} onChange={(e) => setSearch(e.target.value)} />
+      <AppDashed noTopBorder padding="p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <Icon icon="solar:widget-5-bold-duotone" className="text-xl text-primary" />
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-title">Dịch vụ</h1>
+              <p className="text-xs text-muted-foreground">{services.length} dịch vụ</p>
+            </div>
           </div>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[130px] h-8 text-xs"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tất cả trạng thái</SelectItem>
-              <SelectItem value="published">Công khai</SelectItem>
-              <SelectItem value="draft">Nháp</SelectItem>
-              <SelectItem value="archived">Lưu trữ</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button size="sm" className="text-xs gap-1.5 h-8 ml-auto" onClick={() => navigate("/admin/services/create")}>
+          <Button size="sm" className="text-xs gap-1.5" onClick={() => navigate("/admin/services/create")}>
             <Icon icon="solar:add-circle-bold-duotone" className="text-sm" />
             Thêm dịch vụ
           </Button>
         </div>
       </AppDashed>
+      <AdminStats items={stats} />
+      <AppDashed noTopBorder padding="p-3">
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <Icon icon="solar:magnifer-linear" className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground text-sm" />
+            <Input
+              placeholder="Tìm dịch vụ..."
+              className="pl-8 text-sm"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="text-xs gap-1.5 shrink-0">
+                <Icon icon="solar:filter-bold-duotone" className="text-sm" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-[240px] p-3">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-foreground">Bộ lọc</span>
+                  {activeFilterCount > 0 && (
+                    <button onClick={clearFilters} className="text-[11px] text-primary hover:underline cursor-pointer">
+                      Xóa tất cả
+                    </button>
+                  )}
+                </div>
+                <Separator />
+                <div className="space-y-1.5">
+                  <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Trạng thái</span>
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger className="w-full text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Tất cả</SelectItem>
+                      <SelectItem value="draft">Nháp</SelectItem>
+                      <SelectItem value="published">Đã xuất bản</SelectItem>
+                      <SelectItem value="archived">Đã lưu trữ</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
+      </AppDashed>
 
+      {/* Service List */}
       <AppDashed noTopBorder padding="p-0" scrollable>
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <Icon icon="svg-spinners:ring-resize" className="text-2xl text-muted-foreground" />
           </div>
-        ) : services.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-2">
+        ) : filteredServices.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 gap-2">
             <Icon icon="solar:widget-5-bold-duotone" className="text-4xl text-muted-foreground/30" />
-            <p className="text-sm text-muted-foreground">Chưa có dịch vụ nào</p>
+            <p className="text-sm text-muted-foreground">
+              {search || statusFilter !== "all"
+                ? "Không tìm thấy dịch vụ phù hợp"
+                : "Chưa có dịch vụ nào"}
+            </p>
           </div>
         ) : (
-          <>
-            <div className="w-max min-w-full">
-              <div className="grid grid-cols-[48px_1fr_140px_100px_100px_48px] items-center px-4 py-2.5 border-b border-border bg-muted/30 text-xs font-medium text-muted-foreground whitespace-nowrap">
-                <span></span>
-                <span>Dịch vụ</span>
-                <span>Giá</span>
-                <span>Trạng thái</span>
-                <span>Thời gian</span>
-                <span></span>
+          <div className="w-max min-w-full">
+            {/* Table header */}
+            <div className="flex items-center gap-4 px-4 py-2 border-b border-border text-[11px] font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap">
+              <div className="w-10 shrink-0" />
+              <div className="flex-1">Dịch vụ</div>
+              <div className="flex items-center gap-4 shrink-0">
+                <div className="w-[120px]">Giá</div>
+                <div className="w-[80px]">Trạng thái</div>
+                <div className="w-[80px] text-right">Thời gian</div>
               </div>
-              {services.map((service) => (
-                <div key={service.id} className="grid grid-cols-[48px_1fr_140px_100px_100px_48px] items-center px-4 py-2.5 border-b border-border hover:bg-muted/20 transition-colors whitespace-nowrap">
-                  <div className="w-9 h-9 rounded-md border border-border overflow-hidden bg-muted/20 shrink-0 flex items-center justify-center">
-                    {service.icon ? (
-                      <Icon icon={service.icon} className="text-lg text-primary" />
-                    ) : service.thumbnail ? (
-                      <img src={service.thumbnail} alt="" className="w-full h-full object-cover" />
+              <div className="w-8 shrink-0" />
+            </div>
+
+            {/* Service rows */}
+            <div className="divide-y divide-border">
+              {filteredServices.map((s) => (
+                <div key={s.id} className="flex items-center gap-4 px-4 py-3 hover:bg-muted/30 transition-colors group whitespace-nowrap">
+                  {/* Icon/Thumbnail */}
+                  <div className="w-10 h-10 rounded-lg bg-muted overflow-hidden shrink-0 flex items-center justify-center">
+                    {s.icon ? (
+                      <Icon icon={s.icon} className="text-lg text-primary" />
+                    ) : s.thumbnail ? (
+                      <img src={s.thumbnail} alt={s.name} className="w-full h-full object-cover" />
                     ) : (
-                      <Icon icon="solar:widget-5-bold-duotone" className="text-sm text-muted-foreground/40" />
+                      <Icon icon="solar:widget-5-bold-duotone" className="text-base text-muted-foreground" />
                     )}
                   </div>
-                  <div className="min-w-0 px-2">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-sm font-medium text-title">{service.name}</span>
-                      {service.isFeatured && <Icon icon="solar:star-bold" className="text-xs text-yellow-500" />}
+
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-foreground">{s.name}</span>
+                      {s.isFeatured && <Icon icon="solar:star-bold" className="text-amber-500 text-xs shrink-0" />}
                     </div>
-                    <p className="text-[11px] text-muted-foreground">{service.tagline || service.slug}</p>
+                    <span className="text-xs text-muted-foreground block mt-0.5">{s.tagline || s.slug}</span>
                   </div>
-                  <div className="text-xs">
-                    {service.minPrice && service.maxPrice ? (
-                      <span className="text-title font-medium">{formatPrice(service.minPrice, service.currency)} - {formatPrice(service.maxPrice, service.currency)}</span>
-                    ) : service.minPrice ? (
-                      <span className="text-title font-medium">Từ {formatPrice(service.minPrice, service.currency)}</span>
-                    ) : (
-                      <span className="text-title font-medium">{formatPrice(service.price, service.currency)}</span>
-                    )}
-                    {service.priceUnit && <span className="text-muted-foreground ml-0.5">{service.priceUnit}</span>}
+
+                  {/* Details */}
+                  <div className="flex items-center gap-4 shrink-0">
+                    <div className="w-[120px]">
+                      <span className="text-xs font-medium text-foreground">
+                        {s.minPrice && s.maxPrice
+                          ? `${formatPrice(s.minPrice, s.currency)} - ${formatPrice(s.maxPrice, s.currency)}`
+                          : s.minPrice
+                            ? `Từ ${formatPrice(s.minPrice, s.currency)}`
+                            : formatPrice(s.price, s.currency)}
+                      </span>
+                      {s.priceUnit && <span className="text-[10px] text-muted-foreground ml-0.5">{s.priceUnit}</span>}
+                    </div>
+                    <div className="w-[80px]">
+                      <div className="flex items-center gap-1.5">
+                        <div className={`size-2 rounded-full ${statusMap[s.status]?.color || "bg-gray-500"}`} />
+                        <span className="text-[11px] text-muted-foreground">{statusMap[s.status]?.label || s.status}</span>
+                      </div>
+                    </div>
+                    <div className="w-[80px] text-right">
+                      <TooltipProvider delayDuration={200}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="text-xs text-muted-foreground tabular-nums">
+                              {s.estimatedDays ? `~${s.estimatedDays}d` : "—"}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom" className="text-xs">
+                            {timeAgo(s.createdAt)}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                   </div>
-                  <Badge variant={statusMap[service.status]?.variant || "secondary"} className="text-[10px] w-fit">
-                    {statusMap[service.status]?.label || service.status}
-                  </Badge>
-                  <span className="text-xs text-muted-foreground">
-                    {service.estimatedDays ? `~${service.estimatedDays} ngày` : "—"}
-                  </span>
+
+                  {/* Actions */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="size-7">
-                        <Icon icon="solar:menu-dots-bold" className="text-sm" />
+                      <Button variant="ghost" size="icon" className="size-8 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                        <Icon icon="solar:menu-dots-bold" className="text-base" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-36">
-                      <DropdownMenuItem className="text-xs gap-2" onClick={() => navigate(`/admin/services/${service.id}/edit`)}>
-                        <Icon icon="solar:pen-bold-duotone" className="text-sm" /> Chỉnh sửa
+                    <DropdownMenuContent align="end" className="w-44">
+                      <DropdownMenuItem onClick={() => navigate(`/admin/services/${s.id}/edit`)}>
+                        <Icon icon="solar:pen-bold-duotone" className="mr-2 text-base" />
+                        Chỉnh sửa
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="text-xs gap-2 text-destructive" onClick={() => handleDelete(service.id)}>
-                        <Icon icon="solar:trash-bin-trash-bold-duotone" className="text-sm" /> Xóa
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(s.id)}>
+                        <Icon icon="solar:trash-bin-trash-bold-duotone" className="mr-2 text-base" />
+                        Xóa dịch vụ
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
               ))}
             </div>
-          </>
+
+            {/* Footer */}
+            <div className="flex items-center justify-between px-4 py-2 border-t border-border">
+              <span className="text-[11px] text-muted-foreground">
+                Hiển thị {filteredServices.length} / {services.length} dịch vụ
+              </span>
+            </div>
+          </div>
         )}
       </AppDashed>
     </div>

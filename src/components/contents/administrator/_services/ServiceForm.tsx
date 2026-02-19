@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { usePageTitle } from "@/hooks/use-page-title";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "@/lib/api";
@@ -17,7 +16,7 @@ import FileUploadDialog from "@/components/vani/FileUploadDialog";
 const initialForm = {
   name: "", slug: "", tagline: "", description: "", content: "",
   icon: "", thumbnail: "", coverImage: "",
-  price: "", minPrice: "", maxPrice: "",
+  price: "0", minPrice: "", maxPrice: "",
   currency: "VND", priceUnit: "",
   status: "draft",
   categoryId: "",
@@ -68,7 +67,7 @@ function Field({ label, hint, children, span = 1 }: { label: string; hint?: stri
 export default function ServiceForm() {
   const { id } = useParams();
   const isEditing = Boolean(id);
-  usePageTitle(isEditing ? "Chỉnh sửa dịch vụ" : "Thêm dịch vụ mới");
+  usePageTitle(isEditing ? "Chỉnh sửa dịch vụ" : "Thêm dịch vụ");
   const navigate = useNavigate();
   const [form, setForm] = useState(initialForm);
   const [submitting, setSubmitting] = useState(false);
@@ -84,12 +83,13 @@ export default function ServiceForm() {
             name: s.name || "", slug: s.slug || "", tagline: s.tagline || "",
             description: s.description || "", content: s.content || "",
             icon: s.icon || "", thumbnail: s.thumbnail || "", coverImage: s.coverImage || "",
-            price: s.price || "", minPrice: s.minPrice || "", maxPrice: s.maxPrice || "",
+            price: String(s.price || 0), minPrice: s.minPrice ? String(s.minPrice) : "",
+            maxPrice: s.maxPrice ? String(s.maxPrice) : "",
             currency: s.currency || "VND", priceUnit: s.priceUnit || "",
             status: s.status || "draft",
             categoryId: s.categoryId || "",
-            features: Array.isArray(s.features) ? s.features.join("\n") : (s.features || ""),
-            deliverables: Array.isArray(s.deliverables) ? s.deliverables.join("\n") : (s.deliverables || ""),
+            features: (s.features || []).join("\n"),
+            deliverables: (s.deliverables || []).join("\n"),
             estimatedDays: s.estimatedDays?.toString() || "",
             isFeatured: s.isFeatured || false,
             sortOrder: s.sortOrder?.toString() || "0",
@@ -99,21 +99,21 @@ export default function ServiceForm() {
     }
   }, [id]);
 
-  const set = (key: string, value: any) => setForm((f) => ({ ...f, [key]: value }));
+  const set = (key: string, value: string) => setForm((f) => ({ ...f, [key]: value }));
 
   const handleSubmit = async () => {
     if (!form.name || !form.slug) return toast.error("Tên và slug là bắt buộc");
     setSubmitting(true);
     try {
-      const payload: any = {
+      const payload = {
         ...form,
-        features: form.features ? form.features.split("\n").map((s) => s.trim()).filter(Boolean) : [],
-        deliverables: form.deliverables ? form.deliverables.split("\n").map((s) => s.trim()).filter(Boolean) : [],
+        features: form.features ? form.features.split("\n").filter(Boolean) : [],
+        deliverables: form.deliverables ? form.deliverables.split("\n").filter(Boolean) : [],
         estimatedDays: form.estimatedDays ? parseInt(form.estimatedDays) : null,
         sortOrder: parseInt(form.sortOrder) || 0,
-        categoryId: form.categoryId || null,
-        minPrice: form.minPrice || null,
-        maxPrice: form.maxPrice || null,
+        categoryId: form.categoryId || undefined,
+        minPrice: form.minPrice || undefined,
+        maxPrice: form.maxPrice || undefined,
       };
       if (isEditing && id) {
         const { data } = await (api.api.admin.services as any)({ id }).patch(payload);
@@ -149,32 +149,32 @@ export default function ServiceForm() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" className="size-8" onClick={() => navigate("/admin/services")}>
-              <Icon icon="solar:arrow-left-linear" className="text-lg" />
+              <Icon icon="solar:arrow-left-bold" className="text-sm" />
             </Button>
             <div>
-              <h1 className="text-base font-bold text-title">{isEditing ? "Chỉnh sửa dịch vụ" : "Thêm dịch vụ mới"}</h1>
-              <p className="text-xs text-muted-foreground">{isEditing ? "Cập nhật thông tin dịch vụ" : "Tạo một dịch vụ mới"}</p>
+              <h1 className="text-lg font-bold text-title">{isEditing ? "Chỉnh sửa dịch vụ" : "Thêm dịch vụ mới"}</h1>
+              <p className="text-xs text-muted-foreground">Điền thông tin dịch vụ</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="text-xs h-8" onClick={() => navigate("/admin/services")}>Hủy</Button>
-            <Button size="sm" className="text-xs h-8 gap-1.5" onClick={handleSubmit} disabled={submitting}>
-              {submitting && <Icon icon="svg-spinners:ring-resize" className="text-sm" />}
-              {isEditing ? "Lưu" : "Tạo dịch vụ"}
+            <Button variant="outline" size="sm" className="text-xs" onClick={() => navigate("/admin/services")}>
+              Hủy
+            </Button>
+            <Button size="sm" className="text-xs gap-1.5" disabled={submitting} onClick={handleSubmit}>
+              <Icon icon="solar:check-circle-bold-duotone" className="text-sm" />
+              {submitting ? "Đang lưu..." : isEditing ? "Cập nhật" : "Tạo dịch vụ"}
             </Button>
           </div>
         </div>
       </AppDashed>
-
-      <Section title="Thông tin cơ bản" icon="solar:document-text-bold-duotone">
+      <Section title="Thông tin cơ bản" icon="solar:document-bold-duotone" description="Tên, mô tả dịch vụ hiển thị trên trang chủ">
         <div className="grid grid-cols-2 gap-4">
-          <Field label="Tên dịch vụ" span={2}>
+          <Field label="Tên dịch vụ *">
             <Input className="text-sm" placeholder="Thiết kế website" value={form.name}
               onChange={(e) => { set("name", e.target.value); if (!isEditing) set("slug", generateSlug(e.target.value)); }} />
           </Field>
-          <Field label="Slug" hint="Đường dẫn URL">
-            <Input className="text-sm font-mono" placeholder="thiet-ke-website" value={form.slug}
-              onChange={(e) => set("slug", e.target.value)} />
+          <Field label="Slug *" hint="URL-friendly, tự động theo tên">
+            <Input className="text-sm font-mono" placeholder="thiet-ke-website" value={form.slug} onChange={(e) => set("slug", e.target.value)} />
           </Field>
           <Field label="Icon" hint="Tên Iconify, vd: solar:monitor-bold-duotone">
             <div className="flex items-center gap-2">
@@ -183,99 +183,90 @@ export default function ServiceForm() {
               {form.icon && <Icon icon={form.icon} className="text-xl text-primary shrink-0" />}
             </div>
           </Field>
-          <Field label="Mô tả ngắn" span={2}>
-            <Input className="text-sm" placeholder="Thiết kế website chuyên nghiệp, hiện đại" value={form.tagline}
-              onChange={(e) => set("tagline", e.target.value)} />
+          <Field label="Thứ tự hiển thị" hint="Số nhỏ hiển thị trước">
+            <Input className="text-sm" type="number" placeholder="0" value={form.sortOrder} onChange={(e) => set("sortOrder", e.target.value)} />
+          </Field>
+          <Field label="Tagline" span={2}>
+            <Input className="text-sm" placeholder="Mô tả ngắn gọn 1 dòng cho dịch vụ..." value={form.tagline} onChange={(e) => set("tagline", e.target.value)} />
           </Field>
           <Field label="Mô tả chi tiết" span={2}>
-            <Textarea className="text-sm min-h-[80px]" placeholder="Chi tiết về dịch vụ..." value={form.description}
-              onChange={(e) => set("description", e.target.value)} />
+            <Textarea className="text-sm min-h-[80px] resize-y" placeholder="Mô tả chi tiết về dịch vụ, quy trình làm việc..." value={form.description} onChange={(e) => set("description", e.target.value)} />
           </Field>
         </div>
       </Section>
-
-      <Section title="Giá & Thời gian" icon="solar:tag-price-bold-duotone" description="Thiết lập mức giá dịch vụ">
+      <Section title="Giá cả" icon="solar:wallet-bold-duotone" description="Thiết lập mức giá dịch vụ">
         <div className="grid grid-cols-3 gap-4">
-          <Field label="Giá hiển thị">
-            <Input className="text-sm" type="number" placeholder="5000000" value={form.price}
-              onChange={(e) => set("price", e.target.value)} />
+          <Field label="Giá hiển thị" hint="Nhập 0 nếu liên hệ">
+            <Input className="text-sm" type="number" placeholder="5000000" value={form.price} onChange={(e) => set("price", e.target.value)} />
           </Field>
-          <Field label="Giá tối thiểu">
-            <Input className="text-sm" type="number" placeholder="3000000" value={form.minPrice}
-              onChange={(e) => set("minPrice", e.target.value)} />
+          <Field label="Giá tối thiểu" hint="Để trống nếu không cần">
+            <Input className="text-sm" type="number" placeholder="3000000" value={form.minPrice} onChange={(e) => set("minPrice", e.target.value)} />
           </Field>
-          <Field label="Giá tối đa">
-            <Input className="text-sm" type="number" placeholder="10000000" value={form.maxPrice}
-              onChange={(e) => set("maxPrice", e.target.value)} />
+          <Field label="Giá tối đa" hint="Để trống nếu không cần">
+            <Input className="text-sm" type="number" placeholder="10000000" value={form.maxPrice} onChange={(e) => set("maxPrice", e.target.value)} />
           </Field>
           <Field label="Đơn vị giá" hint="Ví dụ: / dự án, / tháng">
-            <Input className="text-sm" placeholder="/ dự án" value={form.priceUnit}
-              onChange={(e) => set("priceUnit", e.target.value)} />
+            <Input className="text-sm" placeholder="/ dự án" value={form.priceUnit} onChange={(e) => set("priceUnit", e.target.value)} />
           </Field>
-          <Field label="Tiền tệ">
+          <Field label="Đơn vị tiền tệ">
             <Select value={form.currency} onValueChange={(v) => set("currency", v)}>
-              <SelectTrigger className="text-sm"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-full text-sm"><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="VND">VND</SelectItem>
-                <SelectItem value="USD">USD</SelectItem>
+                <SelectItem value="VND">VND - Việt Nam Đồng</SelectItem>
+                <SelectItem value="USD">USD - US Dollar</SelectItem>
               </SelectContent>
             </Select>
           </Field>
-          <Field label="Thời gian ước tính (ngày)">
-            <Input className="text-sm" type="number" placeholder="14" value={form.estimatedDays}
-              onChange={(e) => set("estimatedDays", e.target.value)} />
+          <Field label="Thời gian ước tính (ngày)" hint="Số ngày hoàn thành dự kiến">
+            <Input className="text-sm" type="number" placeholder="14" value={form.estimatedDays} onChange={(e) => set("estimatedDays", e.target.value)} />
           </Field>
         </div>
       </Section>
-
-      <Section title="Tính năng & Bàn giao" icon="solar:checklist-bold-duotone" description="Mỗi dòng một mục">
+      <Section title="Phân loại" icon="solar:tag-bold-duotone" description="Trạng thái xuất bản">
         <div className="grid grid-cols-2 gap-4">
-          <Field label="Tính năng" hint="Mỗi dòng 1 tính năng">
-            <Textarea className="text-sm min-h-[100px]" placeholder={"Responsive design\nSEO tối ưu\nTốc độ nhanh"} value={form.features}
-              onChange={(e) => set("features", e.target.value)} />
-          </Field>
-          <Field label="Bàn giao" hint="Mỗi dòng 1 sản phẩm bàn giao">
-            <Textarea className="text-sm min-h-[100px]" placeholder={"Source code\nHướng dẫn sử dụng\nHỗ trợ 30 ngày"} value={form.deliverables}
-              onChange={(e) => set("deliverables", e.target.value)} />
-          </Field>
-        </div>
-      </Section>
-
-      <Section title="Hình ảnh" icon="solar:gallery-bold-duotone">
-        <div className="grid grid-cols-2 gap-4">
-          <Field label="Thumbnail">
-            <FileUploadDialog currentUrl={form.thumbnail} onUpload={(url) => set("thumbnail", url)} label="Chọn thumbnail" />
-          </Field>
-          <Field label="Cover Image">
-            <FileUploadDialog currentUrl={form.coverImage} onUpload={(url) => set("coverImage", url)} label="Chọn cover" />
-          </Field>
-        </div>
-      </Section>
-
-      <Section title="Cài đặt" icon="solar:settings-bold-duotone">
-        <div className="grid grid-cols-3 gap-4">
           <Field label="Trạng thái">
             <Select value={form.status} onValueChange={(v) => set("status", v)}>
-              <SelectTrigger className="text-sm"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-full text-sm"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="draft">Nháp</SelectItem>
-                <SelectItem value="published">Công khai</SelectItem>
+                <SelectItem value="published">Xuất bản</SelectItem>
                 <SelectItem value="archived">Lưu trữ</SelectItem>
               </SelectContent>
             </Select>
           </Field>
-          <Field label="Thứ tự hiển thị">
-            <Input className="text-sm" type="number" placeholder="0" value={form.sortOrder}
-              onChange={(e) => set("sortOrder", e.target.value)} />
+        </div>
+      </Section>
+      <Section title="Media" icon="solar:gallery-bold-duotone" description="Hình ảnh đại diện cho dịch vụ">
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Thumbnail">
+            <FileUploadDialog value={form.thumbnail} onChange={(url) => set("thumbnail", url)} label="Upload" />
           </Field>
-          <Field label="Nổi bật">
-            <div className="flex items-center gap-2 pt-1">
-              <Switch checked={form.isFeatured} onCheckedChange={(v) => set("isFeatured", v)} />
-              <span className="text-xs text-muted-foreground">{form.isFeatured ? "Có" : "Không"}</span>
-            </div>
+          <Field label="Cover Image">
+            <FileUploadDialog value={form.coverImage} onChange={(url) => set("coverImage", url)} label="Upload" />
           </Field>
         </div>
       </Section>
+      <Section title="Tính năng" icon="solar:star-bold-duotone" description="Liệt kê tính năng chính, mỗi dòng một tính năng">
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Danh sách tính năng" hint="Mỗi dòng 1 tính năng">
+            <Textarea className="text-sm min-h-[120px] resize-y" placeholder={"Responsive design\nSEO tối ưu\nTốc độ nhanh\nHỗ trợ đa ngôn ngữ"} value={form.features} onChange={(e) => set("features", e.target.value)} />
+          </Field>
+          <Field label="Sản phẩm bàn giao" hint="Mỗi dòng 1 sản phẩm bàn giao">
+            <Textarea className="text-sm min-h-[120px] resize-y" placeholder={"Source code\nHướng dẫn sử dụng\nHỗ trợ 30 ngày\nDomain + hosting setup"} value={form.deliverables} onChange={(e) => set("deliverables", e.target.value)} />
+          </Field>
+        </div>
+      </Section>
+      <AppDashed noTopBorder padding="p-4">
+        <div className="flex items-center justify-end gap-2">
+          <Button variant="outline" size="sm" className="text-xs" onClick={() => navigate("/admin/services")}>
+            Hủy bỏ
+          </Button>
+          <Button size="sm" className="text-xs gap-1.5" disabled={submitting} onClick={handleSubmit}>
+            <Icon icon="solar:check-circle-bold-duotone" className="text-sm" />
+            {submitting ? "Đang lưu..." : isEditing ? "Cập nhật dịch vụ" : "Tạo dịch vụ"}
+          </Button>
+        </div>
+      </AppDashed>
     </div>
   );
 }
