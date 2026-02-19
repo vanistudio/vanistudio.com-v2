@@ -18,8 +18,18 @@ const isGroup = (entry: NavEntry): entry is NavGroup => "children" in entry;
 const navEntries: NavEntry[] = [
   { name: "Trang chủ", href: "/", icon: "solar:home-smile-bold-duotone" },
   { name: "Sản phẩm", href: "/products", icon: "solar:box-bold-duotone" },
+  { name: "Dự án", href: "/projects", icon: "solar:case-round-bold-duotone" },
   { name: "Dịch vụ", href: "/services", icon: "solar:code-square-bold-duotone" },
   { name: "Liên hệ", href: "/contact", icon: "solar:chat-round-dots-bold-duotone" },
+  {
+    name: "Công cụ", icon: "solar:magic-stick-3-bold-duotone",
+    children: [
+      { name: "Lấy mã 2FA", href: "/tools/2fa", icon: "solar:lock-password-bold-duotone" },
+      { name: "Check ID", href: "/tools/check-id", icon: "solar:user-id-bold-duotone" },
+      { name: "Check Live UID", href: "/tools/check-live-uid", icon: "solar:user-check-bold-duotone" },
+      { name: "Kiểm tra Domain", href: "/tools/check-domain", icon: "solar:global-search-bold-duotone" },
+    ],
+  },
   {
     name: "Chính sách", icon: "solar:document-text-bold-duotone",
     children: [

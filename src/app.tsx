@@ -29,6 +29,8 @@ import ProjectForm from '@/components/contents/administrator/_projects/ProjectFo
 import NotFound from '@/components/contents/application/_notfound/NotFound';
 import ProductDetail from '@/components/contents/application/_products/ProductDetail';
 import ProductList from '@/components/contents/application/_products/ProductList';
+import ProjectList from '@/components/contents/application/_projects/ProjectList';
+import ProjectDetail from '@/components/contents/application/_projects/ProjectDetail';
 
 function App() {
   return (
@@ -40,6 +42,8 @@ function App() {
             <Route index element={<AppHome />} />
             <Route path="products" element={<ProductList />} />
             <Route path="products/:slug" element={<ProductDetail />} />
+            <Route path="projects" element={<ProjectList />} />
+            <Route path="projects/:slug" element={<ProjectDetail />} />
             <Route path="privacy" element={<AppPrivacy />} />
             <Route path="refund" element={<AppRefund />} />
             <Route path="shipping" element={<AppShipping />} />
