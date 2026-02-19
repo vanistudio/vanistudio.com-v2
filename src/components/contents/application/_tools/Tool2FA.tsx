@@ -30,7 +30,7 @@ async function generateTOTP(secret: string): Promise<string> {
   timeView.setUint32(4, time, false);
 
   const cryptoKey = await crypto.subtle.importKey(
-    'raw', key, { name: 'HMAC', hash: 'SHA-1' }, false, ['sign']
+    'raw', key.buffer as ArrayBuffer, { name: 'HMAC', hash: 'SHA-1' }, false, ['sign']
   );
   const signature = await crypto.subtle.sign('HMAC', cryptoKey, timeBuffer);
   const hmac = new Uint8Array(signature);

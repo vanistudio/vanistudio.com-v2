@@ -27,7 +27,7 @@ const navEntries: NavEntry[] = [
       { name: "Lấy mã 2FA", href: "/tools/2fa", icon: "solar:lock-password-bold-duotone" },
       { name: "Check ID", href: "/tools/check-id", icon: "solar:user-id-bold-duotone" },
       { name: "Check Live UID", href: "/tools/check-live-uid", icon: "solar:user-check-bold-duotone" },
-      { name: "Kiểm tra Domain", href: "/tools/check-domain", icon: "solar:global-search-bold-duotone" },
+      { name: "Kiểm tra Domain", href: "/tools/check-domain", icon: "solar:planet-3-bold-duotone" },
     ],
   },
   {

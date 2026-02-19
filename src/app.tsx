@@ -31,6 +31,10 @@ import ProductDetail from '@/components/contents/application/_products/ProductDe
 import ProductList from '@/components/contents/application/_products/ProductList';
 import ProjectList from '@/components/contents/application/_projects/ProjectList';
 import ProjectDetail from '@/components/contents/application/_projects/ProjectDetail';
+import Tool2FA from '@/components/contents/application/_tools/Tool2FA';
+import ToolCheckId from '@/components/contents/application/_tools/ToolCheckId';
+import ToolCheckLiveUid from '@/components/contents/application/_tools/ToolCheckLiveUid';
+import ToolCheckDomain from '@/components/contents/application/_tools/ToolCheckDomain';
 
 function App() {
   return (
@@ -44,6 +48,10 @@ function App() {
             <Route path="products/:slug" element={<ProductDetail />} />
             <Route path="projects" element={<ProjectList />} />
             <Route path="projects/:slug" element={<ProjectDetail />} />
+            <Route path="tools/2fa" element={<Tool2FA />} />
+            <Route path="tools/check-id" element={<ToolCheckId />} />
+            <Route path="tools/check-live-uid" element={<ToolCheckLiveUid />} />
+            <Route path="tools/check-domain" element={<ToolCheckDomain />} />
             <Route path="privacy" element={<AppPrivacy />} />
             <Route path="refund" element={<AppRefund />} />
             <Route path="shipping" element={<AppShipping />} />

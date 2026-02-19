@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { usePageTitle } from '@/hooks/use-page-title';
 import { toast } from 'sonner';
+import { api } from '@/lib/api';
 
 export default function ToolCheckId() {
   usePageTitle("Check ID");
@@ -45,18 +46,17 @@ export default function ToolCheckId() {
         return;
       }
 
-      // Try fetching the page to extract ID via backend proxy
-      const res = await fetch(`/api/app/tools/check-id?target=${encodeURIComponent(target)}`);
-      const data = await res.json();
+      // Try fetching via Eden treaty
+      const { data } = await (api.api.app.tools as any)['check-id'].get({ query: { target } });
 
-      if (data.success && data.uid) {
+      if (data?.success && data.uid) {
         setResult({
           uid: data.uid,
           name: data.name,
           link: `https://www.facebook.com/${data.uid}`,
         });
       } else {
-        setError(data.error || 'Không tìm thấy ID');
+        setError(data?.error || 'Không tìm thấy ID');
       }
     } catch {
       setError('Lỗi khi kiểm tra');
