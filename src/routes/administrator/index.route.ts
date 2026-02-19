@@ -8,6 +8,7 @@ import { uploadRoutes } from "./upload.route";
 import { blogRoutes } from "./blog.route";
 import { projectsRoutes } from "./projects.route";
 import { servicesRoutes } from "./services.route";
+import { licensesRoutes } from "./licenses.route";
 
 export const adminRoutes = new Elysia({ prefix: "/api/admin" })
   .use(usersRoutes)
@@ -18,4 +19,5 @@ export const adminRoutes = new Elysia({ prefix: "/api/admin" })
   .use(uploadRoutes)
   .use(blogRoutes)
   .use(projectsRoutes)
-  .use(servicesRoutes);
+  .use(servicesRoutes)
+  .use(licensesRoutes);
