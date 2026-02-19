@@ -41,17 +41,6 @@ export default function ToolCheckId() {
         }
       }
 
-      // If numeric, still call API to get avatar/cover
-      if (/^\d+$/.test(target)) {
-        setResult({
-          uid: target,
-          avatar: `https://graph.facebook.com/${target}/picture?type=large`,
-          link: `https://www.facebook.com/${target}`,
-        });
-        setLoading(false);
-        return;
-      }
-
       const { data } = await (api.api.app.tools as any)['check-id'].get({ query: { target } });
 
       if (data?.success && data.uid) {

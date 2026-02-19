@@ -34,6 +34,53 @@ export const toolsPublicRoutes = new Elysia({ prefix: "/tools" })
         if (!avatar) avatar = `https://graph.facebook.com/${uid}/picture?type=large`;
         return { avatar, cover };
       }
+      const BAD_NAMES = ['error', 'facebook', 'page not found', 'content not found', 'log in', 'đăng nhập', 'sign up', 'đăng ký'];
+      function cleanName(raw?: string) {
+        if (!raw) return undefined;
+        const cleaned = raw.replace(/ \| Facebook$/, '').replace(/ - Facebook$/, '').replace(/ \| Фейсбук$/, '').trim();
+        if (!cleaned) return undefined;
+        const lower = cleaned.toLowerCase();
+        if (BAD_NAMES.some(bad => lower.includes(bad))) return undefined;
+        return cleaned;
+      }
+
+      if (/^\d{5,}$/.test(target)) {
+        let name: string | undefined;
+        let avatar: string | undefined;
+        let cover: string | undefined;
+        // mbasic has simpler HTML, less aggressive blocking
+        try {
+          const html = await ky.get(`https://mbasic.facebook.com/profile.php?id=${target}`, {
+            headers: { "User-Agent": UA_MOBILE, "Accept": "text/html", "Accept-Language": "en-US,en;q=0.9" },
+            redirect: "follow",
+            throwHttpErrors: false,
+          }).text();
+          const nameMatch = html.match(/<title>([^<]+)<\/title>/);
+          name = cleanName(nameMatch?.[1]);
+          // mbasic profile pics are in <img> tags with the profile URL
+          const imgMatch = html.match(/profpic[^>]*src="([^"]+)"/) || html.match(/profilePhoto[^>]*src="([^"]+)"/);
+          if (imgMatch?.[1]) {
+            avatar = imgMatch[1].replace(/&amp;/g, '&');
+          }
+        } catch {}
+        // Try desktop for og:image + cover
+        try {
+          const html = await ky.get(`https://www.facebook.com/profile.php?id=${target}`, {
+            headers: { "User-Agent": UA_DESKTOP, "Accept": "text/html", "Accept-Language": "en-US,en;q=0.9" },
+            redirect: "follow",
+            throwHttpErrors: false,
+          }).text();
+          if (!name) {
+            const nameMatch = html.match(/<title>([^<]+)<\/title>/);
+            name = cleanName(nameMatch?.[1]);
+          }
+          const extras = await getExtras(target, html);
+          if (!avatar && extras.avatar) avatar = extras.avatar;
+          if (extras.cover) cover = extras.cover;
+        } catch {}
+        if (!avatar) avatar = `https://graph.facebook.com/${target}/picture?type=large`;
+        return { success: true, uid: target, name, avatar, cover };
+      }
       try {
         const graphData = await ky.get(`https://graph.facebook.com/${target}/picture?redirect=false`, {
           headers: { "User-Agent": UA_DESKTOP },
@@ -69,7 +116,7 @@ export const toolsPublicRoutes = new Elysia({ prefix: "/tools" })
           const match = mobileHtml.match(pattern);
           if (match?.[1] && match[1].length >= 5) {
             const nameMatch = mobileHtml.match(/<title>([^<]+)<\/title>/);
-            const name = nameMatch?.[1]?.replace(/ \| Facebook$/, '').replace(/ - Facebook$/, '').trim() || undefined;
+            const name = cleanName(nameMatch?.[1]);
             const extras = await getExtras(match[1], mobileHtml);
             return { success: true, uid: match[1], name, ...extras };
           }
@@ -96,7 +143,7 @@ export const toolsPublicRoutes = new Elysia({ prefix: "/tools" })
           const match = html.match(pattern);
           if (match?.[1] && match[1].length >= 5) {
             const nameMatch = html.match(/<title>([^<]+)<\/title>/);
-            const name = nameMatch?.[1]?.replace(/ \| Facebook$/, '').replace(/ - Facebook$/, '').trim() || undefined;
+            const name = cleanName(nameMatch?.[1]);
             const extras = await getExtras(match[1], html);
             return { success: true, uid: match[1], name, ...extras };
           }
