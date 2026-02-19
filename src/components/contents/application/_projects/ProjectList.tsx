@@ -135,14 +135,15 @@ export default function ProjectList() {
     <div className="flex flex-col w-full">
       <AppDashed noTopBorder padding="p-5">
         <div className="flex flex-col items-center gap-1.5">
+          <div className="p-3 rounded-xl bg-primary/10 mb-1">
+            <Icon icon="solar:code-bold-duotone" className="text-3xl text-primary" />
+          </div>
           <h1 className="text-xl font-bold text-title">Dự án</h1>
-          <p className="text-sm text-muted-foreground text-center max-w-md">
+          <p className="text-sm text-muted-foreground text-center max-w-lg">
             Các dự án đã và đang thực hiện bởi Vani Studio
           </p>
         </div>
       </AppDashed>
-
-      {/* Type filter */}
       <AppDashed noTopBorder padding="p-3">
         <div className="flex flex-wrap items-center justify-center gap-2">
           {typeFilters.map((f) => (
@@ -161,8 +162,6 @@ export default function ProjectList() {
           ))}
         </div>
       </AppDashed>
-
-      {/* Projects grid */}
       <AppDashed noTopBorder padding="p-0">
         {loading ? (
           <div className="flex items-center justify-center py-20">

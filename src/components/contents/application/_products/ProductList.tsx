@@ -134,8 +134,11 @@ export default function ProductList() {
     <div className="flex flex-col w-full">
       <AppDashed noTopBorder padding="p-5">
         <div className="flex flex-col items-center gap-1.5">
+          <div className="p-3 rounded-xl bg-primary/10 mb-1">
+            <Icon icon="solar:box-bold-duotone" className="text-3xl text-primary" />
+          </div>
           <h1 className="text-xl font-bold text-title">Sản phẩm</h1>
-          <p className="text-sm text-muted-foreground text-center max-w-md">
+          <p className="text-sm text-muted-foreground text-center max-w-lg">
             Khám phá các sản phẩm, công cụ và giải pháp phần mềm từ Vani Studio
           </p>
         </div>
