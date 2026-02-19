@@ -40,6 +40,7 @@ import ServiceForm from '@/components/contents/administrator/_services/ServiceFo
 import ServiceList from '@/components/contents/application/_services/ServiceList';
 import AdminLicenses from '@/components/contents/administrator/_licenses/AdminLicenses';
 import LicenseForm from '@/components/contents/administrator/_licenses/LicenseForm';
+import AdminDashboard from '@/components/contents/administrator/_dashboard/AdminDashboard';
 
 function App() {
   return (
@@ -75,6 +76,7 @@ function App() {
             <Route index element={<SetupGuard><ConfigurationPage /></SetupGuard>} />
           </Route>
           <Route path="/admin" element={<ConfigGuard><AdminGuard><AdminLayout /></AdminGuard></ConfigGuard>}>
+            <Route index element={<AdminDashboard />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="categories" element={<AdminCategories />} />
             <Route path="categories/create" element={<CategoryForm />} />

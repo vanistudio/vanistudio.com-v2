@@ -9,8 +9,10 @@ import { blogRoutes } from "./blog.route";
 import { projectsRoutes } from "./projects.route";
 import { servicesRoutes } from "./services.route";
 import { licensesRoutes } from "./licenses.route";
+import { dashboardRoutes } from "./dashboard.route";
 
 export const adminRoutes = new Elysia({ prefix: "/api/admin" })
+  .use(dashboardRoutes)
   .use(usersRoutes)
   .use(categoriesRoutes)
   .use(productsRoutes)
