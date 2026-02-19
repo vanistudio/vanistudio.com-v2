@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { usePageTitle } from '@/hooks/use-page-title';
-import ky from 'ky';
+import { api } from '@/lib/api';
 
 interface Product {
   id: string;
@@ -139,12 +139,12 @@ export default function ProductDetail() {
 
   useEffect(() => {
     if (!slug) return;
-    ky.get(`/api/app/products/${slug}`).json<{ success: boolean; product?: Product; error?: string }>()
-      .then((data) => {
-        if (data.success && data.product) {
+    (api.api.app.products as any)({ slug }).get()
+      .then(({ data }: any) => {
+        if (data?.success && data.product) {
           setProduct(data.product);
         } else {
-          setError(data.error || "Không tìm thấy sản phẩm");
+          setError(data?.error || "Không tìm thấy sản phẩm");
         }
       })
       .catch(() => setError("Lỗi khi tải sản phẩm"))

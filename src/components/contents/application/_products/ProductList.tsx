@@ -113,7 +113,7 @@ export default function ProductList() {
     const queryParams: Record<string, string> = { limit: '50' };
     if (activeCategory) queryParams.categoryId = activeCategory;
 
-    (api.api.app.products.index as any).get({ query: queryParams })
+    (api.api.app.products as any).get({ query: queryParams })
       .then(({ data }: any) => {
         if (data?.success) setProducts(data.products || []);
       })
