@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { usePageTitle } from '@/hooks/use-page-title';
-import { api } from '@/lib/api';
+
 
 interface Product {
   id: string;
@@ -139,8 +139,9 @@ export default function ProductDetail() {
 
   useEffect(() => {
     if (!slug) return;
-    (api.api.app.products as any)({ slug }).get()
-      .then(({ data }: any) => {
+    fetch(`/api/app/products/${slug}`)
+      .then((r) => r.json())
+      .then((data: any) => {
         if (data?.success) {
           setProduct(data.product);
         } else {
@@ -327,7 +328,7 @@ export default function ProductDetail() {
       )}
 
       {/* Video */}
-      {product.videoUrl && product.videoUrl.trim() !== '' && (
+      {product.videoUrl && (product.videoUrl.includes('youtube.com') || product.videoUrl.includes('youtu.be')) && (
         <AppDashed noTopBorder padding="p-5">
           <div className="flex flex-col gap-3">
             <h2 className="text-sm font-bold text-title">Video giới thiệu</h2>
