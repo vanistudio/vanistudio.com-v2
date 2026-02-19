@@ -226,7 +226,7 @@ export default function AdminHeader() {
         <div className="flex items-center gap-1 shrink-0 ml-auto">
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="hidden md:flex size-8 rounded-lg items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            className="flex size-8 rounded-lg items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
             <Icon icon="solar:sun-bold-duotone" className="text-base dark:hidden" />
             <Icon icon="solar:moon-bold-duotone" className="text-base hidden dark:block" />
@@ -238,10 +238,9 @@ export default function AdminHeader() {
           >
             <Icon icon="solar:home-2-bold-duotone" className="text-base" />
           </Link>
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-lg hover:bg-muted transition-colors">
+              <button className="flex items-center gap-2 pl-1 pr-1 md:pl-2 md:pr-2 py-1 rounded-lg hover:bg-muted transition-colors">
                 {user?.avatarUrl ? (
                   <img src={user.avatarUrl} alt="" className="size-6 rounded-full object-cover" />
                 ) : (
