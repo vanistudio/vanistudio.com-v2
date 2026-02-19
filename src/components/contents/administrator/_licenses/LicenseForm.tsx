@@ -22,7 +22,7 @@ const initialForm = {
   status: "unused",
   maxActivations: "1",
   notes: "",
-  expiresAt: "",
+  domain: "",
 };
 
 function Section({ title, icon, description, children }: { title: string; icon: string; description?: string; children: React.ReactNode }) {
@@ -88,7 +88,7 @@ export default function LicenseForm() {
             status: l.status || "unused",
             maxActivations: String(l.maxActivations || 1),
             notes: l.notes || "",
-            expiresAt: l.expiresAt ? new Date(l.expiresAt).toISOString().split("T")[0] : "",
+            domain: l.domain || "",
           });
         }
       }).finally(() => setLoading(false));
@@ -111,7 +111,6 @@ export default function LicenseForm() {
         productId: form.productId || undefined,
         userId: form.userId || undefined,
         maxActivations: parseInt(form.maxActivations) || 1,
-        expiresAt: form.expiresAt || undefined,
       };
       if (isEditing && id) {
         const { data } = await (api.api.admin.licenses as any)({ id }).patch(payload);
@@ -243,13 +242,13 @@ export default function LicenseForm() {
         </div>
       </Section>
 
-      <Section title="Cài đặt" icon="solar:settings-bold-duotone" description="Giới hạn kích hoạt và hạn sử dụng">
+      <Section title="Cài đặt" icon="solar:settings-bold-duotone" description="Giới hạn kích hoạt">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Max kích hoạt" hint="Số lần tối đa có thể kích hoạt">
             <Input className="text-sm" type="number" placeholder="1" min="1" value={form.maxActivations} onChange={(e) => set("maxActivations", e.target.value)} />
           </Field>
-          <Field label="Ngày hết hạn" hint="Để trống nếu không giới hạn">
-            <Input className="text-sm" type="date" value={form.expiresAt} onChange={(e) => set("expiresAt", e.target.value)} />
+          <Field label="Domain" hint="Domain được phép sử dụng license">
+            <Input className="text-sm" placeholder="example.com" value={form.domain} onChange={(e) => set("domain", e.target.value)} />
           </Field>
           <Field label="Ghi chú" span={2} hint="Ghi chú nội bộ cho admin">
             <Textarea className="text-sm min-h-[60px] resize-y" placeholder="Ghi chú về license này..." value={form.notes} onChange={(e) => set("notes", e.target.value)} />

@@ -13,6 +13,7 @@ export const licenses = pgTable("licenses", {
   maxActivations: integer("max_activations").default(1).notNull(),
   currentActivations: integer("current_activations").default(0).notNull(),
   notes: text("notes"),
+  domain: text("domain"),
   expiresAt: timestamp("expires_at", { withTimezone: true }),
   activatedAt: timestamp("activated_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),

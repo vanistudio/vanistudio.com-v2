@@ -67,6 +67,7 @@ export const licensesController = {
         maxActivations: licenses.maxActivations,
         currentActivations: licenses.currentActivations,
         notes: licenses.notes,
+        domain: licenses.domain,
         expiresAt: licenses.expiresAt,
         activatedAt: licenses.activatedAt,
         createdAt: licenses.createdAt,
@@ -99,6 +100,7 @@ export const licensesController = {
         maxActivations: licenses.maxActivations,
         currentActivations: licenses.currentActivations,
         notes: licenses.notes,
+        domain: licenses.domain,
         expiresAt: licenses.expiresAt,
         activatedAt: licenses.activatedAt,
         createdAt: licenses.createdAt,
@@ -122,8 +124,9 @@ export const licensesController = {
     status?: string;
     maxActivations?: number;
     notes?: string;
+    domain?: string;
     expiresAt?: string;
-  }) {
+  }): Promise<any> {
     const key = generateLicenseKey();
 
     const [existing] = await db.select({ id: licenses.id }).from(licenses).where(eq(licenses.key, key)).limit(1);
@@ -133,10 +136,11 @@ export const licensesController = {
       key,
       productId: data.productId || null,
       productName: data.productName,
-      userId: data.userId || null,
-      status: (data.status as any) || (data.userId ? "active" : "unused"),
+      userId: (data.userId && data.userId !== "none") ? data.userId : null,
+      status: (data.status as any) || ((data.userId && data.userId !== "none") ? "active" : "unused"),
       maxActivations: data.maxActivations || 1,
       notes: data.notes || null,
+      domain: data.domain || null,
       expiresAt: data.expiresAt ? new Date(data.expiresAt) : null,
       activatedAt: data.userId ? new Date() : null,
     }).returning();
@@ -147,7 +151,7 @@ export const licensesController = {
   async update(id: string, data: Record<string, any>) {
     const { id: _, createdAt, key, ...updateData } = data;
     if (updateData.expiresAt) updateData.expiresAt = new Date(updateData.expiresAt);
-    if (updateData.userId === "") updateData.userId = null;
+    if (updateData.userId === "" || updateData.userId === "none") updateData.userId = null;
 
     const [updated] = await db.update(licenses)
       .set({ ...updateData, updatedAt: new Date() })
