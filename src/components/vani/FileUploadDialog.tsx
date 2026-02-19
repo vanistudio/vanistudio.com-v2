@@ -147,7 +147,7 @@ export default function FileUploadDialog({
             />
             {uploading ? (
               <div className="flex flex-col items-center gap-2">
-                <Icon icon="solar:spinner-bold-duotone" className="text-3xl text-primary animate-spin" />
+                <Icon icon="svg-spinners:ring-resize" className="text-3xl text-primary animate-spin" />
                 <p className="text-sm text-muted-foreground">Đang upload...</p>
               </div>
             ) : preview ? (
