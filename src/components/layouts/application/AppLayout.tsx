@@ -1,11 +1,11 @@
 import { Outlet } from "react-router-dom";
-import AppPublicHeader from "./AppPublicHeader";
+import AppHeader from "./AppHeader";
 import AppFooter from "./AppFooter";
 
 const AppLayout = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col font-sans antialiased">
-      <AppPublicHeader />
+      <AppHeader />
       <main className="flex-grow flex flex-col items-center pt-3">
         <div className="w-full">
           <Outlet />
