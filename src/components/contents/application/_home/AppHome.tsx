@@ -153,7 +153,7 @@ export default function AppHome() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    (api.api.app.products as any).get({ query: { limit: "20" } })
+    (api.api.app.products.index as any).get({ query: { limit: '20' } })
       .then(({ data }: any) => {
         if (data?.success) setProducts(data.products || []);
       })

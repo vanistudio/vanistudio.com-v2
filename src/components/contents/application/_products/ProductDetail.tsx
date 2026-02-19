@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { usePageTitle } from '@/hooks/use-page-title';
-
+import ky from 'ky';
 
 interface Product {
   id: string;
@@ -139,13 +139,12 @@ export default function ProductDetail() {
 
   useEffect(() => {
     if (!slug) return;
-    fetch(`/api/app/products/${slug}`)
-      .then((r) => r.json())
-      .then((data: any) => {
-        if (data?.success) {
+    ky.get(`/api/app/products/${slug}`).json<{ success: boolean; product?: Product; error?: string }>()
+      .then((data) => {
+        if (data.success && data.product) {
           setProduct(data.product);
         } else {
-          setError(data?.error || "Không tìm thấy sản phẩm");
+          setError(data.error || "Không tìm thấy sản phẩm");
         }
       })
       .catch(() => setError("Lỗi khi tải sản phẩm"))
@@ -171,10 +170,10 @@ export default function ProductDetail() {
           <div className="flex flex-col items-center justify-center py-32 gap-4">
             <Icon icon="solar:box-bold-duotone" className="text-6xl text-muted-foreground/20" />
             <p className="text-muted-foreground">{error || "Không tìm thấy sản phẩm"}</p>
-            <Link to="/">
+            <Link to="/products">
               <Button variant="outline" size="sm">
                 <ArrowLeft size={14} className="mr-1.5" />
-                Quay lại trang chủ
+                Quay lại
               </Button>
             </Link>
           </div>
@@ -199,9 +198,9 @@ export default function ProductDetail() {
     <div className="flex flex-col w-full">
       {/* Back button */}
       <AppDashed noTopBorder padding="p-3">
-        <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+        <Link to="/products" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft size={14} />
-          <span>Trang chủ</span>
+          <span>Sản phẩm</span>
         </Link>
       </AppDashed>
 
