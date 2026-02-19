@@ -71,8 +71,8 @@ export default function ToolCheckId() {
     <div className="flex flex-col w-full">
       <AppDashed noTopBorder padding="p-5">
         <div className="flex flex-col items-center gap-1.5">
-          <div className="p-3 rounded-xl bg-blue-500/10 mb-1">
-            <Icon icon="solar:user-id-bold-duotone" className="text-3xl text-blue-500" />
+          <div className="p-3 rounded-xl bg-primary/10 mb-1">
+            <Icon icon="solar:user-id-bold-duotone" className="text-3xl text-primary" />
           </div>
           <h1 className="text-xl font-bold text-title">Check ID</h1>
           <p className="text-sm text-muted-foreground text-center max-w-md">
@@ -121,8 +121,8 @@ export default function ToolCheckId() {
                   {result.avatar ? (
                     <img src={result.avatar} alt="Avatar" className="size-14 rounded-full border-2 border-background shadow-sm shrink-0 object-cover" />
                   ) : (
-                    <div className="size-14 rounded-full bg-blue-500/10 flex items-center justify-center shrink-0">
-                      <Icon icon="solar:user-bold-duotone" className="text-2xl text-blue-500" />
+                    <div className="size-14 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <Icon icon="solar:user-bold-duotone" className="text-2xl text-primary" />
                     </div>
                   )}
                   <div className="flex flex-col min-w-0">

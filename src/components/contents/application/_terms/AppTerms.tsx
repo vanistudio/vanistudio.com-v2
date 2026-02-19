@@ -1,4 +1,5 @@
 import AppDashed from '@/components/layouts/application/AppDashed';
+import { Icon } from '@iconify/react';
 import { usePageTitle } from '@/hooks/use-page-title';
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -28,17 +29,15 @@ export default function AppTerms() {
   usePageTitle("Điều khoản Dịch vụ");
   return (
     <div className="flex flex-col w-full">
-      <AppDashed noTopBorder padding="p-3">
-        <SectionTitle>Điều khoản Dịch vụ</SectionTitle>
-      </AppDashed>
-
-      <AppDashed noTopBorder padding="p-3">
-        <div className="flex items-center gap-2 justify-center">
-          <article className="prose dark:prose-invert prose-sm text-center max-w-[560px] text-muted-foreground">
-            <p>
-              Khi sử dụng các sản phẩm và dịch vụ của <span className="text-foreground font-medium">Vani Studio</span>, bạn đồng ý tuân thủ các điều khoản dưới đây. Vui lòng đọc kỹ trước khi sử dụng dịch vụ.
-            </p>
-          </article>
+      <AppDashed noTopBorder padding="p-5">
+        <div className="flex flex-col items-center gap-1.5">
+          <div className="p-3 rounded-xl bg-primary/10 mb-1">
+            <Icon icon="solar:document-text-bold-duotone" className="text-3xl text-primary" />
+          </div>
+          <h1 className="text-xl font-bold text-title">Điều khoản Dịch vụ</h1>
+          <p className="text-sm text-muted-foreground text-center max-w-lg">
+            Vui lòng đọc kỹ trước khi sử dụng dịch vụ của chúng tôi
+          </p>
         </div>
       </AppDashed>
 

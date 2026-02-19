@@ -1,4 +1,5 @@
 import AppDashed from '@/components/layouts/application/AppDashed';
+import { Icon } from '@iconify/react';
 import { usePageTitle } from '@/hooks/use-page-title';
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -28,18 +29,15 @@ export default function AppPrivacy() {
   usePageTitle("Chính sách Bảo mật");
   return (
     <div className="flex flex-col w-full">
-      <AppDashed noTopBorder padding="p-3">
-        <SectionTitle>Chính sách Bảo mật</SectionTitle>
-      </AppDashed>
-
-      <AppDashed noTopBorder padding="p-3">
-        <div className="flex items-center gap-2 justify-center">
-          <article className="prose dark:prose-invert prose-sm text-center max-w-[560px] text-muted-foreground">
-            <p>
-              Bảo vệ thông tin cá nhân của khách hàng là ưu tiên hàng đầu của{" "}
-              <span className="text-foreground font-medium">Vani Studio</span>. Chính sách dưới đây mô tả cách chúng tôi thu thập, sử dụng và bảo mật dữ liệu của bạn.
-            </p>
-          </article>
+      <AppDashed noTopBorder padding="p-5">
+        <div className="flex flex-col items-center gap-1.5">
+          <div className="p-3 rounded-xl bg-primary/10 mb-1">
+            <Icon icon="solar:shield-check-bold-duotone" className="text-3xl text-primary" />
+          </div>
+          <h1 className="text-xl font-bold text-title">Chính sách Bảo mật</h1>
+          <p className="text-sm text-muted-foreground text-center max-w-lg">
+            Bảo vệ thông tin cá nhân của khách hàng là ưu tiên hàng đầu của Vani Studio
+          </p>
         </div>
       </AppDashed>
 

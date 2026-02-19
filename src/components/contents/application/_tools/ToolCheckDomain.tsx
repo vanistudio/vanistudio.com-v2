@@ -98,8 +98,8 @@ export default function ToolCheckDomain() {
     <div className="flex flex-col w-full">
       <AppDashed noTopBorder padding="p-5">
         <div className="flex flex-col items-center gap-1.5">
-          <div className="p-3 rounded-xl bg-violet-500/10 mb-1">
-            <Icon icon="solar:planet-3-bold-duotone" className="text-3xl text-violet-500" />
+          <div className="p-3 rounded-xl bg-primary/10 mb-1">
+            <Icon icon="solar:planet-3-bold-duotone" className="text-3xl text-primary" />
           </div>
           <h1 className="text-xl font-bold text-title">Kiểm tra Domain</h1>
           <p className="text-sm text-muted-foreground text-center max-w-md">

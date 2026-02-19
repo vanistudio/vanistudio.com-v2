@@ -1,4 +1,5 @@
 import AppDashed from '@/components/layouts/application/AppDashed';
+import { Icon } from '@iconify/react';
 import { usePageTitle } from '@/hooks/use-page-title';
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -28,17 +29,15 @@ export default function AppRefund() {
   usePageTitle("Chính sách Hoàn tiền");
   return (
     <div className="flex flex-col w-full">
-      <AppDashed noTopBorder padding="p-3">
-        <SectionTitle>Chính sách Hoàn tiền</SectionTitle>
-      </AppDashed>
-
-      <AppDashed noTopBorder padding="p-3">
-        <div className="flex items-center gap-2 justify-center">
-          <article className="prose dark:prose-invert prose-sm text-center max-w-[560px] text-muted-foreground">
-            <p>
-              <span className="text-foreground font-medium">Vani Studio</span> cam kết cung cấp dịch vụ thiết kế và phát triển phần mềm chất lượng cao. Chính sách hoàn tiền dưới đây được thiết kế nhằm bảo vệ quyền lợi của cả hai bên và đảm bảo tính minh bạch trong mọi giao dịch.
-            </p>
-          </article>
+      <AppDashed noTopBorder padding="p-5">
+        <div className="flex flex-col items-center gap-1.5">
+          <div className="p-3 rounded-xl bg-primary/10 mb-1">
+            <Icon icon="solar:wallet-money-bold-duotone" className="text-3xl text-primary" />
+          </div>
+          <h1 className="text-xl font-bold text-title">Chính sách Hoàn tiền</h1>
+          <p className="text-sm text-muted-foreground text-center max-w-lg">
+            Cam kết cung cấp dịch vụ chất lượng cao và bảo vệ quyền lợi khách hàng
+          </p>
         </div>
       </AppDashed>
 

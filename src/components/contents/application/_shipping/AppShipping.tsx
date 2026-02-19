@@ -1,4 +1,5 @@
 import AppDashed from '@/components/layouts/application/AppDashed';
+import { Icon } from '@iconify/react';
 import { usePageTitle } from '@/hooks/use-page-title';
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -28,17 +29,15 @@ export default function AppShipping() {
   usePageTitle("Chính sách Giao nhận");
   return (
     <div className="flex flex-col w-full">
-      <AppDashed noTopBorder padding="p-3">
-        <SectionTitle>Chính sách Giao nhận</SectionTitle>
-      </AppDashed>
-
-      <AppDashed noTopBorder padding="p-3">
-        <div className="flex items-center gap-2 justify-center">
-          <article className="prose dark:prose-invert prose-sm text-center max-w-[560px] text-muted-foreground">
-            <p>
-              Chính sách giao nhận của <span className="text-foreground font-medium">Vani Studio</span> được thiết kế nhằm đảm bảo quá trình bàn giao sản phẩm phần mềm diễn ra suôn sẻ, đúng hạn và đáp ứng đầy đủ yêu cầu của khách hàng.
-            </p>
-          </article>
+      <AppDashed noTopBorder padding="p-5">
+        <div className="flex flex-col items-center gap-1.5">
+          <div className="p-3 rounded-xl bg-primary/10 mb-1">
+            <Icon icon="solar:delivery-bold-duotone" className="text-3xl text-primary" />
+          </div>
+          <h1 className="text-xl font-bold text-title">Chính sách Giao nhận</h1>
+          <p className="text-sm text-muted-foreground text-center max-w-lg">
+            Đảm bảo quá trình bàn giao sản phẩm diễn ra suôn sẻ và đúng hạn
+          </p>
         </div>
       </AppDashed>
 
