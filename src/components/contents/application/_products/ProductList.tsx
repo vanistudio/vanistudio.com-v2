@@ -143,8 +143,6 @@ export default function ProductList() {
           </p>
         </div>
       </AppDashed>
-
-      {/* Category filter */}
       {categories.length > 0 && (
         <AppDashed noTopBorder padding="p-3">
           <div className="flex flex-wrap items-center justify-center gap-2">
@@ -177,8 +175,6 @@ export default function ProductList() {
           </div>
         </AppDashed>
       )}
-
-      {/* Products grid */}
       <AppDashed noTopBorder padding="p-0">
         {loading ? (
           <div className="flex items-center justify-center py-20">
