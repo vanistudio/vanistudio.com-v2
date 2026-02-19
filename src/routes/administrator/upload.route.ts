@@ -3,7 +3,7 @@ import { adminProxy } from "@/proxies/administrator.proxy";
 import { join } from "path";
 import { randomUUID } from "crypto";
 
-const UPLOAD_DIR = join(process.cwd(), "dist/public/uploads");
+const UPLOAD_DIR = join(process.cwd(), "uploads");
 
 export const uploadRoutes = new Elysia({ prefix: "/upload" })
   .use(adminProxy)

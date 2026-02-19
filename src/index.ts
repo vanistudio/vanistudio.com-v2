@@ -74,6 +74,7 @@ const app = new Elysia()
   )
   .use(routes)
   .get("/assets/*", ({ path }) => Bun.file(join(process.cwd(), "dist/public", path)))
+  .get("/uploads/*", ({ path }) => Bun.file(join(process.cwd(), path)))
   .get("/", () => serveHtml())
   .get("*", ({ path }) => {
     if (path.startsWith('/api') || path.startsWith('/_vanixjnk')) {
