@@ -11,6 +11,8 @@ import AppShipping from '@/components/contents/application/_shipping/AppShipping
 import AppWarranty from '@/components/contents/application/_warranty/AppWarranty';
 import AppPayment from '@/components/contents/application/_payment/AppPayment';
 import AppTerms from '@/components/contents/application/_terms/AppTerms';
+import BlogList from '@/components/contents/application/_blog/BlogList';
+import BlogDetail from '@/components/contents/application/_blog/BlogDetail';
 import AuthLayout from '@/components/layouts/authentication/AuthLayout';
 import AuthLogin from '@/components/contents/authentication/_login/AuthLogin';
 import AppOnboarding from '@/components/contents/application/_onboarding/AppOnboarding';
@@ -59,6 +61,8 @@ function App() {
             <Route path="tools/check-live-uid" element={<ToolCheckLiveUid />} />
             <Route path="tools/check-domain" element={<ToolCheckDomain />} />
             <Route path="services" element={<ServiceList />} />
+            <Route path="blog" element={<BlogList />} />
+            <Route path="blog/:slug" element={<BlogDetail />} />
             <Route path="privacy" element={<AppPrivacy />} />
             <Route path="refund" element={<AppRefund />} />
             <Route path="shipping" element={<AppShipping />} />

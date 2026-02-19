@@ -20,6 +20,7 @@ const navEntries: NavEntry[] = [
   { name: "Sản phẩm", href: "/products", icon: "solar:box-bold-duotone" },
   { name: "Dự án", href: "/projects", icon: "solar:case-round-bold-duotone" },
   { name: "Dịch vụ", href: "/services", icon: "solar:code-square-bold-duotone" },
+  { name: "Blog", href: "/blog", icon: "solar:document-text-bold-duotone" },
   { name: "Liên hệ", href: "/contact", icon: "solar:chat-round-dots-bold-duotone" },
   {
     name: "Công cụ", icon: "solar:magic-stick-3-bold-duotone",
