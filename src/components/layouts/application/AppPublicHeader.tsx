@@ -203,13 +203,9 @@ export default function AppPublicHeader() {
             </nav>
           </SheetContent>
         </Sheet>
-
-        {/* Logo */}
         <Link to="/" className="flex items-center gap-2 shrink-0 mr-2 md:mr-6">
           <img src="/vanistudio.png" alt="Logo" className="h-10" />
         </Link>
-
-        {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-0.5 flex-grow">
           {navEntries.map((entry) =>
             isGroup(entry) ? (
@@ -231,19 +227,14 @@ export default function AppPublicHeader() {
             )
           )}
         </nav>
-
-        {/* Right side */}
         <div className="flex items-center gap-1 shrink-0 ml-auto">
-          {/* Theme toggle */}
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="hidden md:flex size-8 rounded-lg items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            className="flex size-8 rounded-lg items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
             <Icon icon="solar:sun-bold-duotone" className="text-base dark:hidden" />
             <Icon icon="solar:moon-bold-duotone" className="text-base hidden dark:block" />
           </button>
-
-          {/* Admin link (if admin) */}
           {user?.role === "admin" && (
             <Link
               to="/admin"
@@ -253,12 +244,10 @@ export default function AppPublicHeader() {
               <Icon icon="solar:widget-bold-duotone" className="text-base" />
             </Link>
           )}
-
-          {/* User menu or Login */}
           {isAuthenticated && user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-lg hover:bg-muted transition-colors">
+                <button className="flex items-center gap-2 pl-1 pr-1 md:pl-2 md:pr-2 py-1 rounded-lg hover:bg-muted transition-colors">
                   {user.avatarUrl ? (
                     <img src={user.avatarUrl} alt="" className="size-6 rounded-full object-cover" />
                   ) : (
