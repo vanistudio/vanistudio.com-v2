@@ -5,3 +5,4 @@ export * from "./category.schema";
 export * from "./product.schema";
 export * from "./blog.schema";
 export * from "./project.schema";
+export * from "./service.schema";
