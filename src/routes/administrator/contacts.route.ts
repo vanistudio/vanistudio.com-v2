@@ -1,7 +1,9 @@
 import { Elysia } from "elysia";
 import { contactController } from "@/controllers/administrator/contact.controller";
+import { adminProxy } from "@/proxies/administrator.proxy";
 
 export const contactRoutes = new Elysia({ prefix: "/contacts" })
+  .use(adminProxy)
   .get("/", async ({ query }) => {
     try {
       const data = await contactController.getAll({
