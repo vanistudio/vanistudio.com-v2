@@ -24,11 +24,46 @@ function cleanDomainInput(raw: string): string {
     .trim();
 }
 
+// ── In-memory cache ──
+const cache = new Map<string, { data: any; expiry: number }>();
+const CACHE_TTL = 10 * 60 * 1000; // 10 phút
+
+function getCache(key: string) {
+  const entry = cache.get(key);
+  if (!entry) return null;
+  if (Date.now() > entry.expiry) {
+    cache.delete(key);
+    return null;
+  }
+  return entry.data;
+}
+
+function setCache(key: string, data: any, ttl = CACHE_TTL) {
+  cache.set(key, { data, expiry: Date.now() + ttl });
+}
+
+function invalidateCache(prefix: string) {
+  for (const key of cache.keys()) {
+    if (key.startsWith(prefix)) cache.delete(key);
+  }
+}
+
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, entry] of cache) {
+    if (now > entry.expiry) cache.delete(key);
+  }
+}, 5 * 60 * 1000);
+
 export const licensePublicRoutes = new Elysia({ prefix: "/license" })
   .get("/verify-domain/:domain", async ({ params }) => {
     try {
       const domain = cleanDomainInput(params.domain);
       if (!domain) return { success: false, error: "Vui lòng nhập tên miền hợp lệ" };
+
+      const cacheKey = `verify:${domain}`;
+      const cached = getCache(cacheKey);
+      if (cached) return cached;
 
       const [license] = await db.select({
         productName: licenses.productName,
@@ -43,12 +78,16 @@ export const licensePublicRoutes = new Elysia({ prefix: "/license" })
         .where(eq(licenses.domain, domain))
         .limit(1);
 
-      if (!license) return { success: false, error: "Tên miền này chưa được cấp giấy phép hoạt động" };
+      if (!license) {
+        const result = { success: false, error: "Tên miền này chưa được cấp giấy phép hoạt động" };
+        setCache(cacheKey, result, 2 * 60 * 1000);
+        return result;
+      }
 
       const isActive = license.status === "active";
       const isExpired = license.expiresAt ? new Date(license.expiresAt) < new Date() : false;
 
-      return {
+      const result = {
         success: true,
         verified: isActive && !isExpired,
         license: {
@@ -61,6 +100,9 @@ export const licensePublicRoutes = new Elysia({ prefix: "/license" })
           createdAt: license.createdAt,
         },
       };
+
+      setCache(cacheKey, result);
+      return result;
     } catch (error: any) {
       return { success: false, error: error.message };
     }
@@ -90,9 +132,10 @@ export const licensePublicRoutes = new Elysia({ prefix: "/license" })
       }
 
       const cleanDomain = cleanDomainInput(domain);
-      if (!cleanDomain || cleanDomain.length > 253 || !/^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*\.[a-z]{2,}$/.test(cleanDomain)) {
-        return { valid: false, code: "INVALID_DOMAIN", message: "Tên miền không hợp lệ" };
-      }
+
+      const cacheKey = `activate:${key}:${cleanDomain}`;
+      const cached = getCache(cacheKey);
+      if (cached) return cached;
 
       if (key.length > 50 || !/^[A-Z0-9-]+$/.test(key)) {
         return { valid: false, code: "INVALID_KEY", message: "License key không hợp lệ" };
@@ -100,18 +143,22 @@ export const licensePublicRoutes = new Elysia({ prefix: "/license" })
 
       const [license] = await db.select().from(licenses).where(eq(licenses.key, key)).limit(1);
 
-      await new Promise(r => setTimeout(r, 100 + Math.random() * 200));
-
       if (!license) {
-        return { valid: false, code: "INVALID_KEY", message: "License key không hợp lệ" };
+        const result = { valid: false, code: "INVALID_KEY", message: "License key không hợp lệ" };
+        setCache(cacheKey, result, 2 * 60 * 1000);
+        return result;
       }
 
       if (license.status === "revoked") {
-        return { valid: false, code: "REVOKED", message: "License đã bị thu hồi" };
+        const result = { valid: false, code: "REVOKED", message: "License đã bị thu hồi" };
+        setCache(cacheKey, result, 2 * 60 * 1000);
+        return result;
       }
 
       if (license.expiresAt && new Date(license.expiresAt) < new Date()) {
-        return { valid: false, code: "EXPIRED", message: "License đã hết hạn" };
+        const result = { valid: false, code: "EXPIRED", message: "License đã hết hạn" };
+        setCache(cacheKey, result, 2 * 60 * 1000);
+        return result;
       }
 
       if (license.domain && license.domain !== cleanDomain) {
@@ -127,9 +174,10 @@ export const licensePublicRoutes = new Elysia({ prefix: "/license" })
             updatedAt: new Date(),
           })
           .where(eq(licenses.id, license.id));
+        invalidateCache(`verify:${cleanDomain}`);
       }
 
-      return {
+      const result = {
         valid: true,
         code: "VALID",
         message: "License hợp lệ",
@@ -139,6 +187,9 @@ export const licensePublicRoutes = new Elysia({ prefix: "/license" })
           expiresAt: license.expiresAt,
         },
       };
+
+      setCache(cacheKey, result);
+      return result;
     } catch (error: any) {
       return { valid: false, code: "SERVER_ERROR", message: "Lỗi hệ thống" };
     }
