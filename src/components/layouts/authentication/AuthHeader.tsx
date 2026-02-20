@@ -17,31 +17,32 @@ const isGroup = (entry: NavEntry): entry is NavGroup => "children" in entry;
 
 const navEntries: NavEntry[] = [
   { name: "Trang chủ", href: "/", icon: "solar:home-smile-bold-duotone" },
+  { name: "Sản phẩm", href: "/products", icon: "solar:box-bold-duotone" },
+  { name: "Dự án", href: "/projects", icon: "solar:case-round-bold-duotone" },
+  { name: "Dịch vụ", href: "/services", icon: "solar:code-square-bold-duotone" },
+  { name: "Blog", href: "/blog", icon: "solar:document-text-bold-duotone" },
+  { name: "Liên hệ", href: "/contact", icon: "solar:chat-round-dots-bold-duotone" },
   {
-    name: "Sản phẩm", icon: "solar:box-bold-duotone",
+    name: "Công cụ", icon: "solar:magic-stick-3-bold-duotone",
     children: [
-      { name: "Tất cả sản phẩm", href: "/products", icon: "solar:box-bold-duotone" },
-      { name: "Dự án", href: "/projects", icon: "solar:case-round-bold-duotone" },
-    ],
-  },
-  {
-    name: "Dịch vụ", icon: "solar:widget-5-bold-duotone",
-    children: [
-      { name: "Tất cả dịch vụ", href: "/services", icon: "solar:widget-5-bold-duotone" },
-      { name: "Blog", href: "/blog", icon: "solar:document-text-bold-duotone" },
-    ],
-  },
-  {
-    name: "Công cụ", icon: "solar:tuning-2-bold-duotone",
-    children: [
-      { name: "2FA Code", href: "/tools/2fa", icon: "solar:shield-keyhole-bold-duotone" },
+      { name: "Lấy mã 2FA", href: "/tools/2fa", icon: "solar:lock-password-bold-duotone" },
       { name: "Check ID", href: "/tools/check-id", icon: "solar:user-id-bold-duotone" },
       { name: "Check Live UID", href: "/tools/check-live-uid", icon: "solar:user-check-bold-duotone" },
       { name: "Kiểm tra Domain", href: "/tools/check-domain", icon: "solar:planet-3-bold-duotone" },
       { name: "Kiểm tra License", href: "/license", icon: "solar:key-bold-duotone" },
     ],
   },
-  { name: "Liên hệ", href: "/contact", icon: "solar:chat-round-dots-bold-duotone" },
+  {
+    name: "Chính sách", icon: "solar:document-text-bold-duotone",
+    children: [
+      { name: "Điều khoản", href: "/terms", icon: "solar:clipboard-text-bold-duotone" },
+      { name: "Bảo mật", href: "/privacy", icon: "solar:shield-keyhole-bold-duotone" },
+      { name: "Hoàn tiền", href: "/refund", icon: "solar:wallet-money-bold-duotone" },
+      { name: "Giao nhận", href: "/shipping", icon: "solar:box-bold-duotone" },
+      { name: "Bảo hành", href: "/warranty", icon: "solar:shield-check-bold-duotone" },
+      { name: "Thanh toán", href: "/payment", icon: "solar:card-bold-duotone" },
+    ],
+  },
 ];
 
 function NavGroupPopover({ group, isLinkActive }: { group: NavGroup; isLinkActive: (href: string) => boolean }) {
