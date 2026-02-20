@@ -5,7 +5,7 @@ import { contacts } from "@/schemas/contact.schema";
 export const contactPublicRoutes = new Elysia({ prefix: "/contact" })
   .post("/", async ({ body }) => {
     try {
-      const { name, email, subject, message } = body as any;
+      const { name, email, phone, subject, message } = body as any;
       if (!name || !email || !message) {
         throw new Error("Vui lòng điền đầy đủ thông tin");
       }
@@ -22,6 +22,7 @@ export const contactPublicRoutes = new Elysia({ prefix: "/contact" })
       const [contact] = await db.insert(contacts).values({
         name,
         email,
+        phone: phone || null,
         subject: subject || null,
         message,
       }).returning();

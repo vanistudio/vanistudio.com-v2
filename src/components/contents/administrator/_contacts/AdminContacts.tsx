@@ -22,6 +22,7 @@ interface Contact {
   id: string;
   name: string;
   email: string;
+  phone: string | null;
   subject: string | null;
   message: string;
   isRead: boolean;
@@ -155,6 +156,7 @@ export default function AdminContacts() {
               <div className="w-4" />
               <div className="w-[140px]">Người gửi</div>
               <div className="w-[180px]">Email</div>
+              <div className="w-[120px]">SĐT / Zalo</div>
               <div className="flex-1">Tiêu đề</div>
               <div className="w-[80px] text-right">Thời gian</div>
               <div className="w-8 shrink-0" />
@@ -177,6 +179,9 @@ export default function AdminContacts() {
                   </div>
                   <div className="w-[180px]">
                     <span className="text-xs text-muted-foreground">{c.email}</span>
+                  </div>
+                  <div className="w-[120px]">
+                    <span className="text-xs text-muted-foreground">{c.phone || "—"}</span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <span className="text-xs text-muted-foreground truncate block max-w-[250px]">
@@ -237,7 +242,7 @@ export default function AdminContacts() {
           </DialogHeader>
           {selected && (
             <div className="flex flex-col gap-4">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <div className="p-3 rounded-lg border border-border bg-muted/10">
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">Người gửi</p>
                   <p className="text-sm font-medium text-title">{selected.name}</p>
@@ -245,6 +250,10 @@ export default function AdminContacts() {
                 <div className="p-3 rounded-lg border border-border bg-muted/10">
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">Email</p>
                   <a href={`mailto:${selected.email}`} className="text-sm font-medium text-primary hover:underline">{selected.email}</a>
+                </div>
+                <div className="p-3 rounded-lg border border-border bg-muted/10">
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">SĐT / Zalo</p>
+                  <p className="text-sm font-medium text-title">{selected.phone || "—"}</p>
                 </div>
               </div>
               <div className="p-3 rounded-lg border border-border bg-muted/10">

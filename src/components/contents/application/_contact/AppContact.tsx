@@ -11,7 +11,7 @@ export default function AppContact() {
   usePageTitle("Liên hệ");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
-  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', subject: '', message: '' });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,7 +84,7 @@ export default function AppContact() {
             <p className="text-sm text-muted-foreground text-center max-w-sm">
               Cảm ơn bạn đã liên hệ. Chúng tôi sẽ phản hồi trong thời gian sớm nhất.
             </p>
-            <Button variant="outline" size="sm" className="mt-2" onClick={() => { setSent(false); setForm({ name: '', email: '', subject: '', message: '' }); }}>
+            <Button variant="outline" size="sm" className="mt-2" onClick={() => { setSent(false); setForm({ name: '', email: '', phone: '', subject: '', message: '' }); }}>
               Gửi tin nhắn khác
             </Button>
           </div>
@@ -109,13 +109,23 @@ export default function AppContact() {
                 />
               </div>
             </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-muted-foreground">Tiêu đề</label>
-              <Input
-                placeholder="Chủ đề liên hệ..."
-                value={form.subject}
-                onChange={(e) => setForm({ ...form, subject: e.target.value })}
-              />
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-muted-foreground">Số điện thoại / Zalo</label>
+                <Input
+                  placeholder="0912 345 678"
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-muted-foreground">Tiêu đề</label>
+                <Input
+                  placeholder="Chủ đề liên hệ..."
+                  value={form.subject}
+                  onChange={(e) => setForm({ ...form, subject: e.target.value })}
+                />
+              </div>
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-medium text-muted-foreground">Nội dung *</label>
