@@ -43,7 +43,7 @@ import ServiceForm from '@/components/contents/administrator/_services/ServiceFo
 import ServiceList from '@/components/contents/application/_services/ServiceList';
 import ServiceDetail from '@/components/contents/application/_services/ServiceDetail';
 import AppContact from '@/components/contents/application/_contact/AppContact';
-import LicenseCheck from '@/components/contents/application/_license/LicenseCheck';
+import LicenseCheck from '@/components/contents/application/_license/AppLicense';
 import AdminLicenses from '@/components/contents/administrator/_licenses/AdminLicenses';
 import LicenseForm from '@/components/contents/administrator/_licenses/LicenseForm';
 import AdminDashboard from '@/components/contents/administrator/_dashboard/AdminDashboard';
