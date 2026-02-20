@@ -86,6 +86,40 @@ export const authRoutes = new Elysia({ prefix: "/api/auth" })
       phoneNumber: t.String({ minLength: 1, maxLength: 20 }),
     }),
   })
+  .post("/register", async ({ body, cookie }) => {
+    try {
+      const { username, fullName, email, phone, password, confirmPassword } = body as any;
+      if (!username || !fullName || !email || !password) {
+        return { success: false, error: "Vui lòng điền đầy đủ thông tin" };
+      }
+      if (password.length < 6) {
+        return { success: false, error: "Mật khẩu tối thiểu 6 ký tự" };
+      }
+      if (password !== confirmPassword) {
+        return { success: false, error: "Mật khẩu xác nhận không khớp" };
+      }
+
+      const { token } = await authController.register({ username, fullName, email, phone: phone || "", password });
+      cookie[COOKIE_NAME].set({ value: token, ...COOKIE_OPTIONS });
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
+  })
+  .post("/login", async ({ body, cookie }) => {
+    try {
+      const { email, password } = body as any;
+      if (!email || !password) {
+        return { success: false, error: "Vui lòng nhập email và mật khẩu" };
+      }
+
+      const { token, needsOnboarding } = await authController.login(email, password);
+      cookie[COOKIE_NAME].set({ value: token, ...COOKIE_OPTIONS });
+      return { success: true, needsOnboarding };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
+  })
   .post("/logout", ({ cookie }) => {
     cookie[COOKIE_NAME].set({ value: "", ...COOKIE_OPTIONS, maxAge: 0 });
     return { success: true };

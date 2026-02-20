@@ -36,10 +36,9 @@ export default function AppContact() {
   };
 
   const contactInfo = [
-    { icon: "solar:letter-bold-duotone", label: "Email", value: "contact@vanistudio.com", href: "mailto:contact@vanistudio.com" },
-    { icon: "logos:discord-icon", label: "Discord", value: "Vani Studio", href: "https://discord.gg/vanistudio" },
-    { icon: "logos:facebook", label: "Facebook", value: "Vani Studio", href: "https://facebook.com/vanistudio" },
-    { icon: "logos:telegram", label: "Telegram", value: "@vanistudio", href: "https://t.me/vanistudio" },
+    { icon: "solar:letter-bold-duotone", label: "Email", value: "vanixjnk@gmail.com", href: "mailto:vanixjnk@gmail.com" },
+    { icon: "logos:facebook", label: "Facebook", value: "Nguyễn Đình Bảo", href: "https://facebook.com/vanixjnk" },
+    { icon: "logos:telegram", label: "Telegram", value: "@vanixjnk", href: "https://t.me/vanixjnk" },
   ];
 
   return (
@@ -56,7 +55,7 @@ export default function AppContact() {
         </div>
       </AppDashed>
       <AppDashed noTopBorder padding="p-5">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl mx-auto">
           {contactInfo.map((item) => (
             <a
               key={item.label}

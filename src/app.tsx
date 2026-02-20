@@ -15,6 +15,7 @@ import BlogList from '@/components/contents/application/_blog/BlogList';
 import BlogDetail from '@/components/contents/application/_blog/BlogDetail';
 import AuthLayout from '@/components/layouts/authentication/AuthLayout';
 import AuthLogin from '@/components/contents/authentication/_login/AuthLogin';
+import AuthRegister from '@/components/contents/authentication/_register/AuthRegister';
 import AppOnboarding from '@/components/contents/application/_onboarding/AppOnboarding';
 import ConfigurationPage from '@/components/contents/configuration/ConfigurationPage';
 import AdminUsers from '@/components/contents/administrator/_users/AdminUsers';
@@ -79,6 +80,7 @@ function App() {
           </Route>
           <Route path="/auth" element={<ConfigGuard><AuthLayout /></ConfigGuard>}>
             <Route path="login" element={<GuestGuard><AuthLogin /></GuestGuard>} />
+            <Route path="register" element={<GuestGuard><AuthRegister /></GuestGuard>} />
           </Route>
           <Route path="/onboarding" element={<ConfigGuard><AuthLayout /></ConfigGuard>}>
             <Route index element={<AuthGuard><AppOnboarding /></AuthGuard>} />

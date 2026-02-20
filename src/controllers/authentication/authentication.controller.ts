@@ -178,6 +178,47 @@ export const authController = {
     const token = createToken(updated.id, false);
     return { user: updated, token };
   },
+  async register(data: { username: string; fullName: string; email: string; phone: string; password: string }) {
+    const [existingEmail] = await db.select().from(users).where(eq(users.email, data.email)).limit(1);
+    if (existingEmail) throw new Error("Email đã được sử dụng");
+
+    const [existingUsername] = await db.select().from(users).where(eq(users.username, data.username)).limit(1);
+    if (existingUsername) throw new Error("Username đã được sử dụng");
+
+    const passwordHash = await Bun.password.hash(data.password, { algorithm: "bcrypt", cost: 10 });
+
+    const [newUser] = await db.insert(users).values({
+      username: data.username,
+      email: data.email,
+      passwordHash,
+      displayName: data.fullName,
+      fullName: data.fullName,
+      phoneNumber: data.phone,
+      provider: "local",
+    }).returning();
+
+    const token = createToken(newUser.id, false);
+    return { token, user: newUser };
+  },
+
+  async login(email: string, password: string) {
+    const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+    if (!user) throw new Error("Email hoặc mật khẩu không đúng");
+
+    if (user.provider !== "local") {
+      throw new Error(`Tài khoản này được đăng nhập qua ${user.provider === "github" ? "GitHub" : "Google"}`);
+    }
+
+    const valid = await Bun.password.verify(password, user.passwordHash);
+    if (!valid) throw new Error("Email hoặc mật khẩu không đúng");
+
+    if (!user.isActive) throw new Error("Tài khoản đã bị vô hiệu hóa");
+
+    const needsOnboarding = !user.username;
+    const token = createToken(user.id, needsOnboarding);
+    return { token, needsOnboarding };
+  },
+
   async getMe(userId: string) {
     const [user] = await db
       .select({
