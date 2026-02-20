@@ -28,7 +28,7 @@ export const productsController = {
       conditions.push(eq(products.categoryId, options.categoryId));
     }
 
-    if (options.status && ["draft", "published", "archived"].includes(options.status)) {
+    if (options.status && ["draft", "published", "archived", "discontinued"].includes(options.status)) {
       conditions.push(eq(products.status, options.status as any));
     }
 

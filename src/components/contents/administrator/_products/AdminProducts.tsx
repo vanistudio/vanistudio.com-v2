@@ -41,6 +41,7 @@ const statusMap: Record<string, { label: string; color: string }> = {
   draft: { label: "Nháp", color: "bg-yellow-500" },
   published: { label: "Đã xuất bản", color: "bg-emerald-500" },
   archived: { label: "Đã lưu trữ", color: "bg-zinc-400" },
+  discontinued: { label: "Ngừng kinh doanh", color: "bg-red-500" },
 };
 
 const typeMap: Record<string, string> = {
@@ -189,6 +190,7 @@ export default function AdminProducts() {
                       <SelectItem value="draft">Nháp</SelectItem>
                       <SelectItem value="published">Đã xuất bản</SelectItem>
                       <SelectItem value="archived">Đã lưu trữ</SelectItem>
+                      <SelectItem value="discontinued">Ngừng kinh doanh</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

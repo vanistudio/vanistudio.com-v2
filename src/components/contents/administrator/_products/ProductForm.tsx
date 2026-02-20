@@ -224,6 +224,7 @@ export default function ProductForm() {
                 <SelectItem value="draft">Nháp</SelectItem>
                 <SelectItem value="published">Xuất bản</SelectItem>
                 <SelectItem value="archived">Lưu trữ</SelectItem>
+                <SelectItem value="discontinued">Ngừng kinh doanh</SelectItem>
               </SelectContent>
             </Select>
           </Field>

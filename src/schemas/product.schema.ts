@@ -12,7 +12,7 @@ export const products = pgTable("products", {
   content: text("content"),
   categoryId: uuid("category_id").references(() => categories.id, { onDelete: "set null" }),
   type: text("type", { enum: ["free", "premium", "enterprise"] }).default("premium").notNull(),
-  status: text("status", { enum: ["draft", "published", "archived"] }).default("draft").notNull(),
+  status: text("status", { enum: ["draft", "published", "archived", "discontinued"] }).default("draft").notNull(),
   thumbnail: text("thumbnail"),
   coverImage: text("cover_image"),
   images: jsonb("images").$type<string[]>().default([]),
