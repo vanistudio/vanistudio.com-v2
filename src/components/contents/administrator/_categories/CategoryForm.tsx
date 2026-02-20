@@ -139,7 +139,6 @@ export default function CategoryForm() {
 
   return (
     <div className="flex flex-col w-full">
-      {/* Header */}
       <AppDashed noTopBorder padding="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -193,9 +192,7 @@ export default function CategoryForm() {
               </Field>
             </div>
           </div>
-
           <Separator />
-
           <div>
             <div className="flex items-center gap-2 mb-3">
               <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
@@ -229,9 +226,6 @@ export default function CategoryForm() {
                       ))}
                     </SelectContent>
                   </Select>
-                  <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center shrink-0 border border-border">
-                    <Icon icon={form.icon || "solar:question-circle-bold-duotone"} className="text-xl text-muted-foreground" />
-                  </div>
                 </div>
               </Field>
               <div className="grid grid-cols-2 gap-4">
