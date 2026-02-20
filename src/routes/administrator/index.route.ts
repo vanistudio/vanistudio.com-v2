@@ -10,6 +10,7 @@ import { projectsRoutes } from "./projects.route";
 import { servicesRoutes } from "./services.route";
 import { licensesRoutes } from "./licenses.route";
 import { dashboardRoutes } from "./dashboard.route";
+import { contactRoutes } from "./contacts.route";
 
 export const adminRoutes = new Elysia({ prefix: "/api/admin" })
   .use(dashboardRoutes)
@@ -22,4 +23,5 @@ export const adminRoutes = new Elysia({ prefix: "/api/admin" })
   .use(blogRoutes)
   .use(projectsRoutes)
   .use(servicesRoutes)
-  .use(licensesRoutes);
+  .use(licensesRoutes)
+  .use(contactRoutes);

@@ -38,6 +38,7 @@ const navEntries: NavEntry[] = [
     name: "Hệ thống", icon: "solar:settings-bold-duotone",
     children: [
       { name: "Cài đặt", href: "/admin/settings", icon: "solar:tuning-2-bold-duotone" },
+      { name: "Tin nhắn", href: "/admin/contacts", icon: "solar:chat-round-dots-bold-duotone" },
       { name: "Database", href: "/admin/database", icon: "solar:database-bold-duotone" },
     ],
   },

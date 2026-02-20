@@ -9,6 +9,43 @@ import { Link } from 'react-router-dom';
 import { usePageTitle } from '@/hooks/use-page-title';
 import { api } from '@/lib/api';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+
+interface Service {
+  id: string;
+  name: string;
+  slug: string;
+  tagline: string | null;
+  icon: string | null;
+  price: string;
+  minPrice: string | null;
+  currency: string;
+  features: string[];
+  isFeatured: boolean;
+}
+
+interface Project {
+  id: string;
+  name: string;
+  slug: string;
+  tagline: string | null;
+  thumbnail: string | null;
+  coverImage: string | null;
+  type: string;
+  techStack: string[];
+  isFeatured: boolean;
+}
+
+interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  thumbnail: string | null;
+  authorName: string | null;
+  publishedAt: string | null;
+  createdAt: string;
+}
 
 interface Product {
   id: string;
@@ -150,15 +187,26 @@ export default function AppHome() {
   const { resolvedTheme } = useTheme();
   usePageTitle("Trang chủ");
   const [products, setProducts] = useState<Product[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    (api.api.app.products as any).get({ query: { limit: '20' } })
-      .then(({ data }: any) => {
+    Promise.all([
+      (api.api.app.products as any).get({ query: { limit: '20' } }).then(({ data }: any) => {
         if (data?.success) setProducts(data.products || []);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      }),
+      (api.api.app.services as any).get().then(({ data }: any) => {
+        if (data?.success) setServices((data.services || []).slice(0, 6));
+      }),
+      (api.api.app.projects as any).get({ query: { limit: '6' } }).then(({ data }: any) => {
+        if (data?.success) setProjects(data.projects || []);
+      }),
+      (api.api.app.blog as any).get({ query: { limit: '4' } }).then(({ data }: any) => {
+        if (data?.success) setBlogPosts(data.posts || []);
+      }),
+    ]).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
   return (
@@ -315,6 +363,149 @@ export default function AppHome() {
             ))}
           </div>
         )}
+      </AppDashed>
+      {services.length > 0 && (
+        <>
+          <AppDashed noTopBorder padding="p-3">
+            <SectionTitle>Dịch vụ nổi bật</SectionTitle>
+          </AppDashed>
+          <AppDashed noTopBorder padding="p-5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-4xl mx-auto">
+              {services.map((s) => (
+                <Link key={s.id} to={`/services/${s.slug}`} className="group flex flex-col items-center gap-2 p-4 rounded-xl border border-border hover:border-primary/30 hover:bg-primary/5 transition-all duration-200">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Icon icon={s.icon || "solar:widget-5-bold-duotone"} className="text-xl text-primary" />
+                  </div>
+                  <h3 className="text-sm font-bold text-title text-center">{s.name}</h3>
+                  {s.tagline && <p className="text-[10px] text-muted-foreground text-center line-clamp-2">{s.tagline}</p>}
+                  {s.features && s.features.length > 0 && (
+                    <div className="flex flex-wrap gap-1 justify-center mt-1">
+                      {s.features.slice(0, 2).map((f, i) => (
+                        <span key={i} className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">{f}</span>
+                      ))}
+                    </div>
+                  )}
+                </Link>
+              ))}
+            </div>
+            <div className="flex justify-center mt-4">
+              <Link to="/services">
+                <Button variant="outline" size="sm" className="text-xs">
+                  Xem tất cả dịch vụ
+                  <ArrowUpRight size={12} className="ml-1" />
+                </Button>
+              </Link>
+            </div>
+          </AppDashed>
+        </>
+      )}
+      {projects.length > 0 && (
+        <>
+          <AppDashed noTopBorder padding="p-3">
+            <SectionTitle>Dự án tiêu biểu</SectionTitle>
+          </AppDashed>
+          <AppDashed noTopBorder padding="p-0">
+            <div className="grid grid-cols-2 sm:grid-cols-3">
+              {projects.map((p) => (
+                <Link key={p.id} to={`/projects/${p.slug}`} className="p-3 group">
+                  <div className="p-[4px] rounded-[10px] border border-border">
+                    <div className="relative w-full bg-muted-background rounded-[6px] border border-border h-[140px] overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      {p.thumbnail || p.coverImage ? (
+                        <img src={p.thumbnail || p.coverImage || ''} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-muted/30">
+                          <Icon icon="solar:case-round-bold-duotone" className="text-3xl text-muted-foreground/30" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="px-1 mt-2 flex flex-col gap-0.5">
+                    <h3 className="text-sm font-bold text-title truncate">{p.name}</h3>
+                    {p.tagline && <p className="text-xs text-muted-foreground line-clamp-1">{p.tagline}</p>}
+                    {p.techStack && p.techStack.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {p.techStack.slice(0, 3).map((t) => (
+                          <Badge key={t} variant="secondary" className="text-[9px] px-1.5 py-0">{t}</Badge>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </Link>
+              ))}
+            </div>
+            <div className="flex justify-center p-4">
+              <Link to="/projects">
+                <Button variant="outline" size="sm" className="text-xs">
+                  Xem tất cả dự án
+                  <ArrowUpRight size={12} className="ml-1" />
+                </Button>
+              </Link>
+            </div>
+          </AppDashed>
+        </>
+      )}
+      {blogPosts.length > 0 && (
+        <>
+          <AppDashed noTopBorder padding="p-3">
+            <SectionTitle>Bài viết mới nhất</SectionTitle>
+          </AppDashed>
+          <AppDashed noTopBorder padding="p-0">
+            <div className="grid grid-cols-2 sm:grid-cols-4">
+              {blogPosts.map((post) => (
+                <Link key={post.id} to={`/blog/${post.slug}`} className="p-3 group">
+                  <div className="p-[3px] rounded-[8px] border border-border">
+                    <div className="relative w-full bg-muted-background rounded-[5px] border border-border h-[100px] overflow-hidden">
+                      {post.thumbnail ? (
+                        <img src={post.thumbnail} alt={post.title} className="w-full h-full object-cover" loading="lazy" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-muted/30">
+                          <Icon icon="solar:document-text-bold-duotone" className="text-2xl text-muted-foreground/30" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="px-0.5 mt-1.5 flex flex-col gap-0.5">
+                    <h3 className="text-xs font-bold text-title line-clamp-2">{post.title}</h3>
+                    <p className="text-[10px] text-muted-foreground">
+                      {new Date(post.publishedAt || post.createdAt).toLocaleDateString('vi-VN')}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            <div className="flex justify-center p-4">
+              <Link to="/blog">
+                <Button variant="outline" size="sm" className="text-xs">
+                  Xem tất cả bài viết
+                  <ArrowUpRight size={12} className="ml-1" />
+                </Button>
+              </Link>
+            </div>
+          </AppDashed>
+        </>
+      )}
+      <AppDashed noTopBorder withDotGrid padding="p-8">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <h2 className="text-lg font-bold text-title">Bạn có dự án cần phát triển?</h2>
+          <p className="text-sm text-muted-foreground max-w-md">
+            Liên hệ ngay để được tư vấn miễn phí. Chúng tôi sẵn sàng biến ý tưởng của bạn thành hiện thực.
+          </p>
+          <div className="flex items-center gap-3">
+            <Link to="/contact">
+              <Button size="sm">
+                <Icon icon="solar:chat-round-dots-bold-duotone" className="text-sm mr-1.5" />
+                Liên hệ tư vấn
+              </Button>
+            </Link>
+            <Link to="/services">
+              <Button variant="outline" size="sm">
+                <Icon icon="solar:widget-5-bold-duotone" className="text-sm mr-1.5" />
+                Xem dịch vụ
+              </Button>
+            </Link>
+          </div>
+        </div>
       </AppDashed>
     </div>
   );
