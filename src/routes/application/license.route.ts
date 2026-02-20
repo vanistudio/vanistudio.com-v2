@@ -3,31 +3,24 @@ import { db } from "@/configs/index.config";
 import { licenses } from "@/schemas/license.schema";
 import { users } from "@/schemas/user.schema";
 import { eq, and } from "drizzle-orm";
+import { createHmac } from "crypto";
+
+const LICENSE_SECRET = process.env.APP_LICENSE_SECRET || process.env.APP_JWT_SECRET || "vani-license-secret";
+
+function generateSignature(key: string, domain: string, timestamp: number): string {
+  return createHmac("sha256", LICENSE_SECRET)
+    .update(`${key}:${domain}:${timestamp}`)
+    .digest("hex");
+}
+
+function cleanDomainInput(raw: string): string {
+  return raw.toLowerCase().replace(/^(https?:\/\/)?(www\.)?/, "").replace(/\/+$/, "").trim();
+}
 
 export const licensePublicRoutes = new Elysia({ prefix: "/license" })
-  .get("/check/:key", async ({ params }) => {
-    try {
-      const [license] = await db.select({
-        id: licenses.id,
-        key: licenses.key,
-        productName: licenses.productName,
-        status: licenses.status,
-        domain: licenses.domain,
-        expiresAt: licenses.expiresAt,
-        activatedAt: licenses.activatedAt,
-        createdAt: licenses.createdAt,
-      }).from(licenses).where(eq(licenses.key, params.key)).limit(1);
-
-      if (!license) return { success: false, error: "Không tìm thấy license key" };
-
-      return { success: true, license };
-    } catch (error: any) {
-      return { success: false, error: error.message };
-    }
-  })
   .get("/verify-domain/:domain", async ({ params }) => {
     try {
-      const domain = params.domain.toLowerCase().replace(/^(https?:\/\/)?(www\.)?/, "").replace(/\/+$/, "");
+      const domain = cleanDomainInput(params.domain);
       if (!domain) return { success: false, error: "Vui lòng nhập tên miền hợp lệ" };
 
       const [license] = await db.select({
@@ -67,14 +60,41 @@ export const licensePublicRoutes = new Elysia({ prefix: "/license" })
   })
   .post("/activate", async ({ body }) => {
     try {
-      const { key, domain } = body as { key: string; domain: string };
+      const { key, domain, timestamp, signature } = body as {
+        key: string;
+        domain: string;
+        timestamp?: number;
+        signature?: string;
+      };
+
       if (!key || !domain) {
         return { valid: false, code: "MISSING_PARAMS", message: "Thiếu license key hoặc domain" };
       }
 
-      const cleanDomain = domain.toLowerCase().replace(/^(https?:\/\/)?(www\.)?/, "").replace(/\/+$/, "");
+      if (timestamp && signature) {
+        const now = Date.now();
+        if (Math.abs(now - timestamp) > 5 * 60 * 1000) {
+          return { valid: false, code: "EXPIRED_REQUEST", message: "Yêu cầu đã hết hạn" };
+        }
+        const expectedSig = generateSignature(key, domain, timestamp);
+        if (signature !== expectedSig) {
+          return { valid: false, code: "INVALID_SIGNATURE", message: "Chữ ký không hợp lệ" };
+        }
+      }
+
+      const cleanDomain = cleanDomainInput(domain);
+      if (!cleanDomain || cleanDomain.length > 253 || !/^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*\.[a-z]{2,}$/.test(cleanDomain)) {
+        return { valid: false, code: "INVALID_DOMAIN", message: "Tên miền không hợp lệ" };
+      }
+
+      if (key.length > 50 || !/^[A-Z0-9-]+$/.test(key)) {
+        return { valid: false, code: "INVALID_KEY", message: "License key không hợp lệ" };
+      }
 
       const [license] = await db.select().from(licenses).where(eq(licenses.key, key)).limit(1);
+
+      await new Promise(r => setTimeout(r, 100 + Math.random() * 200));
+
       if (!license) {
         return { valid: false, code: "INVALID_KEY", message: "License key không hợp lệ" };
       }
@@ -90,7 +110,6 @@ export const licensePublicRoutes = new Elysia({ prefix: "/license" })
       if (license.domain && license.domain !== cleanDomain) {
         return { valid: false, code: "DOMAIN_MISMATCH", message: "License không được cấp cho domain này" };
       }
-
 
       if (!license.domain || license.status === "unused") {
         await db.update(licenses)
@@ -114,6 +133,6 @@ export const licensePublicRoutes = new Elysia({ prefix: "/license" })
         },
       };
     } catch (error: any) {
-      return { valid: false, code: "SERVER_ERROR", message: error.message };
+      return { valid: false, code: "SERVER_ERROR", message: "Lỗi hệ thống" };
     }
   });
