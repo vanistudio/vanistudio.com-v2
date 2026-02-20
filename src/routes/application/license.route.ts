@@ -14,7 +14,14 @@ function generateSignature(key: string, domain: string, timestamp: number): stri
 }
 
 function cleanDomainInput(raw: string): string {
-  return raw.toLowerCase().replace(/^(https?:\/\/)?(www\.)?/, "").replace(/\/+$/, "").trim();
+  return raw
+    .trim()
+    .toLowerCase()
+    .replace(/^(https?:\/\/)?/, "")
+    .replace(/^www\./, "")
+    .split(/[/?#]/)[0]
+    .replace(/\/+$/, "")
+    .trim();
 }
 
 export const licensePublicRoutes = new Elysia({ prefix: "/license" })
