@@ -171,15 +171,12 @@ export default function ProjectDetail() {
 
   return (
     <div className="flex flex-col w-full">
-      {/* Back button */}
       <AppDashed noTopBorder padding="p-3">
         <Link to="/projects" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft size={14} />
           <span>Dự án</span>
         </Link>
       </AppDashed>
-
-      {/* Hero: Cover image */}
       {project.coverImage && (
         <AppDashed noTopBorder padding="p-0">
           <div className="relative w-full aspect-[21/9] overflow-hidden">
@@ -188,8 +185,6 @@ export default function ProjectDetail() {
           </div>
         </AppDashed>
       )}
-
-      {/* Header */}
       <AppDashed noTopBorder padding="p-5">
         <div className="flex flex-col gap-3">
           <div className="flex items-start gap-4">
@@ -222,8 +217,6 @@ export default function ProjectDetail() {
               )}
             </div>
           </div>
-
-          {/* CTA */}
           {links.length > 0 && (
             <div className="flex items-center gap-2 mt-1">
               {project.liveUrl && (
@@ -254,8 +247,6 @@ export default function ProjectDetail() {
           )}
         </div>
       </AppDashed>
-
-      {/* Description */}
       {project.description && (
         <AppDashed noTopBorder padding="p-5">
           <div className="flex flex-col gap-2">
@@ -264,8 +255,6 @@ export default function ProjectDetail() {
           </div>
         </AppDashed>
       )}
-
-      {/* Gallery */}
       {allImages.length > 0 && (
         <AppDashed noTopBorder padding="p-5">
           <div className="flex flex-col gap-3">
@@ -274,8 +263,6 @@ export default function ProjectDetail() {
           </div>
         </AppDashed>
       )}
-
-      {/* Video */}
       {project.videoUrl && (project.videoUrl.includes('youtube.com') || project.videoUrl.includes('youtu.be')) && (
         <AppDashed noTopBorder padding="p-5">
           <div className="flex flex-col gap-3">
@@ -291,8 +278,6 @@ export default function ProjectDetail() {
           </div>
         </AppDashed>
       )}
-
-      {/* Content (rich text) */}
       {project.content && (
         <AppDashed noTopBorder padding="p-5">
           <div className="flex flex-col gap-3">
@@ -304,8 +289,6 @@ export default function ProjectDetail() {
           </div>
         </AppDashed>
       )}
-
-      {/* Tech Stack */}
       {project.techStack && project.techStack.length > 0 && (
         <AppDashed noTopBorder padding="p-5">
           <div className="flex flex-col gap-3">
@@ -318,8 +301,6 @@ export default function ProjectDetail() {
           </div>
         </AppDashed>
       )}
-
-      {/* Tags */}
       {project.tags && project.tags.length > 0 && (
         <AppDashed noTopBorder padding="p-5">
           <div className="flex flex-col gap-3">
@@ -332,8 +313,6 @@ export default function ProjectDetail() {
           </div>
         </AppDashed>
       )}
-
-      {/* Project Info */}
       {(project.category || project.clientName || project.role || dateRange) && (
         <AppDashed noTopBorder padding="p-5">
           <div className="flex flex-col gap-2">
@@ -362,8 +341,6 @@ export default function ProjectDetail() {
           </div>
         </AppDashed>
       )}
-
-      {/* Links */}
       {links.length > 0 && (
         <AppDashed noTopBorder padding="p-5">
           <div className="flex flex-col gap-3">

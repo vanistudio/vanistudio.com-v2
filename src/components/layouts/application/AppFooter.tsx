@@ -22,14 +22,6 @@ const AppFooter = () => {
     { label: "Bảo hành", to: "/warranty" },
     { label: "Thanh toán", to: "/payment" },
   ];
-
-  const socialLinks = [
-    { icon: "logos:facebook", label: "Facebook", href: "https://facebook.com/vanistudio" },
-    { icon: "logos:discord-icon", label: "Discord", href: "https://discord.gg/vanistudio" },
-    { icon: "logos:telegram", label: "Telegram", href: "https://t.me/vanistudio" },
-    { icon: "mdi:github", label: "GitHub", href: "https://github.com/vanistudio" },
-  ];
-
   return (
     <footer className="w-full mt-auto">
       <AppDashed noTopBorder padding="p-6">
@@ -57,8 +49,6 @@ const AppFooter = () => {
               ))}
             </div>
           </div>
-
-          {/* Policy */}
           <div className="flex flex-col gap-2">
             <h3 className="text-xs font-bold text-title uppercase tracking-wider">Chính sách</h3>
             <div className="grid grid-cols-2 gap-x-4 gap-y-1">

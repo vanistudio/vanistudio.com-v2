@@ -196,15 +196,12 @@ export default function ProductDetail() {
 
   return (
     <div className="flex flex-col w-full">
-      {/* Back button */}
       <AppDashed noTopBorder padding="p-3">
         <Link to="/products" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft size={14} />
           <span>Sản phẩm</span>
         </Link>
       </AppDashed>
-
-      {/* Hero: Cover image */}
       {product.coverImage && (
         <AppDashed noTopBorder padding="p-0">
           <div className="relative w-full aspect-[21/9] overflow-hidden">
@@ -217,8 +214,6 @@ export default function ProductDetail() {
           </div>
         </AppDashed>
       )}
-
-      {/* Header */}
       <AppDashed noTopBorder padding="p-5">
         <div className="flex flex-col gap-3">
           <div className="flex items-start gap-4">
@@ -250,8 +245,6 @@ export default function ProductDetail() {
               )}
             </div>
           </div>
-
-          {/* Price + CTA */}
           <div className="flex items-center justify-between flex-wrap gap-3 mt-1">
             <div className="flex items-center gap-3">
               {product.type === "free" ? (
@@ -286,8 +279,6 @@ export default function ProductDetail() {
           </div>
         </div>
       </AppDashed>
-
-      {/* Stats bar */}
       <AppDashed noTopBorder padding="p-0">
         <div className="grid grid-cols-3 divide-x divide-border">
           {[
@@ -305,8 +296,6 @@ export default function ProductDetail() {
           ))}
         </div>
       </AppDashed>
-
-      {/* Description */}
       {product.description && (
         <AppDashed noTopBorder padding="p-5">
           <div className="flex flex-col gap-2">
@@ -315,8 +304,6 @@ export default function ProductDetail() {
           </div>
         </AppDashed>
       )}
-
-      {/* Gallery */}
       {allImages.length > 0 && (
         <AppDashed noTopBorder padding="p-5">
           <div className="flex flex-col gap-3">
@@ -325,8 +312,6 @@ export default function ProductDetail() {
           </div>
         </AppDashed>
       )}
-
-      {/* Video */}
       {product.videoUrl && (product.videoUrl.includes('youtube.com') || product.videoUrl.includes('youtu.be')) && (
         <AppDashed noTopBorder padding="p-5">
           <div className="flex flex-col gap-3">
@@ -342,8 +327,6 @@ export default function ProductDetail() {
           </div>
         </AppDashed>
       )}
-
-      {/* Highlights */}
       {product.highlights && product.highlights.length > 0 && (
         <AppDashed noTopBorder padding="p-0">
           <div className="px-5 pt-4 pb-1">
@@ -364,8 +347,6 @@ export default function ProductDetail() {
           </div>
         </AppDashed>
       )}
-
-      {/* Features */}
       {product.features && product.features.length > 0 && (
         <AppDashed noTopBorder padding="p-5">
           <div className="flex flex-col gap-3">
@@ -381,8 +362,6 @@ export default function ProductDetail() {
           </div>
         </AppDashed>
       )}
-
-      {/* Content (rich text) */}
       {product.content && (
         <AppDashed noTopBorder padding="p-5">
           <div className="flex flex-col gap-3">
@@ -394,8 +373,6 @@ export default function ProductDetail() {
           </div>
         </AppDashed>
       )}
-
-      {/* Tech Stack */}
       {(product.techStack?.length > 0 || product.frameworks?.length > 0) && (
         <AppDashed noTopBorder padding="p-5">
           <div className="flex flex-col gap-3">
@@ -411,7 +388,6 @@ export default function ProductDetail() {
         </AppDashed>
       )}
 
-      {/* Tags */}
       {product.tags && product.tags.length > 0 && (
         <AppDashed noTopBorder padding="p-5">
           <div className="flex flex-col gap-3">
@@ -427,7 +403,6 @@ export default function ProductDetail() {
         </AppDashed>
       )}
 
-      {/* Product Info */}
       <AppDashed noTopBorder padding="p-5">
         <div className="flex flex-col gap-2">
           <h2 className="text-sm font-bold text-title">Thông tin sản phẩm</h2>
@@ -461,7 +436,6 @@ export default function ProductDetail() {
         </div>
       </AppDashed>
 
-      {/* Links */}
       {links.length > 0 && (
         <AppDashed noTopBorder padding="p-5">
           <div className="flex flex-col gap-3">
