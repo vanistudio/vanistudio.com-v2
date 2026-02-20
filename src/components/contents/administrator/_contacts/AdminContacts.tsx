@@ -1,15 +1,22 @@
-import { useState, useEffect } from 'react';
-import { Icon } from '@iconify/react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { usePageTitle } from '@/hooks/use-page-title';
-import { api } from '@/lib/api';
-import { toast } from 'sonner';
+import { useState, useEffect, useCallback, useMemo } from "react";
+import AppDashed from "@/components/layouts/application/AppDashed";
+import { Icon } from "@iconify/react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuSeparator, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
+import AdminStats from "@/components/vani/AdminStats";
+import { usePageTitle } from "@/hooks/use-page-title";
+import { api } from "@/lib/api";
+import { toast } from "sonner";
 
 interface Contact {
   id: string;
@@ -21,36 +28,43 @@ interface Contact {
   createdAt: string;
 }
 
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "Vừa xong";
+  if (mins < 60) return `${mins}p trước`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h trước`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days}d trước`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months} tháng trước`;
+  return `${Math.floor(months / 12)} năm trước`;
+}
+
 export default function AdminContacts() {
   usePageTitle("Tin nhắn liên hệ");
+
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Contact | null>(null);
 
-  const fetchContacts = (p = 1, s = '') => {
+  const fetchContacts = useCallback(async () => {
     setLoading(true);
-    const query: Record<string, string> = { page: String(p), limit: '20' };
-    if (s) query.search = s;
-    (api.api.admin.contacts as any).get({ query })
-      .then(({ data }: any) => {
-        if (data?.success) {
-          setContacts(data.contacts || []);
-          setTotalPages(data.pagination?.totalPages || 1);
-        }
-      })
-      .finally(() => setLoading(false));
-  };
+    try {
+      const { data } = await (api.api.admin.contacts as any).get({
+        query: { page: "1", limit: "500" },
+      });
+      if (data?.success) setContacts(data.contacts || []);
+    } catch {
+      toast.error("Không thể tải tin nhắn");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-  useEffect(() => { fetchContacts(); }, []);
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    setPage(1);
-    fetchContacts(1, search);
-  };
+  useEffect(() => { fetchContacts(); }, [fetchContacts]);
 
   const handleRead = async (contact: Contact) => {
     setSelected(contact);
@@ -67,95 +81,154 @@ export default function AdminContacts() {
     try {
       const { data } = await (api.api.admin.contacts as any)[id].delete() as any;
       if (data?.success) {
+        toast.success("Đã xóa");
         setContacts(prev => prev.filter(c => c.id !== id));
-        setSelected(null);
-        toast.success("Đã xóa tin nhắn");
-      }
-    } catch {
-      toast.error("Lỗi khi xóa");
-    }
+        if (selected?.id === id) setSelected(null);
+      } else toast.error(data?.error || "Thất bại");
+    } catch { toast.error("Lỗi kết nối"); }
   };
 
-  const formatDate = (d: string) => new Date(d).toLocaleDateString('vi-VN', {
-    day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit',
-  });
+  const filtered = useMemo(() => {
+    if (!search) return contacts;
+    const q = search.toLowerCase();
+    return contacts.filter(c =>
+      `${c.name} ${c.email} ${c.subject || ""} ${c.message}`.toLowerCase().includes(q)
+    );
+  }, [contacts, search]);
+
+  const stats = useMemo(() => {
+    const total = contacts.length;
+    const unread = contacts.filter(c => !c.isRead).length;
+    const read = contacts.filter(c => c.isRead).length;
+    return [
+      { label: "Tổng tin nhắn", value: total, icon: "solar:chat-round-dots-bold-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
+      { label: "Chưa đọc", value: unread, icon: "solar:letter-unread-bold-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
+      { label: "Đã đọc", value: read, icon: "solar:check-read-bold-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
+    ];
+  }, [contacts]);
 
   return (
-    <div className="p-6 space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-bold text-title">Tin nhắn liên hệ</h1>
-          <p className="text-sm text-muted-foreground">Quản lý tin nhắn từ khách hàng</p>
-        </div>
-      </div>
-
-      <form onSubmit={handleSearch} className="flex items-center gap-2 max-w-sm">
-        <div className="relative flex-1">
-          <Icon icon="solar:magnifer-bold-duotone" className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground" />
-          <Input className="pl-9 h-9 text-sm" placeholder="Tìm kiếm..." value={search} onChange={e => setSearch(e.target.value)} />
-        </div>
-        <Button type="submit" size="sm" variant="outline" className="h-9">Tìm</Button>
-      </form>
-
-      {loading ? (
-        <div className="flex items-center justify-center py-16">
-          <Icon icon="svg-spinners:ring-resize" className="text-xl text-muted-foreground" />
-        </div>
-      ) : contacts.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 gap-2">
-          <Icon icon="solar:chat-round-dots-bold-duotone" className="text-4xl text-muted-foreground/20" />
-          <p className="text-sm text-muted-foreground">Chưa có tin nhắn nào</p>
-        </div>
-      ) : (
-        <>
-          <div className="border border-border rounded-lg overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-muted/30 border-b border-border">
-                  <th className="text-left p-3 text-xs font-medium text-muted-foreground"></th>
-                  <th className="text-left p-3 text-xs font-medium text-muted-foreground">Người gửi</th>
-                  <th className="text-left p-3 text-xs font-medium text-muted-foreground hidden md:table-cell">Email</th>
-                  <th className="text-left p-3 text-xs font-medium text-muted-foreground hidden sm:table-cell">Tiêu đề</th>
-                  <th className="text-left p-3 text-xs font-medium text-muted-foreground">Thời gian</th>
-                  <th className="text-right p-3 text-xs font-medium text-muted-foreground"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {contacts.map(c => (
-                  <tr key={c.id} className={cn("border-b border-border hover:bg-muted/20 cursor-pointer transition-colors", !c.isRead && "bg-primary/5")} onClick={() => handleRead(c)}>
-                    <td className="p-3 w-8">
-                      {!c.isRead && <div className="w-2 h-2 rounded-full bg-primary" />}
-                    </td>
-                    <td className="p-3">
-                      <span className={cn("text-sm", !c.isRead ? "font-semibold text-title" : "text-foreground")}>{c.name}</span>
-                    </td>
-                    <td className="p-3 hidden md:table-cell text-muted-foreground text-xs">{c.email}</td>
-                    <td className="p-3 hidden sm:table-cell text-xs text-muted-foreground truncate max-w-[150px]">{c.subject || '—'}</td>
-                    <td className="p-3 text-xs text-muted-foreground whitespace-nowrap">{formatDate(c.createdAt)}</td>
-                    <td className="p-3 text-right">
-                      <Button variant="ghost" size="icon" className="size-7" onClick={(e) => { e.stopPropagation(); handleDelete(c.id); }}>
-                        <Icon icon="solar:trash-bin-trash-bold-duotone" className="text-sm text-destructive" />
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2">
-              <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => { setPage(p => p - 1); fetchContacts(page - 1, search); }}>
-                <Icon icon="solar:arrow-left-bold" className="text-xs" />
-              </Button>
-              <span className="text-xs text-muted-foreground">{page} / {totalPages}</span>
-              <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => { setPage(p => p + 1); fetchContacts(page + 1, search); }}>
-                <Icon icon="solar:arrow-right-bold" className="text-xs" />
-              </Button>
+    <div className="flex flex-col w-full">
+      <AppDashed noTopBorder padding="p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <Icon icon="solar:chat-round-dots-bold-duotone" className="text-xl text-primary" />
             </div>
-          )}
-        </>
-      )}
+            <div>
+              <h1 className="text-lg font-bold text-title">Tin nhắn liên hệ</h1>
+              <p className="text-xs text-muted-foreground">{contacts.length} tin nhắn</p>
+            </div>
+          </div>
+        </div>
+      </AppDashed>
+      <AdminStats items={stats} />
+      <AppDashed noTopBorder padding="p-3">
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <Icon icon="solar:magnifer-linear" className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground text-sm" />
+            <Input
+              placeholder="Tìm tên, email, tiêu đề..."
+              className="pl-8 text-sm"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+        </div>
+      </AppDashed>
+
+      <AppDashed noTopBorder padding="p-0" scrollable>
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <Icon icon="svg-spinners:ring-resize" className="text-2xl text-muted-foreground" />
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 gap-2">
+            <Icon icon="solar:chat-round-dots-bold-duotone" className="text-4xl text-muted-foreground/30" />
+            <p className="text-sm text-muted-foreground">
+              {search ? "Không tìm thấy tin nhắn phù hợp" : "Chưa có tin nhắn nào"}
+            </p>
+          </div>
+        ) : (
+          <div className="w-max min-w-full">
+            <div className="flex items-center gap-4 px-4 py-2 border-b border-border text-[11px] font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap">
+              <div className="w-4" />
+              <div className="w-[140px]">Người gửi</div>
+              <div className="w-[180px]">Email</div>
+              <div className="flex-1">Tiêu đề</div>
+              <div className="w-[80px] text-right">Thời gian</div>
+              <div className="w-8 shrink-0" />
+            </div>
+
+            <div className="divide-y divide-border">
+              {filtered.map((c) => (
+                <div
+                  key={c.id}
+                  onClick={() => handleRead(c)}
+                  className={`flex items-center gap-4 px-4 py-3 hover:bg-muted/30 transition-colors group whitespace-nowrap cursor-pointer ${!c.isRead ? "bg-primary/[0.03]" : ""}`}
+                >
+                  <div className="w-4 flex items-center justify-center">
+                    {!c.isRead && <div className="size-2 rounded-full bg-primary" />}
+                  </div>
+                  <div className="w-[140px]">
+                    <span className={`text-sm ${!c.isRead ? "font-bold text-title" : "font-medium text-foreground"}`}>
+                      {c.name}
+                    </span>
+                  </div>
+                  <div className="w-[180px]">
+                    <span className="text-xs text-muted-foreground">{c.email}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <span className="text-xs text-muted-foreground truncate block max-w-[250px]">
+                      {c.subject || "Không có tiêu đề"}
+                    </span>
+                  </div>
+                  <div className="w-[80px] text-right">
+                    <TooltipProvider delayDuration={200}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="text-xs text-muted-foreground tabular-nums">{timeAgo(c.createdAt)}</span>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="text-xs">
+                          {new Date(c.createdAt).toLocaleString("vi-VN")}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="size-8 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" onClick={(e) => e.stopPropagation()}>
+                        <Icon icon="solar:menu-dots-bold" className="text-base" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-44">
+                      <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleRead(c); }}>
+                        <Icon icon="solar:eye-bold-duotone" className="mr-2 text-base" />
+                        Xem chi tiết
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={(e) => { e.stopPropagation(); window.open(`mailto:${c.email}?subject=Re: ${c.subject || ""}`); }}>
+                        <Icon icon="solar:reply-bold-duotone" className="mr-2 text-base" />
+                        Trả lời
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={(e) => { e.stopPropagation(); handleDelete(c.id); }}>
+                        <Icon icon="solar:trash-bin-trash-bold-duotone" className="mr-2 text-base" />
+                        Xóa
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex items-center justify-between px-4 py-2 border-t border-border">
+              <span className="text-[11px] text-muted-foreground">
+                Hiển thị {filtered.length} / {contacts.length} tin nhắn
+              </span>
+            </div>
+          </div>
+        )}
+      </AppDashed>
 
       <Dialog open={!!selected} onOpenChange={() => setSelected(null)}>
         <DialogContent className="max-w-lg">
@@ -179,7 +252,7 @@ export default function AdminContacts() {
                 <p className="text-sm text-foreground/90 whitespace-pre-wrap leading-relaxed">{selected.message}</p>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">{formatDate(selected.createdAt)}</span>
+                <span className="text-xs text-muted-foreground">{new Date(selected.createdAt).toLocaleString("vi-VN")}</span>
                 <div className="flex gap-2">
                   <Button variant="destructive" size="sm" className="text-xs" onClick={() => handleDelete(selected.id)}>
                     <Icon icon="solar:trash-bin-trash-bold-duotone" className="text-sm mr-1" />
