@@ -7,8 +7,8 @@ import { randomBytes } from "crypto";
 
 function generateLicenseKey(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  const segments = 4;
-  const segLen = 5;
+  const segments = 6;
+  const segLen = 4;
   const parts: string[] = [];
   const bytes = randomBytes(segments * segLen);
   for (let s = 0; s < segments; s++) {
