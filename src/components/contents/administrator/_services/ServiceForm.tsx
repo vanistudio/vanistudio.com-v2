@@ -243,9 +243,6 @@ export default function ServiceForm() {
                   ))}
                 </SelectContent>
               </Select>
-              <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center shrink-0 border border-border">
-                <Icon icon={form.icon || "solar:question-circle-bold-duotone"} className="text-xl text-muted-foreground" />
-              </div>
             </div>
           </Field>
           <Field label="Thứ tự hiển thị" hint="Số nhỏ hiển thị trước">
