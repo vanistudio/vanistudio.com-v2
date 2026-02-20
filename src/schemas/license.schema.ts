@@ -10,8 +10,6 @@ export const licenses = pgTable("licenses", {
   productName: text("product_name").notNull(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
   status: text("status", { enum: ["active", "expired", "revoked", "unused"] }).default("unused").notNull(),
-  maxActivations: integer("max_activations").default(1).notNull(),
-  currentActivations: integer("current_activations").default(0).notNull(),
   notes: text("notes"),
   domain: text("domain"),
   expiresAt: timestamp("expires_at", { withTimezone: true }),

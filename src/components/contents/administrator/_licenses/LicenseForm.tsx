@@ -20,7 +20,6 @@ const initialForm = {
   productName: "",
   userId: "",
   status: "unused",
-  maxActivations: "1",
   notes: "",
   domain: "",
 };
@@ -86,7 +85,6 @@ export default function LicenseForm() {
             productName: l.productName || "",
             userId: l.userId || "",
             status: l.status || "unused",
-            maxActivations: String(l.maxActivations || 1),
             notes: l.notes || "",
             domain: l.domain || "",
           });
@@ -110,7 +108,6 @@ export default function LicenseForm() {
         ...form,
         productId: form.productId || undefined,
         userId: form.userId || undefined,
-        maxActivations: parseInt(form.maxActivations) || 1,
       };
       if (isEditing && id) {
         const { data } = await (api.api.admin.licenses as any)({ id }).patch(payload);
@@ -242,11 +239,8 @@ export default function LicenseForm() {
         </div>
       </Section>
 
-      <Section title="Cài đặt" icon="solar:settings-bold-duotone" description="Giới hạn kích hoạt">
+      <Section title="Cài đặt" icon="solar:settings-bold-duotone" description="Domain và ghi chú">
         <div className="grid grid-cols-2 gap-4">
-          <Field label="Max kích hoạt" hint="Số lần tối đa có thể kích hoạt">
-            <Input className="text-sm" type="number" placeholder="1" min="1" value={form.maxActivations} onChange={(e) => set("maxActivations", e.target.value)} />
-          </Field>
           <Field label="Domain" hint="Domain được phép sử dụng license">
             <Input className="text-sm" placeholder="example.com" value={form.domain} onChange={(e) => set("domain", e.target.value)} />
           </Field>

@@ -11,6 +11,7 @@ interface VerifyResult {
   productName: string;
   status: string;
   domain: string | null;
+  ownerName: string | null;
   expiresAt: string | null;
   activatedAt: string | null;
   createdAt: string;
@@ -137,6 +138,7 @@ export default function AppLicense() {
               {[
                 { icon: "solar:global-bold-duotone", label: "Tên miền", value: result.domain || "—" },
                 { icon: "solar:box-bold-duotone", label: "Sản phẩm", value: result.productName },
+                { icon: "solar:user-bold-duotone", label: "Chủ sở hữu", value: result.ownerName || "—" },
                 { icon: "solar:calendar-bold-duotone", label: "Ngày cấp phép", value: formatDate(result.activatedAt || result.createdAt) },
                 { icon: "solar:calendar-mark-bold-duotone", label: "Hiệu lực đến", value: result.expiresAt ? formatDate(result.expiresAt) : "Vĩnh viễn" },
               ].map((item, i) => (

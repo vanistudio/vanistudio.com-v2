@@ -29,8 +29,6 @@ interface License {
   userName: string | null;
   userEmail: string | null;
   status: string;
-  maxActivations: number;
-  currentActivations: number;
   notes: string | null;
   domain: string | null;
   expiresAt: string | null;
@@ -224,7 +222,6 @@ export default function AdminLicenses() {
                 <div className="w-[140px]">Người dùng</div>
                 <div className="w-[120px]">Domain</div>
                 <div className="w-[80px]">Trạng thái</div>
-                <div className="w-[60px] text-right">Kích hoạt</div>
                 <div className="w-[70px] text-right">Ngày tạo</div>
               </div>
               <div className="w-8 shrink-0" />
@@ -267,11 +264,6 @@ export default function AdminLicenses() {
                         <div className={`size-2 rounded-full ${statusMap[l.status]?.color || "bg-gray-500"}`} />
                         <span className="text-[11px] text-muted-foreground">{statusMap[l.status]?.label || l.status}</span>
                       </div>
-                    </div>
-                    <div className="w-[60px] text-right">
-                      <span className="text-xs text-muted-foreground tabular-nums">
-                        {l.currentActivations}/{l.maxActivations}
-                      </span>
                     </div>
                     <div className="w-[70px] text-right">
                       <TooltipProvider delayDuration={200}>

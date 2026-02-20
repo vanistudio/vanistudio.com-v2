@@ -55,7 +55,6 @@ export const licensesController = {
       .where(whereClause);
 
     const total = Number(countResult?.count || 0);
-
     const data = await db
       .select({
         id: licenses.id,
@@ -64,8 +63,6 @@ export const licensesController = {
         productName: licenses.productName,
         userId: licenses.userId,
         status: licenses.status,
-        maxActivations: licenses.maxActivations,
-        currentActivations: licenses.currentActivations,
         notes: licenses.notes,
         domain: licenses.domain,
         expiresAt: licenses.expiresAt,
@@ -97,8 +94,7 @@ export const licensesController = {
         productName: licenses.productName,
         userId: licenses.userId,
         status: licenses.status,
-        maxActivations: licenses.maxActivations,
-        currentActivations: licenses.currentActivations,
+
         notes: licenses.notes,
         domain: licenses.domain,
         expiresAt: licenses.expiresAt,
@@ -122,7 +118,7 @@ export const licensesController = {
     productName: string;
     userId?: string;
     status?: string;
-    maxActivations?: number;
+
     notes?: string;
     domain?: string;
     expiresAt?: string;
@@ -138,7 +134,7 @@ export const licensesController = {
       productName: data.productName,
       userId: (data.userId && data.userId !== "none") ? data.userId : null,
       status: (data.status as any) || ((data.userId && data.userId !== "none") ? "active" : "unused"),
-      maxActivations: data.maxActivations || 1,
+
       notes: data.notes || null,
       domain: data.domain || null,
       expiresAt: data.expiresAt ? new Date(data.expiresAt) : null,
