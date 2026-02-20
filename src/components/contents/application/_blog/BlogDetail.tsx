@@ -82,7 +82,6 @@ export default function BlogDetail() {
 
   return (
     <div className="flex flex-col w-full">
-      {/* Header */}
       <AppDashed noTopBorder padding="p-4">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" className="size-8 shrink-0" onClick={() => navigate('/blog')}>
@@ -115,8 +114,6 @@ export default function BlogDetail() {
           </div>
         </div>
       </AppDashed>
-
-      {/* Cover image */}
       {(post.coverImage || post.thumbnail) && (
         <AppDashed noTopBorder padding="p-0">
           <div className="w-full h-[300px] overflow-hidden">
@@ -128,8 +125,6 @@ export default function BlogDetail() {
           </div>
         </AppDashed>
       )}
-
-      {/* Tags + Category */}
       {(post.category || (post.tags && post.tags.length > 0)) && (
         <AppDashed noTopBorder padding="p-4">
           <div className="flex items-center flex-wrap gap-2">
@@ -146,16 +141,12 @@ export default function BlogDetail() {
           </div>
         </AppDashed>
       )}
-
-      {/* Content */}
       <AppDashed noTopBorder padding="p-4">
         <article
           className="prose dark:prose-invert prose-sm max-w-none text-foreground/90"
           dangerouslySetInnerHTML={{ __html: post.content || '<p class="text-muted-foreground">Chưa có nội dung.</p>' }}
         />
       </AppDashed>
-
-      {/* Footer */}
       <AppDashed noTopBorder withDotGrid padding="p-6">
         <div className="flex items-center justify-center">
           <Button variant="outline" size="sm" className="text-xs" onClick={() => navigate('/blog')}>

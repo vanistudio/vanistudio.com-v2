@@ -191,8 +191,6 @@ export default function AdminServices() {
           </Popover>
         </div>
       </AppDashed>
-
-      {/* Service List */}
       <AppDashed noTopBorder padding="p-0" scrollable>
         {loading ? (
           <div className="flex items-center justify-center py-20">
@@ -209,7 +207,6 @@ export default function AdminServices() {
           </div>
         ) : (
           <div className="w-max min-w-full">
-            {/* Table header */}
             <div className="flex items-center gap-4 px-4 py-2 border-b border-border text-[11px] font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap">
               <div className="w-10 shrink-0" />
               <div className="flex-1">Dịch vụ</div>
@@ -220,12 +217,9 @@ export default function AdminServices() {
               </div>
               <div className="w-8 shrink-0" />
             </div>
-
-            {/* Service rows */}
             <div className="divide-y divide-border">
               {filteredServices.map((s) => (
                 <div key={s.id} className="flex items-center gap-4 px-4 py-3 hover:bg-muted/30 transition-colors group whitespace-nowrap">
-                  {/* Icon/Thumbnail */}
                   <div className="w-10 h-10 rounded-lg bg-muted overflow-hidden shrink-0 flex items-center justify-center">
                     {s.icon ? (
                       <Icon icon={s.icon} className="text-lg text-primary" />
@@ -235,8 +229,6 @@ export default function AdminServices() {
                       <Icon icon="solar:widget-5-bold-duotone" className="text-base text-muted-foreground" />
                     )}
                   </div>
-
-                  {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-semibold text-foreground">{s.name}</span>
@@ -244,8 +236,6 @@ export default function AdminServices() {
                     </div>
                     <span className="text-xs text-muted-foreground block mt-0.5">{s.tagline || s.slug}</span>
                   </div>
-
-                  {/* Details */}
                   <div className="flex items-center gap-4 shrink-0">
                     <div className="w-[120px]">
                       <span className="text-xs font-medium text-foreground">
@@ -278,8 +268,6 @@ export default function AdminServices() {
                       </TooltipProvider>
                     </div>
                   </div>
-
-                  {/* Actions */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon" className="size-8 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
@@ -301,8 +289,6 @@ export default function AdminServices() {
                 </div>
               ))}
             </div>
-
-            {/* Footer */}
             <div className="flex items-center justify-between px-4 py-2 border-t border-border">
               <span className="text-[11px] text-muted-foreground">
                 Hiển thị {filteredServices.length} / {services.length} dịch vụ

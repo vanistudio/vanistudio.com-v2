@@ -80,7 +80,6 @@ export default function UserRow({ user, onToggleActive, onChangeRole, onDelete }
 
   return (
     <div className="flex items-center gap-4 px-4 py-3 hover:bg-muted/30 transition-colors group whitespace-nowrap">
-      {/* Avatar + Status indicator */}
       <div className="relative shrink-0">
         <Avatar className="size-10">
           <AvatarImage src={user.avatarUrl || undefined} alt={displayName} />
@@ -90,8 +89,6 @@ export default function UserRow({ user, onToggleActive, onChangeRole, onDelete }
           className={`absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full border-2 border-background ${user.isActive ? "bg-emerald-500" : "bg-zinc-400"}`}
         />
       </div>
-
-      {/* User info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <span className="text-sm font-semibold text-foreground">{displayName}</span>

@@ -107,7 +107,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="flex flex-col w-full">
-      {/* Header — same pattern as all admin pages */}
       <AppDashed noTopBorder padding="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -121,11 +120,7 @@ export default function AdminDashboard() {
           </div>
         </div>
       </AppDashed>
-
-      {/* Stats bar — same AdminStats component */}
       <AdminStats items={stats} />
-
-      {/* Content list — flex table like AdminProducts */}
       <AppDashed noTopBorder padding="p-0">
         <div className="flex items-center gap-4 px-4 py-2 border-b border-border text-[11px] font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap">
           <div className="w-[200px]">Mục</div>
@@ -173,14 +168,11 @@ export default function AdminDashboard() {
           </span>
         </div>
       </AppDashed>
-
-      {/* Recent activity — 3-column flex panels */}
       <AppDashed noTopBorder padding="p-0">
         <div className="px-4 py-2 border-b border-border">
           <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Hoạt động gần đây</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-border">
-          {/* Recent Products */}
           <div>
             <div className="flex items-center justify-between px-4 py-2 border-b border-border">
               <div className="flex items-center gap-2">
@@ -209,8 +201,6 @@ export default function AdminDashboard() {
               )}
             </div>
           </div>
-
-          {/* Recent Blog */}
           <div>
             <div className="flex items-center justify-between px-4 py-2 border-b border-border">
               <div className="flex items-center gap-2">
@@ -236,8 +226,6 @@ export default function AdminDashboard() {
               )}
             </div>
           </div>
-
-          {/* Recent Licenses */}
           <div>
             <div className="flex items-center justify-between px-4 py-2 border-b border-border">
               <div className="flex items-center gap-2">

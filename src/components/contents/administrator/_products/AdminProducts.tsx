@@ -209,8 +209,6 @@ export default function AdminProducts() {
           </Popover>
         </div>
       </AppDashed>
-
-      {/* Product List */}
       <AppDashed noTopBorder padding="p-0" scrollable>
         {loading ? (
           <div className="flex items-center justify-center py-20">
@@ -227,7 +225,6 @@ export default function AdminProducts() {
           </div>
         ) : (
           <div className="w-max min-w-full">
-            {/* Table header */}
             <div className="flex items-center gap-4 px-4 py-2 border-b border-border text-[11px] font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap">
               <div className="w-10 shrink-0" />
               <div className="flex-1">Sản phẩm</div>
@@ -239,12 +236,9 @@ export default function AdminProducts() {
               </div>
               <div className="w-8 shrink-0" />
             </div>
-
-            {/* Product rows */}
             <div className="divide-y divide-border">
               {filteredProducts.map((p) => (
                 <div key={p.id} className="flex items-center gap-4 px-4 py-3 hover:bg-muted/30 transition-colors group whitespace-nowrap">
-                  {/* Thumbnail */}
                   <div className="w-10 h-10 rounded-lg bg-muted overflow-hidden shrink-0">
                     {p.thumbnail ? (
                       <img src={p.thumbnail} alt={p.name} className="w-full h-full object-cover" />
@@ -254,8 +248,6 @@ export default function AdminProducts() {
                       </div>
                     )}
                   </div>
-
-                  {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-semibold text-foreground">{p.name}</span>
@@ -263,8 +255,6 @@ export default function AdminProducts() {
                     </div>
                     <span className="text-xs text-muted-foreground block mt-0.5">{p.tagline || p.slug}</span>
                   </div>
-
-                  {/* Details */}
                   <div className="flex items-center gap-4 shrink-0">
                     <div className="w-[70px]">
                       <Badge variant="secondary" className="text-[10px] px-1.5 py-0">{typeMap[p.type] || p.type}</Badge>
@@ -291,8 +281,6 @@ export default function AdminProducts() {
                       </TooltipProvider>
                     </div>
                   </div>
-
-                  {/* Actions */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon" className="size-8 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
@@ -314,8 +302,6 @@ export default function AdminProducts() {
                 </div>
               ))}
             </div>
-
-            {/* Footer */}
             <div className="flex items-center justify-between px-4 py-2 border-t border-border">
               <span className="text-[11px] text-muted-foreground">
                 Hiển thị {filteredProducts.length} / {products.length} sản phẩm
