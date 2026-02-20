@@ -369,35 +369,26 @@ export default function AppHome() {
           <AppDashed noTopBorder padding="p-3">
             <SectionTitle>Dịch vụ nổi bật</SectionTitle>
           </AppDashed>
-          <AppDashed noTopBorder padding="p-0">
-            <div className="grid grid-cols-2 sm:grid-cols-3">
+          <AppDashed noTopBorder padding="p-5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-4xl mx-auto">
               {services.map((s) => (
-                <Link key={s.id} to={`/services/${s.slug}`} className="flex flex-col gap-2 cursor-pointer group w-full p-3">
-                  <div className="p-[4px] rounded-[10px] border border-border">
-                    <div className="relative w-full bg-muted-background rounded-[6px] border border-border h-[140px] overflow-hidden select-none">
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      <div className="w-full h-full flex flex-col items-center justify-center gap-2">
-                        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                          <Icon icon={s.icon || "solar:widget-5-bold-duotone"} className="text-xl text-primary" />
-                        </div>
-                        {s.features && s.features.length > 0 && (
-                          <div className="flex flex-wrap gap-1 justify-center px-3">
-                            {s.features.slice(0, 2).map((f, i) => (
-                              <span key={i} className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">{f}</span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
+                <Link key={s.id} to={`/services/${s.slug}`} className="flex flex-col items-center gap-2 p-4 rounded-xl border border-border">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <Icon icon={s.icon || "solar:widget-5-bold-duotone"} className="text-xl text-primary" />
+                  </div>
+                  <h3 className="text-sm font-bold text-title text-center">{s.name}</h3>
+                  {s.tagline && <p className="text-[10px] text-muted-foreground text-center line-clamp-2">{s.tagline}</p>}
+                  {s.features && s.features.length > 0 && (
+                    <div className="flex flex-wrap gap-1 justify-center mt-1">
+                      {s.features.slice(0, 2).map((f, i) => (
+                        <span key={i} className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">{f}</span>
+                      ))}
                     </div>
-                  </div>
-                  <div className="px-1 flex flex-col gap-1">
-                    <h3 className="text-sm font-bold text-title text-center truncate">{s.name}</h3>
-                    {s.tagline && <p className="text-[10px] text-muted-foreground text-center line-clamp-1">{s.tagline}</p>}
-                  </div>
+                  )}
                 </Link>
               ))}
             </div>
-            <div className="flex justify-center py-4">
+            <div className="flex justify-center mt-4">
               <Link to="/services">
                 <Button variant="outline" size="sm" className="text-xs">
                   Xem tất cả dịch vụ
