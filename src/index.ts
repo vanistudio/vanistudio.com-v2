@@ -5,6 +5,7 @@ import { db } from "@/configs/index.config";
 import { sql } from "drizzle-orm";
 import { routes } from "@/routes/index.route";
 import { getSiteSettings } from "@/services/settings.service";
+import { addRequestLog } from "@/services/request-logger.service";
 
 export const systemStatus = {
   startedAt: new Date(),
@@ -72,9 +73,27 @@ const app = new Elysia()
       exposeHeaders: ["Set-Cookie"],
     })
   )
+  .onBeforeHandle(({ store }) => {
+    (store as any).__startTime = performance.now();
+  })
+  .onAfterHandle(({ request, store, set }) => {
+    const path = new URL(request.url).pathname;
+    if (path.startsWith("/assets") || path.startsWith("/uploads") || path === "/ws/online") return;
+    const duration = Math.round(performance.now() - ((store as any).__startTime || 0));
+    addRequestLog({
+      method: request.method,
+      path,
+      status: (set as any).status || 200,
+      ip: request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+        || request.headers.get("x-real-ip") || "127.0.0.1",
+      userAgent: request.headers.get("user-agent")?.substring(0, 150) || "",
+      duration,
+      timestamp: Date.now(),
+    });
+  })
   .use(routes)
-  .get("/assets/*", ({ path }) => Bun.file(join(process.cwd(), "dist/public", path)))
-  .get("/uploads/*", ({ path }) => Bun.file(join(process.cwd(), path)))
+  .get("/assets/*", ({ path }: { path: string }) => Bun.file(join(process.cwd(), "dist/public", path)))
+  .get("/uploads/*", ({ path }: { path: string }) => Bun.file(join(process.cwd(), path)))
   .get("/", () => serveHtml())
   .get("*", ({ path }) => {
     if (path.startsWith('/api') || path.startsWith('/_vanixjnk')) {
@@ -102,8 +121,8 @@ async function startServer() {
     const gracefulShutdown = async () => {
       console.log("➥ Đang dừng máy chủ...");
       try {
-      } catch (error) {
-        console.error("➥ Lỗi khi cleanup:", error);
+      } catch (_error) {
+        console.error("➥ Lỗi khi cleanup:", _error);
       }
       server.stop();
       console.log("➥ Máy chủ đã dừng hoạt động.");

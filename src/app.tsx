@@ -48,6 +48,7 @@ import AdminLicenses from '@/components/contents/administrator/_licenses/AdminLi
 import LicenseForm from '@/components/contents/administrator/_licenses/LicenseForm';
 import AdminDashboard from '@/components/contents/administrator/_dashboard/AdminDashboard';
 import AdminContacts from '@/components/contents/administrator/_contacts/AdminContacts';
+import AdminRequests from '@/components/contents/administrator/_requests/AdminRequests';
 
 function App() {
   return (
@@ -112,6 +113,7 @@ function App() {
             <Route path="licenses/create" element={<LicenseForm />} />
             <Route path="licenses/:id/edit" element={<LicenseForm />} />
             <Route path="contacts" element={<AdminContacts />} />
+            <Route path="requests" element={<AdminRequests />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
