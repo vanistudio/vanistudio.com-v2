@@ -5,7 +5,7 @@ import { users } from "@/schemas/user.schema";
 import { eq, and } from "drizzle-orm";
 import { createHmac } from "crypto";
 
-const LICENSE_SECRET = process.env.APP_LICENSE_SECRET || process.env.APP_JWT_SECRET || "vani-license-secret";
+const LICENSE_SECRET = process.env.APP_LICENSE_SECRET || "123";
 
 function generateSignature(key: string, domain: string, timestamp: number): string {
   return createHmac("sha256", LICENSE_SECRET)
