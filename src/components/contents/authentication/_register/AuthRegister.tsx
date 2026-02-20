@@ -69,62 +69,56 @@ export default function AuthRegister() {
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-medium text-muted-foreground">Họ tên *</label>
-                <Input
-                  placeholder="Nguyễn Văn A"
-                  value={form.fullName}
-                  onChange={(e) => setForm({ ...form, fullName: e.target.value })}
-                />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-medium text-muted-foreground">Username *</label>
-                <Input
-                  placeholder="nguyenvana"
-                  value={form.username}
-                  onChange={(e) => setForm({ ...form, username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '') })}
-                />
-              </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium text-muted-foreground">Họ tên *</label>
+              <Input
+                placeholder="Nguyễn Văn A"
+                value={form.fullName}
+                onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+              />
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-medium text-muted-foreground">Email *</label>
-                <Input
-                  type="email"
-                  placeholder="email@example.com"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-medium text-muted-foreground">Số điện thoại / Zalo</label>
-                <Input
-                  placeholder="0912 345 678"
-                  value={form.phone}
-                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                />
-              </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium text-muted-foreground">Username *</label>
+              <Input
+                placeholder="nguyenvana"
+                value={form.username}
+                onChange={(e) => setForm({ ...form, username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '') })}
+              />
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-medium text-muted-foreground">Mật khẩu *</label>
-                <Input
-                  type="password"
-                  placeholder="Tối thiểu 6 ký tự"
-                  value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
-                />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-medium text-muted-foreground">Xác nhận mật khẩu *</label>
-                <Input
-                  type="password"
-                  placeholder="Nhập lại mật khẩu"
-                  value={form.confirmPassword}
-                  onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
-                />
-              </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium text-muted-foreground">Email *</label>
+              <Input
+                type="email"
+                placeholder="email@example.com"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium text-muted-foreground">Số điện thoại / Zalo</label>
+              <Input
+                placeholder="0912 345 678"
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium text-muted-foreground">Mật khẩu *</label>
+              <Input
+                type="password"
+                placeholder="Tối thiểu 6 ký tự"
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium text-muted-foreground">Xác nhận mật khẩu *</label>
+              <Input
+                type="password"
+                placeholder="Nhập lại mật khẩu"
+                value={form.confirmPassword}
+                onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+              />
             </div>
             <Button type="submit" disabled={loading} className="w-full mt-1">
               {loading ? (
