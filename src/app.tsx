@@ -40,6 +40,9 @@ import ToolCheckDomain from '@/components/contents/application/_tools/ToolCheckD
 import AdminServices from '@/components/contents/administrator/_services/AdminServices';
 import ServiceForm from '@/components/contents/administrator/_services/ServiceForm';
 import ServiceList from '@/components/contents/application/_services/ServiceList';
+import ServiceDetail from '@/components/contents/application/_services/ServiceDetail';
+import AppContact from '@/components/contents/application/_contact/AppContact';
+import LicenseCheck from '@/components/contents/application/_license/LicenseCheck';
 import AdminLicenses from '@/components/contents/administrator/_licenses/AdminLicenses';
 import LicenseForm from '@/components/contents/administrator/_licenses/LicenseForm';
 import AdminDashboard from '@/components/contents/administrator/_dashboard/AdminDashboard';
@@ -61,8 +64,11 @@ function App() {
             <Route path="tools/check-live-uid" element={<ToolCheckLiveUid />} />
             <Route path="tools/check-domain" element={<ToolCheckDomain />} />
             <Route path="services" element={<ServiceList />} />
+            <Route path="services/:slug" element={<ServiceDetail />} />
             <Route path="blog" element={<BlogList />} />
             <Route path="blog/:slug" element={<BlogDetail />} />
+            <Route path="contact" element={<AppContact />} />
+            <Route path="license" element={<LicenseCheck />} />
             <Route path="privacy" element={<AppPrivacy />} />
             <Route path="refund" element={<AppRefund />} />
             <Route path="shipping" element={<AppShipping />} />

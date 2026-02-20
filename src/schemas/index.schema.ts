@@ -6,3 +6,4 @@ export * from "./product.schema";
 export * from "./blog.schema";
 export * from "./project.schema";
 export * from "./service.schema";
+export * from "./contact.schema";

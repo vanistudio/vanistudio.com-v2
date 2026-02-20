@@ -3,6 +3,7 @@ import { Icon } from '@iconify/react';
 import AppDashed from '@/components/layouts/application/AppDashed';
 import { usePageTitle } from '@/hooks/use-page-title';
 import { api } from '@/lib/api';
+import { Link } from 'react-router-dom';
 
 interface Service {
   id: string;
@@ -30,7 +31,7 @@ function formatPrice(price: string, currency: string) {
 
 function ServiceCard({ service }: { service: Service }) {
   return (
-    <div className="group relative flex flex-col rounded-xl border border-border bg-card overflow-hidden hover:shadow-lg hover:border-primary/20 transition-all duration-300">
+    <Link to={`/services/${service.slug}`} className="group relative flex flex-col rounded-xl border border-border bg-card overflow-hidden hover:shadow-lg hover:border-primary/20 transition-all duration-300">
       {service.isFeatured && (
         <div className="absolute top-3 right-3 z-10">
           <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 text-[10px] font-medium">
@@ -87,7 +88,7 @@ function ServiceCard({ service }: { service: Service }) {
           </div>
         )}
       </div>
-    </div>
+    </Link>
   );
 }
 

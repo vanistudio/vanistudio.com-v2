@@ -29,6 +29,7 @@ const navEntries: NavEntry[] = [
       { name: "Check ID", href: "/tools/check-id", icon: "solar:user-id-bold-duotone" },
       { name: "Check Live UID", href: "/tools/check-live-uid", icon: "solar:user-check-bold-duotone" },
       { name: "Kiểm tra Domain", href: "/tools/check-domain", icon: "solar:planet-3-bold-duotone" },
+      { name: "Kiểm tra License", href: "/license", icon: "solar:key-bold-duotone" },
     ],
   },
   {
