@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Icon } from '@iconify/react';
 import AppDashed from '@/components/layouts/application/AppDashed';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { usePageTitle } from '@/hooks/use-page-title';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -26,8 +27,6 @@ export default function ToolCheckLiveUid() {
       toast.error('Vui lòng nhập UID');
       return;
     }
-
-    // Support multiple UIDs separated by newlines, commas, or spaces
     const uids = raw.split(/[\n,\s]+/).map(s => s.trim()).filter(s => /^\d+$/.test(s));
     if (uids.length === 0) {
       toast.error('Không tìm thấy UID hợp lệ (chỉ chấp nhận số)');
@@ -78,17 +77,16 @@ export default function ToolCheckLiveUid() {
           </p>
         </div>
       </AppDashed>
-
       <AppDashed noTopBorder padding="p-5">
         <div className="max-w-lg mx-auto flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-title">Nhập UID (tối đa 50)</label>
-            <textarea
+            <Textarea
               placeholder={"Mỗi UID một dòng hoặc phân cách bằng dấu phẩy...\n\nVí dụ:\n100001234567890\n100009876543210"}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               rows={5}
-              className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
+              className="font-mono resize-none"
             />
             <div className="flex justify-between items-center">
               <p className="text-xs text-muted-foreground">
@@ -119,7 +117,6 @@ export default function ToolCheckLiveUid() {
 
           {results.length > 0 && (
             <div className="flex flex-col gap-3">
-              {/* Stats */}
               <div className="flex gap-2">
                 <div className="flex-1 p-3 rounded-lg border border-border text-center">
                   <p className="text-lg font-bold text-title">{results.length}</p>
@@ -141,8 +138,6 @@ export default function ToolCheckLiveUid() {
                   Sao chép {liveCount} UID live
                 </Button>
               )}
-
-              {/* Results list */}
               <div className="rounded-lg border border-border overflow-hidden divide-y divide-border">
                 {results.map((r) => (
                   <div key={r.uid} className="flex items-center justify-between px-4 py-2.5">
