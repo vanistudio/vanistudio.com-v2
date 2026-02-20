@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
+import { ArrowUpRight } from 'lucide-react';
 import { Icon } from '@iconify/react';
 import AppDashed from '@/components/layouts/application/AppDashed';
 import { usePageTitle } from '@/hooks/use-page-title';
 import { api } from '@/lib/api';
 import { Link } from 'react-router-dom';
-import { cn } from '@/lib/utils';
 
 interface Service {
   id: string;
@@ -30,74 +30,49 @@ function formatPrice(price: string, currency: string) {
   return num.toLocaleString("vi-VN") + " " + currency;
 }
 
-const gradients = [
-  "from-blue-500/10 to-cyan-500/10",
-  "from-violet-500/10 to-purple-500/10",
-  "from-amber-500/10 to-orange-500/10",
-  "from-emerald-500/10 to-teal-500/10",
-  "from-rose-500/10 to-pink-500/10",
-  "from-indigo-500/10 to-blue-500/10",
-];
-
-const iconColors = [
-  "text-blue-500",
-  "text-violet-500",
-  "text-amber-500",
-  "text-emerald-500",
-  "text-rose-500",
-  "text-indigo-500",
-];
-
-function ServiceCard({ service, index }: { service: Service; index: number }) {
-  const gradient = gradients[index % gradients.length];
-  const iconColor = iconColors[index % iconColors.length];
-
+function ServiceCard({ service }: { service: Service }) {
   return (
-    <Link to={`/services/${service.slug}`} className="group relative flex flex-col rounded-2xl border border-border bg-card overflow-hidden hover:border-primary/30 transition-all duration-300">
-      {service.isFeatured && (
-        <div className="absolute top-3 right-3 z-10">
-          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-600 text-[10px] font-semibold">
-            <Icon icon="solar:star-bold" className="text-[10px]" />
-            Nổi bật
-          </div>
-        </div>
-      )}
-
-      <div className={cn("bg-gradient-to-br px-6 pt-6 pb-5", gradient)}>
-        <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-background/80 backdrop-blur-sm flex items-center justify-center shadow-sm shrink-0">
-            <Icon icon={service.icon || "solar:widget-5-bold-duotone"} className={cn("text-2xl", iconColor)} />
-          </div>
-          <div className="min-w-0 flex-1">
-            <h3 className="text-base font-bold text-title leading-snug">{service.name}</h3>
-            {service.tagline && (
-              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{service.tagline}</p>
+    <Link to={`/services/${service.slug}`} className="flex flex-col gap-2 cursor-pointer group w-full p-3">
+      <div className="p-[4px] rounded-[10px] border border-border">
+        <div className="relative w-full bg-muted-background rounded-[6px] border border-border h-[180px] overflow-hidden select-none">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="w-full h-full flex flex-col items-center justify-center gap-3">
+            <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
+              <Icon icon={service.icon || "solar:widget-5-bold-duotone"} className="text-2xl text-primary" />
+            </div>
+            {service.features && service.features.length > 0 && (
+              <div className="flex flex-wrap gap-1 justify-center px-4">
+                {service.features.slice(0, 3).map((f, i) => (
+                  <span key={i} className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">{f}</span>
+                ))}
+              </div>
             )}
           </div>
+          {service.isFeatured && (
+            <div className="absolute top-2 left-2">
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border border-amber-500/30 bg-amber-500/15 text-amber-500">
+                Nổi bật
+              </span>
+            </div>
+          )}
+          {service.estimatedDays && (
+            <div className="absolute top-2 right-2">
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border border-border bg-background/80 text-muted-foreground">
+                ~{service.estimatedDays} ngày
+              </span>
+            </div>
+          )}
         </div>
       </div>
-
-      <div className="px-6 pt-4 pb-3 flex-1">
-        {service.features && service.features.length > 0 && (
-          <ul className="space-y-2">
-            {service.features.slice(0, 4).map((f, i) => (
-              <li key={i} className="flex items-start gap-2.5 text-xs text-muted-foreground">
-                <div className="w-4 h-4 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0 mt-0.5">
-                  <Icon icon="solar:check-read-bold" className="text-emerald-500 text-[9px]" />
-                </div>
-                <span className="leading-relaxed">{f}</span>
-              </li>
-            ))}
-            {service.features.length > 4 && (
-              <li className="text-[11px] text-muted-foreground/50 pl-[26px]">+{service.features.length - 4} tính năng khác</li>
-            )}
-          </ul>
-        )}
-      </div>
-
-      <div className="border-t border-border px-6 py-3.5 flex items-center justify-between">
-        <div>
-          <div className="text-sm font-bold text-title">
+      <div className="px-1 flex flex-col gap-1">
+        <h3 className="text-sm font-bold text-title truncate">{service.name}</h3>
+        <p className="text-xs text-muted-foreground line-clamp-2 min-h-[2rem]">{service.tagline || service.description}</p>
+        <div className="flex items-center justify-between mt-0.5">
+          <div className="flex items-center gap-1 select-none">
+            <span className="text-xs text-muted-foreground transition-colors duration-300 group-hover:text-title">Xem chi tiết</span>
+            <ArrowUpRight size={12} className="text-muted-foreground transition-all duration-300 group-hover:rotate-45 group-hover:text-title" />
+          </div>
+          <span className="text-xs font-semibold text-primary">
             {service.minPrice && service.maxPrice ? (
               <>{formatPrice(service.minPrice, service.currency)} – {formatPrice(service.maxPrice, service.currency)}</>
             ) : service.minPrice ? (
@@ -105,20 +80,7 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
             ) : (
               formatPrice(service.price, service.currency)
             )}
-          </div>
-          {service.priceUnit && <span className="text-[10px] text-muted-foreground">{service.priceUnit}</span>}
-        </div>
-        <div className="flex items-center gap-3">
-          {service.estimatedDays && (
-            <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-              <Icon icon="solar:clock-circle-bold-duotone" className="text-xs" />
-              ~{service.estimatedDays} ngày
-            </div>
-          )}
-          <div className="flex items-center gap-1 text-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <span className="font-medium">Chi tiết</span>
-            <Icon icon="solar:arrow-right-linear" className="text-sm" />
-          </div>
+          </span>
         </div>
       </div>
     </Link>
@@ -138,34 +100,32 @@ export default function ServiceList() {
 
   return (
     <div className="flex flex-col w-full">
-      <AppDashed noTopBorder padding="p-8">
-        <div className="flex flex-col items-center gap-2 max-w-lg mx-auto">
-          <div className="p-3 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 mb-1">
+      <AppDashed noTopBorder padding="p-5">
+        <div className="flex flex-col items-center gap-1.5">
+          <div className="p-3 rounded-xl bg-primary/10 mb-1">
             <Icon icon="solar:widget-5-bold-duotone" className="text-3xl text-primary" />
           </div>
-          <h1 className="text-2xl font-bold text-title">Dịch vụ</h1>
-          <p className="text-sm text-muted-foreground text-center leading-relaxed">
-            Giải pháp chuyên nghiệp, thiết kế riêng cho nhu cầu của bạn
+          <h1 className="text-xl font-bold text-title">Dịch vụ</h1>
+          <p className="text-sm text-muted-foreground text-center max-w-lg">
+            Các dịch vụ chuyên nghiệp mà chúng tôi cung cấp
           </p>
         </div>
       </AppDashed>
 
-      <AppDashed noTopBorder padding="p-5">
+      <AppDashed noTopBorder padding="p-0">
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <Icon icon="svg-spinners:ring-resize" className="text-2xl text-muted-foreground" />
           </div>
         ) : services.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-3">
-            <div className="p-4 rounded-2xl bg-muted/30">
-              <Icon icon="solar:widget-5-bold-duotone" className="text-4xl text-muted-foreground/30" />
-            </div>
+          <div className="flex flex-col items-center justify-center py-20 gap-2">
+            <Icon icon="solar:widget-5-bold-duotone" className="text-5xl text-muted-foreground/20" />
             <p className="text-sm text-muted-foreground">Chưa có dịch vụ nào</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
-            {services.map((service, i) => (
-              <ServiceCard key={service.id} service={service} index={i} />
+          <div className="grid grid-cols-2 sm:grid-cols-3">
+            {services.map((service) => (
+              <ServiceCard key={service.id} service={service} />
             ))}
           </div>
         )}

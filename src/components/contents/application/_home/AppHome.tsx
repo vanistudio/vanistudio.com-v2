@@ -369,38 +369,35 @@ export default function AppHome() {
           <AppDashed noTopBorder padding="p-3">
             <SectionTitle>Dịch vụ nổi bật</SectionTitle>
           </AppDashed>
-          <AppDashed noTopBorder padding="p-5">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-w-4xl mx-auto">
-              {services.map((s, i) => {
-                const gradients = ["from-blue-500/10 to-cyan-500/10", "from-violet-500/10 to-purple-500/10", "from-amber-500/10 to-orange-500/10", "from-emerald-500/10 to-teal-500/10", "from-rose-500/10 to-pink-500/10", "from-indigo-500/10 to-blue-500/10"];
-                const iconColors = ["text-blue-500", "text-violet-500", "text-amber-500", "text-emerald-500", "text-rose-500", "text-indigo-500"];
-                return (
-                  <Link key={s.id} to={`/services/${s.slug}`} className="group relative flex flex-col rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300">
-                    <div className={`bg-gradient-to-br ${gradients[i % gradients.length]} px-4 py-4`}>
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-background/80 backdrop-blur-sm flex items-center justify-center shadow-sm shrink-0">
-                          <Icon icon={s.icon || "solar:widget-5-bold-duotone"} className={`text-xl ${iconColors[i % iconColors.length]}`} />
+          <AppDashed noTopBorder padding="p-0">
+            <div className="grid grid-cols-2 sm:grid-cols-3">
+              {services.map((s) => (
+                <Link key={s.id} to={`/services/${s.slug}`} className="flex flex-col gap-2 cursor-pointer group w-full p-3">
+                  <div className="p-[4px] rounded-[10px] border border-border">
+                    <div className="relative w-full bg-muted-background rounded-[6px] border border-border h-[140px] overflow-hidden select-none">
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="w-full h-full flex flex-col items-center justify-center gap-2">
+                        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                          <Icon icon={s.icon || "solar:widget-5-bold-duotone"} className="text-xl text-primary" />
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <h3 className="text-sm font-bold text-title leading-snug truncate">{s.name}</h3>
-                          {s.tagline && <p className="text-[10px] text-muted-foreground line-clamp-1 mt-0.5">{s.tagline}</p>}
-                        </div>
+                        {s.features && s.features.length > 0 && (
+                          <div className="flex flex-wrap gap-1 justify-center px-3">
+                            {s.features.slice(0, 2).map((f, i) => (
+                              <span key={i} className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">{f}</span>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
-                    <div className="px-4 py-3 flex items-center justify-between border-t border-border">
-                      <span className="text-xs font-semibold text-title">
-                        {s.minPrice && Number(s.minPrice) > 0 ? `Từ ${Number(s.minPrice).toLocaleString("vi-VN")} ${s.currency}` : Number(s.price) > 0 ? `${Number(s.price).toLocaleString("vi-VN")} ${s.currency}` : "Liên hệ"}
-                      </span>
-                      <div className="flex items-center gap-1 text-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                        <span className="font-medium">Xem</span>
-                        <Icon icon="solar:arrow-right-linear" className="text-sm" />
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
+                  </div>
+                  <div className="px-1 flex flex-col gap-1">
+                    <h3 className="text-sm font-bold text-title text-center truncate">{s.name}</h3>
+                    {s.tagline && <p className="text-[10px] text-muted-foreground text-center line-clamp-1">{s.tagline}</p>}
+                  </div>
+                </Link>
+              ))}
             </div>
-            <div className="flex justify-center mt-4">
+            <div className="flex justify-center py-4">
               <Link to="/services">
                 <Button variant="outline" size="sm" className="text-xs">
                   Xem tất cả dịch vụ
