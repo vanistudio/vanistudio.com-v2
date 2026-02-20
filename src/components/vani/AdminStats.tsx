@@ -5,8 +5,8 @@ interface StatItem {
   label: string;
   value: string | number;
   icon: string;
-  bgColor?: string;  // full class e.g. "bg-blue-500/10"
-  textColor?: string; // full class e.g. "text-blue-500"
+  bgColor?: string;
+  textColor?: string;
 }
 
 interface AdminStatsProps {

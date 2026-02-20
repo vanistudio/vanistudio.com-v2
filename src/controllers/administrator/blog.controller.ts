@@ -105,7 +105,6 @@ export const blogController = {
       updateData.readingTime = estimateReadingTime(updateData.content);
     }
 
-    // Auto-set publishedAt when publishing for the first time
     if (updateData.status === "published") {
       const [current] = await db.select({ publishedAt: blogPosts.publishedAt }).from(blogPosts).where(eq(blogPosts.id, id)).limit(1);
       if (!current?.publishedAt) {

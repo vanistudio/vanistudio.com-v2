@@ -24,34 +24,20 @@ import { DataTableToolbar } from "./DataTableToolbar";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-
-  // ── Search ──
   searchKey?: string;
   searchPlaceholder?: string;
-
-  // ── Toolbar ──
   toolbar?: (table: ReturnType<typeof useReactTable<TData>>) => React.ReactNode;
   toolbarChildren?: React.ReactNode;
   showToolbar?: boolean;
-
-  // ── Pagination ──
   showPagination?: boolean;
   pageSizeOptions?: number[];
   defaultPageSize?: number;
-
-  // ── Row expand ──
   getSubRows?: (row: TData) => TData[] | undefined;
   renderSubComponent?: (props: { row: Row<TData> }) => React.ReactNode;
-
-  // ── Styles ──
   className?: string;
   compact?: boolean;
-
-  // ── Empty state ──
   emptyIcon?: string;
   emptyMessage?: string;
-
-  // ── Callbacks ──
   onRowClick?: (row: TData) => void;
 }
 

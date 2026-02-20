@@ -109,8 +109,6 @@ export const productsPublicRoutes = new Elysia({ prefix: "/products" })
         .limit(1);
 
       if (!product) return { success: false, error: "Không tìm thấy sản phẩm" };
-
-      // Increment view count
       await db.update(products)
         .set({ viewCount: sql`${products.viewCount} + 1` })
         .where(eq(products.id, product.id));
