@@ -11,6 +11,8 @@ interface AuthUser {
   avatarUrl: string | null;
   provider: string;
   role: string;
+  roleId: string | null;
+  permissions: string[];
   createdAt: Date | string;
 }
 

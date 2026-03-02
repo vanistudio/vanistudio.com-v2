@@ -1,7 +1,8 @@
 import { db } from "@/configs/index.config";
 import { settings } from "@/schemas/setting.schema";
 import { users } from "@/schemas/user.schema";
-import { eq } from "drizzle-orm";
+import { roles } from "@/schemas/role.schema";
+import { eq, or, isNotNull } from "drizzle-orm";
 import { invalidateSettingsCache } from "@/services/settings.service";
 
 async function hasSettings(): Promise<boolean> {
@@ -13,7 +14,10 @@ async function hasAdmin(): Promise<boolean> {
   const [row] = await db
     .select({ id: users.id })
     .from(users)
-    .where(eq(users.role, "admin"))
+    .where(or(
+      eq(users.role, "admin"),
+      isNotNull(users.roleId)
+    ))
     .limit(1);
   return !!row;
 }
@@ -60,9 +64,16 @@ export const configController = {
       })
       .returning();
 
+    // Lookup admin role to get roleId
+    const [adminRole] = await db
+      .select({ id: roles.id })
+      .from(roles)
+      .where(eq(roles.name, "admin"))
+      .limit(1);
+
     const [admin] = await db
       .update(users)
-      .set({ role: "admin", updatedAt: new Date() })
+      .set({ role: "admin", roleId: adminRole?.id || null, updatedAt: new Date() })
       .where(eq(users.id, userId))
       .returning();
 

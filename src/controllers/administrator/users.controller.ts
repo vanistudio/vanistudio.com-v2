@@ -46,7 +46,7 @@ export const usersController = {
       );
     }
 
-    if (options.role && (options.role === "admin" || options.role === "user")) {
+    if (options.role) {
       conditions.push(eq(users.role, options.role));
     }
 

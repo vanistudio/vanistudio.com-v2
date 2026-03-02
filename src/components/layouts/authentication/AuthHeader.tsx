@@ -256,7 +256,7 @@ export default function AuthHeader() {
                   <p className="text-[11px] text-muted-foreground truncate">{user?.email}</p>
                 </div>
                 <DropdownMenuSeparator />
-                {user?.role === 'admin' && (
+                {!!user?.permissions?.length && (
                   <DropdownMenuItem asChild>
                     <Link to="/admin" className="cursor-pointer">
                       <Icon icon="solar:widget-line-duotone" className="mr-2 text-base" />

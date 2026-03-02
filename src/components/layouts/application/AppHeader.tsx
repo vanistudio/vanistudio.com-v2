@@ -236,7 +236,7 @@ export default function AppHeadder() {
             <Icon icon="solar:sun-line-duotone" className="text-base dark:hidden" />
             <Icon icon="solar:moon-line-duotone" className="text-base hidden dark:block" />
           </button>
-          {user?.role === "admin" && (
+          {!!user?.permissions?.length && (
             <Link
               to="/admin"
               className="hidden md:flex size-8 rounded-lg items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
@@ -265,7 +265,7 @@ export default function AppHeadder() {
                   <p className="text-[11px] text-muted-foreground truncate">{user.email}</p>
                 </div>
                 <DropdownMenuSeparator />
-                {user.role === "admin" && (
+                {!!user.permissions?.length && (
                   <DropdownMenuItem asChild>
                     <Link to="/admin" className="cursor-pointer">
                       <Icon icon="solar:widget-line-duotone" className="mr-2 text-base" />

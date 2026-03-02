@@ -90,12 +90,12 @@ export default function AdminUsers() {
   }, [users, search, roleFilter, statusFilter]);
   const stats = useMemo(() => {
     const total = users.length;
-    const admins = users.filter((u) => u.role === "admin").length;
+    const withPerms = users.filter((u) => u.role !== "user").length;
     const active = users.filter((u) => u.isActive).length;
     const inactive = total - active;
     return [
       { label: "Tổng người dùng", value: total, icon: "solar:users-group-rounded-line-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
-      { label: "Admin", value: admins, icon: "solar:shield-user-line-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
+      { label: "Có quyền quản trị", value: withPerms, icon: "solar:shield-user-line-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
       { label: "Đang hoạt động", value: active, icon: "solar:check-circle-line-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
       { label: "Vô hiệu hóa", value: inactive, icon: "solar:close-circle-line-duotone", bgColor: "bg-red-500/10", textColor: "text-red-500" },
     ];
@@ -166,8 +166,11 @@ export default function AdminUsers() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Tất cả</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="user">User</SelectItem>
+                      {roles.map((r) => (
+                        <SelectItem key={r.id} value={r.name}>
+                          <span className="capitalize">{r.name}</span>
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>

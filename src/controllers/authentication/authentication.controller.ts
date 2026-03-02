@@ -1,5 +1,6 @@
 import { db } from "@/configs/index.config";
 import { users } from "@/schemas/user.schema";
+import { roles } from "@/schemas/role.schema";
 import { githubOAuthService, type GitHubConfig } from "@/services/github.service";
 import { googleOAuthService, type GoogleConfig } from "@/services/google.service";
 import { eq, and } from "drizzle-orm";
@@ -231,12 +232,30 @@ export const authController = {
         avatarUrl: users.avatarUrl,
         provider: users.provider,
         role: users.role,
+        roleId: users.roleId,
         createdAt: users.createdAt,
       })
       .from(users)
       .where(eq(users.id, userId))
       .limit(1);
 
-    return user || null;
+    if (!user) return null;
+
+    // Resolve permissions from role
+    let permissions: string[] = [];
+    if (user.roleId) {
+      const [role] = await db
+        .select({ permissions: roles.permissions })
+        .from(roles)
+        .where(eq(roles.id, user.roleId))
+        .limit(1);
+      if (role) permissions = role.permissions;
+    }
+    // Fallback for legacy admin without roleId
+    if (!user.roleId && user.role === "admin") {
+      permissions = ["*"];
+    }
+
+    return { ...user, permissions };
   },
 };

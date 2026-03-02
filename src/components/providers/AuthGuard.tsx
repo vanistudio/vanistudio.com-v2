@@ -52,7 +52,7 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
 
   if (loading) return null;
 
-  if (!isAuthenticated || user?.role !== "admin") {
+  if (!isAuthenticated || !user?.permissions?.length) {
     return <Navigate to="/" replace />;
   }
 
