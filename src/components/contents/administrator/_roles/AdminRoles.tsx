@@ -15,6 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import ConfirmDialog from "@/components/vani/ConfirmDialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,6 +43,7 @@ export default function AdminRoles() {
   const [editingRole, setEditingRole] = useState<Role | null>(null);
   const [form, setForm] = useState({ name: "", description: "", permissions: [] as string[] });
   const [saving, setSaving] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const fetchRoles = useCallback(async () => {
     setLoading(true);
@@ -118,14 +120,16 @@ export default function AdminRoles() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Bạn có chắc muốn xóa role này?")) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      const { data } = await (api.api.admin as any).roles({ id }).delete();
+      const { data } = await (api.api.admin as any).roles({ id: deleteTarget }).delete();
       if (data?.success) { toast.success("Đã xóa role"); fetchRoles(); }
       else toast.error(data?.error || "Xóa thất bại");
     } catch {
       toast.error("Lỗi kết nối");
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
@@ -250,7 +254,7 @@ export default function AdminRoles() {
                         {!role.isSystem && (
                           <>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(role.id)}>
+                            <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setDeleteTarget(role.id)}>
                               <Icon icon="solar:trash-bin-2-line-duotone" className="mr-2 text-sm" />
                               <span className="text-xs">Xóa</span>
                             </DropdownMenuItem>
@@ -272,7 +276,7 @@ export default function AdminRoles() {
       </AppDashed>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingRole ? "Chỉnh sửa role" : "Tạo role mới"}</DialogTitle>
           </DialogHeader>
@@ -351,6 +355,15 @@ export default function AdminRoles() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Xóa role"
+        description="Bạn có chắc muốn xóa role này? Người dùng đang sử dụng role sẽ bị hủy liên kết."
+        confirmText="Xóa"
+        onConfirm={handleDelete}
+      />
     </div>
   );
 }

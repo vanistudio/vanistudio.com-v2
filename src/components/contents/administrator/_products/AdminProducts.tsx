@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/tooltip";
 import AdminStats from "@/components/vani/AdminStats";
 import { usePageTitle } from "@/hooks/use-page-title";
+import ConfirmDialog from "@/components/vani/ConfirmDialog";
 import { useNavigate } from "react-router-dom";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
@@ -96,13 +97,16 @@ export default function AdminProducts() {
 
   useEffect(() => { fetchProducts(); }, [fetchProducts]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Xóa sản phẩm này?")) return;
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      const { data } = await api.api.admin.products({ id }).delete();
+      const { data } = await api.api.admin.products({ id: deleteTarget }).delete();
       if (data?.success) { toast.success("Đã xóa sản phẩm"); fetchProducts(); }
       else toast.error((data as any)?.error || "Thất bại");
     } catch { toast.error("Lỗi kết nối"); }
+    finally { setDeleteTarget(null); }
   };
 
   const filteredProducts = useMemo(() => {
@@ -313,5 +317,15 @@ export default function AdminProducts() {
         )}
       </AppDashed>
     </div>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Xóa sản phẩm"
+        description="Bạn có chắc muốn xóa sản phẩm này? Hành động này không thể hoàn tác."
+        confirmText="Xóa"
+        onConfirm={handleDelete}
+      />
+    </>
   );
 }

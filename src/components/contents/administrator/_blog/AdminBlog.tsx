@@ -16,6 +16,7 @@ import { usePageTitle } from "@/hooks/use-page-title";
 import { useNavigate } from "react-router-dom";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
+import ConfirmDialog from "@/components/vani/ConfirmDialog";
 
 interface BlogPost {
   id: string;
@@ -76,13 +77,16 @@ export default function AdminBlog() {
 
   useEffect(() => { fetchPosts(); }, [fetchPosts]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Xóa bài viết này?")) return;
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      const { data } = await (api.api.admin.blog as any)({ id }).delete();
+      const { data } = await (api.api.admin.blog as any)({ id: deleteTarget }).delete();
       if (data?.success) { toast.success("Đã xóa bài viết"); fetchPosts(); }
       else toast.error(data?.error || "Thất bại");
     } catch { toast.error("Lỗi kết nối"); }
+    finally { setDeleteTarget(null); }
   };
 
   const filteredPosts = useMemo(() => {
@@ -276,5 +280,15 @@ export default function AdminBlog() {
         )}
       </AppDashed>
     </div>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Xóa bài viết"
+        description="Bạn có chắc muốn xóa bài viết này?"
+        confirmText="Xóa"
+        onConfirm={handleDelete}
+      />
+    </>
   );
 }

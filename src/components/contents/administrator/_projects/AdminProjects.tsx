@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/tooltip";
 import AdminStats from "@/components/vani/AdminStats";
 import { usePageTitle } from "@/hooks/use-page-title";
+import ConfirmDialog from "@/components/vani/ConfirmDialog";
 import { useNavigate } from "react-router-dom";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
@@ -92,13 +93,16 @@ export default function AdminProjects() {
 
   useEffect(() => { fetchProjects(); }, [fetchProjects]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Xóa dự án này?")) return;
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      const { data } = await (api.api.admin.projects as any)({ id }).delete();
+      const { data } = await (api.api.admin.projects as any)({ id: deleteTarget }).delete();
       if (data?.success) { toast.success("Đã xóa dự án"); fetchProjects(); }
       else toast.error(data?.error || "Thất bại");
     } catch { toast.error("Lỗi kết nối"); }
+    finally { setDeleteTarget(null); }
   };
 
   const filteredProjects = useMemo(() => {
@@ -318,5 +322,15 @@ export default function AdminProjects() {
         )}
       </AppDashed>
     </div>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Xóa dự án"
+        description="Bạn có chắc muốn xóa dự án này? Hành động này không thể hoàn tác."
+        confirmText="Xóa"
+        onConfirm={handleDelete}
+      />
+    </>
   );
 }

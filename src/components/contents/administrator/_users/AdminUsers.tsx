@@ -12,6 +12,7 @@ import { usePageTitle } from "@/hooks/use-page-title";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
 import UserRow, { type User } from "./UserRow";
+import ConfirmDialog from "@/components/vani/ConfirmDialog";
 
 export default function AdminUsers() {
   usePageTitle("Quản lý Người dùng");
@@ -20,6 +21,7 @@ export default function AdminUsers() {
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
@@ -50,13 +52,14 @@ export default function AdminUsers() {
       else toast.error("Thất bại", { description: (data as any)?.error });
     } catch { toast.error("Lỗi kết nối"); }
   };
-  const handleDelete = async (id: string) => {
-    if (!confirm("Bạn có chắc muốn xóa người dùng này?")) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      const { data } = await api.api.admin.users({ id }).delete();
+      const { data } = await api.api.admin.users({ id: deleteTarget }).delete();
       if (data?.success) { toast.success("Đã xóa người dùng"); fetchUsers(); }
       else toast.error("Thất bại", { description: (data as any)?.error });
     } catch { toast.error("Lỗi kết nối"); }
+    finally { setDeleteTarget(null); }
   };
   const filteredUsers = useMemo(() => {
     return users.filter((u) => {
@@ -205,7 +208,7 @@ export default function AdminUsers() {
                   user={user}
                   onToggleActive={handleToggleActive}
                   onChangeRole={handleChangeRole}
-                  onDelete={handleDelete}
+                  onDelete={(id) => setDeleteTarget(id)}
                 />
               ))}
             </div>
@@ -218,5 +221,15 @@ export default function AdminUsers() {
         )}
       </AppDashed>
     </div>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Xóa người dùng"
+        description="Bạn có chắc muốn xóa người dùng này? Hành động này không thể hoàn tác."
+        confirmText="Xóa"
+        onConfirm={handleDelete}
+      />
+    </>
   );
 }

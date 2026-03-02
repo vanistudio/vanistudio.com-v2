@@ -17,6 +17,7 @@ import AdminStats from "@/components/vani/AdminStats";
 import { usePageTitle } from "@/hooks/use-page-title";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
+import ConfirmDialog from "@/components/vani/ConfirmDialog";
 
 interface Contact {
   id: string;
@@ -77,16 +78,19 @@ export default function AdminContacts() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Xóa tin nhắn này?")) return;
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      const { data } = await (api.api.admin.contacts as any)[id].delete() as any;
+      const { data } = await (api.api.admin.contacts as any)[deleteTarget].delete() as any;
       if (data?.success) {
         toast.success("Đã xóa");
-        setContacts(prev => prev.filter(c => c.id !== id));
-        if (selected?.id === id) setSelected(null);
+        setContacts(prev => prev.filter(c => c.id !== deleteTarget));
+        if (selected?.id === deleteTarget) setSelected(null);
       } else toast.error(data?.error || "Thất bại");
     } catch { toast.error("Lỗi kết nối"); }
+    finally { setDeleteTarget(null); }
   };
 
   const filtered = useMemo(() => {
@@ -278,5 +282,15 @@ export default function AdminContacts() {
         </DialogContent>
       </Dialog>
     </div>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Xóa tin nhắn"
+        description="Bạn có chắc muốn xóa tin nhắn này?"
+        confirmText="Xóa"
+        onConfirm={handleDelete}
+      />
+    </>
   );
 }

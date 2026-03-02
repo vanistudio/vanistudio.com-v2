@@ -19,6 +19,7 @@ import { usePageTitle } from "@/hooks/use-page-title";
 import { useNavigate } from "react-router-dom";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
+import ConfirmDialog from "@/components/vani/ConfirmDialog";
 
 interface Service {
   id: string;
@@ -90,13 +91,16 @@ export default function AdminServices() {
 
   useEffect(() => { fetchServices(); }, [fetchServices]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Xóa dịch vụ này?")) return;
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      const { data } = await (api.api.admin.services as any)({ id }).delete();
+      const { data } = await (api.api.admin.services as any)({ id: deleteTarget }).delete();
       if (data?.success) { toast.success("Đã xóa dịch vụ"); fetchServices(); }
       else toast.error(data?.error || "Thất bại");
     } catch { toast.error("Lỗi kết nối"); }
+    finally { setDeleteTarget(null); }
   };
 
   const filteredServices = useMemo(() => {
@@ -280,7 +284,7 @@ export default function AdminServices() {
                         Chỉnh sửa
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(s.id)}>
+                      <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setDeleteTarget(s.id)}>
                         <Icon icon="solar:trash-bin-trash-line-duotone" className="mr-2 text-base" />
                         Xóa dịch vụ
                       </DropdownMenuItem>
@@ -298,5 +302,15 @@ export default function AdminServices() {
         )}
       </AppDashed>
     </div>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Xóa dịch vụ"
+        description="Bạn có chắc muốn xóa dịch vụ này?"
+        confirmText="Xóa"
+        onConfirm={handleDelete}
+      />
+    </>
   );
 }
