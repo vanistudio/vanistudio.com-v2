@@ -24,9 +24,8 @@ function cleanDomainInput(raw: string): string {
     .trim();
 }
 
-// ── In-memory cache ──
 const cache = new Map<string, { data: any; expiry: number }>();
-const CACHE_TTL = 10 * 60 * 1000; // 10 phút
+const CACHE_TTL = 10 * 60 * 1000;
 
 function getCache(key: string) {
   const entry = cache.get(key);

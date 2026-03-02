@@ -3,9 +3,21 @@ import { licensesController } from "@/controllers/administrator/licenses.control
 import { adminProxy, requirePermission } from "@/proxies/administrator.proxy";
 import { PERMISSIONS } from "@/constants/permissions";
 
+/** Mask license key: chỉ admin (wildcard *) thấy full key */
+function maskKey(key: string): string {
+  const parts = key.split("-");
+  if (parts.length <= 1) return "****";
+  const last = parts[parts.length - 1];
+  return parts.slice(0, -1).map(() => "XXXX").join("-") + "-" + last;
+}
+
+function isFullAdmin(admin: any): boolean {
+  return admin?.permissions?.includes("*") === true;
+}
+
 export const licensesRoutes = new Elysia({ prefix: "/licenses" })
   .use(adminProxy)
-  .get("/", async ({ query }) => {
+  .get("/", async ({ query, admin }) => {
     try {
       const result = await licensesController.getAll({
         page: query.page ? parseInt(query.page) : 1,
@@ -13,6 +25,9 @@ export const licensesRoutes = new Elysia({ prefix: "/licenses" })
         search: query.search || undefined,
         status: query.status || undefined,
       });
+      if (!isFullAdmin(admin)) {
+        result.licenses = result.licenses.map((l: any) => ({ ...l, key: maskKey(l.key) }));
+      }
       return { success: true, ...result };
     } catch (error: any) {
       return { success: false, error: error.message };
@@ -34,33 +49,39 @@ export const licensesRoutes = new Elysia({ prefix: "/licenses" })
       return { success: false, error: error.message };
     }
   }, { beforeHandle: requirePermission(PERMISSIONS.LICENSES_VIEW) })
-  .get("/:id", async ({ params }) => {
+  .get("/:id", async ({ params, admin }) => {
     try {
       const license = await licensesController.getById(params.id);
+      if (!isFullAdmin(admin)) {
+        (license as any).key = maskKey((license as any).key);
+      }
       return { success: true, license };
     } catch (error: any) {
       return { success: false, error: error.message };
     }
   }, { beforeHandle: requirePermission(PERMISSIONS.LICENSES_VIEW) })
-  .post("/", async ({ body }) => {
+  .post("/", async ({ body, admin }) => {
     try {
       const license = await licensesController.create(body as any);
+      if (!isFullAdmin(admin)) license.key = maskKey(license.key);
       return { success: true, license };
     } catch (error: any) {
       return { success: false, error: error.message };
     }
   }, { beforeHandle: requirePermission(PERMISSIONS.LICENSES_CREATE) })
-  .patch("/:id", async ({ params, body }) => {
+  .patch("/:id", async ({ params, body, admin }) => {
     try {
       const license = await licensesController.update(params.id, body as any);
+      if (!isFullAdmin(admin)) (license as any).key = maskKey((license as any).key);
       return { success: true, license };
     } catch (error: any) {
       return { success: false, error: error.message };
     }
   }, { beforeHandle: requirePermission(PERMISSIONS.LICENSES_UPDATE) })
-  .patch("/:id/revoke", async ({ params }) => {
+  .patch("/:id/revoke", async ({ params, admin }) => {
     try {
       const license = await licensesController.revoke(params.id);
+      if (!isFullAdmin(admin)) (license as any).key = maskKey((license as any).key);
       return { success: true, license };
     } catch (error: any) {
       return { success: false, error: error.message };

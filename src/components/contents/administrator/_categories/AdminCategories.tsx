@@ -49,12 +49,12 @@ function timeAgo(dateStr: string): string {
 }
 
 function SortableRow({
-  cat, isDraggable, navigate, handleDelete,
+  cat, isDraggable, navigate, onDelete,
 }: {
   cat: Category;
   isDraggable: boolean;
   navigate: (path: string) => void;
-  handleDelete: (id: string) => void;
+  onDelete: (id: string) => void;
 }) {
   const {
     attributes, listeners, setNodeRef, transform, transition, isDragging,
@@ -113,7 +113,7 @@ function SortableRow({
             <Icon icon="solar:pen-line-duotone" className="mr-2 text-base" />
             Chỉnh sửa
           </DropdownMenuItem>
-          <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setDeleteTarget(cat.id)}>
+          <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => onDelete(cat.id)}>
             <Icon icon="solar:trash-bin-trash-line-duotone" className="mr-2 text-base" />
             Xóa
           </DropdownMenuItem>
@@ -280,7 +280,7 @@ export default function AdminCategories() {
                       cat={cat}
                       isDraggable={isDraggable}
                       navigate={navigate}
-                      handleDelete={handleDelete}
+                      onDelete={(id) => setDeleteTarget(id)}
                     />
                   ))}
                 </div>

@@ -276,7 +276,7 @@ export default function AdminRoles() {
       </AppDashed>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[800px] max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingRole ? "Chỉnh sửa role" : "Tạo role mới"}</DialogTitle>
           </DialogHeader>
@@ -309,7 +309,7 @@ export default function AdminRoles() {
                 </Button>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 {PERMISSION_GROUPS.map((group) => {
                   const allChecked = group.permissions.every((p) => form.permissions.includes(p.key));
                   const someChecked = group.permissions.some((p) => form.permissions.includes(p.key));
