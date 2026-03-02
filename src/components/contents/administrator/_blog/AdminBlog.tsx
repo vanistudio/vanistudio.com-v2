@@ -116,6 +116,7 @@ export default function AdminBlog() {
   const activeFilterCount = statusFilter !== "all" ? 1 : 0;
 
   return (
+    <>
     <div className="flex flex-col w-full">
       <AppDashed noTopBorder padding="p-4">
         <div className="flex items-center justify-between">
@@ -262,7 +263,7 @@ export default function AdminBlog() {
                         Chỉnh sửa
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(p.id)}>
+                      <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setDeleteTarget(p.id)}>
                         <Icon icon="solar:trash-bin-trash-line-duotone" className="mr-2 text-base" />
                         Xóa bài viết
                       </DropdownMenuItem>

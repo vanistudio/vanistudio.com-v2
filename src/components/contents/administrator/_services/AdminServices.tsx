@@ -131,6 +131,7 @@ export default function AdminServices() {
   const clearFilters = () => { setStatusFilter("all"); };
 
   return (
+    <>
     <div className="flex flex-col w-full">
       <AppDashed noTopBorder padding="p-4">
         <div className="flex items-center justify-between">

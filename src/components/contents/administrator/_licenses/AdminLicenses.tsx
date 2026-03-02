@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/tooltip";
 import AdminStats from "@/components/vani/AdminStats";
 import { usePageTitle } from "@/hooks/use-page-title";
+import ConfirmDialog from "@/components/vani/ConfirmDialog";
 import { useNavigate } from "react-router-dom";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
@@ -82,22 +83,27 @@ export default function AdminLicenses() {
 
   useEffect(() => { fetchLicenses(); }, [fetchLicenses]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Xóa license này?")) return;
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [revokeTarget, setRevokeTarget] = useState<string | null>(null);
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      const { data } = await (api.api.admin.licenses as any)({ id }).delete();
+      const { data } = await (api.api.admin.licenses as any)({ id: deleteTarget }).delete();
       if (data?.success) { toast.success("Đã xóa"); fetchLicenses(); }
       else toast.error(data?.error || "Thất bại");
     } catch { toast.error("Lỗi kết nối"); }
+    finally { setDeleteTarget(null); }
   };
 
-  const handleRevoke = async (id: string) => {
-    if (!confirm("Thu hồi license này?")) return;
+  const handleRevoke = async () => {
+    if (!revokeTarget) return;
     try {
-      const { data } = await (api.api.admin.licenses as any)({ id }).revoke.patch();
+      const { data } = await (api.api.admin.licenses as any)({ id: revokeTarget }).revoke.patch();
       if (data?.success) { toast.success("Đã thu hồi"); fetchLicenses(); }
       else toast.error(data?.error || "Thất bại");
     } catch { toast.error("Lỗi kết nối"); }
+    finally { setRevokeTarget(null); }
   };
 
   const copyKey = (key: string) => {
@@ -133,6 +139,7 @@ export default function AdminLicenses() {
   const clearFilters = () => { setStatusFilter("all"); };
 
   return (
+    <>
     <div className="flex flex-col w-full">
       <AppDashed noTopBorder padding="p-4">
         <div className="flex items-center justify-between">
@@ -298,14 +305,14 @@ export default function AdminLicenses() {
                       {l.status === "active" && (
                         <>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-amber-600 focus:text-amber-600" onClick={() => handleRevoke(l.id)}>
+                          <DropdownMenuItem className="text-amber-600 focus:text-amber-600" onClick={() => setRevokeTarget(l.id)}>
                             <Icon icon="solar:close-circle-line-duotone" className="mr-2 text-base" />
                             Thu hồi
                           </DropdownMenuItem>
                         </>
                       )}
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(l.id)}>
+                      <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setDeleteTarget(l.id)}>
                         <Icon icon="solar:trash-bin-trash-line-duotone" className="mr-2 text-base" />
                         Xóa
                       </DropdownMenuItem>
@@ -324,5 +331,23 @@ export default function AdminLicenses() {
         )}
       </AppDashed>
     </div>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Xóa license"
+        description="Bạn có chắc muốn xóa license này?"
+        confirmText="Xóa"
+        onConfirm={handleDelete}
+      />
+      <ConfirmDialog
+        open={!!revokeTarget}
+        onOpenChange={(open) => !open && setRevokeTarget(null)}
+        title="Thu hồi license"
+        description="Bạn có chắc muốn thu hồi license này? Người dùng sẽ không thể sử dụng nữa."
+        confirmText="Thu hồi"
+        onConfirm={handleRevoke}
+      />
+    </>
   );
 }

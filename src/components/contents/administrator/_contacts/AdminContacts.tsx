@@ -113,6 +113,7 @@ export default function AdminContacts() {
   }, [contacts]);
 
   return (
+    <>
     <div className="flex flex-col w-full">
       <AppDashed noTopBorder padding="p-4">
         <div className="flex items-center justify-between">
@@ -220,7 +221,7 @@ export default function AdminContacts() {
                         Trả lời
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={(e) => { e.stopPropagation(); handleDelete(c.id); }}>
+                      <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={(e) => { e.stopPropagation(); setDeleteTarget(c.id); }}>
                         <Icon icon="solar:trash-bin-trash-line-duotone" className="mr-2 text-base" />
                         Xóa
                       </DropdownMenuItem>
@@ -267,7 +268,7 @@ export default function AdminContacts() {
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">{new Date(selected.createdAt).toLocaleString("vi-VN")}</span>
                 <div className="flex gap-2">
-                  <Button variant="destructive" size="sm" className="text-xs" onClick={() => handleDelete(selected.id)}>
+                  <Button variant="destructive" size="sm" className="text-xs" onClick={() => setDeleteTarget(selected.id)}>
                     <Icon icon="solar:trash-bin-trash-line-duotone" className="text-sm mr-1" />
                     Xóa
                   </Button>

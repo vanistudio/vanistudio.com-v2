@@ -138,6 +138,7 @@ export default function AdminProducts() {
   const clearFilters = () => { setStatusFilter("all"); setTypeFilter("all"); };
 
   return (
+    <>
     <div className="flex flex-col w-full">
       <AppDashed noTopBorder padding="p-4">
         <div className="flex items-center justify-between">
@@ -299,7 +300,7 @@ export default function AdminProducts() {
                         Chỉnh sửa
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(p.id)}>
+                      <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setDeleteTarget(p.id)}>
                         <Icon icon="solar:trash-bin-trash-line-duotone" className="mr-2 text-base" />
                         Xóa sản phẩm
                       </DropdownMenuItem>

@@ -12,6 +12,7 @@ import { usePageTitle } from "@/hooks/use-page-title";
 import { useNavigate } from "react-router-dom";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
+import ConfirmDialog from "@/components/vani/ConfirmDialog";
 import {
   DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors,
   type DragEndEvent,
@@ -112,7 +113,7 @@ function SortableRow({
             <Icon icon="solar:pen-line-duotone" className="mr-2 text-base" />
             Chỉnh sửa
           </DropdownMenuItem>
-          <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(cat.id)}>
+          <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setDeleteTarget(cat.id)}>
             <Icon icon="solar:trash-bin-trash-line-duotone" className="mr-2 text-base" />
             Xóa
           </DropdownMenuItem>
@@ -150,13 +151,16 @@ export default function AdminCategories() {
 
   useEffect(() => { fetchCategories(); }, []);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Xóa chuyên mục này?")) return;
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      const { data } = await api.api.admin.categories({ id }).delete();
+      const { data } = await api.api.admin.categories({ id: deleteTarget }).delete();
       if (data?.success) { toast.success("Đã xóa"); fetchCategories(); }
       else toast.error((data as any)?.error || "Thất bại");
     } catch { toast.error("Lỗi kết nối"); }
+    finally { setDeleteTarget(null); }
   };
 
   const isDraggable = !search;
@@ -215,6 +219,7 @@ export default function AdminCategories() {
   }, [categories]);
 
   return (
+    <>
     <div className="flex flex-col w-full">
       <AppDashed noTopBorder padding="p-4">
         <div className="flex items-center justify-between">
@@ -296,5 +301,15 @@ export default function AdminCategories() {
         )}
       </AppDashed>
     </div>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Xóa chuyên mục"
+        description="Bạn có chắc muốn xóa chuyên mục này?"
+        confirmText="Xóa"
+        onConfirm={handleDelete}
+      />
+    </>
   );
 }
