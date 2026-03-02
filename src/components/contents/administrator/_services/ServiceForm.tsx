@@ -14,46 +14,46 @@ import { toast } from "sonner";
 import FileUploadDialog from "@/components/vani/FileUploadDialog";
 
 const ICON_OPTIONS = [
-  { value: "solar:monitor-bold-duotone", label: "Website" },
-  { value: "solar:smartphone-bold-duotone", label: "Mobile App" },
-  { value: "solar:laptop-bold-duotone", label: "Laptop" },
-  { value: "solar:code-square-bold-duotone", label: "Code" },
-  { value: "solar:palette-bold-duotone", label: "Design" },
-  { value: "solar:pen-bold-duotone", label: "Pen" },
-  { value: "solar:cart-large-bold-duotone", label: "E-Commerce" },
-  { value: "solar:server-bold-duotone", label: "Server" },
-  { value: "solar:database-bold-duotone", label: "Database" },
-  { value: "solar:cloud-bold-duotone", label: "Cloud" },
-  { value: "solar:shield-check-bold-duotone", label: "Security" },
-  { value: "solar:chart-bold-duotone", label: "Analytics" },
-  { value: "solar:graph-up-bold-duotone", label: "SEO" },
-  { value: "solar:rocket-bold-duotone", label: "Startup" },
-  { value: "solar:bolt-bold-duotone", label: "Performance" },
-  { value: "solar:settings-bold-duotone", label: "Settings" },
-  { value: "solar:chat-round-dots-bold-duotone", label: "Chatbot" },
-  { value: "solar:letter-bold-duotone", label: "Email" },
-  { value: "solar:camera-bold-duotone", label: "Photo" },
-  { value: "solar:video-frame-bold-duotone", label: "Video" },
-  { value: "solar:gamepad-bold-duotone", label: "Game" },
-  { value: "solar:user-bold-duotone", label: "User" },
-  { value: "solar:users-group-rounded-bold-duotone", label: "Team" },
-  { value: "solar:wallet-bold-duotone", label: "Payment" },
-  { value: "solar:gift-bold-duotone", label: "Gift" },
-  { value: "solar:star-bold-duotone", label: "Star" },
-  { value: "solar:heart-bold-duotone", label: "Heart" },
-  { value: "solar:bookmark-bold-duotone", label: "Bookmark" },
-  { value: "solar:map-point-bold-duotone", label: "Map" },
-  { value: "solar:gallery-bold-duotone", label: "Gallery" },
-  { value: "solar:music-notes-bold-duotone", label: "Music" },
-  { value: "solar:tuning-2-bold-duotone", label: "Tuning" },
-  { value: "solar:box-bold-duotone", label: "Box" },
-  { value: "solar:document-text-bold-duotone", label: "Document" },
-  { value: "solar:link-circle-bold-duotone", label: "Link" },
-  { value: "solar:magnifer-bold-duotone", label: "Search" },
-  { value: "solar:lock-bold-duotone", label: "Lock" },
-  { value: "solar:folder-bold-duotone", label: "Folder" },
-  { value: "solar:clipboard-bold-duotone", label: "Clipboard" },
-  { value: "solar:widget-5-bold-duotone", label: "Widget" },
+  { value: "solar:monitor-line-duotone", label: "Website" },
+  { value: "solar:smartphone-line-duotone", label: "Mobile App" },
+  { value: "solar:laptop-line-duotone", label: "Laptop" },
+  { value: "solar:code-square-line-duotone", label: "Code" },
+  { value: "solar:palette-line-duotone", label: "Design" },
+  { value: "solar:pen-line-duotone", label: "Pen" },
+  { value: "solar:cart-large-line-duotone", label: "E-Commerce" },
+  { value: "solar:server-line-duotone", label: "Server" },
+  { value: "solar:database-line-duotone", label: "Database" },
+  { value: "solar:cloud-line-duotone", label: "Cloud" },
+  { value: "solar:shield-check-line-duotone", label: "Security" },
+  { value: "solar:chart-line-duotone", label: "Analytics" },
+  { value: "solar:graph-up-line-duotone", label: "SEO" },
+  { value: "solar:rocket-line-duotone", label: "Startup" },
+  { value: "solar:bolt-line-duotone", label: "Performance" },
+  { value: "solar:settings-line-duotone", label: "Settings" },
+  { value: "solar:chat-round-dots-line-duotone", label: "Chatbot" },
+  { value: "solar:letter-line-duotone", label: "Email" },
+  { value: "solar:camera-line-duotone", label: "Photo" },
+  { value: "solar:video-frame-line-duotone", label: "Video" },
+  { value: "solar:gamepad-line-duotone", label: "Game" },
+  { value: "solar:user-line-duotone", label: "User" },
+  { value: "solar:users-group-rounded-line-duotone", label: "Team" },
+  { value: "solar:wallet-line-duotone", label: "Payment" },
+  { value: "solar:gift-line-duotone", label: "Gift" },
+  { value: "solar:star-line-duotone", label: "Star" },
+  { value: "solar:heart-line-duotone", label: "Heart" },
+  { value: "solar:bookmark-line-duotone", label: "Bookmark" },
+  { value: "solar:map-point-line-duotone", label: "Map" },
+  { value: "solar:gallery-line-duotone", label: "Gallery" },
+  { value: "solar:music-notes-line-duotone", label: "Music" },
+  { value: "solar:tuning-2-line-duotone", label: "Tuning" },
+  { value: "solar:box-line-duotone", label: "Box" },
+  { value: "solar:document-text-line-duotone", label: "Document" },
+  { value: "solar:link-circle-line-duotone", label: "Link" },
+  { value: "solar:magnifer-line-duotone", label: "Search" },
+  { value: "solar:lock-line-duotone", label: "Lock" },
+  { value: "solar:folder-line-duotone", label: "Folder" },
+  { value: "solar:clipboard-line-duotone", label: "Clipboard" },
+  { value: "solar:widget-5-line-duotone", label: "Widget" },
 ];
 
 const initialForm = {
@@ -204,13 +204,13 @@ export default function ServiceForm() {
               Hủy
             </Button>
             <Button size="sm" className="text-xs gap-1.5" disabled={submitting} onClick={handleSubmit}>
-              <Icon icon="solar:check-circle-bold-duotone" className="text-sm" />
+              <Icon icon="solar:check-circle-line-duotone" className="text-sm" />
               {submitting ? "Đang lưu..." : isEditing ? "Cập nhật" : "Tạo dịch vụ"}
             </Button>
           </div>
         </div>
       </AppDashed>
-      <Section title="Thông tin cơ bản" icon="solar:document-bold-duotone" description="Tên, mô tả dịch vụ hiển thị trên trang chủ">
+      <Section title="Thông tin cơ bản" icon="solar:document-line-duotone" description="Tên, mô tả dịch vụ hiển thị trên trang chủ">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Tên dịch vụ *">
             <Input className="text-sm" placeholder="Thiết kế website" value={form.name}
@@ -256,7 +256,7 @@ export default function ServiceForm() {
           </Field>
         </div>
       </Section>
-      <Section title="Giá cả" icon="solar:wallet-bold-duotone" description="Thiết lập mức giá dịch vụ">
+      <Section title="Giá cả" icon="solar:wallet-line-duotone" description="Thiết lập mức giá dịch vụ">
         <div className="grid grid-cols-3 gap-4">
           <Field label="Giá hiển thị" hint="Nhập 0 nếu liên hệ">
             <Input className="text-sm" type="number" placeholder="5000000" value={form.price} onChange={(e) => set("price", e.target.value)} />
@@ -284,7 +284,7 @@ export default function ServiceForm() {
           </Field>
         </div>
       </Section>
-      <Section title="Phân loại" icon="solar:tag-bold-duotone" description="Trạng thái xuất bản">
+      <Section title="Phân loại" icon="solar:tag-line-duotone" description="Trạng thái xuất bản">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Trạng thái">
             <Select value={form.status} onValueChange={(v) => set("status", v)}>
@@ -298,7 +298,7 @@ export default function ServiceForm() {
           </Field>
         </div>
       </Section>
-      <Section title="Media" icon="solar:gallery-bold-duotone" description="Hình ảnh đại diện cho dịch vụ">
+      <Section title="Media" icon="solar:gallery-line-duotone" description="Hình ảnh đại diện cho dịch vụ">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Thumbnail">
             <FileUploadDialog value={form.thumbnail} onChange={(url) => set("thumbnail", url)} label="Upload" />
@@ -308,7 +308,7 @@ export default function ServiceForm() {
           </Field>
         </div>
       </Section>
-      <Section title="Tính năng" icon="solar:star-bold-duotone" description="Liệt kê tính năng chính, mỗi dòng một tính năng">
+      <Section title="Tính năng" icon="solar:star-line-duotone" description="Liệt kê tính năng chính, mỗi dòng một tính năng">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Danh sách tính năng" hint="Mỗi dòng 1 tính năng">
             <Textarea className="text-sm min-h-[120px] resize-y" placeholder={"Responsive design\nSEO tối ưu\nTốc độ nhanh\nHỗ trợ đa ngôn ngữ"} value={form.features} onChange={(e) => set("features", e.target.value)} />

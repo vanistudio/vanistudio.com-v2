@@ -32,7 +32,7 @@ export default function AppTerms() {
       <AppDashed noTopBorder padding="p-5">
         <div className="flex flex-col items-center gap-1.5">
           <div className="p-3 rounded-xl bg-primary/10 mb-1">
-            <Icon icon="solar:document-text-bold-duotone" className="text-3xl text-primary" />
+            <Icon icon="solar:document-text-line-duotone" className="text-3xl text-primary" />
           </div>
           <h1 className="text-xl font-bold text-title">Điều khoản Dịch vụ</h1>
           <p className="text-sm text-muted-foreground text-center max-w-lg">

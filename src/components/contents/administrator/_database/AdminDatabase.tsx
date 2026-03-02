@@ -61,10 +61,10 @@ export default function AdminDatabase() {
     const totalRows = tables.reduce((sum, t) => sum + t.rows, 0);
     const totalBytes = tables.reduce((sum, t) => sum + t.totalSizeBytes, 0);
     return [
-      { label: "Tổng bảng", value: totalTables, icon: "solar:database-bold-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
-      { label: "Tổng hàng", value: totalRows.toLocaleString(), icon: "solar:layers-bold-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
-      { label: "Dung lượng bảng", value: formatBytes(totalBytes), icon: "solar:server-bold-duotone", bgColor: "bg-violet-500/10", textColor: "text-violet-500" },
-      { label: "Database", value: databaseSize || "—", icon: "solar:cloud-bold-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
+      { label: "Tổng bảng", value: totalTables, icon: "solar:database-line-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
+      { label: "Tổng hàng", value: totalRows.toLocaleString(), icon: "solar:layers-line-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
+      { label: "Dung lượng bảng", value: formatBytes(totalBytes), icon: "solar:server-line-duotone", bgColor: "bg-violet-500/10", textColor: "text-violet-500" },
+      { label: "Database", value: databaseSize || "—", icon: "solar:cloud-line-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
     ];
   }, [tables, databaseSize]);
 
@@ -76,7 +76,7 @@ export default function AdminDatabase() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              <Icon icon="solar:database-bold-duotone" className="text-xl text-primary" />
+              <Icon icon="solar:database-line-duotone" className="text-xl text-primary" />
             </div>
             <div>
               <h1 className="text-lg font-bold text-title">Database</h1>
@@ -88,7 +88,7 @@ export default function AdminDatabase() {
             disabled={loading}
             className="size-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
-            <Icon icon="solar:refresh-bold-duotone" className={`text-base ${loading ? "animate-spin" : ""}`} />
+            <Icon icon="solar:refresh-line-duotone" className={`text-base ${loading ? "animate-spin" : ""}`} />
           </button>
         </div>
       </AppDashed>
@@ -111,7 +111,7 @@ export default function AdminDatabase() {
           </div>
         ) : filteredTables.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-2">
-            <Icon icon="solar:database-bold-duotone" className="text-4xl text-muted-foreground/30" />
+            <Icon icon="solar:database-line-duotone" className="text-4xl text-muted-foreground/30" />
             <p className="text-sm text-muted-foreground">
               {search ? "Không tìm thấy bảng phù hợp" : "Không có bảng nào"}
             </p>
@@ -129,7 +129,7 @@ export default function AdminDatabase() {
                 <div key={table.name} className="grid grid-cols-[1fr_100px_120px_120px] items-center gap-2 px-4 py-3 hover:bg-muted/30 transition-colors">
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-8 h-8 rounded-md bg-muted flex items-center justify-center shrink-0">
-                      <Icon icon="solar:database-bold-duotone" className="text-sm text-muted-foreground" />
+                      <Icon icon="solar:database-line-duotone" className="text-sm text-muted-foreground" />
                     </div>
                     <div className="min-w-0">
                       <span className="text-sm font-semibold text-foreground font-mono">{table.name}</span>

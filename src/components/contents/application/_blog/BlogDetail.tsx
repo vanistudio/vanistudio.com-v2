@@ -68,7 +68,7 @@ export default function BlogDetail() {
       <div className="flex flex-col w-full">
         <AppDashed noTopBorder padding="p-0">
           <div className="flex flex-col items-center justify-center py-20 gap-3">
-            <Icon icon="solar:document-text-bold-duotone" className="text-5xl text-muted-foreground/20" />
+            <Icon icon="solar:document-text-line-duotone" className="text-5xl text-muted-foreground/20" />
             <p className="text-sm text-muted-foreground">Không tìm thấy bài viết</p>
             <Button variant="outline" size="sm" onClick={() => navigate('/blog')}>
               <Icon icon="solar:arrow-left-bold" className="text-sm mr-1.5" />
@@ -95,7 +95,7 @@ export default function BlogDetail() {
                   <img src={post.authorAvatar} alt="" className="size-4 rounded-full object-cover" />
                 ) : (
                   <div className="size-4 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Icon icon="solar:user-bold-duotone" className="text-[8px] text-primary" />
+                    <Icon icon="solar:user-line-duotone" className="text-[8px] text-primary" />
                   </div>
                 )}
                 <span className="text-xs text-muted-foreground">{post.authorName || 'Vani Studio'}</span>

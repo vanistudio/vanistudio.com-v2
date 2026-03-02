@@ -99,7 +99,7 @@ export default function ToolCheckDomain() {
       <AppDashed noTopBorder padding="p-5">
         <div className="flex flex-col items-center gap-1.5">
           <div className="p-3 rounded-xl bg-primary/10 mb-1">
-            <Icon icon="solar:planet-3-bold-duotone" className="text-3xl text-primary" />
+            <Icon icon="solar:planet-3-line-duotone" className="text-3xl text-primary" />
           </div>
           <h1 className="text-xl font-bold text-title">Kiểm tra Domain</h1>
           <p className="text-sm text-muted-foreground text-center max-w-md">
@@ -124,7 +124,7 @@ export default function ToolCheckDomain() {
                 {loading ? (
                   <Icon icon="svg-spinners:ring-resize" className="text-base animate-spin" />
                 ) : (
-                  <Icon icon="solar:magnifer-bold-duotone" className="text-base" />
+                  <Icon icon="solar:magnifer-line-duotone" className="text-base" />
                 )}
               </Button>
             </div>
@@ -132,7 +132,7 @@ export default function ToolCheckDomain() {
 
           {error && (
             <div className="flex items-center gap-2 p-3 rounded-lg border border-destructive/30 bg-destructive/5 text-destructive text-sm">
-              <Icon icon="solar:danger-triangle-bold-duotone" className="text-lg shrink-0" />
+              <Icon icon="solar:danger-triangle-line-duotone" className="text-lg shrink-0" />
               {error}
             </div>
           )}
@@ -153,14 +153,14 @@ export default function ToolCheckDomain() {
               </div>
               {result.server && (
                 <div className="p-4 rounded-xl border border-border">
-                  <InfoBlock label="Web Server" icon="solar:server-bold-duotone">
+                  <InfoBlock label="Web Server" icon="solar:server-line-duotone">
                     <span className="text-sm font-mono text-muted-foreground">{result.server}</span>
                   </InfoBlock>
                 </div>
               )}
               {result.ssl && (
                 <div className="p-4 rounded-xl border border-border">
-                  <InfoBlock label="Chứng chỉ SSL" icon="solar:shield-check-bold-duotone">
+                  <InfoBlock label="Chứng chỉ SSL" icon="solar:shield-check-line-duotone">
                     <div className="flex flex-col gap-1.5">
                       {result.ssl.issuer && (
                         <div className="flex justify-between text-xs">
@@ -194,7 +194,7 @@ export default function ToolCheckDomain() {
               )}
               {result.dns && (
                 <div className="p-4 rounded-xl border border-border">
-                  <InfoBlock label="DNS Records" icon="solar:database-bold-duotone">
+                  <InfoBlock label="DNS Records" icon="solar:database-line-duotone">
                     <div className="flex flex-col divide-y divide-border/50">
                       <DnsRow type="A" records={result.dns.A || []} />
                       <DnsRow type="AAAA" records={result.dns.AAAA || []} />

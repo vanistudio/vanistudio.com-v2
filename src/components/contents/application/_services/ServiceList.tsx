@@ -42,7 +42,7 @@ function ServiceCard({ service }: { service: Service }) {
       )}
       <div className="flex flex-col items-center gap-3 p-6 pb-4">
         <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
-          <Icon icon={service.icon || "solar:widget-5-bold-duotone"} className="text-2xl text-primary" />
+          <Icon icon={service.icon || "solar:widget-5-line-duotone"} className="text-2xl text-primary" />
         </div>
         <div className="text-center">
           <h3 className="text-base font-bold text-title">{service.name}</h3>
@@ -83,7 +83,7 @@ function ServiceCard({ service }: { service: Service }) {
         </div>
         {service.estimatedDays && (
           <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-            <Icon icon="solar:clock-circle-bold-duotone" className="text-xs" />
+            <Icon icon="solar:clock-circle-line-duotone" className="text-xs" />
             ~{service.estimatedDays} ngày
           </div>
         )}
@@ -108,7 +108,7 @@ export default function ServiceList() {
       <AppDashed noTopBorder padding="p-5">
         <div className="flex flex-col items-center gap-1.5">
           <div className="p-3 rounded-xl bg-primary/10 mb-1">
-            <Icon icon="solar:widget-5-bold-duotone" className="text-3xl text-primary" />
+            <Icon icon="solar:widget-5-line-duotone" className="text-3xl text-primary" />
           </div>
           <h1 className="text-xl font-bold text-title">Dịch vụ</h1>
           <p className="text-sm text-muted-foreground text-center max-w-lg">
@@ -124,7 +124,7 @@ export default function ServiceList() {
           </div>
         ) : services.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-2">
-            <Icon icon="solar:widget-5-bold-duotone" className="text-4xl text-muted-foreground/30" />
+            <Icon icon="solar:widget-5-line-duotone" className="text-4xl text-muted-foreground/30" />
             <p className="text-sm text-muted-foreground">Chưa có dịch vụ nào</p>
           </div>
         ) : (

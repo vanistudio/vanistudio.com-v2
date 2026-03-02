@@ -69,7 +69,7 @@ export default function ToolCheckLiveUid() {
       <AppDashed noTopBorder padding="p-5">
         <div className="flex flex-col items-center gap-1.5">
           <div className="p-3 rounded-xl bg-primary/10 mb-1">
-            <Icon icon="solar:user-check-bold-duotone" className="text-3xl text-primary" />
+            <Icon icon="solar:user-check-line-duotone" className="text-3xl text-primary" />
           </div>
           <h1 className="text-xl font-bold text-title">Check Live UID</h1>
           <p className="text-sm text-muted-foreground text-center max-w-md">
@@ -100,7 +100,7 @@ export default function ToolCheckLiveUid() {
                   </>
                 ) : (
                   <>
-                    <Icon icon="solar:check-read-bold-duotone" className="text-base mr-1.5" />
+                    <Icon icon="solar:check-read-line-duotone" className="text-base mr-1.5" />
                     Kiểm tra
                   </>
                 )}
@@ -110,7 +110,7 @@ export default function ToolCheckLiveUid() {
 
           {error && (
             <div className="flex items-center gap-2 p-3 rounded-lg border border-destructive/30 bg-destructive/5 text-destructive text-sm">
-              <Icon icon="solar:danger-triangle-bold-duotone" className="text-lg shrink-0" />
+              <Icon icon="solar:danger-triangle-line-duotone" className="text-lg shrink-0" />
               {error}
             </div>
           )}
@@ -134,7 +134,7 @@ export default function ToolCheckLiveUid() {
 
               {liveCount > 0 && (
                 <Button variant="outline" size="sm" onClick={copyLive} className="w-full">
-                  <Icon icon="solar:copy-bold-duotone" className="text-base mr-1.5" />
+                  <Icon icon="solar:copy-line-duotone" className="text-base mr-1.5" />
                   Sao chép {liveCount} UID live
                 </Button>
               )}

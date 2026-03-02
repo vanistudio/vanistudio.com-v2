@@ -36,7 +36,7 @@ export default function AppContact() {
   };
 
   const contactInfo = [
-    { icon: "solar:letter-bold-duotone", label: "Email", value: "vanixjnk@gmail.com", href: "mailto:vanixjnk@gmail.com" },
+    { icon: "solar:letter-line-duotone", label: "Email", value: "vanixjnk@gmail.com", href: "mailto:vanixjnk@gmail.com" },
     { icon: "logos:facebook", label: "Facebook", value: "Nguyễn Đình Bảo", href: "https://facebook.com/vanixjnk" },
     { icon: "logos:telegram", label: "Telegram", value: "@vanixjnk", href: "https://t.me/vanixjnk" },
   ];
@@ -46,7 +46,7 @@ export default function AppContact() {
       <AppDashed noTopBorder padding="p-5">
         <div className="flex flex-col items-center gap-1.5">
           <div className="p-3 rounded-xl bg-primary/10 mb-1">
-            <Icon icon="solar:chat-round-dots-bold-duotone" className="text-3xl text-primary" />
+            <Icon icon="solar:chat-round-dots-line-duotone" className="text-3xl text-primary" />
           </div>
           <h1 className="text-xl font-bold text-title">Liên hệ</h1>
           <p className="text-sm text-muted-foreground text-center max-w-lg">
@@ -77,7 +77,7 @@ export default function AppContact() {
         {sent ? (
           <div className="flex flex-col items-center gap-3 py-8">
             <div className="p-3 rounded-full bg-emerald-500/10">
-              <Icon icon="solar:check-circle-bold-duotone" className="text-4xl text-emerald-500" />
+              <Icon icon="solar:check-circle-line-duotone" className="text-4xl text-emerald-500" />
             </div>
             <h2 className="text-lg font-bold text-title">Đã gửi thành công!</h2>
             <p className="text-sm text-muted-foreground text-center max-w-sm">
@@ -139,7 +139,7 @@ export default function AppContact() {
               {loading ? (
                 <Icon icon="svg-spinners:ring-resize" className="text-sm mr-2" />
               ) : (
-                <Icon icon="solar:plain-bold-duotone" className="text-sm mr-2" />
+                <Icon icon="solar:plain-line-duotone" className="text-sm mr-2" />
               )}
               Gửi tin nhắn
             </Button>

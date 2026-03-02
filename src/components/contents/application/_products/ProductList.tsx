@@ -52,7 +52,7 @@ function ProductCard({ product }: { product: Product }) {
                 <img alt={product.name} loading="lazy" className="w-full h-full object-cover" src={product.coverImage} />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-muted/30">
-                  <Icon icon="solar:box-bold-duotone" className="text-4xl text-muted-foreground/30" />
+                  <Icon icon="solar:box-line-duotone" className="text-4xl text-muted-foreground/30" />
                 </div>
               )}
             </div>
@@ -135,7 +135,7 @@ export default function ProductList() {
       <AppDashed noTopBorder padding="p-5">
         <div className="flex flex-col items-center gap-1.5">
           <div className="p-3 rounded-xl bg-primary/10 mb-1">
-            <Icon icon="solar:box-bold-duotone" className="text-3xl text-primary" />
+            <Icon icon="solar:box-line-duotone" className="text-3xl text-primary" />
           </div>
           <h1 className="text-xl font-bold text-title">Sản phẩm</h1>
           <p className="text-sm text-muted-foreground text-center max-w-lg">
@@ -182,7 +182,7 @@ export default function ProductList() {
           </div>
         ) : products.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 gap-2">
-            <Icon icon="solar:box-bold-duotone" className="text-5xl text-muted-foreground/20" />
+            <Icon icon="solar:box-line-duotone" className="text-5xl text-muted-foreground/20" />
             <p className="text-sm text-muted-foreground">
               {activeCategory ? "Không có sản phẩm trong danh mục này" : "Chưa có sản phẩm nào"}
             </p>

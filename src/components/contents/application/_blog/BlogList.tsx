@@ -41,7 +41,7 @@ function BlogCard({ post }: { post: BlogPost }) {
             <img alt={post.title} loading="lazy" className="w-full h-full object-cover" src={post.thumbnail} />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-muted/30">
-              <Icon icon="solar:document-text-bold-duotone" className="text-4xl text-muted-foreground/30" />
+              <Icon icon="solar:document-text-line-duotone" className="text-4xl text-muted-foreground/30" />
             </div>
           )}
           {post.isFeatured && (
@@ -69,7 +69,7 @@ function BlogCard({ post }: { post: BlogPost }) {
               <img src={post.authorAvatar} alt="" className="size-4 rounded-full object-cover" />
             ) : (
               <div className="size-4 rounded-full bg-primary/10 flex items-center justify-center">
-                <Icon icon="solar:user-bold-duotone" className="text-[8px] text-primary" />
+                <Icon icon="solar:user-line-duotone" className="text-[8px] text-primary" />
               </div>
             )}
             <span className="text-[10px] text-muted-foreground">{post.authorName || 'Vani Studio'}</span>
@@ -120,7 +120,7 @@ export default function BlogList() {
       <AppDashed noTopBorder padding="p-5">
         <div className="flex flex-col items-center gap-1.5">
           <div className="p-3 rounded-xl bg-primary/10 mb-1">
-            <Icon icon="solar:document-text-bold-duotone" className="text-3xl text-primary" />
+            <Icon icon="solar:document-text-line-duotone" className="text-3xl text-primary" />
           </div>
           <h1 className="text-xl font-bold text-title">Blog</h1>
           <p className="text-sm text-muted-foreground text-center max-w-lg">
@@ -131,7 +131,7 @@ export default function BlogList() {
       <AppDashed noTopBorder padding="p-3">
         <form onSubmit={handleSearch} className="flex items-center justify-center">
           <div className="relative w-full max-w-md">
-            <Icon icon="solar:magnifer-bold-duotone" className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground" />
+            <Icon icon="solar:magnifer-line-duotone" className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground" />
             <Input
               className="text-sm pl-9 h-9"
               placeholder="Tìm kiếm bài viết..."
@@ -148,7 +148,7 @@ export default function BlogList() {
           </div>
         ) : posts.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 gap-2">
-            <Icon icon="solar:document-text-bold-duotone" className="text-5xl text-muted-foreground/20" />
+            <Icon icon="solar:document-text-line-duotone" className="text-5xl text-muted-foreground/20" />
             <p className="text-sm text-muted-foreground">
               {search ? "Không tìm thấy bài viết" : "Chưa có bài viết nào"}
             </p>

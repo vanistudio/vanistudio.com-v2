@@ -70,7 +70,7 @@ export default function ServiceDetail() {
       <div className="flex flex-col w-full">
         <AppDashed noTopBorder padding="p-0">
           <div className="flex flex-col items-center justify-center py-20 gap-3">
-            <Icon icon="solar:widget-5-bold-duotone" className="text-5xl text-muted-foreground/20" />
+            <Icon icon="solar:widget-5-line-duotone" className="text-5xl text-muted-foreground/20" />
             <p className="text-sm text-muted-foreground">Không tìm thấy dịch vụ</p>
             <Button variant="outline" size="sm" onClick={() => navigate('/services')}>
               <Icon icon="solar:arrow-left-bold" className="text-sm mr-1.5" />
@@ -91,7 +91,7 @@ export default function ServiceDetail() {
           </Button>
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-              <Icon icon={service.icon || "solar:widget-5-bold-duotone"} className="text-xl text-primary" />
+              <Icon icon={service.icon || "solar:widget-5-line-duotone"} className="text-xl text-primary" />
             </div>
             <div className="min-w-0">
               <h1 className="text-lg font-bold text-title truncate">{service.name}</h1>
@@ -143,7 +143,7 @@ export default function ServiceDetail() {
                 <ul className="space-y-1.5">
                   {service.deliverables.map((d, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-foreground/80">
-                      <Icon icon="solar:box-bold-duotone" className="text-primary text-sm shrink-0 mt-0.5" />
+                      <Icon icon="solar:box-line-duotone" className="text-primary text-sm shrink-0 mt-0.5" />
                       <span>{d}</span>
                     </li>
                   ))}
@@ -170,7 +170,7 @@ export default function ServiceDetail() {
                 <div>
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Thời gian dự kiến</p>
                   <div className="flex items-center gap-1.5">
-                    <Icon icon="solar:clock-circle-bold-duotone" className="text-sm text-primary" />
+                    <Icon icon="solar:clock-circle-line-duotone" className="text-sm text-primary" />
                     <span className="text-sm font-medium text-title">~{service.estimatedDays} ngày</span>
                   </div>
                 </div>
@@ -179,7 +179,7 @@ export default function ServiceDetail() {
                 to="/contact"
                 className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
               >
-                <Icon icon="solar:chat-round-dots-bold-duotone" className="text-sm" />
+                <Icon icon="solar:chat-round-dots-line-duotone" className="text-sm" />
                 Liên hệ ngay
               </Link>
             </div>

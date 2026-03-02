@@ -72,7 +72,7 @@ export default function ToolCheckId() {
       <AppDashed noTopBorder padding="p-5">
         <div className="flex flex-col items-center gap-1.5">
           <div className="p-3 rounded-xl bg-primary/10 mb-1">
-            <Icon icon="solar:user-id-bold-duotone" className="text-3xl text-primary" />
+            <Icon icon="solar:user-id-line-duotone" className="text-3xl text-primary" />
           </div>
           <h1 className="text-xl font-bold text-title">Check ID</h1>
           <p className="text-sm text-muted-foreground text-center max-w-md">
@@ -96,7 +96,7 @@ export default function ToolCheckId() {
                 {loading ? (
                   <Icon icon="svg-spinners:ring-resize" className="text-base animate-spin" />
                 ) : (
-                  <Icon icon="solar:magnifer-bold-duotone" className="text-base" />
+                  <Icon icon="solar:magnifer-line-duotone" className="text-base" />
                 )}
               </Button>
             </div>
@@ -104,7 +104,7 @@ export default function ToolCheckId() {
 
           {error && (
             <div className="flex items-center gap-2 p-3 rounded-lg border border-destructive/30 bg-destructive/5 text-destructive text-sm">
-              <Icon icon="solar:danger-triangle-bold-duotone" className="text-lg shrink-0" />
+              <Icon icon="solar:danger-triangle-line-duotone" className="text-lg shrink-0" />
               {error}
             </div>
           )}
@@ -122,7 +122,7 @@ export default function ToolCheckId() {
                     <img src={result.avatar} alt="Avatar" className="size-14 rounded-full border-2 border-background shadow-sm shrink-0 object-cover" />
                   ) : (
                     <div className="size-14 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <Icon icon="solar:user-bold-duotone" className="text-2xl text-primary" />
+                      <Icon icon="solar:user-line-duotone" className="text-2xl text-primary" />
                     </div>
                   )}
                   <div className="flex flex-col min-w-0">
@@ -135,7 +135,7 @@ export default function ToolCheckId() {
                   className="flex items-center justify-between px-4 py-3 rounded-lg bg-background border border-border hover:border-primary/50 transition-colors group cursor-pointer"
                 >
                   <span className="text-lg font-bold font-mono text-title">{result.uid}</span>
-                  <Icon icon="solar:copy-bold-duotone" className="text-lg text-muted-foreground group-hover:text-primary transition-colors" />
+                  <Icon icon="solar:copy-line-duotone" className="text-lg text-muted-foreground group-hover:text-primary transition-colors" />
                 </button>
                 {result.link && (
                   <a
@@ -144,7 +144,7 @@ export default function ToolCheckId() {
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
                   >
-                    <Icon icon="solar:link-bold-duotone" className="text-base" />
+                    <Icon icon="solar:link-line-duotone" className="text-base" />
                     Mở profile
                   </a>
                 )}

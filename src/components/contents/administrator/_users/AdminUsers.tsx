@@ -78,10 +78,10 @@ export default function AdminUsers() {
     const active = users.filter((u) => u.isActive).length;
     const inactive = total - active;
     return [
-      { label: "Tổng người dùng", value: total, icon: "solar:users-group-rounded-bold-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
-      { label: "Admin", value: admins, icon: "solar:shield-user-bold-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
-      { label: "Đang hoạt động", value: active, icon: "solar:check-circle-bold-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
-      { label: "Vô hiệu hóa", value: inactive, icon: "solar:close-circle-bold-duotone", bgColor: "bg-red-500/10", textColor: "text-red-500" },
+      { label: "Tổng người dùng", value: total, icon: "solar:users-group-rounded-line-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
+      { label: "Admin", value: admins, icon: "solar:shield-user-line-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
+      { label: "Đang hoạt động", value: active, icon: "solar:check-circle-line-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
+      { label: "Vô hiệu hóa", value: inactive, icon: "solar:close-circle-line-duotone", bgColor: "bg-red-500/10", textColor: "text-red-500" },
     ];
   }, [users]);
 
@@ -94,7 +94,7 @@ export default function AdminUsers() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              <Icon icon="solar:users-group-rounded-bold-duotone" className="text-xl text-primary" />
+              <Icon icon="solar:users-group-rounded-line-duotone" className="text-xl text-primary" />
             </div>
             <div>
               <h1 className="text-lg font-bold text-title">Quản lý Người dùng</h1>
@@ -120,7 +120,7 @@ export default function AdminUsers() {
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" className="text-xs gap-1.5 shrink-0">
-                <Icon icon="solar:filter-bold-duotone" className="text-sm" />
+                <Icon icon="solar:filter-line-duotone" className="text-sm" />
                 {activeFilterCount > 0 && (
                   <Badge variant="default" className="size-4 p-0 flex items-center justify-center text-[9px] rounded-full ml-0.5">
                     {activeFilterCount}
@@ -180,7 +180,7 @@ export default function AdminUsers() {
           </div>
         ) : filteredUsers.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-2">
-            <Icon icon="solar:users-group-rounded-bold-duotone" className="text-4xl text-muted-foreground/30" />
+            <Icon icon="solar:users-group-rounded-line-duotone" className="text-4xl text-muted-foreground/30" />
             <p className="text-sm text-muted-foreground">
               {search || roleFilter !== "all" || statusFilter !== "all"
                 ? "Không tìm thấy người dùng phù hợp"

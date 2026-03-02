@@ -97,13 +97,13 @@ export default function FileUploadDialog({
           />
           <DialogTrigger asChild>
             <Button type="button" variant="outline" className="text-xs gap-1.5 shrink-0">
-              <Icon icon="solar:upload-bold-duotone" className="text-sm" />
+              <Icon icon="solar:upload-line-duotone" className="text-sm" />
               {label}
             </Button>
           </DialogTrigger>
           {value && (
             <Button type="button" variant="outline" className="shrink-0 text-muted-foreground hover:text-destructive" onClick={handleRemove}>
-              <Icon icon="solar:close-circle-bold-duotone" className="text-base" />
+              <Icon icon="solar:close-circle-line-duotone" className="text-base" />
             </Button>
           )}
         </div>
@@ -158,7 +158,7 @@ export default function FileUploadDialog({
             ) : (
               <div className="flex flex-col items-center gap-2">
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Icon icon="solar:cloud-upload-bold-duotone" className="text-2xl text-primary" />
+                  <Icon icon="solar:cloud-upload-line-duotone" className="text-2xl text-primary" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-foreground">Kéo thả ảnh vào đây</p>

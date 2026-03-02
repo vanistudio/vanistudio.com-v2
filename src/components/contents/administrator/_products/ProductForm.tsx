@@ -174,13 +174,13 @@ export default function ProductForm() {
               Hủy
             </Button>
             <Button size="sm" className="text-xs gap-1.5" disabled={submitting} onClick={handleSubmit}>
-              <Icon icon="solar:check-circle-bold-duotone" className="text-sm" />
+              <Icon icon="solar:check-circle-line-duotone" className="text-sm" />
               {submitting ? "Đang lưu..." : isEditing ? "Cập nhật" : "Tạo sản phẩm"}
             </Button>
           </div>
         </div>
       </AppDashed>
-      <Section title="Thông tin cơ bản" icon="solar:document-bold-duotone" description="Tên, mô tả sản phẩm hiển thị trên trang chủ">
+      <Section title="Thông tin cơ bản" icon="solar:document-line-duotone" description="Tên, mô tả sản phẩm hiển thị trên trang chủ">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Tên sản phẩm *">
             <Input className="text-sm" placeholder="VaniStudio Pro" value={form.name}
@@ -197,7 +197,7 @@ export default function ProductForm() {
           </Field>
         </div>
       </Section>
-      <Section title="Phân loại" icon="solar:tag-bold-duotone" description="Chuyên mục, loại sản phẩm và trạng thái xuất bản">
+      <Section title="Phân loại" icon="solar:tag-line-duotone" description="Chuyên mục, loại sản phẩm và trạng thái xuất bản">
         <div className="grid grid-cols-3 gap-4">
           <Field label="Chuyên mục">
             <Select value={form.categoryId} onValueChange={(v) => set("categoryId", v)}>
@@ -230,7 +230,7 @@ export default function ProductForm() {
           </Field>
         </div>
       </Section>
-      <Section title="Giá cả" icon="solar:wallet-bold-duotone" description="Thiết lập giá bán và khuyến mãi">
+      <Section title="Giá cả" icon="solar:wallet-line-duotone" description="Thiết lập giá bán và khuyến mãi">
         <div className="grid grid-cols-3 gap-4">
           <Field label="Giá gốc" hint="Nhập 0 cho sản phẩm miễn phí">
             <Input className="text-sm" type="number" placeholder="0" value={form.price} onChange={(e) => set("price", e.target.value)} />
@@ -249,7 +249,7 @@ export default function ProductForm() {
           </Field>
         </div>
       </Section>
-      <Section title="Media" icon="solar:gallery-bold-duotone" description="Hình ảnh và video giới thiệu sản phẩm">
+      <Section title="Media" icon="solar:gallery-line-duotone" description="Hình ảnh và video giới thiệu sản phẩm">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Thumbnail">
             <FileUploadDialog value={form.thumbnail} onChange={(url) => set("thumbnail", url)} label="Upload" />
@@ -265,7 +265,7 @@ export default function ProductForm() {
           </Field>
         </div>
       </Section>
-      <Section title="Demo & Source" icon="solar:link-circle-bold-duotone" description="Liên kết demo, mã nguồn và tài liệu">
+      <Section title="Demo & Source" icon="solar:link-circle-line-duotone" description="Liên kết demo, mã nguồn và tài liệu">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Demo URL">
             <Input className="text-sm" placeholder="https://demo.example.com" value={form.demoUrl} onChange={(e) => set("demoUrl", e.target.value)} />
@@ -278,7 +278,7 @@ export default function ProductForm() {
           </Field>
         </div>
       </Section>
-      <Section title="Tech Stack & Tags" icon="solar:code-square-bold-duotone" description="Công nghệ sử dụng và từ khóa tìm kiếm">
+      <Section title="Tech Stack & Tags" icon="solar:code-square-line-duotone" description="Công nghệ sử dụng và từ khóa tìm kiếm">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Tech Stack" hint="Phân cách bằng dấu phẩy">
             <Input className="text-sm" placeholder="React, TypeScript, Tailwind CSS" value={form.techStack} onChange={(e) => set("techStack", e.target.value)} />
@@ -291,7 +291,7 @@ export default function ProductForm() {
           </Field>
         </div>
       </Section>
-      <Section title="Thông số kỹ thuật" icon="solar:settings-bold-duotone" description="Phiên bản, tương thích và yêu cầu hệ thống">
+      <Section title="Thông số kỹ thuật" icon="solar:settings-line-duotone" description="Phiên bản, tương thích và yêu cầu hệ thống">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Phiên bản">
             <Input className="text-sm font-mono" placeholder="1.0.0" value={form.version} onChange={(e) => set("version", e.target.value)} />
@@ -307,12 +307,12 @@ export default function ProductForm() {
           </Field>
         </div>
       </Section>
-      <Section title="Tính năng" icon="solar:star-bold-duotone" description="Liệt kê tính năng chính, mỗi dòng một tính năng">
+      <Section title="Tính năng" icon="solar:star-line-duotone" description="Liệt kê tính năng chính, mỗi dòng một tính năng">
         <Field label="Danh sách tính năng" span={2}>
           <Textarea className="text-sm min-h-[120px] resize-y" placeholder={"Đăng nhập OAuth (Google, GitHub)\nDashboard thống kê realtime\nQuản lý người dùng & phân quyền\nThanh toán tích hợp\n..."} value={form.features} onChange={(e) => set("features", e.target.value)} />
         </Field>
       </Section>
-      <Section title="Bảo hành & Hỗ trợ" icon="solar:shield-check-bold-duotone" description="Chính sách bảo hành và thông tin liên hệ hỗ trợ">
+      <Section title="Bảo hành & Hỗ trợ" icon="solar:shield-check-line-duotone" description="Chính sách bảo hành và thông tin liên hệ hỗ trợ">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Bảo hành (tháng)" hint="Mặc định 3 tháng">
             <Input className="text-sm" type="number" placeholder="3" value={form.warrantyMonths} onChange={(e) => set("warrantyMonths", e.target.value)} />
@@ -322,7 +322,7 @@ export default function ProductForm() {
           </Field>
         </div>
       </Section>
-      <Section title="SEO" icon="solar:magnifer-bold-duotone" description="Tối ưu hiển thị trên công cụ tìm kiếm">
+      <Section title="SEO" icon="solar:magnifer-line-duotone" description="Tối ưu hiển thị trên công cụ tìm kiếm">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Meta Title" hint="Để trống sẽ dùng tên sản phẩm">
             <Input className="text-sm" placeholder="VaniStudio Pro — Premium Source Code" value={form.metaTitle} onChange={(e) => set("metaTitle", e.target.value)} />

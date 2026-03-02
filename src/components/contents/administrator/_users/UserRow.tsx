@@ -48,7 +48,7 @@ export function getProviderIcon(provider: string) {
   switch (provider) {
     case "github": return "mdi:github";
     case "google": return "flat-color-icons:google";
-    default: return "solar:letter-bold-duotone";
+    default: return "solar:letter-line-duotone";
   }
 }
 
@@ -147,16 +147,16 @@ export default function UserRow({ user, onToggleActive, onChangeRole, onDelete }
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
           <DropdownMenuItem onClick={() => onToggleActive(user.id)}>
-            <Icon icon={user.isActive ? "solar:close-circle-bold-duotone" : "solar:check-circle-bold-duotone"} className="mr-2 text-base" />
+            <Icon icon={user.isActive ? "solar:close-circle-line-duotone" : "solar:check-circle-line-duotone"} className="mr-2 text-base" />
             {user.isActive ? "Vô hiệu hóa" : "Kích hoạt"}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => onChangeRole(user.id, user.role === "admin" ? "user" : "admin")}>
-            <Icon icon="solar:shield-user-bold-duotone" className="mr-2 text-base" />
+            <Icon icon="solar:shield-user-line-duotone" className="mr-2 text-base" />
             {user.role === "admin" ? "Hạ quyền User" : "Nâng quyền Admin"}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => onDelete(user.id)}>
-            <Icon icon="solar:trash-bin-trash-bold-duotone" className="mr-2 text-base" />
+            <Icon icon="solar:trash-bin-trash-line-duotone" className="mr-2 text-base" />
             Xóa người dùng
           </DropdownMenuItem>
         </DropdownMenuContent>

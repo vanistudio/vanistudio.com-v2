@@ -16,31 +16,31 @@ type NavEntry = NavItem | NavGroup;
 const isGroup = (entry: NavEntry): entry is NavGroup => "children" in entry;
 
 const navEntries: NavEntry[] = [
-  { name: "Dashboard", href: "/admin", icon: "solar:widget-bold-duotone" },
-  { name: "Người dùng", href: "/admin/users", icon: "solar:users-group-rounded-bold-duotone" },
+  { name: "Dashboard", href: "/admin", icon: "solar:widget-line-duotone" },
+  { name: "Người dùng", href: "/admin/users", icon: "solar:users-group-rounded-line-duotone" },
   {
-    name: "Nội dung", icon: "solar:layers-bold-duotone",
+    name: "Nội dung", icon: "solar:layers-line-duotone",
     children: [
-      { name: "Chuyên mục", href: "/admin/categories", icon: "solar:folder-bold-duotone" },
-      { name: "Sản phẩm", href: "/admin/products", icon: "solar:box-bold-duotone" },
-      { name: "Dịch vụ", href: "/admin/services", icon: "solar:widget-5-bold-duotone" },
-      { name: "Blog", href: "/admin/blog", icon: "solar:document-text-bold-duotone" },
+      { name: "Chuyên mục", href: "/admin/categories", icon: "solar:folder-line-duotone" },
+      { name: "Sản phẩm", href: "/admin/products", icon: "solar:box-line-duotone" },
+      { name: "Dịch vụ", href: "/admin/services", icon: "solar:widget-5-line-duotone" },
+      { name: "Blog", href: "/admin/blog", icon: "solar:document-text-line-duotone" },
     ],
   },
   {
-    name: "Dự án", icon: "solar:case-round-bold-duotone",
+    name: "Dự án", icon: "solar:case-round-line-duotone",
     children: [
-      { name: "Project", href: "/admin/projects", icon: "solar:code-bold-duotone" },
-      { name: "License", href: "/admin/licenses", icon: "solar:key-bold-duotone" },
+      { name: "Project", href: "/admin/projects", icon: "solar:code-line-duotone" },
+      { name: "License", href: "/admin/licenses", icon: "solar:key-line-duotone" },
     ],
   },
   {
-    name: "Hệ thống", icon: "solar:settings-bold-duotone",
+    name: "Hệ thống", icon: "solar:settings-line-duotone",
     children: [
-      { name: "Cài đặt", href: "/admin/settings", icon: "solar:tuning-2-bold-duotone" },
-      { name: "Tin nhắn", href: "/admin/contacts", icon: "solar:chat-round-dots-bold-duotone" },
-      { name: "Request Logs", href: "/admin/requests", icon: "solar:chart-2-bold-duotone" },
-      { name: "Database", href: "/admin/database", icon: "solar:database-bold-duotone" },
+      { name: "Cài đặt", href: "/admin/settings", icon: "solar:tuning-2-line-duotone" },
+      { name: "Tin nhắn", href: "/admin/contacts", icon: "solar:chat-round-dots-line-duotone" },
+      { name: "Request Logs", href: "/admin/requests", icon: "solar:chart-2-line-duotone" },
+      { name: "Database", href: "/admin/database", icon: "solar:database-line-duotone" },
     ],
   },
 ];
@@ -173,7 +173,7 @@ export default function AdminHeader() {
         <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
           <SheetTrigger asChild>
             <button className="size-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors md:hidden">
-              <Icon icon="solar:hamburger-menu-bold-duotone" className="text-lg" />
+              <Icon icon="solar:hamburger-menu-line-duotone" className="text-lg" />
             </button>
           </SheetTrigger>
           <SheetContent side="left" className="w-[250px] p-0">
@@ -230,15 +230,15 @@ export default function AdminHeader() {
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             className="flex size-8 rounded-lg items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
-            <Icon icon="solar:sun-bold-duotone" className="text-base dark:hidden" />
-            <Icon icon="solar:moon-bold-duotone" className="text-base hidden dark:block" />
+            <Icon icon="solar:sun-line-duotone" className="text-base dark:hidden" />
+            <Icon icon="solar:moon-line-duotone" className="text-base hidden dark:block" />
           </button>
           <Link
             to="/"
             className="hidden md:flex size-8 rounded-lg items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             title="Về trang chủ"
           >
-            <Icon icon="solar:home-2-bold-duotone" className="text-base" />
+            <Icon icon="solar:home-2-line-duotone" className="text-base" />
           </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -247,7 +247,7 @@ export default function AdminHeader() {
                   <img src={user.avatarUrl} alt="" className="size-6 rounded-full object-cover" />
                 ) : (
                   <div className="size-6 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Icon icon="solar:user-bold-duotone" className="text-xs text-primary" />
+                    <Icon icon="solar:user-line-duotone" className="text-xs text-primary" />
                   </div>
                 )}
                 <Icon icon="solar:alt-arrow-down-bold" className="text-[10px] text-muted-foreground hidden md:block" />
@@ -261,19 +261,19 @@ export default function AdminHeader() {
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
                 <Link to="/admin" className="cursor-pointer">
-                  <Icon icon="solar:widget-bold-duotone" className="mr-2 text-base" />
+                  <Icon icon="solar:widget-line-duotone" className="mr-2 text-base" />
                   Dashboard
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link to="/" className="cursor-pointer">
-                  <Icon icon="solar:home-2-bold-duotone" className="mr-2 text-base" />
+                  <Icon icon="solar:home-2-line-duotone" className="mr-2 text-base" />
                   Về trang chủ
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="text-destructive focus:text-destructive cursor-pointer" onClick={() => logout()}>
-                <Icon icon="solar:logout-2-bold-duotone" className="mr-2 text-base" />
+                <Icon icon="solar:logout-2-line-duotone" className="mr-2 text-base" />
                 Đăng xuất
               </DropdownMenuItem>
             </DropdownMenuContent>

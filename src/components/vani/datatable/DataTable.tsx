@@ -56,7 +56,7 @@ export function DataTable<TData, TValue>({
   renderSubComponent,
   className,
   compact = false,
-  emptyIcon = "solar:inbox-bold-duotone",
+  emptyIcon = "solar:inbox-line-duotone",
   emptyMessage = "Không có dữ liệu",
   onRowClick,
 }: DataTableProps<TData, TValue>) {

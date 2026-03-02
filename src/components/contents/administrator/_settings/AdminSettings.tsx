@@ -131,7 +131,7 @@ export default function AdminSettings() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              <Icon icon="solar:tuning-2-bold-duotone" className="text-xl text-primary" />
+              <Icon icon="solar:tuning-2-line-duotone" className="text-xl text-primary" />
             </div>
             <div>
               <h1 className="text-lg font-bold text-title">Cài đặt Website</h1>
@@ -143,7 +143,7 @@ export default function AdminSettings() {
       <AppDashed noTopBorder padding="p-5">
         <div className="space-y-6">
           <div>
-            <SectionHeader icon="solar:home-2-bold-duotone" title="Thông tin chung" />
+            <SectionHeader icon="solar:home-2-line-duotone" title="Thông tin chung" />
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <Field label="Tên website *">
@@ -176,7 +176,7 @@ export default function AdminSettings() {
           <Separator />
 
           <div>
-            <SectionHeader icon="solar:magnifer-bold-duotone" title="SEO & Meta" />
+            <SectionHeader icon="solar:magnifer-line-duotone" title="SEO & Meta" />
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <Field label="Meta Title" hint="Tiêu đề hiển thị trên kết quả tìm kiếm">
@@ -206,7 +206,7 @@ export default function AdminSettings() {
           <Separator />
 
           <div>
-            <SectionHeader icon="solar:share-bold-duotone" title="Open Graph / Social" />
+            <SectionHeader icon="solar:share-line-duotone" title="Open Graph / Social" />
             <div className="space-y-4">
               <Field label="OG Image" hint="Ảnh hiển thị khi chia sẻ trên mạng xã hội (1200x630)">
                 <FileUploadDialog value={form.siteOgImage} onChange={(url) => set("siteOgImage", url)} label="Upload" />
@@ -225,7 +225,7 @@ export default function AdminSettings() {
           <Separator />
 
           <div>
-            <SectionHeader icon="solar:chart-bold-duotone" title="Analytics & Tracking" />
+            <SectionHeader icon="solar:chart-line-duotone" title="Analytics & Tracking" />
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <Field label="Google Analytics ID" hint="Ví dụ: G-XXXXXXXXXX">
@@ -245,7 +245,7 @@ export default function AdminSettings() {
       <AppDashed noTopBorder padding="p-4">
         <div className="flex items-center justify-end">
           <Button size="sm" className="text-xs gap-1.5" disabled={submitting} onClick={handleSubmit}>
-            <Icon icon="solar:check-circle-bold-duotone" className="text-sm" />
+            <Icon icon="solar:check-circle-line-duotone" className="text-sm" />
             {submitting ? "Đang lưu..." : "Lưu cài đặt"}
           </Button>
         </div>

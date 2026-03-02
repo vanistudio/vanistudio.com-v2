@@ -159,14 +159,14 @@ export default function ProjectForm() {
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" className="text-xs" onClick={() => navigate("/admin/projects")}>Hủy</Button>
             <Button size="sm" className="text-xs gap-1.5" disabled={submitting} onClick={handleSubmit}>
-              <Icon icon="solar:check-circle-bold-duotone" className="text-sm" />
+              <Icon icon="solar:check-circle-line-duotone" className="text-sm" />
               {submitting ? "Đang lưu..." : isEditing ? "Cập nhật" : "Tạo dự án"}
             </Button>
           </div>
         </div>
       </AppDashed>
 
-      <Section title="Thông tin dự án" icon="solar:code-square-bold-duotone" description="Tên, mô tả và nội dung chi tiết">
+      <Section title="Thông tin dự án" icon="solar:code-square-line-duotone" description="Tên, mô tả và nội dung chi tiết">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Tên dự án *">
             <Input className="text-sm" placeholder="Portfolio Website" value={form.name}
@@ -187,7 +187,7 @@ export default function ProjectForm() {
         </div>
       </Section>
 
-      <Section title="Phân loại & Trạng thái" icon="solar:tag-bold-duotone" description="Loại dự án, tech stack và trạng thái">
+      <Section title="Phân loại & Trạng thái" icon="solar:tag-line-duotone" description="Loại dự án, tech stack và trạng thái">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Loại dự án">
             <Select value={form.type} onValueChange={(v) => set("type", v)}>
@@ -228,7 +228,7 @@ export default function ProjectForm() {
         </div>
       </Section>
 
-      <Section title="Links" icon="solar:link-bold-duotone" description="URL demo, source code và thiết kế">
+      <Section title="Links" icon="solar:link-line-duotone" description="URL demo, source code và thiết kế">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Live URL" hint="Link website đang hoạt động">
             <Input className="text-sm" placeholder="https://example.com" value={form.liveUrl} onChange={(e) => set("liveUrl", e.target.value)} />
@@ -245,7 +245,7 @@ export default function ProjectForm() {
         </div>
       </Section>
 
-      <Section title="Media" icon="solar:gallery-bold-duotone" description="Ảnh đại diện, ảnh bìa và ảnh demo">
+      <Section title="Media" icon="solar:gallery-line-duotone" description="Ảnh đại diện, ảnh bìa và ảnh demo">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Thumbnail">
             <FileUploadDialog value={form.thumbnail} onChange={(url) => set("thumbnail", url)} label="Upload" />
@@ -259,7 +259,7 @@ export default function ProjectForm() {
         </div>
       </Section>
 
-      <Section title="Timeline & Khách hàng" icon="solar:calendar-bold-duotone" description="Thời gian thực hiện và thông tin khách hàng">
+      <Section title="Timeline & Khách hàng" icon="solar:calendar-line-duotone" description="Thời gian thực hiện và thông tin khách hàng">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Ngày bắt đầu">
             <Input type="date" className="text-sm" value={form.startDate} onChange={(e) => set("startDate", e.target.value)} />
@@ -282,7 +282,7 @@ export default function ProjectForm() {
         </div>
       </Section>
 
-      <Section title="SEO" icon="solar:magnifer-bold-duotone" description="Tối ưu hiển thị trên công cụ tìm kiếm">
+      <Section title="SEO" icon="solar:magnifer-line-duotone" description="Tối ưu hiển thị trên công cụ tìm kiếm">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Meta Title" hint="Để trống sẽ dùng tên dự án">
             <Input className="text-sm" placeholder="Portfolio Website | VaniStudio" value={form.metaTitle} onChange={(e) => set("metaTitle", e.target.value)} />

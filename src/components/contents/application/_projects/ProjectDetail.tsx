@@ -136,7 +136,7 @@ export default function ProjectDetail() {
       <div className="flex flex-col w-full">
         <AppDashed noTopBorder>
           <div className="flex flex-col items-center justify-center py-32 gap-4">
-            <Icon icon="solar:case-round-bold-duotone" className="text-6xl text-muted-foreground/20" />
+            <Icon icon="solar:case-round-line-duotone" className="text-6xl text-muted-foreground/20" />
             <p className="text-muted-foreground">{error || "Không tìm thấy dự án"}</p>
             <Link to="/projects">
               <Button variant="outline" size="sm">
@@ -320,7 +320,7 @@ export default function ProjectDetail() {
             <div className="rounded-lg border border-border overflow-hidden">
               <div className="px-4">
                 {project.category && (
-                  <InfoRow icon={<Icon icon="solar:folder-bold-duotone" className="text-base" />} label="Danh mục" value={project.category} />
+                  <InfoRow icon={<Icon icon="solar:folder-line-duotone" className="text-base" />} label="Danh mục" value={project.category} />
                 )}
                 {project.clientName && (
                   <InfoRow icon={<User size={14} />} label="Khách hàng" value={project.clientName} />
@@ -332,7 +332,7 @@ export default function ProjectDetail() {
                   <InfoRow icon={<Calendar size={14} />} label="Thời gian" value={dateRange} />
                 )}
                 <InfoRow
-                  icon={<Icon icon="solar:calendar-bold-duotone" className="text-base" />}
+                  icon={<Icon icon="solar:calendar-line-duotone" className="text-base" />}
                   label="Cập nhật"
                   value={new Date(project.updatedAt).toLocaleDateString("vi-VN")}
                 />

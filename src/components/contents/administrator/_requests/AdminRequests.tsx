@@ -183,7 +183,7 @@ export default function AdminRequests() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-primary/10">
-              <Icon icon="solar:chart-2-bold-duotone" className="text-xl text-primary" />
+              <Icon icon="solar:chart-2-line-duotone" className="text-xl text-primary" />
             </div>
             <div>
               <h1 className="text-base font-bold text-title">Request Logs</h1>
@@ -197,14 +197,14 @@ export default function AdminRequests() {
               className="text-xs h-8"
               onClick={() => setAutoRefresh(!autoRefresh)}
             >
-              <Icon icon={autoRefresh ? "solar:refresh-bold-duotone" : "solar:pause-bold-duotone"} className="text-sm mr-1.5" />
+              <Icon icon={autoRefresh ? "solar:refresh-line-duotone" : "solar:pause-line-duotone"} className="text-sm mr-1.5" />
               {autoRefresh ? "Live" : "Paused"}
             </Button>
             <Button variant="outline" size="sm" className="text-xs h-8" onClick={fetchData}>
-              <Icon icon="solar:refresh-bold-duotone" className="text-sm" />
+              <Icon icon="solar:refresh-line-duotone" className="text-sm" />
             </Button>
             <Button variant="outline" size="sm" className="text-xs h-8 text-destructive" onClick={handleClear}>
-              <Icon icon="solar:trash-bin-minimalistic-bold-duotone" className="text-sm" />
+              <Icon icon="solar:trash-bin-minimalistic-line-duotone" className="text-sm" />
             </Button>
           </div>
         </div>
@@ -212,10 +212,10 @@ export default function AdminRequests() {
       {stats && (
         <AdminStats
           items={[
-            { label: "Tổng", value: stats.total, icon: "solar:chart-2-bold-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
-            { label: "5 phút gần", value: stats.last5m, icon: "solar:clock-circle-bold-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
-            { label: "1 giờ gần", value: stats.last1h, icon: "solar:history-bold-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
-            { label: "Avg", value: `${stats.avgDuration}ms`, icon: "solar:stopwatch-bold-duotone", bgColor: "bg-purple-500/10", textColor: "text-purple-500" },
+            { label: "Tổng", value: stats.total, icon: "solar:chart-2-line-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
+            { label: "5 phút gần", value: stats.last5m, icon: "solar:clock-circle-line-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
+            { label: "1 giờ gần", value: stats.last1h, icon: "solar:history-line-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
+            { label: "Avg", value: `${stats.avgDuration}ms`, icon: "solar:stopwatch-line-duotone", bgColor: "bg-purple-500/10", textColor: "text-purple-500" },
           ]}
         />
       )}
@@ -233,7 +233,7 @@ export default function AdminRequests() {
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" className="text-xs gap-1.5 shrink-0">
-                <Icon icon="solar:filter-bold-duotone" className="text-sm" />
+                <Icon icon="solar:filter-line-duotone" className="text-sm" />
                 {activeFilterCount > 0 && (
                   <Badge variant="default" className="size-4 p-0 flex items-center justify-center text-[9px] rounded-full ml-0.5">
                     {activeFilterCount}
@@ -308,7 +308,7 @@ export default function AdminRequests() {
           compact
           defaultPageSize={50}
           pageSizeOptions={[25, 50, 100, 200]}
-          emptyIcon="solar:chart-2-bold-duotone"
+          emptyIcon="solar:chart-2-line-duotone"
           emptyMessage="Chưa có request nào"
         />
       </AppDashed>

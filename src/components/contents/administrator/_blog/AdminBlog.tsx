@@ -102,10 +102,10 @@ export default function AdminBlog() {
     const draft = posts.filter((p) => p.status === "draft").length;
     const totalViews = posts.reduce((sum, p) => sum + p.viewCount, 0);
     return [
-      { label: "Tổng bài viết", value: total, icon: "solar:document-text-bold-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
-      { label: "Đã xuất bản", value: published, icon: "solar:check-circle-bold-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
-      { label: "Bản nháp", value: draft, icon: "solar:pen-new-square-bold-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
-      { label: "Tổng lượt xem", value: totalViews.toLocaleString(), icon: "solar:eye-bold-duotone", bgColor: "bg-violet-500/10", textColor: "text-violet-500" },
+      { label: "Tổng bài viết", value: total, icon: "solar:document-text-line-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
+      { label: "Đã xuất bản", value: published, icon: "solar:check-circle-line-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
+      { label: "Bản nháp", value: draft, icon: "solar:pen-new-square-line-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
+      { label: "Tổng lượt xem", value: totalViews.toLocaleString(), icon: "solar:eye-line-duotone", bgColor: "bg-violet-500/10", textColor: "text-violet-500" },
     ];
   }, [posts]);
 
@@ -117,7 +117,7 @@ export default function AdminBlog() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              <Icon icon="solar:document-text-bold-duotone" className="text-xl text-primary" />
+              <Icon icon="solar:document-text-line-duotone" className="text-xl text-primary" />
             </div>
             <div>
               <h1 className="text-lg font-bold text-title">Blog</h1>
@@ -125,7 +125,7 @@ export default function AdminBlog() {
             </div>
           </div>
           <Button size="sm" className="text-xs gap-1.5" onClick={() => navigate("/admin/blog/create")}>
-            <Icon icon="solar:add-circle-bold-duotone" className="text-sm" />
+            <Icon icon="solar:add-circle-line-duotone" className="text-sm" />
             Viết bài mới
           </Button>
         </div>
@@ -140,7 +140,7 @@ export default function AdminBlog() {
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" className="text-xs gap-1.5 shrink-0">
-                <Icon icon="solar:filter-bold-duotone" className="text-sm" />
+                <Icon icon="solar:filter-line-duotone" className="text-sm" />
                 {activeFilterCount > 0 && (
                   <Badge variant="default" className="size-4 p-0 flex items-center justify-center text-[9px] rounded-full ml-0.5">
                     {activeFilterCount}
@@ -181,13 +181,13 @@ export default function AdminBlog() {
           </div>
         ) : filteredPosts.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-2">
-            <Icon icon="solar:document-text-bold-duotone" className="text-4xl text-muted-foreground/30" />
+            <Icon icon="solar:document-text-line-duotone" className="text-4xl text-muted-foreground/30" />
             <p className="text-sm text-muted-foreground">
               {search || statusFilter !== "all" ? "Không tìm thấy bài viết phù hợp" : "Chưa có bài viết nào"}
             </p>
             {!search && statusFilter === "all" && (
               <Button size="sm" variant="outline" className="text-xs gap-1.5 mt-2" onClick={() => navigate("/admin/blog/create")}>
-                <Icon icon="solar:pen-new-square-bold-duotone" className="text-sm" />
+                <Icon icon="solar:pen-new-square-line-duotone" className="text-sm" />
                 Viết bài đầu tiên
               </Button>
             )}
@@ -213,7 +213,7 @@ export default function AdminBlog() {
                       <img src={p.thumbnail} alt={p.title} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <Icon icon="solar:document-text-bold-duotone" className="text-sm text-muted-foreground" />
+                        <Icon icon="solar:document-text-line-duotone" className="text-sm text-muted-foreground" />
                       </div>
                     )}
                   </div>
@@ -254,12 +254,12 @@ export default function AdminBlog() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-44">
                       <DropdownMenuItem onClick={() => navigate(`/admin/blog/${p.id}/edit`)}>
-                        <Icon icon="solar:pen-bold-duotone" className="mr-2 text-base" />
+                        <Icon icon="solar:pen-line-duotone" className="mr-2 text-base" />
                         Chỉnh sửa
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(p.id)}>
-                        <Icon icon="solar:trash-bin-trash-bold-duotone" className="mr-2 text-base" />
+                        <Icon icon="solar:trash-bin-trash-line-duotone" className="mr-2 text-base" />
                         Xóa bài viết
                       </DropdownMenuItem>
                     </DropdownMenuContent>

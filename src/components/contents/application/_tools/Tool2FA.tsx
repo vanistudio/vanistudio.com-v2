@@ -98,7 +98,7 @@ export default function Tool2FA() {
       <AppDashed noTopBorder padding="p-5">
         <div className="flex flex-col items-center gap-1.5">
           <div className="p-3 rounded-xl bg-primary/10 mb-1">
-            <Icon icon="solar:lock-password-bold-duotone" className="text-3xl text-primary" />
+            <Icon icon="solar:lock-password-line-duotone" className="text-3xl text-primary" />
           </div>
           <h1 className="text-xl font-bold text-title">Lấy mã 2FA</h1>
           <p className="text-sm text-muted-foreground text-center max-w-md">
@@ -138,7 +138,7 @@ export default function Tool2FA() {
                 <span className="text-4xl font-bold tracking-[0.3em] text-title font-mono">
                   {code.slice(0, 3)} {code.slice(3)}
                 </span>
-                <Icon icon="solar:copy-bold-duotone" className="text-xl text-muted-foreground group-hover:text-primary transition-colors" />
+                <Icon icon="solar:copy-line-duotone" className="text-xl text-muted-foreground group-hover:text-primary transition-colors" />
               </button>
 
               <div className="w-full flex flex-col items-center gap-2">

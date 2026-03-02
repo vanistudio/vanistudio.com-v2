@@ -45,13 +45,13 @@ function timeAgo(dateStr: string): string {
 }
 
 const contentLinks = [
-  { label: "Sản phẩm", icon: "solar:box-bold-duotone", href: "/admin/products", createHref: "/admin/products/create", key: "products" },
-  { label: "Dịch vụ", icon: "solar:widget-5-bold-duotone", href: "/admin/services", createHref: "/admin/services/create", key: "services" },
-  { label: "Blog", icon: "solar:document-text-bold-duotone", href: "/admin/blog", createHref: "/admin/blog/create", key: "blog" },
-  { label: "Dự án", icon: "solar:code-bold-duotone", href: "/admin/projects", createHref: "/admin/projects/create", key: "projects" },
-  { label: "License", icon: "solar:key-bold-duotone", href: "/admin/licenses", createHref: "/admin/licenses/create", key: "licenses" },
-  { label: "Chuyên mục", icon: "solar:folder-bold-duotone", href: "/admin/categories", createHref: "/admin/categories/create", key: "categories" },
-  { label: "Người dùng", icon: "solar:users-group-rounded-bold-duotone", href: "/admin/users", createHref: "", key: "users" },
+  { label: "Sản phẩm", icon: "solar:box-line-duotone", href: "/admin/products", createHref: "/admin/products/create", key: "products" },
+  { label: "Dịch vụ", icon: "solar:widget-5-line-duotone", href: "/admin/services", createHref: "/admin/services/create", key: "services" },
+  { label: "Blog", icon: "solar:document-text-line-duotone", href: "/admin/blog", createHref: "/admin/blog/create", key: "blog" },
+  { label: "Dự án", icon: "solar:code-line-duotone", href: "/admin/projects", createHref: "/admin/projects/create", key: "projects" },
+  { label: "License", icon: "solar:key-line-duotone", href: "/admin/licenses", createHref: "/admin/licenses/create", key: "licenses" },
+  { label: "Chuyên mục", icon: "solar:folder-line-duotone", href: "/admin/categories", createHref: "/admin/categories/create", key: "categories" },
+  { label: "Người dùng", icon: "solar:users-group-rounded-line-duotone", href: "/admin/users", createHref: "", key: "users" },
 ];
 
 export default function AdminDashboard() {
@@ -99,10 +99,10 @@ export default function AdminDashboard() {
   };
 
   const stats = counts ? [
-    { label: "Sản phẩm", value: counts.products.total, icon: "solar:box-bold-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
-    { label: "Bài viết", value: counts.blog.total, icon: "solar:document-text-bold-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
-    { label: "License", value: counts.licenses.total, icon: "solar:key-bold-duotone", bgColor: "bg-orange-500/10", textColor: "text-orange-500" },
-    { label: "Người dùng", value: counts.users, icon: "solar:users-group-rounded-bold-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
+    { label: "Sản phẩm", value: counts.products.total, icon: "solar:box-line-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
+    { label: "Bài viết", value: counts.blog.total, icon: "solar:document-text-line-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
+    { label: "License", value: counts.licenses.total, icon: "solar:key-line-duotone", bgColor: "bg-orange-500/10", textColor: "text-orange-500" },
+    { label: "Người dùng", value: counts.users, icon: "solar:users-group-rounded-line-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
   ] : [];
 
   return (
@@ -111,7 +111,7 @@ export default function AdminDashboard() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              <Icon icon="solar:widget-bold-duotone" className="text-xl text-primary" />
+              <Icon icon="solar:widget-line-duotone" className="text-xl text-primary" />
             </div>
             <div>
               <h1 className="text-lg font-bold text-title">Dashboard</h1>

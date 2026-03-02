@@ -168,7 +168,7 @@ export default function ProductDetail() {
       <div className="flex flex-col w-full">
         <AppDashed noTopBorder>
           <div className="flex flex-col items-center justify-center py-32 gap-4">
-            <Icon icon="solar:box-bold-duotone" className="text-6xl text-muted-foreground/20" />
+            <Icon icon="solar:box-line-duotone" className="text-6xl text-muted-foreground/20" />
             <p className="text-muted-foreground">{error || "Không tìm thấy sản phẩm"}</p>
             <Link to="/products">
               <Button variant="outline" size="sm">
@@ -336,7 +336,7 @@ export default function ProductDetail() {
             {product.highlights.map((h, i) => (
               <div key={i} className="flex items-start gap-3 p-4 hover:bg-muted-background transition-colors">
                 <div className="p-2 rounded-lg bg-primary/10 text-primary shrink-0">
-                  <Icon icon={h.icon || "solar:star-bold-duotone"} className="text-lg" />
+                  <Icon icon={h.icon || "solar:star-line-duotone"} className="text-lg" />
                 </div>
                 <div className="flex flex-col gap-0.5 min-w-0">
                   <span className="text-sm font-semibold text-foreground">{h.title}</span>
@@ -409,16 +409,16 @@ export default function ProductDetail() {
           <div className="rounded-lg border border-border overflow-hidden">
             <div className="px-4">
               {product.version && (
-                <InfoRow icon={<Icon icon="solar:tag-bold-duotone" className="text-base" />} label="Phiên bản" value={product.version} />
+                <InfoRow icon={<Icon icon="solar:tag-line-duotone" className="text-base" />} label="Phiên bản" value={product.version} />
               )}
               {product.fileSize && (
-                <InfoRow icon={<Icon icon="solar:folder-bold-duotone" className="text-base" />} label="Dung lượng" value={product.fileSize} />
+                <InfoRow icon={<Icon icon="solar:folder-line-duotone" className="text-base" />} label="Dung lượng" value={product.fileSize} />
               )}
               {product.compatibility && (
-                <InfoRow icon={<Icon icon="solar:monitor-bold-duotone" className="text-base" />} label="Tương thích" value={product.compatibility} />
+                <InfoRow icon={<Icon icon="solar:monitor-line-duotone" className="text-base" />} label="Tương thích" value={product.compatibility} />
               )}
               {product.requirements && (
-                <InfoRow icon={<Icon icon="solar:cpu-bold-duotone" className="text-base" />} label="Yêu cầu" value={product.requirements} />
+                <InfoRow icon={<Icon icon="solar:cpu-line-duotone" className="text-base" />} label="Yêu cầu" value={product.requirements} />
               )}
               {product.warrantyMonths != null && product.warrantyMonths > 0 && (
                 <InfoRow icon={<Shield size={14} />} label="Bảo hành" value={`${product.warrantyMonths} tháng`} />
@@ -427,7 +427,7 @@ export default function ProductDetail() {
                 <InfoRow icon={<Mail size={14} />} label="Hỗ trợ kỹ thuật" value={product.supportEmail || "Có"} />
               )}
               <InfoRow
-                icon={<Icon icon="solar:calendar-bold-duotone" className="text-base" />}
+                icon={<Icon icon="solar:calendar-line-duotone" className="text-base" />}
                 label="Cập nhật"
                 value={new Date(product.updatedAt).toLocaleDateString("vi-VN")}
               />

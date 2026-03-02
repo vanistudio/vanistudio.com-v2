@@ -119,10 +119,10 @@ export default function AdminProjects() {
     const draft = projects.filter((p) => p.status === "draft").length;
     const featured = projects.filter((p) => p.isFeatured).length;
     return [
-      { label: "Tổng dự án", value: total, icon: "solar:code-square-bold-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
-      { label: "Đã xuất bản", value: published, icon: "solar:check-circle-bold-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
-      { label: "Bản nháp", value: draft, icon: "solar:pen-new-square-bold-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
-      { label: "Nổi bật", value: featured, icon: "solar:star-bold-duotone", bgColor: "bg-violet-500/10", textColor: "text-violet-500" },
+      { label: "Tổng dự án", value: total, icon: "solar:code-square-line-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
+      { label: "Đã xuất bản", value: published, icon: "solar:check-circle-line-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
+      { label: "Bản nháp", value: draft, icon: "solar:pen-new-square-line-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
+      { label: "Nổi bật", value: featured, icon: "solar:star-line-duotone", bgColor: "bg-violet-500/10", textColor: "text-violet-500" },
     ];
   }, [projects]);
 
@@ -135,7 +135,7 @@ export default function AdminProjects() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              <Icon icon="solar:code-square-bold-duotone" className="text-xl text-primary" />
+              <Icon icon="solar:code-square-line-duotone" className="text-xl text-primary" />
             </div>
             <div>
               <h1 className="text-lg font-bold text-title">Dự án</h1>
@@ -143,7 +143,7 @@ export default function AdminProjects() {
             </div>
           </div>
           <Button size="sm" className="text-xs gap-1.5" onClick={() => navigate("/admin/projects/create")}>
-            <Icon icon="solar:add-circle-bold-duotone" className="text-sm" />
+            <Icon icon="solar:add-circle-line-duotone" className="text-sm" />
             Thêm dự án
           </Button>
         </div>
@@ -163,7 +163,7 @@ export default function AdminProjects() {
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" className="text-xs gap-1.5 shrink-0">
-                <Icon icon="solar:filter-bold-duotone" className="text-sm" />
+                <Icon icon="solar:filter-line-duotone" className="text-sm" />
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end" className="w-[240px] p-3">
@@ -214,7 +214,7 @@ export default function AdminProjects() {
           </div>
         ) : filteredProjects.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-2">
-            <Icon icon="solar:code-square-bold-duotone" className="text-4xl text-muted-foreground/30" />
+            <Icon icon="solar:code-square-line-duotone" className="text-4xl text-muted-foreground/30" />
             <p className="text-sm text-muted-foreground">
               {search || statusFilter !== "all" || typeFilter !== "all"
                 ? "Không tìm thấy dự án phù hợp"
@@ -242,7 +242,7 @@ export default function AdminProjects() {
                       <img src={p.thumbnail} alt={p.name} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <Icon icon="solar:code-square-bold-duotone" className="text-base text-muted-foreground" />
+                        <Icon icon="solar:code-square-line-duotone" className="text-base text-muted-foreground" />
                       </div>
                     )}
                   </div>
@@ -266,7 +266,7 @@ export default function AdminProjects() {
                     <div className="w-[80px] flex items-center gap-1.5">
                       {p.liveUrl && (
                         <a href={p.liveUrl} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
-                          <Icon icon="solar:global-bold-duotone" className="text-sm" />
+                          <Icon icon="solar:global-line-duotone" className="text-sm" />
                         </a>
                       )}
                       {p.sourceUrl && (
@@ -296,12 +296,12 @@ export default function AdminProjects() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-44">
                       <DropdownMenuItem onClick={() => navigate(`/admin/projects/${p.id}/edit`)}>
-                        <Icon icon="solar:pen-bold-duotone" className="mr-2 text-base" />
+                        <Icon icon="solar:pen-line-duotone" className="mr-2 text-base" />
                         Chỉnh sửa
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(p.id)}>
-                        <Icon icon="solar:trash-bin-trash-bold-duotone" className="mr-2 text-base" />
+                        <Icon icon="solar:trash-bin-trash-line-duotone" className="mr-2 text-base" />
                         Xóa dự án
                       </DropdownMenuItem>
                     </DropdownMenuContent>

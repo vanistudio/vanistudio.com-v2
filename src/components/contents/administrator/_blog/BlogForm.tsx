@@ -150,14 +150,14 @@ export default function BlogForm() {
               Hủy
             </Button>
             <Button size="sm" className="text-xs gap-1.5" disabled={submitting} onClick={handleSubmit}>
-              <Icon icon="solar:check-circle-bold-duotone" className="text-sm" />
+              <Icon icon="solar:check-circle-line-duotone" className="text-sm" />
               {submitting ? "Đang lưu..." : isEditing ? "Cập nhật" : "Xuất bản"}
             </Button>
           </div>
         </div>
       </AppDashed>
 
-      <Section title="Nội dung bài viết" icon="solar:pen-new-square-bold-duotone" description="Tiêu đề, slug và nội dung chính">
+      <Section title="Nội dung bài viết" icon="solar:pen-new-square-line-duotone" description="Tiêu đề, slug và nội dung chính">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Tiêu đề bài viết *">
             <Input className="text-sm" placeholder="Hướng dẫn tối ưu hiệu suất React" value={form.title}
@@ -175,7 +175,7 @@ export default function BlogForm() {
         </div>
       </Section>
 
-      <Section title="Phân loại & Trạng thái" icon="solar:tag-bold-duotone" description="Chuyên mục, tags và trạng thái xuất bản">
+      <Section title="Phân loại & Trạng thái" icon="solar:tag-line-duotone" description="Chuyên mục, tags và trạng thái xuất bản">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Chuyên mục">
             <Input className="text-sm" placeholder="Lập trình, Design, Tutorial..." value={form.category} onChange={(e) => set("category", e.target.value)} />
@@ -202,7 +202,7 @@ export default function BlogForm() {
         </div>
       </Section>
 
-      <Section title="Media" icon="solar:gallery-bold-duotone" description="Ảnh đại diện và ảnh bìa bài viết">
+      <Section title="Media" icon="solar:gallery-line-duotone" description="Ảnh đại diện và ảnh bìa bài viết">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Thumbnail">
             <FileUploadDialog value={form.thumbnail} onChange={(url) => set("thumbnail", url)} label="Upload" />
@@ -213,7 +213,7 @@ export default function BlogForm() {
         </div>
       </Section>
 
-      <Section title="Tác giả" icon="solar:user-bold-duotone" description="Thông tin người viết">
+      <Section title="Tác giả" icon="solar:user-line-duotone" description="Thông tin người viết">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Tên tác giả">
             <Input className="text-sm" placeholder="Nguyễn Văn A" value={form.authorName} onChange={(e) => set("authorName", e.target.value)} />
@@ -224,7 +224,7 @@ export default function BlogForm() {
         </div>
       </Section>
 
-      <Section title="SEO & Meta" icon="solar:magnifer-bold-duotone" description="Tối ưu hiển thị trên công cụ tìm kiếm">
+      <Section title="SEO & Meta" icon="solar:magnifer-line-duotone" description="Tối ưu hiển thị trên công cụ tìm kiếm">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Meta Title" hint="Để trống sẽ dùng tiêu đề bài viết">
             <Input className="text-sm" placeholder="Hướng dẫn tối ưu React | VaniStudio Blog" value={form.metaTitle} onChange={(e) => set("metaTitle", e.target.value)} />

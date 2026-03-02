@@ -13,45 +13,45 @@ import { api } from "@/lib/api";
 import { toast } from "sonner";
 
 const ICON_OPTIONS = [
-  { value: "solar:code-square-bold-duotone", label: "Code" },
-  { value: "solar:laptop-bold-duotone", label: "Laptop" },
-  { value: "solar:monitor-bold-duotone", label: "Monitor" },
-  { value: "solar:smartphone-bold-duotone", label: "Smartphone" },
-  { value: "solar:server-bold-duotone", label: "Server" },
-  { value: "solar:database-bold-duotone", label: "Database" },
-  { value: "solar:cloud-bold-duotone", label: "Cloud" },
-  { value: "solar:shield-check-bold-duotone", label: "Shield" },
-  { value: "solar:lock-bold-duotone", label: "Lock" },
-  { value: "solar:palette-bold-duotone", label: "Palette" },
-  { value: "solar:pen-bold-duotone", label: "Pen" },
-  { value: "solar:cart-large-bold-duotone", label: "Cart" },
-  { value: "solar:wallet-bold-duotone", label: "Wallet" },
-  { value: "solar:chart-bold-duotone", label: "Chart" },
-  { value: "solar:graph-up-bold-duotone", label: "Graph" },
-  { value: "solar:user-bold-duotone", label: "User" },
-  { value: "solar:users-group-rounded-bold-duotone", label: "Users" },
-  { value: "solar:chat-round-dots-bold-duotone", label: "Chat" },
-  { value: "solar:letter-bold-duotone", label: "Mail" },
-  { value: "solar:camera-bold-duotone", label: "Camera" },
-  { value: "solar:gallery-bold-duotone", label: "Gallery" },
-  { value: "solar:music-notes-bold-duotone", label: "Music" },
-  { value: "solar:video-frame-bold-duotone", label: "Video" },
-  { value: "solar:gamepad-bold-duotone", label: "Game" },
-  { value: "solar:rocket-bold-duotone", label: "Rocket" },
-  { value: "solar:star-bold-duotone", label: "Star" },
-  { value: "solar:heart-bold-duotone", label: "Heart" },
-  { value: "solar:bolt-bold-duotone", label: "Bolt" },
-  { value: "solar:settings-bold-duotone", label: "Settings" },
-  { value: "solar:tuning-2-bold-duotone", label: "Tuning" },
-  { value: "solar:bookmark-bold-duotone", label: "Bookmark" },
-  { value: "solar:folder-bold-duotone", label: "Folder" },
-  { value: "solar:document-text-bold-duotone", label: "Document" },
-  { value: "solar:clipboard-bold-duotone", label: "Clipboard" },
-  { value: "solar:link-circle-bold-duotone", label: "Link" },
-  { value: "solar:magnifer-bold-duotone", label: "Search" },
-  { value: "solar:map-point-bold-duotone", label: "Map" },
-  { value: "solar:box-bold-duotone", label: "Box" },
-  { value: "solar:gift-bold-duotone", label: "Gift" },
+  { value: "solar:code-square-line-duotone", label: "Code" },
+  { value: "solar:laptop-line-duotone", label: "Laptop" },
+  { value: "solar:monitor-line-duotone", label: "Monitor" },
+  { value: "solar:smartphone-line-duotone", label: "Smartphone" },
+  { value: "solar:server-line-duotone", label: "Server" },
+  { value: "solar:database-line-duotone", label: "Database" },
+  { value: "solar:cloud-line-duotone", label: "Cloud" },
+  { value: "solar:shield-check-line-duotone", label: "Shield" },
+  { value: "solar:lock-line-duotone", label: "Lock" },
+  { value: "solar:palette-line-duotone", label: "Palette" },
+  { value: "solar:pen-line-duotone", label: "Pen" },
+  { value: "solar:cart-large-line-duotone", label: "Cart" },
+  { value: "solar:wallet-line-duotone", label: "Wallet" },
+  { value: "solar:chart-line-duotone", label: "Chart" },
+  { value: "solar:graph-up-line-duotone", label: "Graph" },
+  { value: "solar:user-line-duotone", label: "User" },
+  { value: "solar:users-group-rounded-line-duotone", label: "Users" },
+  { value: "solar:chat-round-dots-line-duotone", label: "Chat" },
+  { value: "solar:letter-line-duotone", label: "Mail" },
+  { value: "solar:camera-line-duotone", label: "Camera" },
+  { value: "solar:gallery-line-duotone", label: "Gallery" },
+  { value: "solar:music-notes-line-duotone", label: "Music" },
+  { value: "solar:video-frame-line-duotone", label: "Video" },
+  { value: "solar:gamepad-line-duotone", label: "Game" },
+  { value: "solar:rocket-line-duotone", label: "Rocket" },
+  { value: "solar:star-line-duotone", label: "Star" },
+  { value: "solar:heart-line-duotone", label: "Heart" },
+  { value: "solar:bolt-line-duotone", label: "Bolt" },
+  { value: "solar:settings-line-duotone", label: "Settings" },
+  { value: "solar:tuning-2-line-duotone", label: "Tuning" },
+  { value: "solar:bookmark-line-duotone", label: "Bookmark" },
+  { value: "solar:folder-line-duotone", label: "Folder" },
+  { value: "solar:document-text-line-duotone", label: "Document" },
+  { value: "solar:clipboard-line-duotone", label: "Clipboard" },
+  { value: "solar:link-circle-line-duotone", label: "Link" },
+  { value: "solar:magnifer-line-duotone", label: "Search" },
+  { value: "solar:map-point-line-duotone", label: "Map" },
+  { value: "solar:box-line-duotone", label: "Box" },
+  { value: "solar:gift-line-duotone", label: "Gift" },
 ];
 
 function generateSlug(name: string) {
@@ -155,7 +155,7 @@ export default function CategoryForm() {
               Hủy
             </Button>
             <Button size="sm" className="text-xs gap-1.5" disabled={submitting} onClick={handleSubmit}>
-              <Icon icon="solar:check-circle-bold-duotone" className="text-sm" />
+              <Icon icon="solar:check-circle-line-duotone" className="text-sm" />
               {submitting ? "Đang lưu..." : isEditing ? "Cập nhật" : "Tạo chuyên mục"}
             </Button>
           </div>
@@ -166,7 +166,7 @@ export default function CategoryForm() {
           <div>
             <div className="flex items-center gap-2 mb-3">
               <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
-                <Icon icon="solar:document-bold-duotone" className="text-sm text-primary" />
+                <Icon icon="solar:document-line-duotone" className="text-sm text-primary" />
               </div>
               <span className="text-sm font-semibold text-title">Thông tin cơ bản</span>
             </div>
@@ -196,7 +196,7 @@ export default function CategoryForm() {
           <div>
             <div className="flex items-center gap-2 mb-3">
               <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
-                <Icon icon="solar:pallete-2-bold-duotone" className="text-sm text-primary" />
+                <Icon icon="solar:pallete-2-line-duotone" className="text-sm text-primary" />
               </div>
               <span className="text-sm font-semibold text-title">Hiển thị</span>
             </div>

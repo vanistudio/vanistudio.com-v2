@@ -57,7 +57,7 @@ function ProjectCard({ project }: { project: Project }) {
                 <img alt={project.name} loading="lazy" className="w-full h-full object-cover" src={project.coverImage} />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-muted/30">
-                  <Icon icon="solar:case-round-bold-duotone" className="text-4xl text-muted-foreground/30" />
+                  <Icon icon="solar:case-round-line-duotone" className="text-4xl text-muted-foreground/30" />
                 </div>
               )}
             </div>
@@ -136,7 +136,7 @@ export default function ProjectList() {
       <AppDashed noTopBorder padding="p-5">
         <div className="flex flex-col items-center gap-1.5">
           <div className="p-3 rounded-xl bg-primary/10 mb-1">
-            <Icon icon="solar:code-bold-duotone" className="text-3xl text-primary" />
+            <Icon icon="solar:code-line-duotone" className="text-3xl text-primary" />
           </div>
           <h1 className="text-xl font-bold text-title">Dự án</h1>
           <p className="text-sm text-muted-foreground text-center max-w-lg">
@@ -169,7 +169,7 @@ export default function ProjectList() {
           </div>
         ) : projects.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 gap-2">
-            <Icon icon="solar:case-round-bold-duotone" className="text-5xl text-muted-foreground/20" />
+            <Icon icon="solar:case-round-line-duotone" className="text-5xl text-muted-foreground/20" />
             <p className="text-sm text-muted-foreground">
               {activeType ? "Không có dự án thuộc loại này" : "Chưa có dự án nào"}
             </p>

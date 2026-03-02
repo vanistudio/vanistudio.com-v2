@@ -116,10 +116,10 @@ export default function AdminServices() {
     const draft = services.filter((s) => s.status === "draft").length;
     const featured = services.filter((s) => s.isFeatured).length;
     return [
-      { label: "Tổng dịch vụ", value: total, icon: "solar:widget-5-bold-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
-      { label: "Đã xuất bản", value: published, icon: "solar:check-circle-bold-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
-      { label: "Bản nháp", value: draft, icon: "solar:pen-new-square-bold-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
-      { label: "Nổi bật", value: featured, icon: "solar:star-bold-duotone", bgColor: "bg-violet-500/10", textColor: "text-violet-500" },
+      { label: "Tổng dịch vụ", value: total, icon: "solar:widget-5-line-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
+      { label: "Đã xuất bản", value: published, icon: "solar:check-circle-line-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
+      { label: "Bản nháp", value: draft, icon: "solar:pen-new-square-line-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
+      { label: "Nổi bật", value: featured, icon: "solar:star-line-duotone", bgColor: "bg-violet-500/10", textColor: "text-violet-500" },
     ];
   }, [services]);
 
@@ -132,7 +132,7 @@ export default function AdminServices() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              <Icon icon="solar:widget-5-bold-duotone" className="text-xl text-primary" />
+              <Icon icon="solar:widget-5-line-duotone" className="text-xl text-primary" />
             </div>
             <div>
               <h1 className="text-lg font-bold text-title">Dịch vụ</h1>
@@ -140,7 +140,7 @@ export default function AdminServices() {
             </div>
           </div>
           <Button size="sm" className="text-xs gap-1.5" onClick={() => navigate("/admin/services/create")}>
-            <Icon icon="solar:add-circle-bold-duotone" className="text-sm" />
+            <Icon icon="solar:add-circle-line-duotone" className="text-sm" />
             Thêm dịch vụ
           </Button>
         </div>
@@ -160,7 +160,7 @@ export default function AdminServices() {
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" className="text-xs gap-1.5 shrink-0">
-                <Icon icon="solar:filter-bold-duotone" className="text-sm" />
+                <Icon icon="solar:filter-line-duotone" className="text-sm" />
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end" className="w-[240px] p-3">
@@ -198,7 +198,7 @@ export default function AdminServices() {
           </div>
         ) : filteredServices.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-2">
-            <Icon icon="solar:widget-5-bold-duotone" className="text-4xl text-muted-foreground/30" />
+            <Icon icon="solar:widget-5-line-duotone" className="text-4xl text-muted-foreground/30" />
             <p className="text-sm text-muted-foreground">
               {search || statusFilter !== "all"
                 ? "Không tìm thấy dịch vụ phù hợp"
@@ -226,7 +226,7 @@ export default function AdminServices() {
                     ) : s.thumbnail ? (
                       <img src={s.thumbnail} alt={s.name} className="w-full h-full object-cover" />
                     ) : (
-                      <Icon icon="solar:widget-5-bold-duotone" className="text-base text-muted-foreground" />
+                      <Icon icon="solar:widget-5-line-duotone" className="text-base text-muted-foreground" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -276,12 +276,12 @@ export default function AdminServices() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-44">
                       <DropdownMenuItem onClick={() => navigate(`/admin/services/${s.id}/edit`)}>
-                        <Icon icon="solar:pen-bold-duotone" className="mr-2 text-base" />
+                        <Icon icon="solar:pen-line-duotone" className="mr-2 text-base" />
                         Chỉnh sửa
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(s.id)}>
-                        <Icon icon="solar:trash-bin-trash-bold-duotone" className="mr-2 text-base" />
+                        <Icon icon="solar:trash-bin-trash-line-duotone" className="mr-2 text-base" />
                         Xóa dịch vụ
                       </DropdownMenuItem>
                     </DropdownMenuContent>

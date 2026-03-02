@@ -165,7 +165,7 @@ export default function LicenseForm() {
               Hủy
             </Button>
             <Button size="sm" className="text-xs gap-1.5" disabled={submitting} onClick={handleSubmit}>
-              <Icon icon="solar:check-circle-bold-duotone" className="text-sm" />
+              <Icon icon="solar:check-circle-line-duotone" className="text-sm" />
               {submitting ? "Đang lưu..." : isEditing ? "Cập nhật" : "Tạo License"}
             </Button>
           </div>
@@ -175,20 +175,20 @@ export default function LicenseForm() {
       {isEditing && generatedKey && (
         <AppDashed noTopBorder padding="p-4">
           <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
-            <Icon icon="solar:key-bold-duotone" className="text-xl text-primary shrink-0" />
+            <Icon icon="solar:key-line-duotone" className="text-xl text-primary shrink-0" />
             <div className="flex-1 min-w-0">
               <span className="text-xs text-muted-foreground block">License Key</span>
               <span className="text-sm font-mono font-semibold text-foreground">{generatedKey}</span>
             </div>
             <Button variant="outline" size="sm" className="text-xs gap-1.5 shrink-0" onClick={copyKey}>
-              <Icon icon="solar:copy-bold-duotone" className="text-sm" />
+              <Icon icon="solar:copy-line-duotone" className="text-sm" />
               Copy
             </Button>
           </div>
         </AppDashed>
       )}
 
-      <Section title="Sản phẩm" icon="solar:box-bold-duotone" description="Chọn sản phẩm để cấp license key">
+      <Section title="Sản phẩm" icon="solar:box-line-duotone" description="Chọn sản phẩm để cấp license key">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Sản phẩm *" hint="Chọn sản phẩm từ danh sách đã có">
             <Select value={form.productId} onValueChange={handleProductChange}>
@@ -208,7 +208,7 @@ export default function LicenseForm() {
         </div>
       </Section>
 
-      <Section title="Người dùng" icon="solar:user-bold-duotone" description="Gán license cho người dùng (bỏ trống nếu chưa cần)">
+      <Section title="Người dùng" icon="solar:user-line-duotone" description="Gán license cho người dùng (bỏ trống nếu chưa cần)">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Người dùng" hint="Chọn user để gán license">
             <Select value={form.userId} onValueChange={(v) => set("userId", v)}>
@@ -239,7 +239,7 @@ export default function LicenseForm() {
         </div>
       </Section>
 
-      <Section title="Cài đặt" icon="solar:settings-bold-duotone" description="Domain và ghi chú">
+      <Section title="Cài đặt" icon="solar:settings-line-duotone" description="Domain và ghi chú">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Domain" hint="Domain được phép sử dụng license">
             <Input className="text-sm" placeholder="example.com" value={form.domain} onChange={(e) => set("domain", e.target.value)} />

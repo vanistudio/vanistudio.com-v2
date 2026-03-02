@@ -44,7 +44,7 @@ export function DataTableFacetedFilter<TData, TValue>({
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm" className="h-8 text-xs border-dashed gap-1.5">
-          <Icon icon="solar:filter-bold-duotone" className="text-sm" />
+          <Icon icon="solar:filter-line-duotone" className="text-sm" />
           {title}
           {selectedValues.size > 0 && (
             <>

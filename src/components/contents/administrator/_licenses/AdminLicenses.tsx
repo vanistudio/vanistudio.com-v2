@@ -122,10 +122,10 @@ export default function AdminLicenses() {
     const unused = licenses.filter((l) => l.status === "unused").length;
     const revoked = licenses.filter((l) => l.status === "revoked").length;
     return [
-      { label: "Tổng license", value: total, icon: "solar:key-bold-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
-      { label: "Đang dùng", value: active, icon: "solar:check-circle-bold-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
-      { label: "Chưa dùng", value: unused, icon: "solar:clock-circle-bold-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
-      { label: "Đã thu hồi", value: revoked, icon: "solar:close-circle-bold-duotone", bgColor: "bg-red-500/10", textColor: "text-red-500" },
+      { label: "Tổng license", value: total, icon: "solar:key-line-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
+      { label: "Đang dùng", value: active, icon: "solar:check-circle-line-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
+      { label: "Chưa dùng", value: unused, icon: "solar:clock-circle-line-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
+      { label: "Đã thu hồi", value: revoked, icon: "solar:close-circle-line-duotone", bgColor: "bg-red-500/10", textColor: "text-red-500" },
     ];
   }, [licenses]);
 
@@ -138,7 +138,7 @@ export default function AdminLicenses() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              <Icon icon="solar:key-bold-duotone" className="text-xl text-primary" />
+              <Icon icon="solar:key-line-duotone" className="text-xl text-primary" />
             </div>
             <div>
               <h1 className="text-lg font-bold text-title">License Key</h1>
@@ -146,7 +146,7 @@ export default function AdminLicenses() {
             </div>
           </div>
           <Button size="sm" className="text-xs gap-1.5" onClick={() => navigate("/admin/licenses/create")}>
-            <Icon icon="solar:add-circle-bold-duotone" className="text-sm" />
+            <Icon icon="solar:add-circle-line-duotone" className="text-sm" />
             Tạo license
           </Button>
         </div>
@@ -166,7 +166,7 @@ export default function AdminLicenses() {
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" className="text-xs gap-1.5 shrink-0">
-                <Icon icon="solar:filter-bold-duotone" className="text-sm" />
+                <Icon icon="solar:filter-line-duotone" className="text-sm" />
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end" className="w-[240px] p-3">
@@ -206,7 +206,7 @@ export default function AdminLicenses() {
           </div>
         ) : filteredLicenses.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-2">
-            <Icon icon="solar:key-bold-duotone" className="text-4xl text-muted-foreground/30" />
+            <Icon icon="solar:key-line-duotone" className="text-4xl text-muted-foreground/30" />
             <p className="text-sm text-muted-foreground">
               {search || statusFilter !== "all"
                 ? "Không tìm thấy license phù hợp"
@@ -235,9 +235,9 @@ export default function AdminLicenses() {
                       onClick={() => copyKey(l.key)}
                       className="flex items-center gap-1.5 text-xs font-mono text-foreground hover:text-primary transition-colors cursor-pointer"
                     >
-                      <Icon icon="solar:key-bold-duotone" className="text-sm text-muted-foreground shrink-0" />
+                      <Icon icon="solar:key-line-duotone" className="text-sm text-muted-foreground shrink-0" />
                       {l.key}
-                      <Icon icon="solar:copy-bold-duotone" className="text-xs text-muted-foreground/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <Icon icon="solar:copy-line-duotone" className="text-xs text-muted-foreground/50 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </button>
                   </div>
 
@@ -288,25 +288,25 @@ export default function AdminLicenses() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-44">
                       <DropdownMenuItem onClick={() => copyKey(l.key)}>
-                        <Icon icon="solar:copy-bold-duotone" className="mr-2 text-base" />
+                        <Icon icon="solar:copy-line-duotone" className="mr-2 text-base" />
                         Copy Key
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => navigate(`/admin/licenses/${l.id}/edit`)}>
-                        <Icon icon="solar:pen-bold-duotone" className="mr-2 text-base" />
+                        <Icon icon="solar:pen-line-duotone" className="mr-2 text-base" />
                         Chỉnh sửa
                       </DropdownMenuItem>
                       {l.status === "active" && (
                         <>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem className="text-amber-600 focus:text-amber-600" onClick={() => handleRevoke(l.id)}>
-                            <Icon icon="solar:close-circle-bold-duotone" className="mr-2 text-base" />
+                            <Icon icon="solar:close-circle-line-duotone" className="mr-2 text-base" />
                             Thu hồi
                           </DropdownMenuItem>
                         </>
                       )}
                       <DropdownMenuSeparator />
                       <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(l.id)}>
-                        <Icon icon="solar:trash-bin-trash-bold-duotone" className="mr-2 text-base" />
+                        <Icon icon="solar:trash-bin-trash-line-duotone" className="mr-2 text-base" />
                         Xóa
                       </DropdownMenuItem>
                     </DropdownMenuContent>

@@ -42,7 +42,7 @@ export default function AuthLogin() {
   return (
     <div className="flex flex-col w-full">
       <AppDashed noTopBorder padding="p-6">
-        <div className="flex flex-col gap-4 max-w-[380px] mx-auto w-full">
+        <div className="flex flex-col gap-4 max-w-[420px] mx-auto w-full">
           <div className="text-center mb-2">
             <h1 className="text-xl font-bold text-title">Đăng nhập</h1>
             <p className="text-sm text-muted-foreground mt-1">Chào mừng bạn trở lại</p>
@@ -71,7 +71,7 @@ export default function AuthLogin() {
               {loading ? (
                 <Icon icon="svg-spinners:ring-resize" className="text-sm mr-2" />
               ) : (
-                <Icon icon="solar:login-bold-duotone" className="text-sm mr-2" />
+                <Icon icon="solar:login-line-duotone" className="text-sm mr-2" />
               )}
               Đăng nhập
             </Button>
@@ -82,24 +82,24 @@ export default function AuthLogin() {
               <div className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center">
-              <span className="px-3 bg-background text-xs text-muted-foreground">hoặc</span>
+              <span className="px-3 bg-background text-xs text-muted-foreground">hoặc đăng nhập với</span>
             </div>
           </div>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex gap-2">
             <a
               href="/api/auth/github"
-              className="w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-lg border border-border bg-background hover:bg-muted-background transition-colors text-sm font-medium text-foreground cursor-pointer no-underline"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-border bg-background hover:bg-muted-background transition-colors text-sm font-medium text-foreground cursor-pointer no-underline"
             >
               <Icon icon="mdi:github" className="text-xl" />
-              <span>Đăng nhập với GitHub</span>
+              <span>GitHub</span>
             </a>
             <a
               href="/api/auth/google"
-              className="w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-lg border border-border bg-background hover:bg-muted-background transition-colors text-sm font-medium text-foreground cursor-pointer no-underline"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-border bg-background hover:bg-muted-background transition-colors text-sm font-medium text-foreground cursor-pointer no-underline"
             >
               <Icon icon="flat-color-icons:google" className="text-xl" />
-              <span>Đăng nhập với Google</span>
+              <span>Google</span>
             </a>
           </div>
 

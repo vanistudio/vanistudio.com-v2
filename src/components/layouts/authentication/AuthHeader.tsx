@@ -16,31 +16,31 @@ type NavEntry = NavItem | NavGroup;
 const isGroup = (entry: NavEntry): entry is NavGroup => "children" in entry;
 
 const navEntries: NavEntry[] = [
-  { name: "Trang chủ", href: "/", icon: "solar:home-smile-bold-duotone" },
-  { name: "Sản phẩm", href: "/products", icon: "solar:box-bold-duotone" },
-  { name: "Dự án", href: "/projects", icon: "solar:case-round-bold-duotone" },
-  { name: "Dịch vụ", href: "/services", icon: "solar:code-square-bold-duotone" },
-  { name: "Blog", href: "/blog", icon: "solar:document-text-bold-duotone" },
-  { name: "Liên hệ", href: "/contact", icon: "solar:chat-round-dots-bold-duotone" },
+  { name: "Trang chủ", href: "/", icon: "solar:home-smile-line-duotone" },
+  { name: "Sản phẩm", href: "/products", icon: "solar:box-line-duotone" },
+  { name: "Dự án", href: "/projects", icon: "solar:case-round-line-duotone" },
+  { name: "Dịch vụ", href: "/services", icon: "solar:code-square-line-duotone" },
+  { name: "Blog", href: "/blog", icon: "solar:document-text-line-duotone" },
+  { name: "Liên hệ", href: "/contact", icon: "solar:chat-round-dots-line-duotone" },
   {
-    name: "Công cụ", icon: "solar:magic-stick-3-bold-duotone",
+    name: "Công cụ", icon: "solar:magic-stick-3-line-duotone",
     children: [
-      { name: "Lấy mã 2FA", href: "/tools/2fa", icon: "solar:lock-password-bold-duotone" },
-      { name: "Check ID", href: "/tools/check-id", icon: "solar:user-id-bold-duotone" },
-      { name: "Check Live UID", href: "/tools/check-live-uid", icon: "solar:user-check-bold-duotone" },
-      { name: "Kiểm tra Domain", href: "/tools/check-domain", icon: "solar:planet-3-bold-duotone" },
-      { name: "Kiểm tra License", href: "/license", icon: "solar:key-bold-duotone" },
+      { name: "Lấy mã 2FA", href: "/tools/2fa", icon: "solar:lock-password-line-duotone" },
+      { name: "Check ID", href: "/tools/check-id", icon: "solar:user-id-line-duotone" },
+      { name: "Check Live UID", href: "/tools/check-live-uid", icon: "solar:user-check-line-duotone" },
+      { name: "Kiểm tra Domain", href: "/tools/check-domain", icon: "solar:planet-3-line-duotone" },
+      { name: "Kiểm tra License", href: "/license", icon: "solar:key-line-duotone" },
     ],
   },
   {
-    name: "Chính sách", icon: "solar:document-text-bold-duotone",
+    name: "Chính sách", icon: "solar:document-text-line-duotone",
     children: [
-      { name: "Điều khoản", href: "/terms", icon: "solar:clipboard-text-bold-duotone" },
-      { name: "Bảo mật", href: "/privacy", icon: "solar:shield-keyhole-bold-duotone" },
-      { name: "Hoàn tiền", href: "/refund", icon: "solar:wallet-money-bold-duotone" },
-      { name: "Giao nhận", href: "/shipping", icon: "solar:box-bold-duotone" },
-      { name: "Bảo hành", href: "/warranty", icon: "solar:shield-check-bold-duotone" },
-      { name: "Thanh toán", href: "/payment", icon: "solar:card-bold-duotone" },
+      { name: "Điều khoản", href: "/terms", icon: "solar:clipboard-text-line-duotone" },
+      { name: "Bảo mật", href: "/privacy", icon: "solar:shield-keyhole-line-duotone" },
+      { name: "Hoàn tiền", href: "/refund", icon: "solar:wallet-money-line-duotone" },
+      { name: "Giao nhận", href: "/shipping", icon: "solar:box-line-duotone" },
+      { name: "Bảo hành", href: "/warranty", icon: "solar:shield-check-line-duotone" },
+      { name: "Thanh toán", href: "/payment", icon: "solar:card-line-duotone" },
     ],
   },
 ];
@@ -176,7 +176,7 @@ export default function AuthHeader() {
         <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
           <SheetTrigger asChild>
             <button className="size-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors md:hidden">
-              <Icon icon="solar:hamburger-menu-bold-duotone" className="text-lg" />
+              <Icon icon="solar:hamburger-menu-line-duotone" className="text-lg" />
             </button>
           </SheetTrigger>
           <SheetContent side="left" className="w-[250px] p-0">
@@ -233,8 +233,8 @@ export default function AuthHeader() {
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             className="flex size-8 rounded-lg items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
-            <Icon icon="solar:sun-bold-duotone" className="text-base dark:hidden" />
-            <Icon icon="solar:moon-bold-duotone" className="text-base hidden dark:block" />
+            <Icon icon="solar:sun-line-duotone" className="text-base dark:hidden" />
+            <Icon icon="solar:moon-line-duotone" className="text-base hidden dark:block" />
           </button>
           {isAuthenticated ? (
             <DropdownMenu>
@@ -244,7 +244,7 @@ export default function AuthHeader() {
                     <img src={user.avatarUrl} alt="" className="size-6 rounded-full object-cover" />
                   ) : (
                     <div className="size-6 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Icon icon="solar:user-bold-duotone" className="text-xs text-primary" />
+                      <Icon icon="solar:user-line-duotone" className="text-xs text-primary" />
                     </div>
                   )}
                   <Icon icon="solar:alt-arrow-down-bold" className="text-[10px] text-muted-foreground hidden md:block" />
@@ -259,20 +259,20 @@ export default function AuthHeader() {
                 {user?.role === 'admin' && (
                   <DropdownMenuItem asChild>
                     <Link to="/admin" className="cursor-pointer">
-                      <Icon icon="solar:widget-bold-duotone" className="mr-2 text-base" />
+                      <Icon icon="solar:widget-line-duotone" className="mr-2 text-base" />
                       Dashboard
                     </Link>
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem asChild>
                   <Link to="/" className="cursor-pointer">
-                    <Icon icon="solar:home-2-bold-duotone" className="mr-2 text-base" />
+                    <Icon icon="solar:home-2-line-duotone" className="mr-2 text-base" />
                     Về trang chủ
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-destructive focus:text-destructive cursor-pointer" onClick={() => logout()}>
-                  <Icon icon="solar:logout-2-bold-duotone" className="mr-2 text-base" />
+                  <Icon icon="solar:logout-2-line-duotone" className="mr-2 text-base" />
                   Đăng xuất
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -282,7 +282,7 @@ export default function AuthHeader() {
               to="/auth/login"
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] font-medium text-primary-foreground bg-primary hover:bg-primary/90 transition-colors"
             >
-              <Icon icon="solar:login-bold-duotone" className="text-base" />
+              <Icon icon="solar:login-line-duotone" className="text-base" />
               <span className="hidden md:inline">Đăng nhập</span>
             </Link>
           )}

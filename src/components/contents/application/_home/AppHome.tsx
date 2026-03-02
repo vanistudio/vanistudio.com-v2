@@ -128,7 +128,7 @@ function ProductCard({ product }: { product: Product }) {
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-muted/30">
-                    <Icon icon="solar:box-bold-duotone" className="text-4xl text-muted-foreground/30" />
+                    <Icon icon="solar:box-line-duotone" className="text-4xl text-muted-foreground/30" />
                   </div>
                 )}
               </div>
@@ -242,12 +242,12 @@ export default function AppHome() {
       <AppDashed noTopBorder padding="p-0" className="relative">
         <div className="grid grid-cols-2 sm:grid-cols-3 relative z-10">
           {[
-            { icon: "solar:bolt-circle-bold-duotone", label: "Hiệu suất cao", desc: "Sản phẩm được tối ưu hóa để đảm bảo tốc độ xử lý nhanh nhất, mang lại trải nghiệm mượt mà cho người dùng.", color: "text-blue-500" },
-            { icon: "solar:shield-keyhole-bold-duotone", label: "An toàn & Bảo mật", desc: "Dữ liệu người dùng luôn được mã hóa và bảo vệ nghiêm ngặt, tuân thủ các tiêu chuẩn bảo mật hiện đại.", color: "text-emerald-500" },
-            { icon: "solar:code-square-bold-duotone", label: "Mã nguồn sạch", desc: "Codebase được thiết kế theo kiến trúc chuẩn, dễ bảo trì, mở rộng và tích hợp với các hệ thống khác.", color: "text-purple-500" },
-            { icon: "solar:users-group-rounded-bold-duotone", label: "Cộng đồng lớn mạnh", desc: "Cộng đồng hàng nghìn người dùng luôn sẵn sàng hỗ trợ, chia sẻ kinh nghiệm và đóng góp ý tưởng.", color: "text-amber-500" },
-            { icon: "solar:settings-minimalistic-bold-duotone", label: "Tự động hóa", desc: "Tích hợp quy trình tự động giúp tiết kiệm thời gian, giảm thiểu thao tác thủ công và tăng năng suất.", color: "text-rose-500" },
-            { icon: "solar:headphones-round-sound-bold-duotone", label: "Hỗ trợ nhanh chóng", desc: "Đội ngũ phát triển luôn lắng nghe phản hồi và sẵn sàng hỗ trợ xử lý mọi vấn đề trong thời gian ngắn nhất.", color: "text-cyan-500" },
+            { icon: "solar:bolt-circle-line-duotone", label: "Hiệu suất cao", desc: "Sản phẩm được tối ưu hóa để đảm bảo tốc độ xử lý nhanh nhất, mang lại trải nghiệm mượt mà cho người dùng.", color: "text-blue-500" },
+            { icon: "solar:shield-keyhole-line-duotone", label: "An toàn & Bảo mật", desc: "Dữ liệu người dùng luôn được mã hóa và bảo vệ nghiêm ngặt, tuân thủ các tiêu chuẩn bảo mật hiện đại.", color: "text-emerald-500" },
+            { icon: "solar:code-square-line-duotone", label: "Mã nguồn sạch", desc: "Codebase được thiết kế theo kiến trúc chuẩn, dễ bảo trì, mở rộng và tích hợp với các hệ thống khác.", color: "text-purple-500" },
+            { icon: "solar:users-group-rounded-line-duotone", label: "Cộng đồng lớn mạnh", desc: "Cộng đồng hàng nghìn người dùng luôn sẵn sàng hỗ trợ, chia sẻ kinh nghiệm và đóng góp ý tưởng.", color: "text-amber-500" },
+            { icon: "solar:settings-minimalistic-line-duotone", label: "Tự động hóa", desc: "Tích hợp quy trình tự động giúp tiết kiệm thời gian, giảm thiểu thao tác thủ công và tăng năng suất.", color: "text-rose-500" },
+            { icon: "solar:headphones-round-sound-line-duotone", label: "Hỗ trợ nhanh chóng", desc: "Đội ngũ phát triển luôn lắng nghe phản hồi và sẵn sàng hỗ trợ xử lý mọi vấn đề trong thời gian ngắn nhất.", color: "text-cyan-500" },
           ].map((item, i) => (
             <div key={i} className="p-5 group cursor-default hover:bg-muted-background transition-colors flex flex-col items-center text-center gap-2.5">
               <Icon icon={item.icon} className={cn("text-5xl", item.color)} />
@@ -353,7 +353,7 @@ export default function AppHome() {
           </div>
         ) : products.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-2">
-            <Icon icon="solar:box-bold-duotone" className="text-4xl text-muted-foreground/30" />
+            <Icon icon="solar:box-line-duotone" className="text-4xl text-muted-foreground/30" />
             <p className="text-sm text-muted-foreground">Chưa có sản phẩm nào</p>
           </div>
         ) : (
@@ -374,7 +374,7 @@ export default function AppHome() {
               {services.map((s) => (
                 <Link key={s.id} to={`/services/${s.slug}`} className="flex flex-col items-center gap-2 p-4 rounded-xl border border-border">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <Icon icon={s.icon || "solar:widget-5-bold-duotone"} className="text-xl text-primary" />
+                    <Icon icon={s.icon || "solar:widget-5-line-duotone"} className="text-xl text-primary" />
                   </div>
                   <h3 className="text-sm font-bold text-title text-center">{s.name}</h3>
                   {s.tagline && <p className="text-[10px] text-muted-foreground text-center line-clamp-2">{s.tagline}</p>}
@@ -415,7 +415,7 @@ export default function AppHome() {
                         <img src={p.thumbnail || p.coverImage || ''} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-muted/30">
-                          <Icon icon="solar:case-round-bold-duotone" className="text-3xl text-muted-foreground/30" />
+                          <Icon icon="solar:case-round-line-duotone" className="text-3xl text-muted-foreground/30" />
                         </div>
                       )}
                     </div>
@@ -460,7 +460,7 @@ export default function AppHome() {
                         <img src={post.thumbnail} alt={post.title} className="w-full h-full object-cover" loading="lazy" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-muted/30">
-                          <Icon icon="solar:document-text-bold-duotone" className="text-2xl text-muted-foreground/30" />
+                          <Icon icon="solar:document-text-line-duotone" className="text-2xl text-muted-foreground/30" />
                         </div>
                       )}
                     </div>
@@ -494,13 +494,13 @@ export default function AppHome() {
           <div className="flex items-center gap-3">
             <Link to="/contact">
               <Button size="sm">
-                <Icon icon="solar:chat-round-dots-bold-duotone" className="text-sm mr-1.5" />
+                <Icon icon="solar:chat-round-dots-line-duotone" className="text-sm mr-1.5" />
                 Liên hệ tư vấn
               </Button>
             </Link>
             <Link to="/services">
               <Button variant="outline" size="sm">
-                <Icon icon="solar:widget-5-bold-duotone" className="text-sm mr-1.5" />
+                <Icon icon="solar:widget-5-line-duotone" className="text-sm mr-1.5" />
                 Xem dịch vụ
               </Button>
             </Link>

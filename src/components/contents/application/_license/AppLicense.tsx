@@ -19,9 +19,9 @@ interface VerifyResult {
 
 const statusMap: Record<string, { label: string; color: string; bg: string; icon: string }> = {
   active: { label: "Đã xác minh", color: "text-emerald-500", bg: "border-emerald-500/30 bg-emerald-500/5", icon: "solar:verified-check-bold" },
-  expired: { label: "Hết hạn", color: "text-amber-500", bg: "border-amber-500/30 bg-amber-500/5", icon: "solar:clock-circle-bold-duotone" },
-  revoked: { label: "Đã thu hồi", color: "text-destructive", bg: "border-destructive/30 bg-destructive/5", icon: "solar:close-circle-bold-duotone" },
-  unused: { label: "Chưa kích hoạt", color: "text-muted-foreground", bg: "border-border bg-muted/10", icon: "solar:minus-circle-bold-duotone" },
+  expired: { label: "Hết hạn", color: "text-amber-500", bg: "border-amber-500/30 bg-amber-500/5", icon: "solar:clock-circle-line-duotone" },
+  revoked: { label: "Đã thu hồi", color: "text-destructive", bg: "border-destructive/30 bg-destructive/5", icon: "solar:close-circle-line-duotone" },
+  unused: { label: "Chưa kích hoạt", color: "text-muted-foreground", bg: "border-border bg-muted/10", icon: "solar:minus-circle-line-duotone" },
 };
 
 function formatDate(dateStr: string | null): string {
@@ -67,7 +67,7 @@ export default function AppLicense() {
       <AppDashed noTopBorder padding="p-5">
         <div className="flex flex-col items-center gap-1.5">
           <div className="p-3 rounded-xl bg-primary/10 mb-1">
-            <Icon icon="solar:shield-check-bold-duotone" className="text-3xl text-primary" />
+            <Icon icon="solar:shield-check-line-duotone" className="text-3xl text-primary" />
           </div>
           <h1 className="text-xl font-bold text-title">Xác minh giấy phép</h1>
           <p className="text-sm text-muted-foreground text-center max-w-lg">
@@ -78,7 +78,7 @@ export default function AppLicense() {
       <AppDashed noTopBorder padding="p-5">
         <form onSubmit={handleCheck} className="flex items-center justify-center gap-2 max-w-md mx-auto">
           <div className="relative flex-1">
-            <Icon icon="solar:global-bold-duotone" className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm" />
+            <Icon icon="solar:global-line-duotone" className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm" />
             <Input
               className="text-sm h-9 pl-9"
               placeholder="example.com"
@@ -91,7 +91,7 @@ export default function AppLicense() {
               <Icon icon="svg-spinners:ring-resize" className="text-sm" />
             ) : (
               <>
-                <Icon icon="solar:shield-check-bold-duotone" className="text-sm mr-1.5" />
+                <Icon icon="solar:shield-check-line-duotone" className="text-sm mr-1.5" />
                 Xác minh
               </>
             )}
@@ -102,7 +102,7 @@ export default function AppLicense() {
         {error && (
           <div className="flex flex-col items-center gap-3 max-w-md mx-auto py-4">
             <div className="p-4 rounded-full bg-destructive/10">
-              <Icon icon="solar:shield-warning-bold-duotone" className="text-4xl text-destructive" />
+              <Icon icon="solar:shield-warning-line-duotone" className="text-4xl text-destructive" />
             </div>
             <div className="text-center">
               <p className="text-sm font-bold text-destructive mb-1">Không tìm thấy giấy phép</p>
@@ -136,11 +136,11 @@ export default function AppLicense() {
             </div>
             <div className="rounded-xl border border-border overflow-hidden">
               {[
-                { icon: "solar:global-bold-duotone", label: "Tên miền", value: result.domain || "—" },
-                { icon: "solar:box-bold-duotone", label: "Sản phẩm", value: result.productName },
-                { icon: "solar:user-bold-duotone", label: "Chủ sở hữu", value: result.ownerName || "—" },
-                { icon: "solar:calendar-bold-duotone", label: "Ngày cấp phép", value: formatDate(result.activatedAt || result.createdAt) },
-                { icon: "solar:calendar-mark-bold-duotone", label: "Hiệu lực đến", value: result.expiresAt ? formatDate(result.expiresAt) : "Vĩnh viễn" },
+                { icon: "solar:global-line-duotone", label: "Tên miền", value: result.domain || "—" },
+                { icon: "solar:box-line-duotone", label: "Sản phẩm", value: result.productName },
+                { icon: "solar:user-line-duotone", label: "Chủ sở hữu", value: result.ownerName || "—" },
+                { icon: "solar:calendar-line-duotone", label: "Ngày cấp phép", value: formatDate(result.activatedAt || result.createdAt) },
+                { icon: "solar:calendar-mark-line-duotone", label: "Hiệu lực đến", value: result.expiresAt ? formatDate(result.expiresAt) : "Vĩnh viễn" },
               ].map((item, i) => (
                 <div key={item.label} className={cn("flex items-center gap-3 px-4 py-3", i < 3 && "border-b border-border")}>
                   <Icon icon={item.icon} className="text-lg text-muted-foreground shrink-0" />
@@ -158,7 +158,7 @@ export default function AppLicense() {
         )}
         {!error && !result && !loading && (
           <div className="flex flex-col items-center justify-center py-8 gap-2">
-            <Icon icon="solar:shield-check-bold-duotone" className="text-4xl text-muted-foreground/20" />
+            <Icon icon="solar:shield-check-line-duotone" className="text-4xl text-muted-foreground/20" />
             <p className="text-sm text-muted-foreground">Nhập tên miền để xác minh giấy phép</p>
           </div>
         )}

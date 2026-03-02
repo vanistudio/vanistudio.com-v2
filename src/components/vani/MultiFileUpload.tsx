@@ -95,7 +95,7 @@ export default function MultiFileUpload({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button type="button" variant="outline" className="text-xs gap-1.5 w-full">
-            <Icon icon="solar:gallery-add-bold-duotone" className="text-sm" />
+            <Icon icon="solar:gallery-add-line-duotone" className="text-sm" />
             Thêm ảnh demo ({value.length} ảnh)
           </Button>
         </DialogTrigger>
@@ -130,7 +130,7 @@ export default function MultiFileUpload({
             ) : (
               <div className="flex flex-col items-center gap-2">
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Icon icon="solar:gallery-add-bold-duotone" className="text-2xl text-primary" />
+                  <Icon icon="solar:gallery-add-line-duotone" className="text-2xl text-primary" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-foreground">Kéo thả ảnh vào đây</p>

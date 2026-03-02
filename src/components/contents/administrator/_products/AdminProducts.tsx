@@ -123,10 +123,10 @@ export default function AdminProducts() {
     const draft = products.filter((p) => p.status === "draft").length;
     const featured = products.filter((p) => p.isFeatured).length;
     return [
-      { label: "Tổng sản phẩm", value: total, icon: "solar:box-bold-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
-      { label: "Đã xuất bản", value: published, icon: "solar:check-circle-bold-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
-      { label: "Bản nháp", value: draft, icon: "solar:pen-new-square-bold-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
-      { label: "Nổi bật", value: featured, icon: "solar:star-bold-duotone", bgColor: "bg-violet-500/10", textColor: "text-violet-500" },
+      { label: "Tổng sản phẩm", value: total, icon: "solar:box-line-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
+      { label: "Đã xuất bản", value: published, icon: "solar:check-circle-line-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
+      { label: "Bản nháp", value: draft, icon: "solar:pen-new-square-line-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
+      { label: "Nổi bật", value: featured, icon: "solar:star-line-duotone", bgColor: "bg-violet-500/10", textColor: "text-violet-500" },
     ];
   }, [products]);
 
@@ -139,7 +139,7 @@ export default function AdminProducts() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              <Icon icon="solar:box-bold-duotone" className="text-xl text-primary" />
+              <Icon icon="solar:box-line-duotone" className="text-xl text-primary" />
             </div>
             <div>
               <h1 className="text-lg font-bold text-title">Sản phẩm</h1>
@@ -147,7 +147,7 @@ export default function AdminProducts() {
             </div>
           </div>
           <Button size="sm" className="text-xs gap-1.5" onClick={() => navigate("/admin/products/create")}>
-            <Icon icon="solar:add-circle-bold-duotone" className="text-sm" />
+            <Icon icon="solar:add-circle-line-duotone" className="text-sm" />
             Thêm sản phẩm
           </Button>
         </div>
@@ -167,7 +167,7 @@ export default function AdminProducts() {
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" className="text-xs gap-1.5 shrink-0">
-                <Icon icon="solar:filter-bold-duotone" className="text-sm" />
+                <Icon icon="solar:filter-line-duotone" className="text-sm" />
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end" className="w-[240px] p-3">
@@ -218,7 +218,7 @@ export default function AdminProducts() {
           </div>
         ) : filteredProducts.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-2">
-            <Icon icon="solar:box-bold-duotone" className="text-4xl text-muted-foreground/30" />
+            <Icon icon="solar:box-line-duotone" className="text-4xl text-muted-foreground/30" />
             <p className="text-sm text-muted-foreground">
               {search || statusFilter !== "all" || typeFilter !== "all"
                 ? "Không tìm thấy sản phẩm phù hợp"
@@ -246,7 +246,7 @@ export default function AdminProducts() {
                       <img src={p.thumbnail} alt={p.name} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <Icon icon="solar:box-bold-duotone" className="text-base text-muted-foreground" />
+                        <Icon icon="solar:box-line-duotone" className="text-base text-muted-foreground" />
                       </div>
                     )}
                   </div>
@@ -291,12 +291,12 @@ export default function AdminProducts() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-44">
                       <DropdownMenuItem onClick={() => navigate(`/admin/products/${p.id}/edit`)}>
-                        <Icon icon="solar:pen-bold-duotone" className="mr-2 text-base" />
+                        <Icon icon="solar:pen-line-duotone" className="mr-2 text-base" />
                         Chỉnh sửa
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(p.id)}>
-                        <Icon icon="solar:trash-bin-trash-bold-duotone" className="mr-2 text-base" />
+                        <Icon icon="solar:trash-bin-trash-line-duotone" className="mr-2 text-base" />
                         Xóa sản phẩm
                       </DropdownMenuItem>
                     </DropdownMenuContent>

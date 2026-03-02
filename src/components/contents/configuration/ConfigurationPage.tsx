@@ -26,12 +26,12 @@ const AUTH_ROUTES = {
 };
 
 const STEPS = [
-  { label: "Giới thiệu", icon: "solar:star-bold-duotone" },
-  { label: "Xác thực", icon: "solar:key-bold-duotone" },
-  { label: "Đăng nhập", icon: "solar:login-bold-duotone" },
-  { label: "Hồ sơ Admin", icon: "solar:user-bold-duotone" },
-  { label: "Website", icon: "solar:global-bold-duotone" },
-  { label: "Hoàn tất", icon: "solar:check-circle-bold-duotone" },
+  { label: "Giới thiệu", icon: "solar:star-line-duotone" },
+  { label: "Xác thực", icon: "solar:key-line-duotone" },
+  { label: "Đăng nhập", icon: "solar:login-line-duotone" },
+  { label: "Hồ sơ Admin", icon: "solar:user-line-duotone" },
+  { label: "Website", icon: "solar:global-line-duotone" },
+  { label: "Hoàn tất", icon: "solar:check-circle-line-duotone" },
 ];
 
 function StepTimeline({ current, onStepClick }: { current: number; onStepClick: (step: number) => void }) {
@@ -471,7 +471,7 @@ export default function ConfigurationPage() {
           {step === 5 && (
             <div className="flex flex-col gap-6 items-center text-center min-h-[400px] justify-center">
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                <Icon icon="solar:check-circle-bold-duotone" className="text-4xl text-primary" />
+                <Icon icon="solar:check-circle-line-duotone" className="text-4xl text-primary" />
               </div>
               <div className="space-y-2">
                 <h2 className="text-2xl font-bold text-title">Cài đặt thành công!</h2>

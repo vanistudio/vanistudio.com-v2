@@ -102,9 +102,9 @@ export default function AdminContacts() {
     const unread = contacts.filter(c => !c.isRead).length;
     const read = contacts.filter(c => c.isRead).length;
     return [
-      { label: "Tổng tin nhắn", value: total, icon: "solar:chat-round-dots-bold-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
-      { label: "Chưa đọc", value: unread, icon: "solar:letter-unread-bold-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
-      { label: "Đã đọc", value: read, icon: "solar:check-read-bold-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
+      { label: "Tổng tin nhắn", value: total, icon: "solar:chat-round-dots-line-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
+      { label: "Chưa đọc", value: unread, icon: "solar:letter-unread-line-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
+      { label: "Đã đọc", value: read, icon: "solar:check-read-line-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
     ];
   }, [contacts]);
 
@@ -114,7 +114,7 @@ export default function AdminContacts() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              <Icon icon="solar:chat-round-dots-bold-duotone" className="text-xl text-primary" />
+              <Icon icon="solar:chat-round-dots-line-duotone" className="text-xl text-primary" />
             </div>
             <div>
               <h1 className="text-lg font-bold text-title">Tin nhắn liên hệ</h1>
@@ -145,7 +145,7 @@ export default function AdminContacts() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-2">
-            <Icon icon="solar:chat-round-dots-bold-duotone" className="text-4xl text-muted-foreground/30" />
+            <Icon icon="solar:chat-round-dots-line-duotone" className="text-4xl text-muted-foreground/30" />
             <p className="text-sm text-muted-foreground">
               {search ? "Không tìm thấy tin nhắn phù hợp" : "Chưa có tin nhắn nào"}
             </p>
@@ -208,16 +208,16 @@ export default function AdminContacts() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-44">
                       <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleRead(c); }}>
-                        <Icon icon="solar:eye-bold-duotone" className="mr-2 text-base" />
+                        <Icon icon="solar:eye-line-duotone" className="mr-2 text-base" />
                         Xem chi tiết
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={(e) => { e.stopPropagation(); window.open(`mailto:${c.email}?subject=Re: ${c.subject || ""}`); }}>
-                        <Icon icon="solar:reply-bold-duotone" className="mr-2 text-base" />
+                        <Icon icon="solar:reply-line-duotone" className="mr-2 text-base" />
                         Trả lời
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={(e) => { e.stopPropagation(); handleDelete(c.id); }}>
-                        <Icon icon="solar:trash-bin-trash-bold-duotone" className="mr-2 text-base" />
+                        <Icon icon="solar:trash-bin-trash-line-duotone" className="mr-2 text-base" />
                         Xóa
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -264,11 +264,11 @@ export default function AdminContacts() {
                 <span className="text-xs text-muted-foreground">{new Date(selected.createdAt).toLocaleString("vi-VN")}</span>
                 <div className="flex gap-2">
                   <Button variant="destructive" size="sm" className="text-xs" onClick={() => handleDelete(selected.id)}>
-                    <Icon icon="solar:trash-bin-trash-bold-duotone" className="text-sm mr-1" />
+                    <Icon icon="solar:trash-bin-trash-line-duotone" className="text-sm mr-1" />
                     Xóa
                   </Button>
                   <Button variant="outline" size="sm" className="text-xs" onClick={() => window.open(`mailto:${selected.email}?subject=Re: ${selected.subject || ''}`)}>
-                    <Icon icon="solar:reply-bold-duotone" className="text-sm mr-1" />
+                    <Icon icon="solar:reply-line-duotone" className="text-sm mr-1" />
                     Trả lời
                   </Button>
                 </div>

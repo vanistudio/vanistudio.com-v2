@@ -19,7 +19,7 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5">
-          <Icon icon="solar:settings-minimalistic-bold-duotone" className="text-sm" />
+          <Icon icon="solar:settings-minimalistic-line-duotone" className="text-sm" />
           Hiển thị
         </Button>
       </DropdownMenuTrigger>

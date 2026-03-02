@@ -124,7 +124,7 @@ export default function AuthRegister() {
               {loading ? (
                 <Icon icon="svg-spinners:ring-resize" className="text-sm mr-2" />
               ) : (
-                <Icon icon="solar:user-plus-bold-duotone" className="text-sm mr-2" />
+                <Icon icon="solar:user-plus-line-duotone" className="text-sm mr-2" />
               )}
               Đăng ký
             </Button>
