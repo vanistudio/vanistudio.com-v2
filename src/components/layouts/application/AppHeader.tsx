@@ -161,7 +161,7 @@ function MobileAccordion({
   );
 }
 
-export default function AppHeadder() {
+export default function AppHeader() {
   const location = useLocation();
   const { user, isAuthenticated, logout } = useAuth();
   const { theme, setTheme } = useTheme();
