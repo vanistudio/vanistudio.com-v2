@@ -1,5 +1,6 @@
 import { db } from "@/configs/index.config";
 import { users } from "@/schemas/user.schema";
+import { roles } from "@/schemas/role.schema";
 import { eq, desc, asc, like, or, and, sql } from "drizzle-orm";
 
 export const usersController = {
@@ -25,6 +26,7 @@ export const usersController = {
       avatarUrl: users.avatarUrl,
       provider: users.provider,
       role: users.role,
+      roleId: users.roleId,
       isActive: users.isActive,
       createdAt: users.createdAt,
       updatedAt: users.updatedAt,
@@ -96,10 +98,23 @@ export const usersController = {
     return updated;
   },
 
-  async updateRole(userId: string, role: "admin" | "user") {
+  async updateRole(userId: string, roleId: string) {
+    // Lookup the role to get its name
+    const [roleRecord] = await db
+      .select({ id: roles.id, name: roles.name })
+      .from(roles)
+      .where(eq(roles.id, roleId))
+      .limit(1);
+
+    if (!roleRecord) throw new Error("Không tìm thấy role");
+
     const [updated] = await db
       .update(users)
-      .set({ role, updatedAt: new Date() })
+      .set({
+        role: roleRecord.name,
+        roleId: roleRecord.id,
+        updatedAt: new Date(),
+      })
       .where(eq(users.id, userId))
       .returning();
 

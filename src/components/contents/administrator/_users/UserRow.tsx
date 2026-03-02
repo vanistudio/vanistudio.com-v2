@@ -7,6 +7,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -26,14 +29,17 @@ export interface User {
   avatarUrl: string | null;
   provider: string;
   role: string;
+  roleId: string | null;
   isActive: boolean;
   createdAt: string;
 }
+import type { Role } from "./AdminUsers";
 
 interface UserRowProps {
   user: User;
+  roles: Role[];
   onToggleActive: (id: string) => void;
-  onChangeRole: (id: string, role: "admin" | "user") => void;
+  onChangeRole: (id: string, roleId: string) => void;
   onDelete: (id: string) => void;
 }
 
@@ -75,7 +81,7 @@ function timeAgo(dateStr: string): string {
   return `${Math.floor(months / 12)} năm trước`;
 }
 
-export default function UserRow({ user, onToggleActive, onChangeRole, onDelete }: UserRowProps) {
+export default function UserRow({ user, roles, onToggleActive, onChangeRole, onDelete }: UserRowProps) {
   const displayName = user.fullName || user.displayName || user.username || "—";
 
   return (
@@ -150,10 +156,29 @@ export default function UserRow({ user, onToggleActive, onChangeRole, onDelete }
             <Icon icon={user.isActive ? "solar:close-circle-line-duotone" : "solar:check-circle-line-duotone"} className="mr-2 text-base" />
             {user.isActive ? "Vô hiệu hóa" : "Kích hoạt"}
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onChangeRole(user.id, user.role === "admin" ? "user" : "admin")}>
-            <Icon icon="solar:shield-user-line-duotone" className="mr-2 text-base" />
-            {user.role === "admin" ? "Hạ quyền User" : "Nâng quyền Admin"}
-          </DropdownMenuItem>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <Icon icon="solar:shield-user-line-duotone" className="mr-2 text-base" />
+              Đổi role
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent className="w-44">
+              {roles.map((r) => (
+                <DropdownMenuItem
+                  key={r.id}
+                  onClick={() => onChangeRole(user.id, r.id)}
+                  className={user.roleId === r.id ? "bg-primary/10 font-semibold" : ""}
+                >
+                  {user.roleId === r.id && (
+                    <Icon icon="solar:check-circle-bold" className="mr-2 text-sm text-primary" />
+                  )}
+                  <span className="capitalize">{r.name}</span>
+                  {r.description && (
+                    <span className="text-[10px] text-muted-foreground ml-auto truncate max-w-[80px]">{r.description}</span>
+                  )}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
           <DropdownMenuSeparator />
           <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => onDelete(user.id)}>
             <Icon icon="solar:trash-bin-trash-line-duotone" className="mr-2 text-base" />

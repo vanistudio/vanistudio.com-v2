@@ -14,9 +14,16 @@ import { toast } from "sonner";
 import UserRow, { type User } from "./UserRow";
 import ConfirmDialog from "@/components/vani/ConfirmDialog";
 
+export interface Role {
+  id: string;
+  name: string;
+  description: string | null;
+}
+
 export default function AdminUsers() {
   usePageTitle("Quản lý Người dùng");
   const [users, setUsers] = useState<User[]>([]);
+  const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
@@ -37,7 +44,13 @@ export default function AdminUsers() {
       setLoading(false);
     }
   }, []);
-  useEffect(() => { fetchUsers(); }, [fetchUsers]);
+  const fetchRoles = useCallback(async () => {
+    try {
+      const { data } = await (api.api.admin as any).roles.get();
+      if (data?.success) setRoles(data.roles || []);
+    } catch {}
+  }, []);
+  useEffect(() => { fetchUsers(); fetchRoles(); }, [fetchUsers, fetchRoles]);
   const handleToggleActive = async (id: string) => {
     try {
       const { data } = await api.api.admin.users({ id })["toggle-active"].patch();
@@ -45,9 +58,9 @@ export default function AdminUsers() {
       else toast.error("Thất bại", { description: (data as any)?.error });
     } catch { toast.error("Lỗi kết nối"); }
   };
-  const handleChangeRole = async (id: string, role: "admin" | "user") => {
+  const handleChangeRole = async (id: string, roleId: string) => {
     try {
-      const { data } = await api.api.admin.users({ id }).role.patch({ role });
+      const { data } = await api.api.admin.users({ id }).role.patch({ roleId } as any);
       if (data?.success) { toast.success("Cập nhật quyền thành công"); fetchUsers(); }
       else toast.error("Thất bại", { description: (data as any)?.error });
     } catch { toast.error("Lỗi kết nối"); }
@@ -207,6 +220,7 @@ export default function AdminUsers() {
                 <UserRow
                   key={user.id}
                   user={user}
+                  roles={roles}
                   onToggleActive={handleToggleActive}
                   onChangeRole={handleChangeRole}
                   onDelete={(id) => setDeleteTarget(id)}

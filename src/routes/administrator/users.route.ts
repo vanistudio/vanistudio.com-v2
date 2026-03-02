@@ -30,7 +30,7 @@ export const usersRoutes = new Elysia({ prefix: "/users" })
   }, { beforeHandle: requirePermission(PERMISSIONS.USERS_TOGGLE_ACTIVE) })
   .patch("/:id/role", async ({ params, body }) => {
     try {
-      const user = await usersController.updateRole(params.id, body.role as "admin" | "user");
+      const user = await usersController.updateRole(params.id, body.roleId);
       return { success: true, user };
     } catch (error: any) {
       return { success: false, error: error.message };
@@ -38,7 +38,7 @@ export const usersRoutes = new Elysia({ prefix: "/users" })
   }, {
     beforeHandle: requirePermission(PERMISSIONS.USERS_UPDATE_ROLE),
     body: t.Object({
-      role: t.String(),
+      roleId: t.String(),
     }),
   })
   .delete("/:id", async ({ params }) => {
