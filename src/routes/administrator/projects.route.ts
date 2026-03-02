@@ -1,6 +1,7 @@
 import { Elysia } from "elysia";
 import { projectsController } from "@/controllers/administrator/projects.controller";
-import { adminProxy } from "@/proxies/administrator.proxy";
+import { adminProxy, requirePermission } from "@/proxies/administrator.proxy";
+import { PERMISSIONS } from "@/constants/permissions";
 
 export const projectsRoutes = new Elysia({ prefix: "/projects" })
   .use(adminProxy)
@@ -18,7 +19,7 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  })
+  }, { beforeHandle: requirePermission(PERMISSIONS.PROJECTS_VIEW) })
   .get("/:id", async ({ params }) => {
     try {
       const project = await projectsController.getById(params.id);
@@ -26,7 +27,7 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  })
+  }, { beforeHandle: requirePermission(PERMISSIONS.PROJECTS_VIEW) })
   .post("/", async ({ admin, body }) => {
     try {
       const project = await projectsController.create(admin!.userId, body as any);
@@ -34,7 +35,7 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  })
+  }, { beforeHandle: requirePermission(PERMISSIONS.PROJECTS_CREATE) })
   .patch("/:id", async ({ params, body }) => {
     try {
       const project = await projectsController.update(params.id, body as any);
@@ -42,7 +43,7 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  })
+  }, { beforeHandle: requirePermission(PERMISSIONS.PROJECTS_UPDATE) })
   .delete("/:id", async ({ params }) => {
     try {
       await projectsController.delete(params.id);
@@ -50,4 +51,4 @@ export const projectsRoutes = new Elysia({ prefix: "/projects" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  });
+  }, { beforeHandle: requirePermission(PERMISSIONS.PROJECTS_DELETE) });

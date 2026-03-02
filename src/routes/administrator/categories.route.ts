@@ -1,6 +1,7 @@
 import { Elysia, t } from "elysia";
 import { categoriesController } from "@/controllers/administrator/categories.controller";
-import { adminProxy } from "@/proxies/administrator.proxy";
+import { adminProxy, requirePermission } from "@/proxies/administrator.proxy";
+import { PERMISSIONS } from "@/constants/permissions";
 
 export const categoriesRoutes = new Elysia({ prefix: "/categories" })
   .use(adminProxy)
@@ -11,7 +12,7 @@ export const categoriesRoutes = new Elysia({ prefix: "/categories" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  })
+  }, { beforeHandle: requirePermission(PERMISSIONS.CATEGORIES_VIEW) })
   .post("/", async ({ body }) => {
     try {
       const category = await categoriesController.create(body);
@@ -20,6 +21,7 @@ export const categoriesRoutes = new Elysia({ prefix: "/categories" })
       return { success: false, error: error.message };
     }
   }, {
+    beforeHandle: requirePermission(PERMISSIONS.CATEGORIES_CREATE),
     body: t.Object({
       name: t.String(),
       slug: t.String(),
@@ -39,6 +41,7 @@ export const categoriesRoutes = new Elysia({ prefix: "/categories" })
       return { success: false, error: error.message };
     }
   }, {
+    beforeHandle: requirePermission(PERMISSIONS.CATEGORIES_REORDER),
     body: t.Object({
       items: t.Array(t.Object({
         id: t.String(),
@@ -54,6 +57,7 @@ export const categoriesRoutes = new Elysia({ prefix: "/categories" })
       return { success: false, error: error.message };
     }
   }, {
+    beforeHandle: requirePermission(PERMISSIONS.CATEGORIES_UPDATE),
     body: t.Partial(t.Object({
       name: t.String(),
       slug: t.String(),
@@ -73,4 +77,4 @@ export const categoriesRoutes = new Elysia({ prefix: "/categories" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  });
+  }, { beforeHandle: requirePermission(PERMISSIONS.CATEGORIES_DELETE) });

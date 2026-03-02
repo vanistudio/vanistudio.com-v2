@@ -1,6 +1,7 @@
 import { Elysia, t } from "elysia";
 import { settingsController } from "@/controllers/administrator/settings.controller";
-import { adminProxy } from "@/proxies/administrator.proxy";
+import { adminProxy, requirePermission } from "@/proxies/administrator.proxy";
+import { PERMISSIONS } from "@/constants/permissions";
 
 export const settingsRoutes = new Elysia({ prefix: "/settings" })
   .use(adminProxy)
@@ -11,7 +12,7 @@ export const settingsRoutes = new Elysia({ prefix: "/settings" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  })
+  }, { beforeHandle: requirePermission(PERMISSIONS.SETTINGS_VIEW) })
   .patch("/", async ({ body }) => {
     try {
       const settings = await settingsController.update(body);
@@ -20,6 +21,7 @@ export const settingsRoutes = new Elysia({ prefix: "/settings" })
       return { success: false, error: error.message };
     }
   }, {
+    beforeHandle: requirePermission(PERMISSIONS.SETTINGS_UPDATE),
     body: t.Partial(t.Object({
       siteName: t.String(),
       siteTagline: t.String(),

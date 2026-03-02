@@ -1,6 +1,7 @@
 import { Elysia } from "elysia";
 import { blogController } from "@/controllers/administrator/blog.controller";
-import { adminProxy } from "@/proxies/administrator.proxy";
+import { adminProxy, requirePermission } from "@/proxies/administrator.proxy";
+import { PERMISSIONS } from "@/constants/permissions";
 
 export const blogRoutes = new Elysia({ prefix: "/blog" })
   .use(adminProxy)
@@ -17,7 +18,7 @@ export const blogRoutes = new Elysia({ prefix: "/blog" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  })
+  }, { beforeHandle: requirePermission(PERMISSIONS.BLOG_VIEW) })
   .get("/:id", async ({ params }) => {
     try {
       const post = await blogController.getById(params.id);
@@ -25,7 +26,7 @@ export const blogRoutes = new Elysia({ prefix: "/blog" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  })
+  }, { beforeHandle: requirePermission(PERMISSIONS.BLOG_VIEW) })
   .post("/", async ({ admin, body }) => {
     try {
       const post = await blogController.create(admin!.userId, body as any);
@@ -33,7 +34,7 @@ export const blogRoutes = new Elysia({ prefix: "/blog" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  })
+  }, { beforeHandle: requirePermission(PERMISSIONS.BLOG_CREATE) })
   .patch("/:id", async ({ params, body }) => {
     try {
       const post = await blogController.update(params.id, body as any);
@@ -41,7 +42,7 @@ export const blogRoutes = new Elysia({ prefix: "/blog" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  })
+  }, { beforeHandle: requirePermission(PERMISSIONS.BLOG_UPDATE) })
   .delete("/:id", async ({ params }) => {
     try {
       await blogController.delete(params.id);
@@ -49,4 +50,4 @@ export const blogRoutes = new Elysia({ prefix: "/blog" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  });
+  }, { beforeHandle: requirePermission(PERMISSIONS.BLOG_DELETE) });

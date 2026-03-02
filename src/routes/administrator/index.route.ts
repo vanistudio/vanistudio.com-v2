@@ -12,10 +12,12 @@ import { licensesRoutes } from "./licenses.route";
 import { dashboardRoutes } from "./dashboard.route";
 import { contactRoutes } from "./contacts.route";
 import { requestLogRoutes } from "./requests.route";
+import { rolesRoutes } from "./roles.route";
 
 export const adminRoutes = new Elysia({ prefix: "/api/admin" })
   .use(dashboardRoutes)
   .use(usersRoutes)
+  .use(rolesRoutes)
   .use(categoriesRoutes)
   .use(productsRoutes)
   .use(databaseRoutes)

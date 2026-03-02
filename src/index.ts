@@ -116,6 +116,10 @@ async function startServer() {
     await db.execute(sql`SELECT 1`);
     console.log("🐘 PostgreSQL đã kết nối thành công!");
 
+    // Seed default roles
+    const { seedDefaultRoles } = await import("@/services/role-seeder.service");
+    await seedDefaultRoles();
+
     const server = app.listen(envPort);
     console.log(`🦊 Elysia đang chạy tại http://localhost:${envPort}`);
     const gracefulShutdown = async () => {

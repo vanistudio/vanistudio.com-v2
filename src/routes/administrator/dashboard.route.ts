@@ -1,6 +1,7 @@
 import { Elysia } from "elysia";
 import { dashboardController } from "@/controllers/administrator/dashboard.controller";
-import { adminProxy } from "@/proxies/administrator.proxy";
+import { adminProxy, requirePermission } from "@/proxies/administrator.proxy";
+import { PERMISSIONS } from "@/constants/permissions";
 
 export const dashboardRoutes = new Elysia({ prefix: "/dashboard" })
   .use(adminProxy)
@@ -11,4 +12,4 @@ export const dashboardRoutes = new Elysia({ prefix: "/dashboard" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  });
+  }, { beforeHandle: requirePermission(PERMISSIONS.DASHBOARD_VIEW) });

@@ -1,6 +1,7 @@
 import { Elysia } from "elysia";
 import { databaseController } from "@/controllers/administrator/database.controller";
-import { adminProxy } from "@/proxies/administrator.proxy";
+import { adminProxy, requirePermission } from "@/proxies/administrator.proxy";
+import { PERMISSIONS } from "@/constants/permissions";
 
 export const databaseRoutes = new Elysia({ prefix: "/database" })
   .use(adminProxy)
@@ -11,4 +12,4 @@ export const databaseRoutes = new Elysia({ prefix: "/database" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  });
+  }, { beforeHandle: requirePermission(PERMISSIONS.DATABASE_VIEW) });

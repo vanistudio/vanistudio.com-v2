@@ -1,6 +1,7 @@
 import { pgTable, text, timestamp, boolean, uuid } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { licenses } from "./license.schema";
+import { roles } from "./role.schema";
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -13,14 +14,16 @@ export const users = pgTable("users", {
   avatarUrl: text("avatar_url"),
   provider: text("provider", { enum: ["local", "github", "google"] }).default("local").notNull(),
   providerId: text("provider_id"),
-  role: text("role", { enum: ["admin", "user"] }).default("user").notNull(),
+  role: text("role").default("user").notNull(),
+  roleId: uuid("role_id").references(() => roles.id, { onDelete: "set null" }),
   isActive: boolean("is_active").default(true).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ many, one }) => ({
   licenses: many(licenses),
+  userRole: one(roles, { fields: [users.roleId], references: [roles.id] }),
 }));
 
 export type User = typeof users.$inferSelect;

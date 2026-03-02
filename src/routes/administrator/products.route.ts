@@ -1,6 +1,7 @@
 import { Elysia, t } from "elysia";
 import { productsController } from "@/controllers/administrator/products.controller";
-import { adminProxy } from "@/proxies/administrator.proxy";
+import { adminProxy, requirePermission } from "@/proxies/administrator.proxy";
+import { PERMISSIONS } from "@/constants/permissions";
 
 export const productsRoutes = new Elysia({ prefix: "/products" })
   .use(adminProxy)
@@ -18,7 +19,7 @@ export const productsRoutes = new Elysia({ prefix: "/products" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  })
+  }, { beforeHandle: requirePermission(PERMISSIONS.PRODUCTS_VIEW) })
   .get("/:id", async ({ params }) => {
     try {
       const product = await productsController.getById(params.id);
@@ -26,7 +27,7 @@ export const productsRoutes = new Elysia({ prefix: "/products" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  })
+  }, { beforeHandle: requirePermission(PERMISSIONS.PRODUCTS_VIEW) })
   .post("/", async ({ admin, body }) => {
     try {
       const product = await productsController.create(admin!.userId, body as any);
@@ -34,7 +35,7 @@ export const productsRoutes = new Elysia({ prefix: "/products" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  })
+  }, { beforeHandle: requirePermission(PERMISSIONS.PRODUCTS_CREATE) })
   .patch("/:id", async ({ params, body }) => {
     try {
       const product = await productsController.update(params.id, body as any);
@@ -42,7 +43,7 @@ export const productsRoutes = new Elysia({ prefix: "/products" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  })
+  }, { beforeHandle: requirePermission(PERMISSIONS.PRODUCTS_UPDATE) })
   .delete("/:id", async ({ params }) => {
     try {
       await productsController.delete(params.id);
@@ -50,4 +51,4 @@ export const productsRoutes = new Elysia({ prefix: "/products" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  });
+  }, { beforeHandle: requirePermission(PERMISSIONS.PRODUCTS_DELETE) });

@@ -1,6 +1,7 @@
 import { Elysia, t } from "elysia";
 import { usersController } from "@/controllers/administrator/users.controller";
-import { adminProxy } from "@/proxies/administrator.proxy";
+import { adminProxy, requirePermission } from "@/proxies/administrator.proxy";
+import { PERMISSIONS } from "@/constants/permissions";
 
 export const usersRoutes = new Elysia({ prefix: "/users" })
   .use(adminProxy)
@@ -18,7 +19,7 @@ export const usersRoutes = new Elysia({ prefix: "/users" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  })
+  }, { beforeHandle: requirePermission(PERMISSIONS.USERS_VIEW) })
   .patch("/:id/toggle-active", async ({ params }) => {
     try {
       const user = await usersController.toggleActive(params.id);
@@ -26,7 +27,7 @@ export const usersRoutes = new Elysia({ prefix: "/users" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  })
+  }, { beforeHandle: requirePermission(PERMISSIONS.USERS_TOGGLE_ACTIVE) })
   .patch("/:id/role", async ({ params, body }) => {
     try {
       const user = await usersController.updateRole(params.id, body.role);
@@ -35,8 +36,9 @@ export const usersRoutes = new Elysia({ prefix: "/users" })
       return { success: false, error: error.message };
     }
   }, {
+    beforeHandle: requirePermission(PERMISSIONS.USERS_UPDATE_ROLE),
     body: t.Object({
-      role: t.Union([t.Literal("admin"), t.Literal("user")]),
+      role: t.String(),
     }),
   })
   .delete("/:id", async ({ params }) => {
@@ -46,4 +48,4 @@ export const usersRoutes = new Elysia({ prefix: "/users" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  });
+  }, { beforeHandle: requirePermission(PERMISSIONS.USERS_DELETE) });

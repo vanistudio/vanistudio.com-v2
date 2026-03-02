@@ -1,6 +1,7 @@
 import { Elysia } from "elysia";
 import { servicesController } from "@/controllers/administrator/services.controller";
-import { adminProxy } from "@/proxies/administrator.proxy";
+import { adminProxy, requirePermission } from "@/proxies/administrator.proxy";
+import { PERMISSIONS } from "@/constants/permissions";
 
 export const servicesRoutes = new Elysia({ prefix: "/services" })
   .use(adminProxy)
@@ -16,7 +17,7 @@ export const servicesRoutes = new Elysia({ prefix: "/services" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  })
+  }, { beforeHandle: requirePermission(PERMISSIONS.SERVICES_VIEW) })
   .get("/:id", async ({ params }) => {
     try {
       const service = await servicesController.getById(params.id);
@@ -24,7 +25,7 @@ export const servicesRoutes = new Elysia({ prefix: "/services" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  })
+  }, { beforeHandle: requirePermission(PERMISSIONS.SERVICES_VIEW) })
   .post("/", async ({ body }) => {
     try {
       const service = await servicesController.create(body as any);
@@ -32,7 +33,7 @@ export const servicesRoutes = new Elysia({ prefix: "/services" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  })
+  }, { beforeHandle: requirePermission(PERMISSIONS.SERVICES_CREATE) })
   .patch("/:id", async ({ params, body }) => {
     try {
       const service = await servicesController.update(params.id, body as any);
@@ -40,7 +41,7 @@ export const servicesRoutes = new Elysia({ prefix: "/services" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  })
+  }, { beforeHandle: requirePermission(PERMISSIONS.SERVICES_UPDATE) })
   .delete("/:id", async ({ params }) => {
     try {
       await servicesController.delete(params.id);
@@ -48,4 +49,4 @@ export const servicesRoutes = new Elysia({ prefix: "/services" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  });
+  }, { beforeHandle: requirePermission(PERMISSIONS.SERVICES_DELETE) });

@@ -1,5 +1,6 @@
 import { Elysia } from "elysia";
-import { adminProxy } from "@/proxies/administrator.proxy";
+import { adminProxy, requirePermission } from "@/proxies/administrator.proxy";
+import { PERMISSIONS } from "@/constants/permissions";
 import { join } from "path";
 import { randomUUID } from "crypto";
 
@@ -33,4 +34,4 @@ export const uploadRoutes = new Elysia({ prefix: "/upload" })
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  });
+  }, { beforeHandle: requirePermission(PERMISSIONS.UPLOADS_CREATE) });

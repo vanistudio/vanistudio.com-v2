@@ -1,5 +1,6 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
+import * as roleSchema from "@/schemas/role.schema";
 import * as userSchema from "@/schemas/user.schema";
 import * as licenseSchema from "@/schemas/license.schema";
 import * as settingSchema from "@/schemas/setting.schema";
@@ -19,6 +20,7 @@ export const pgClient = client;
 
 export const db = drizzle(client, {
   schema: {
+    ...roleSchema,
     ...userSchema,
     ...licenseSchema,
     ...settingSchema,
