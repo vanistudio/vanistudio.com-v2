@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import AppDashed from "@/components/layouts/application/AppDashed";
 import { Icon } from "@iconify/react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import AdminStats from "@/components/vani/AdminStats";
 import { usePageTitle } from "@/hooks/use-page-title";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
@@ -14,6 +15,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Role {
   id: string;
@@ -29,6 +37,7 @@ export default function AdminRoles() {
   usePageTitle("Phân quyền");
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingRole, setEditingRole] = useState<Role | null>(null);
   const [form, setForm] = useState({ name: "", description: "", permissions: [] as string[] });
@@ -120,13 +129,39 @@ export default function AdminRoles() {
     }
   };
 
+  const filteredRoles = useMemo(() => {
+    if (!search) return roles;
+    const q = search.toLowerCase();
+    return roles.filter((r) =>
+      [r.name, r.description].filter(Boolean).join(" ").toLowerCase().includes(q)
+    );
+  }, [roles, search]);
+
+  const stats = useMemo(() => {
+    const total = roles.length;
+    const system = roles.filter((r) => r.isSystem).length;
+    const custom = total - system;
+    const totalUsers = roles.reduce((acc, r) => acc + r.userCount, 0);
+    return [
+      { label: "Tổng role", value: total, icon: "solar:shield-keyhole-line-duotone", bgColor: "bg-blue-500/10", textColor: "text-blue-500" },
+      { label: "Hệ thống", value: system, icon: "solar:shield-star-line-duotone", bgColor: "bg-amber-500/10", textColor: "text-amber-500" },
+      { label: "Tùy chỉnh", value: custom, icon: "solar:shield-plus-line-duotone", bgColor: "bg-emerald-500/10", textColor: "text-emerald-500" },
+      { label: "Tổng người dùng", value: totalUsers, icon: "solar:users-group-rounded-line-duotone", bgColor: "bg-violet-500/10", textColor: "text-violet-500" },
+    ];
+  }, [roles]);
+
   return (
-    <div className="flex flex-col w-full mx-auto max-w-[1200px]">
+    <div className="flex flex-col w-full">
       <AppDashed noTopBorder padding="p-4">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <Icon icon="solar:shield-keyhole-bold-duotone" className="text-xl text-primary" />
-            <h1 className="text-lg font-bold text-title">Phân quyền</h1>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <Icon icon="solar:shield-keyhole-line-duotone" className="text-xl text-primary" />
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-title">Phân quyền</h1>
+              <p className="text-xs text-muted-foreground">{roles.length} role</p>
+            </div>
           </div>
           <Button size="sm" onClick={openCreate}>
             <Icon icon="solar:add-circle-line-duotone" className="mr-1.5" />
@@ -135,67 +170,103 @@ export default function AdminRoles() {
         </div>
       </AppDashed>
 
-      <AppDashed noTopBorder padding="p-4">
-        {loading ? (
-          <div className="flex items-center justify-center py-16">
-            <Icon icon="svg-spinners:ring-resize" className="text-2xl text-muted-foreground" />
+      <AdminStats items={stats} />
+
+      <AppDashed noTopBorder padding="p-3">
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <Icon icon="solar:magnifer-linear" className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground text-sm" />
+            <Input
+              placeholder="Tìm theo tên role..."
+              className="pl-8 text-sm"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
           </div>
-        ) : roles.length === 0 ? (
+        </div>
+      </AppDashed>
+
+      <AppDashed noTopBorder padding="p-0" scrollable>
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <Icon icon="svg-spinners:ring-resize" className="text-2xl text-muted-foreground animate-spin" />
+          </div>
+        ) : filteredRoles.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-2">
-            <Icon icon="solar:shield-keyhole-bold-duotone" className="text-4xl text-muted-foreground/30" />
-            <p className="text-sm text-muted-foreground">Chưa có role nào</p>
+            <Icon icon="solar:shield-keyhole-line-duotone" className="text-4xl text-muted-foreground/30" />
+            <p className="text-sm text-muted-foreground">
+              {search ? "Không tìm thấy role phù hợp" : "Chưa có role nào"}
+            </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {roles.map((role) => (
-              <div key={role.id} className="flex flex-col p-4 rounded-xl border border-border bg-card">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Icon icon={role.permissions.includes("*") ? "solar:shield-star-bold-duotone" : "solar:shield-keyhole-bold-duotone"} className="text-lg text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-title">{role.name}</h3>
-                      {role.description && <p className="text-[10px] text-muted-foreground">{role.description}</p>}
+          <div className="w-max min-w-full">
+            <div className="flex items-center gap-4 px-4 py-2 border-b border-border text-[11px] font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap">
+              <div className="w-10 shrink-0" />
+              <div className="flex-1 min-w-[180px]">Role</div>
+              <div className="w-[100px]">Quyền</div>
+              <div className="w-[100px]">Người dùng</div>
+              <div className="w-[80px]">Loại</div>
+              <div className="w-8 shrink-0" />
+            </div>
+            <div className="divide-y divide-border">
+              {filteredRoles.map((role) => (
+                <div key={role.id} className="flex items-center gap-4 px-4 py-3 whitespace-nowrap">
+                  <div className="w-10 shrink-0 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Icon icon={role.permissions.includes("*") ? "solar:shield-star-bold-duotone" : "solar:shield-keyhole-bold-duotone"} className="text-base text-primary" />
                     </div>
                   </div>
-                  {role.isSystem && (
-                    <Badge variant="outline" className="text-[9px] px-1.5 py-0">Hệ thống</Badge>
-                  )}
-                </div>
-                <div className="flex items-center gap-3 text-[11px] text-muted-foreground mb-3">
-                  <span className="flex items-center gap-1">
-                    <Icon icon="solar:users-group-rounded-line-duotone" className="text-xs" />
-                    {role.userCount} người dùng
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Icon icon="solar:key-line-duotone" className="text-xs" />
-                    {role.permissions.includes("*") ? "Toàn quyền" : `${role.permissions.length} quyền`}
-                  </span>
-                </div>
-                {!role.permissions.includes("*") && role.permissions.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mb-3">
-                    {role.permissions.slice(0, 6).map((p) => (
-                      <span key={p} className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">{p}</span>
-                    ))}
-                    {role.permissions.length > 6 && (
-                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground/60">+{role.permissions.length - 6}</span>
+                  <div className="flex-1 min-w-[180px]">
+                    <div className="text-sm font-semibold text-title">{role.name}</div>
+                    {role.description && <div className="text-[11px] text-muted-foreground truncate max-w-[240px]">{role.description}</div>}
+                  </div>
+                  <div className="w-[100px]">
+                    <span className="text-xs text-muted-foreground">
+                      {role.permissions.includes("*") ? "Toàn quyền" : `${role.permissions.length} quyền`}
+                    </span>
+                  </div>
+                  <div className="w-[100px]">
+                    <span className="text-xs text-muted-foreground">{role.userCount}</span>
+                  </div>
+                  <div className="w-[80px]">
+                    {role.isSystem ? (
+                      <Badge variant="outline" className="text-[9px] px-1.5 py-0">Hệ thống</Badge>
+                    ) : (
+                      <Badge variant="secondary" className="text-[9px] px-1.5 py-0">Tùy chỉnh</Badge>
                     )}
                   </div>
-                )}
-                <div className="flex items-center gap-2 mt-auto pt-3 border-t border-border">
-                  <Button variant="outline" size="sm" className="h-7 text-xs flex-1" onClick={() => openEdit(role)}>
-                    <Icon icon="solar:pen-2-line-duotone" className="mr-1 text-xs" />
-                    Sửa
-                  </Button>
-                  {!role.isSystem && (
-                    <Button variant="outline" size="sm" className="h-7 text-xs text-destructive hover:text-destructive" onClick={() => handleDelete(role.id)}>
-                      <Icon icon="solar:trash-bin-2-line-duotone" className="text-xs" />
-                    </Button>
-                  )}
+                  <div className="w-8 shrink-0 flex items-center justify-center">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className="w-7 h-7 flex items-center justify-center rounded-md hover:bg-muted transition-colors cursor-pointer">
+                          <Icon icon="solar:menu-dots-bold" className="text-base text-muted-foreground" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-[140px]">
+                        <DropdownMenuItem onClick={() => openEdit(role)}>
+                          <Icon icon="solar:pen-2-line-duotone" className="mr-2 text-sm" />
+                          <span className="text-xs">Chỉnh sửa</span>
+                        </DropdownMenuItem>
+                        {!role.isSystem && (
+                          <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(role.id)}>
+                              <Icon icon="solar:trash-bin-2-line-duotone" className="mr-2 text-sm" />
+                              <span className="text-xs">Xóa</span>
+                            </DropdownMenuItem>
+                          </>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+            <div className="flex items-center justify-between px-4 py-2 border-t border-border">
+              <span className="text-[11px] text-muted-foreground">
+                Hiển thị {filteredRoles.length} / {roles.length} role
+              </span>
+            </div>
           </div>
         )}
       </AppDashed>
