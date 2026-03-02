@@ -2,7 +2,7 @@ import { db } from "@/configs/index.config";
 import { settings } from "@/schemas/setting.schema";
 import { users } from "@/schemas/user.schema";
 import { roles } from "@/schemas/role.schema";
-import { eq, or, isNotNull } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { invalidateSettingsCache } from "@/services/settings.service";
 
 async function hasSettings(): Promise<boolean> {
@@ -14,10 +14,7 @@ async function hasAdmin(): Promise<boolean> {
   const [row] = await db
     .select({ id: users.id })
     .from(users)
-    .where(or(
-      eq(users.role, "admin"),
-      isNotNull(users.roleId)
-    ))
+    .where(eq(users.role, "admin"))
     .limit(1);
   return !!row;
 }

@@ -6,16 +6,13 @@ import { eq, ilike, sql } from "drizzle-orm";
 export const rolesController = {
   async getAll() {
     const allRoles = await db.select().from(roles).orderBy(roles.createdAt);
-    // Đếm số user mỗi role
-    const result = [];
-    for (const role of allRoles) {
-      const [count] = await db
-        .select({ count: sql<number>`count(*)::int` })
-        .from(users)
-        .where(eq(users.roleId, role.id));
-      result.push({ ...role, userCount: count?.count || 0 });
-    }
-    return result;
+    // Count all users per role in a single query
+    const counts = await db
+      .select({ roleId: users.roleId, count: sql<number>`count(*)::int` })
+      .from(users)
+      .groupBy(users.roleId);
+    const countMap = new Map(counts.map((c) => [c.roleId, c.count]));
+    return allRoles.map((role) => ({ ...role, userCount: countMap.get(role.id) || 0 }));
   },
 
   async getById(id: string) {
@@ -70,8 +67,8 @@ export const rolesController = {
     if (!existing) throw new Error("Role không tồn tại");
     if (existing.isSystem) throw new Error("Không thể xóa role hệ thống");
 
-    // Xóa roleId khỏi users trước
-    await db.update(users).set({ roleId: null }).where(eq(users.roleId, id));
+    // Xóa roleId và reset role text về "user"
+    await db.update(users).set({ roleId: null, role: "user" }).where(eq(users.roleId, id));
     await db.delete(roles).where(eq(roles.id, id));
   },
 };

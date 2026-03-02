@@ -245,8 +245,7 @@ export default function AdminDashboard() {
                   >
                     <div className={`size-1.5 rounded-full ${statusColors[l.status] || "bg-zinc-400"} shrink-0`} />
                     <div className="flex-1 min-w-0">
-                      <span className="text-[10px] font-mono text-muted-foreground block truncate">{l.key}</span>
-                      <span className="text-[10px] text-muted-foreground/70">{l.productName}</span>
+                      <span className="text-xs font-medium text-foreground block truncate">{l.productName}</span>
                     </div>
                     <span className="text-[10px] text-muted-foreground tabular-nums shrink-0">{timeAgo(l.createdAt)}</span>
                   </div>

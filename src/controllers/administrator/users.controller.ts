@@ -85,7 +85,8 @@ export const usersController = {
     };
   },
 
-  async toggleActive(userId: string) {
+  async toggleActive(userId: string, currentUserId: string) {
+    if (userId === currentUserId) throw new Error("Không thể vô hiệu hóa chính mình");
     const [user] = await db.select({ isActive: users.isActive }).from(users).where(eq(users.id, userId)).limit(1);
     if (!user) throw new Error("Không tìm thấy người dùng");
 
@@ -98,7 +99,8 @@ export const usersController = {
     return updated;
   },
 
-  async updateRole(userId: string, roleId: string) {
+  async updateRole(userId: string, roleId: string, currentUserId: string) {
+    if (userId === currentUserId) throw new Error("Không thể đổi role chính mình");
     // Lookup the role to get its name
     const [roleRecord] = await db
       .select({ id: roles.id, name: roles.name })
@@ -122,7 +124,8 @@ export const usersController = {
     return updated;
   },
 
-  async deleteUser(userId: string) {
+  async deleteUser(userId: string, currentUserId: string) {
+    if (userId === currentUserId) throw new Error("Không thể xóa chính mình");
     const [deleted] = await db.delete(users).where(eq(users.id, userId)).returning();
     if (!deleted) throw new Error("Không tìm thấy người dùng");
     return deleted;

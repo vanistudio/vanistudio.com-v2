@@ -288,7 +288,7 @@ export default function AdminRoles() {
                   placeholder="editor, moderator..."
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  disabled={editingRole?.isSystem && editingRole?.name === "admin"}
+                  disabled={editingRole?.isSystem}
                 />
               </div>
               <div className="flex flex-col gap-1.5">
@@ -304,9 +304,13 @@ export default function AdminRoles() {
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-medium text-muted-foreground">Quyền hạn</label>
-                <Button variant="ghost" size="sm" className="h-6 text-[10px]" onClick={handleToggleAll}>
-                  Chọn tất cả / Bỏ chọn
-                </Button>
+                {editingRole?.isSystem ? (
+                  <span className="text-[10px] text-amber-500 font-medium">Role hệ thống — không thể sửa quyền</span>
+                ) : (
+                  <Button variant="ghost" size="sm" className="h-6 text-[10px]" onClick={handleToggleAll}>
+                    Chọn tất cả / Bỏ chọn
+                  </Button>
+                )}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -317,7 +321,7 @@ export default function AdminRoles() {
                     <div key={group.module} className="rounded-lg border border-border p-3">
                       <div
                         className="flex items-center gap-2 mb-2 cursor-pointer select-none"
-                        onClick={() => handleToggleModule(group.permissions)}
+                        onClick={() => !editingRole?.isSystem && handleToggleModule(group.permissions)}
                       >
                         <div className={`w-4 h-4 rounded border flex items-center justify-center text-[10px] transition-colors ${allChecked ? "bg-primary border-primary text-primary-foreground" : someChecked ? "bg-primary/30 border-primary/50 text-primary-foreground" : "border-border"}`}>
                           {(allChecked || someChecked) && <Icon icon="solar:check-read-linear" />}
@@ -330,7 +334,7 @@ export default function AdminRoles() {
                           <label key={perm.key} className="flex items-center gap-2 cursor-pointer select-none">
                             <div
                               className={`w-3.5 h-3.5 rounded border flex items-center justify-center text-[9px] transition-colors ${form.permissions.includes(perm.key) ? "bg-primary border-primary text-primary-foreground" : "border-border"}`}
-                              onClick={() => handleTogglePermission(perm.key)}
+                              onClick={() => !editingRole?.isSystem && handleTogglePermission(perm.key)}
                             >
                               {form.permissions.includes(perm.key) && <Icon icon="solar:check-read-linear" />}
                             </div>

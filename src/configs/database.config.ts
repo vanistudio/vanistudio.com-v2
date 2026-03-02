@@ -8,6 +8,8 @@ import * as categorySchema from "@/schemas/category.schema";
 import * as productSchema from "@/schemas/product.schema";
 import * as blogSchema from "@/schemas/blog.schema";
 import * as projectSchema from "@/schemas/project.schema";
+import * as serviceSchema from "@/schemas/service.schema";
+import * as contactSchema from "@/schemas/contact.schema";
 
 const connectionString = process.env.APP_POSTGRESQL_URI;
 
@@ -28,6 +30,8 @@ export const db = drizzle(client, {
     ...productSchema,
     ...blogSchema,
     ...projectSchema,
+    ...serviceSchema,
+    ...contactSchema,
   },
 });
 

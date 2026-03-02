@@ -45,7 +45,7 @@ export const dashboardController = {
     const recentBlog = await db.select({ id: blogPosts.id, title: blogPosts.title, status: blogPosts.status, createdAt: blogPosts.createdAt })
       .from(blogPosts).orderBy(sql`${blogPosts.createdAt} desc`).limit(5);
     const recentLicenses = await db.select({
-      id: licenses.id, key: licenses.key, productName: licenses.productName,
+      id: licenses.id, productName: licenses.productName,
       status: licenses.status, createdAt: licenses.createdAt,
     }).from(licenses).orderBy(sql`${licenses.createdAt} desc`).limit(5);
 

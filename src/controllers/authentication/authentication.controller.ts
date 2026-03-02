@@ -106,6 +106,11 @@ async function findOrCreateOAuthUser(
     }
   }
   const passwordHash = await generateRandomPasswordHash();
+  // Lookup default "user" role
+  let userRoleId: string | null = null;
+  const [defaultRole] = await db.select({ id: roles.id }).from(roles).where(eq(roles.name, "user")).limit(1);
+  if (defaultRole) userRoleId = defaultRole.id;
+
   const [newUser] = await db
     .insert(users)
     .values({
@@ -115,6 +120,7 @@ async function findOrCreateOAuthUser(
       avatarUrl: userInfo.avatar,
       provider,
       providerId: userInfo.id,
+      roleId: userRoleId,
     })
     .returning();
 
@@ -188,6 +194,11 @@ export const authController = {
 
     const passwordHash = await Bun.password.hash(data.password, { algorithm: "bcrypt", cost: 10 });
 
+    // Lookup default "user" role
+    let userRoleId: string | null = null;
+    const [defaultRole] = await db.select({ id: roles.id }).from(roles).where(eq(roles.name, "user")).limit(1);
+    if (defaultRole) userRoleId = defaultRole.id;
+
     const [newUser] = await db.insert(users).values({
       username: data.username,
       email: data.email,
@@ -196,6 +207,7 @@ export const authController = {
       fullName: data.fullName,
       phoneNumber: data.phone,
       provider: "local",
+      roleId: userRoleId,
     }).returning();
 
     const token = createToken(newUser.id, false);
@@ -210,10 +222,10 @@ export const authController = {
       throw new Error(`Tài khoản này được đăng nhập qua ${user.provider === "github" ? "GitHub" : "Google"}`);
     }
 
+    if (!user.isActive) throw new Error("Tài khoản đã bị vô hiệu hóa");
+
     const valid = await Bun.password.verify(password, user.passwordHash);
     if (!valid) throw new Error("Email hoặc mật khẩu không đúng");
-
-    if (!user.isActive) throw new Error("Tài khoản đã bị vô hiệu hóa");
 
     const needsOnboarding = !user.username;
     const token = createToken(user.id, needsOnboarding);

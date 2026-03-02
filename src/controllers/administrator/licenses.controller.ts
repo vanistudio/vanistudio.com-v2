@@ -122,11 +122,12 @@ export const licensesController = {
     notes?: string;
     domain?: string;
     expiresAt?: string;
-  }): Promise<any> {
+  }, _retries = 0): Promise<any> {
+    if (_retries > 5) throw new Error("Không thể tạo license key duy nhất, vui lòng thử lại");
     const key = generateLicenseKey();
 
     const [existing] = await db.select({ id: licenses.id }).from(licenses).where(eq(licenses.key, key)).limit(1);
-    if (existing) return this.create(data);
+    if (existing) return this.create(data, _retries + 1);
 
     const [license] = await db.insert(licenses).values({
       key,

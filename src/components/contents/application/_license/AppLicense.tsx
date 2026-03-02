@@ -142,7 +142,7 @@ export default function AppLicense() {
                 { icon: "solar:calendar-line-duotone", label: "Ngày cấp phép", value: formatDate(result.activatedAt || result.createdAt) },
                 { icon: "solar:calendar-mark-line-duotone", label: "Hiệu lực đến", value: result.expiresAt ? formatDate(result.expiresAt) : "Vĩnh viễn" },
               ].map((item, i) => (
-                <div key={item.label} className={cn("flex items-center gap-3 px-4 py-3", i < 3 && "border-b border-border")}>
+                <div key={item.label} className={cn("flex items-center gap-3 px-4 py-3", i < 4 && "border-b border-border")}>
                   <Icon icon={item.icon} className="text-lg text-muted-foreground shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{item.label}</p>

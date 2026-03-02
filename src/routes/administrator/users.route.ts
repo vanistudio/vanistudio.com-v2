@@ -20,17 +20,17 @@ export const usersRoutes = new Elysia({ prefix: "/users" })
       return { success: false, error: error.message };
     }
   }, { beforeHandle: requirePermission(PERMISSIONS.USERS_VIEW) })
-  .patch("/:id/toggle-active", async ({ params }) => {
+  .patch("/:id/toggle-active", async ({ params, admin }) => {
     try {
-      const user = await usersController.toggleActive(params.id);
+      const user = await usersController.toggleActive(params.id, admin!.userId);
       return { success: true, user };
     } catch (error: any) {
       return { success: false, error: error.message };
     }
   }, { beforeHandle: requirePermission(PERMISSIONS.USERS_TOGGLE_ACTIVE) })
-  .patch("/:id/role", async ({ params, body }) => {
+  .patch("/:id/role", async ({ params, body, admin }) => {
     try {
-      const user = await usersController.updateRole(params.id, body.roleId);
+      const user = await usersController.updateRole(params.id, body.roleId, admin!.userId);
       return { success: true, user };
     } catch (error: any) {
       return { success: false, error: error.message };
@@ -41,9 +41,9 @@ export const usersRoutes = new Elysia({ prefix: "/users" })
       roleId: t.String(),
     }),
   })
-  .delete("/:id", async ({ params }) => {
+  .delete("/:id", async ({ params, admin }) => {
     try {
-      await usersController.deleteUser(params.id);
+      await usersController.deleteUser(params.id, admin!.userId);
       return { success: true };
     } catch (error: any) {
       return { success: false, error: error.message };
