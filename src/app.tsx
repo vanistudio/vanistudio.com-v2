@@ -49,6 +49,7 @@ import LicenseForm from '@/components/contents/administrator/_licenses/LicenseFo
 import AdminDashboard from '@/components/contents/administrator/_dashboard/AdminDashboard';
 import AdminContacts from '@/components/contents/administrator/_contacts/AdminContacts';
 import AdminRequests from '@/components/contents/administrator/_requests/AdminRequests';
+import AdminRoles from '@/components/contents/administrator/_roles/AdminRoles';
 
 function App() {
   return (
@@ -92,6 +93,7 @@ function App() {
           <Route path="/admin" element={<ConfigGuard><AdminGuard><AdminLayout /></AdminGuard></ConfigGuard>}>
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<AdminUsers />} />
+            <Route path="roles" element={<AdminRoles />} />
             <Route path="categories" element={<AdminCategories />} />
             <Route path="categories/create" element={<CategoryForm />} />
             <Route path="categories/:id/edit" element={<CategoryForm />} />

@@ -18,6 +18,7 @@ const isGroup = (entry: NavEntry): entry is NavGroup => "children" in entry;
 const navEntries: NavEntry[] = [
   { name: "Dashboard", href: "/admin", icon: "solar:widget-line-duotone" },
   { name: "Người dùng", href: "/admin/users", icon: "solar:users-group-rounded-line-duotone" },
+  { name: "Phân quyền", href: "/admin/roles", icon: "solar:shield-keyhole-line-duotone" },
   {
     name: "Nội dung", icon: "solar:layers-line-duotone",
     children: [
