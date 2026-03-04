@@ -19,16 +19,18 @@ export const licensesRoutes = new Elysia({ prefix: "/licenses" })
   .use(adminProxy)
   .get("/", async ({ query, admin }) => {
     try {
+      const scope = isFullAdmin(admin) ? undefined : admin?.userId;
       const result = await licensesController.getAll({
         page: query.page ? parseInt(query.page) : 1,
         limit: query.limit ? parseInt(query.limit) : 20,
         search: query.search || undefined,
         status: query.status || undefined,
+        scopeUserId: scope,
       });
       if (!isFullAdmin(admin)) {
         result.licenses = result.licenses.map((l: any) => ({ ...l, key: maskKey(l.key) }));
       }
-      return { success: true, ...result };
+      return { success: true, ...result, isAdmin: isFullAdmin(admin) };
     } catch (error: any) {
       return { success: false, error: error.message };
     }
@@ -41,7 +43,10 @@ export const licensesRoutes = new Elysia({ prefix: "/licenses" })
       return { success: false, error: error.message };
     }
   }, { beforeHandle: requirePermission(PERMISSIONS.LICENSES_VIEW) })
-  .get("/users", async () => {
+  .get("/users", async ({ admin }) => {
+    if (!isFullAdmin(admin)) {
+      return { success: true, users: [] };
+    }
     try {
       const users = await licensesController.getUsers();
       return { success: true, users };
@@ -51,18 +56,23 @@ export const licensesRoutes = new Elysia({ prefix: "/licenses" })
   }, { beforeHandle: requirePermission(PERMISSIONS.LICENSES_VIEW) })
   .get("/:id", async ({ params, admin }) => {
     try {
-      const license = await licensesController.getById(params.id);
+      const scope = isFullAdmin(admin) ? undefined : admin?.userId;
+      const license = await licensesController.getById(params.id, scope);
       if (!isFullAdmin(admin)) {
         (license as any).key = maskKey((license as any).key);
       }
-      return { success: true, license };
+      return { success: true, license, isAdmin: isFullAdmin(admin) };
     } catch (error: any) {
       return { success: false, error: error.message };
     }
   }, { beforeHandle: requirePermission(PERMISSIONS.LICENSES_VIEW) })
   .post("/", async ({ body, admin }) => {
     try {
-      const license = await licensesController.create(body as any);
+      const createData = body as any;
+      if (!isFullAdmin(admin)) {
+        createData.userId = admin?.userId;
+      }
+      const license = await licensesController.create(createData);
       if (!isFullAdmin(admin)) license.key = maskKey(license.key);
       return { success: true, license };
     } catch (error: any) {
@@ -71,7 +81,8 @@ export const licensesRoutes = new Elysia({ prefix: "/licenses" })
   }, { beforeHandle: requirePermission(PERMISSIONS.LICENSES_CREATE) })
   .patch("/:id", async ({ params, body, admin }) => {
     try {
-      const license = await licensesController.update(params.id, body as any);
+      const scope = isFullAdmin(admin) ? undefined : admin?.userId;
+      const license = await licensesController.update(params.id, body as any, scope);
       if (!isFullAdmin(admin)) (license as any).key = maskKey((license as any).key);
       return { success: true, license };
     } catch (error: any) {
@@ -80,16 +91,18 @@ export const licensesRoutes = new Elysia({ prefix: "/licenses" })
   }, { beforeHandle: requirePermission(PERMISSIONS.LICENSES_UPDATE) })
   .patch("/:id/revoke", async ({ params, admin }) => {
     try {
-      const license = await licensesController.revoke(params.id);
+      const scope = isFullAdmin(admin) ? undefined : admin?.userId;
+      const license = await licensesController.revoke(params.id, scope);
       if (!isFullAdmin(admin)) (license as any).key = maskKey((license as any).key);
       return { success: true, license };
     } catch (error: any) {
       return { success: false, error: error.message };
     }
   }, { beforeHandle: requirePermission(PERMISSIONS.LICENSES_REVOKE) })
-  .delete("/:id", async ({ params }) => {
+  .delete("/:id", async ({ params, admin }) => {
     try {
-      await licensesController.delete(params.id);
+      const scope = isFullAdmin(admin) ? undefined : admin?.userId;
+      await licensesController.delete(params.id, scope);
       return { success: true };
     } catch (error: any) {
       return { success: false, error: error.message };

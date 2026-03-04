@@ -27,12 +27,17 @@ export const licensesController = {
     limit?: number;
     search?: string;
     status?: string;
+    scopeUserId?: string;
   }) {
     const page = options.page || 1;
     const limit = Math.min(options.limit || 20, 100);
     const offset = (page - 1) * limit;
 
     const conditions = [];
+
+    if (options.scopeUserId) {
+      conditions.push(eq(licenses.userId, options.scopeUserId));
+    }
 
     if (options.search) {
       const search = `%${options.search}%`;
@@ -85,7 +90,7 @@ export const licensesController = {
     };
   },
 
-  async getById(id: string) {
+  async getById(id: string, scopeUserId?: string) {
     const [license] = await db
       .select({
         id: licenses.id,
@@ -110,6 +115,7 @@ export const licensesController = {
       .limit(1);
 
     if (!license) throw new Error("Không tìm thấy license");
+    if (scopeUserId && license.userId !== scopeUserId) throw new Error("Bạn không có quyền truy cập license này");
     return license;
   },
 
@@ -145,7 +151,12 @@ export const licensesController = {
     return license;
   },
 
-  async update(id: string, data: Record<string, any>) {
+  async update(id: string, data: Record<string, any>, scopeUserId?: string) {
+    if (scopeUserId) {
+      const [existing] = await db.select({ userId: licenses.userId }).from(licenses).where(eq(licenses.id, id)).limit(1);
+      if (!existing) throw new Error("Không tìm thấy license");
+      if (existing.userId !== scopeUserId) throw new Error("Bạn không có quyền chỉnh sửa license này");
+    }
     const { id: _, createdAt, key, ...updateData } = data;
     if (updateData.expiresAt) updateData.expiresAt = new Date(updateData.expiresAt);
     if (updateData.userId === "" || updateData.userId === "none") updateData.userId = null;
@@ -159,13 +170,23 @@ export const licensesController = {
     return updated;
   },
 
-  async delete(id: string) {
+  async delete(id: string, scopeUserId?: string) {
+    if (scopeUserId) {
+      const [existing] = await db.select({ userId: licenses.userId }).from(licenses).where(eq(licenses.id, id)).limit(1);
+      if (!existing) throw new Error("Không tìm thấy license");
+      if (existing.userId !== scopeUserId) throw new Error("Bạn không có quyền xóa license này");
+    }
     const [deleted] = await db.delete(licenses).where(eq(licenses.id, id)).returning();
     if (!deleted) throw new Error("Không tìm thấy license");
     return deleted;
   },
 
-  async revoke(id: string) {
+  async revoke(id: string, scopeUserId?: string) {
+    if (scopeUserId) {
+      const [existing] = await db.select({ userId: licenses.userId }).from(licenses).where(eq(licenses.id, id)).limit(1);
+      if (!existing) throw new Error("Không tìm thấy license");
+      if (existing.userId !== scopeUserId) throw new Error("Bạn không có quyền thu hồi license này");
+    }
     const [updated] = await db.update(licenses)
       .set({ status: "revoked", updatedAt: new Date() })
       .where(eq(licenses.id, id))

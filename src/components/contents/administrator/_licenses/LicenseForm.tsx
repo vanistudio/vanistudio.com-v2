@@ -65,13 +65,17 @@ export default function LicenseForm() {
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(isEditing);
   const [generatedKey, setGeneratedKey] = useState("");
+  const [isAdmin, setIsAdmin] = useState(true);
 
   useEffect(() => {
     (api.api.admin.licenses as any).products.get().then(({ data }: any) => {
       if (data?.success) setProducts(data.products || []);
     });
     (api.api.admin.licenses as any).users.get().then(({ data }: any) => {
-      if (data?.success) setUsers(data.users || []);
+      if (data?.success) {
+        setUsers(data.users || []);
+        if (!data.users || data.users.length === 0) setIsAdmin(false);
+      }
     });
 
     if (id) {
@@ -80,6 +84,7 @@ export default function LicenseForm() {
         if (data?.success && data.license) {
           const l = data.license;
           setGeneratedKey(l.key);
+          if (data.isAdmin === false) setIsAdmin(false);
           setForm({
             productId: l.productId || "",
             productName: l.productName || "",
@@ -208,7 +213,7 @@ export default function LicenseForm() {
         </div>
       </Section>
 
-      <Section title="Người dùng" icon="solar:user-line-duotone" description="Gán license cho người dùng (bỏ trống nếu chưa cần)">
+      {isAdmin && <Section title="Người dùng" icon="solar:user-line-duotone" description="Gán license cho người dùng (bỏ trống nếu chưa cần)">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Người dùng" hint="Chọn user để gán license">
             <Select value={form.userId} onValueChange={(v) => set("userId", v)}>
@@ -237,7 +242,23 @@ export default function LicenseForm() {
             </Select>
           </Field>
         </div>
-      </Section>
+      </Section>}
+
+      {!isAdmin && <Section title="Trạng thái" icon="solar:flag-line-duotone" description="Trạng thái license">
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Trạng thái">
+            <Select value={form.status} onValueChange={(v) => set("status", v)}>
+              <SelectTrigger className="w-full text-sm"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="unused">Chưa dùng</SelectItem>
+                <SelectItem value="active">Đang dùng</SelectItem>
+                <SelectItem value="expired">Hết hạn</SelectItem>
+                <SelectItem value="revoked">Đã thu hồi</SelectItem>
+              </SelectContent>
+            </Select>
+          </Field>
+        </div>
+      </Section>}
 
       <Section title="Cài đặt" icon="solar:settings-line-duotone" description="Domain và ghi chú">
         <div className="grid grid-cols-2 gap-4">

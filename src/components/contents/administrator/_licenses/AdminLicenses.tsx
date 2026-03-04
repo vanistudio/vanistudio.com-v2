@@ -66,6 +66,7 @@ export default function AdminLicenses() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [isAdmin, setIsAdmin] = useState(true);
 
   const fetchLicenses = useCallback(async () => {
     setLoading(true);
@@ -73,7 +74,10 @@ export default function AdminLicenses() {
       const { data } = await (api.api.admin.licenses as any).get({
         query: { page: "1", limit: "500" },
       });
-      if (data?.success) setLicenses(data.licenses || []);
+      if (data?.success) {
+        setLicenses(data.licenses || []);
+        setIsAdmin(data.isAdmin !== false);
+      }
     } catch {
       toast.error("Không thể tải danh sách license");
     } finally {
@@ -149,7 +153,7 @@ export default function AdminLicenses() {
             </div>
             <div>
               <h1 className="text-lg font-bold text-title">License Key</h1>
-              <p className="text-xs text-muted-foreground">{licenses.length} license</p>
+              <p className="text-xs text-muted-foreground">{isAdmin ? `${licenses.length} license` : `${licenses.length} license của bạn`}</p>
             </div>
           </div>
           <Button size="sm" className="text-xs gap-1.5" onClick={() => navigate("/admin/licenses/create")}>
@@ -226,7 +230,7 @@ export default function AdminLicenses() {
               <div className="w-[200px]">License Key</div>
               <div className="flex-1">Sản phẩm</div>
               <div className="flex items-center gap-4 shrink-0">
-                <div className="w-[140px]">Người dùng</div>
+                {isAdmin && <div className="w-[140px]">Người dùng</div>}
                 <div className="w-[120px]">Domain</div>
                 <div className="w-[80px]">Trạng thái</div>
                 <div className="w-[70px] text-right">Ngày tạo</div>
@@ -253,7 +257,7 @@ export default function AdminLicenses() {
                   </div>
 
                   <div className="flex items-center gap-4 shrink-0">
-                    <div className="w-[140px]">
+                    {isAdmin && <div className="w-[140px]">
                       {l.userId ? (
                         <div>
                           <span className="text-xs font-medium text-foreground block">{l.userName || "—"}</span>
@@ -262,7 +266,7 @@ export default function AdminLicenses() {
                       ) : (
                         <span className="text-xs text-muted-foreground">Chưa gán</span>
                       )}
-                    </div>
+                    </div>}
                     <div className="w-[120px]">
                       <span className="text-xs text-muted-foreground">{l.domain || "—"}</span>
                     </div>
