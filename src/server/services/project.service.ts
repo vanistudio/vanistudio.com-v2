@@ -25,7 +25,7 @@ export const projectService = {
     return project;
   },
 
-  async create(data: {
+  async create(authorId: string, data: {
     name: string;
     slug: string;
     tagline?: string;
@@ -55,6 +55,7 @@ export const projectService = {
 
     return projectRepository.create({
       ...data,
+      authorId,
       status: data.status || "draft",
     });
   },

@@ -149,4 +149,8 @@ export const projectRepository = {
     const [row] = await db.delete(projects).where(eq(projects.id, id)).returning();
     return row || null;
   },
+
+  async getPublishedSlugs() {
+    return db.select({ slug: projects.slug, updatedAt: projects.updatedAt }).from(projects).where(eq(projects.status, "published"));
+  },
 };

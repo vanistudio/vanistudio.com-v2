@@ -1,11 +1,11 @@
 import { Elysia } from "elysia";
 import cors from "@elysiajs/cors";
 import { join } from "path";
-import { db } from "@/configs/index.config";
+import { db } from "@/server/configs/index.config";
 import { sql } from "drizzle-orm";
-import { routes } from "@/routes/index.route";
-import { getSiteSettings } from "@/services/settings.service";
-import { addRequestLog } from "@/services/request-logger.service";
+import { routes } from "@/server/routes/index.route";
+import { getSiteSettings } from "@/server/services/setting.service";
+import { addRequestLog } from "@/server/services/request-logger.service";
 
 export const systemStatus = {
   startedAt: new Date(),
@@ -117,8 +117,8 @@ async function startServer() {
     console.log("🐘 PostgreSQL đã kết nối thành công!");
 
     // Seed default roles
-    const { seedDefaultRoles } = await import("@/services/role-seeder.service");
-    await seedDefaultRoles();
+    const { roleService } = await import("@/server/services/role.service");
+    await roleService.seedDefaultRoles();
 
     const server = app.listen(envPort);
     console.log(`🦊 Elysia đang chạy tại http://localhost:${envPort}`);

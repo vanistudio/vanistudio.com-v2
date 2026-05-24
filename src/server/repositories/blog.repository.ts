@@ -131,4 +131,8 @@ export const blogRepository = {
       .set({ viewCount: sql`${blogPosts.viewCount} + 1` })
       .where(eq(blogPosts.id, id));
   },
+
+  async getPublishedSlugs() {
+    return db.select({ slug: blogPosts.slug, updatedAt: blogPosts.updatedAt }).from(blogPosts).where(eq(blogPosts.status, "published"));
+  },
 };

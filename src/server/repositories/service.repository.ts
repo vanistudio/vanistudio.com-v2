@@ -83,4 +83,8 @@ export const serviceRepository = {
     const [row] = await db.delete(services).where(eq(services.id, id)).returning();
     return row || null;
   },
+
+  async getPublishedSlugs() {
+    return db.select({ slug: services.slug, updatedAt: services.updatedAt }).from(services).where(eq(services.status, "published"));
+  },
 };

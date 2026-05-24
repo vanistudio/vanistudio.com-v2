@@ -25,7 +25,7 @@ export const productService = {
     return product;
   },
 
-  async create(data: {
+  async create(authorId: string, data: {
     name: string;
     slug: string;
     tagline?: string;
@@ -63,6 +63,7 @@ export const productService = {
 
     return productRepository.create({
       ...data,
+      authorId,
       status: data.status || "draft",
     });
   },

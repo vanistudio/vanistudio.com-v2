@@ -1,5 +1,5 @@
 import { Elysia } from "elysia";
-import { verifyToken } from "@/controllers/authentication/authentication.controller";
+import { verifyToken } from "@/server/services/authentication.service";
 const COOKIE_NAME = "vani_auth";
 export const authProxy = new Elysia({ name: "auth-proxy" })
   .derive({ as: "global" }, ({ cookie }) => {

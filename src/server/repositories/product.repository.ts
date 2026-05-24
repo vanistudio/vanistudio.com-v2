@@ -167,4 +167,8 @@ export const productRepository = {
       .set({ viewCount: sql`${products.viewCount} + 1` })
       .where(eq(products.id, id));
   },
+
+  async getPublishedSlugs() {
+    return db.select({ slug: products.slug, updatedAt: products.updatedAt }).from(products).where(eq(products.status, "published"));
+  },
 };
