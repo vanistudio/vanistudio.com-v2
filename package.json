@@ -8,7 +8,11 @@
     "build": "cross-env NODE_ENV=production next build",
     "build:webpack": "cross-env NODE_ENV=production next build --webpack",
     "start": "cross-env NODE_ENV=production next start",
-    "lint": "eslint",
+    "lint": "oxlint .",
+    "lint:full": "oxlint . && eslint .",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:ui": "vitest --ui",
     "db:push": "drizzle-kit push",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
@@ -37,15 +41,21 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@tanstack/react-query-devtools": "^5.100.14",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitest/ui": "^4.1.7",
     "babel-plugin-react-compiler": "1.0.0",
     "cross-env": "^10.1.0",
     "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
+    "jsdom": "^29.1.1",
+    "oxlint": "^1.66.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.7"
   }
 }
