@@ -163,7 +163,7 @@ function MobileAccordion({
 
 export default function AppHeader() {
   const location = useLocation();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, settings } = useAuth();
   const { theme, setTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -205,7 +205,7 @@ export default function AppHeader() {
           </SheetContent>
         </Sheet>
         <Link to="/" className="flex items-center gap-2 shrink-0 mr-2 md:mr-6">
-          <img src="/vanistudio.png" alt="Logo" className="h-10" />
+          <img src={settings?.siteLogo || "/vanistudio.png"} alt={settings?.siteName || "Logo"} className="h-10 rounded-md object-contain" />
         </Link>
         <nav className="hidden md:flex items-center gap-0.5 flex-grow">
           {navEntries.map((entry) =>

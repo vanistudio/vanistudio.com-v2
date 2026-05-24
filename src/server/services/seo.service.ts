@@ -2,6 +2,7 @@ import { productRepository } from "@/server/repositories/product.repository";
 import { projectRepository } from "@/server/repositories/project.repository";
 import { blogRepository } from "@/server/repositories/blog.repository";
 import { serviceRepository } from "@/server/repositories/service.repository";
+import { settingRepository } from "@/server/repositories/setting.repository";
 
 function buildUrl(base: string, path: string) {
   return `${base.replace(/\/$/, '')}${path}`;
@@ -9,7 +10,8 @@ function buildUrl(base: string, path: string) {
 
 export const seoService = {
   async generateSitemap(): Promise<string> {
-    const baseUrl = process.env.SITE_URL || "https://vanistudio.com";
+    const setting = await settingRepository.get();
+    const baseUrl = setting?.siteUrl || process.env.SITE_URL || "https://vanistudio.com";
 
     const staticPages = [
       { path: "/", priority: "1.0", changefreq: "daily" },
@@ -55,8 +57,9 @@ ${allPages.map(p => `  <url>
     return xml;
   },
 
-  getRobotsTxt(): string {
-    const baseUrl = process.env.SITE_URL || "https://vanistudio.com";
+  async getRobotsTxt(): Promise<string> {
+    const setting = await settingRepository.get();
+    const baseUrl = setting?.siteUrl || process.env.SITE_URL || "https://vanistudio.com";
     return `User-agent: *
 Allow: /
 Disallow: /admin

@@ -22,6 +22,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   needsOnboarding: boolean;
   needsSetup: boolean;
+  settings: Record<string, string> | null;
   refresh: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -32,6 +33,7 @@ const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   needsOnboarding: false,
   needsSetup: false,
+  settings: null,
   refresh: async () => {},
   logout: async () => {},
 });
@@ -41,12 +43,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
   const [needsSetup, setNeedsSetup] = useState(false);
+  const [settings, setSettings] = useState<Record<string, string> | null>(null);
 
   const fetchAll = async () => {
     try {
-      const [authRes, configRes] = await Promise.all([
+      const [authRes, configRes, settingsRes] = await Promise.all([
         api.api.auth.me.get(),
         api.api.config.status.get(),
+        (api.api.app.settings as any).get(),
       ]);
 
       if (authRes.data?.success && authRes.data.user) {
@@ -58,6 +62,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       setNeedsSetup(configRes.data?.needsSetup ?? false);
+
+      if (settingsRes.data?.success && settingsRes.data.settings) {
+        setSettings(settingsRes.data.settings);
+      }
     } catch {
       setUser(null);
       setNeedsOnboarding(false);
@@ -87,6 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated: !!user,
         needsOnboarding,
         needsSetup,
+        settings,
         refresh: fetchAll,
         logout,
       }}

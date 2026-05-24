@@ -6,6 +6,7 @@ import { servicesPublicRoutes } from "./services.route";
 import { blogPublicRoutes } from "./blog.route";
 import { contactPublicRoutes } from "./contact.route";
 import { licensePublicRoutes } from "./license.route";
+import { settingPublicRoutes } from "./setting.route";
 
 export const applicationRoutes = new Elysia({ prefix: "/api/app" })
   .use(productsPublicRoutes)
@@ -14,4 +15,5 @@ export const applicationRoutes = new Elysia({ prefix: "/api/app" })
   .use(servicesPublicRoutes)
   .use(blogPublicRoutes)
   .use(contactPublicRoutes)
-  .use(licensePublicRoutes);
+  .use(licensePublicRoutes)
+  .use(settingPublicRoutes);

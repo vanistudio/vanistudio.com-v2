@@ -42,5 +42,13 @@ export const settingsRoutes = new Elysia({ prefix: "/settings" })
       siteGoogleAnalyticsId: t.String(),
       siteGoogleTagManagerId: t.String(),
       siteFacebookPixelId: t.String(),
+      contactEmail: t.String(),
+      contactPhone: t.String(),
+      contactAddress: t.String(),
+      socialFacebook: t.String(),
+      socialGithub: t.String(),
+      socialYoutube: t.String(),
+      socialZalo: t.String(),
+      socialTelegram: t.String(),
     })),
   });

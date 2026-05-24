@@ -6,9 +6,11 @@ import { Button } from '@/components/ui/button';
 import { usePageTitle } from '@/hooks/use-page-title';
 import { api } from '@/lib/api';
 import { toast } from 'sonner';
+import { useAuth } from '@/components/providers/AuthProvider';
 
 export default function AppContact() {
   usePageTitle("Liên hệ");
+  const { settings } = useAuth();
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', phone: '', subject: '', message: '' });
@@ -36,9 +38,24 @@ export default function AppContact() {
   };
 
   const contactInfo = [
-    { icon: "solar:letter-line-duotone", label: "Email", value: "vanixjnk@gmail.com", href: "mailto:vanixjnk@gmail.com" },
-    { icon: "logos:facebook", label: "Facebook", value: "Nguyễn Đình Bảo", href: "https://facebook.com/vanixjnk" },
-    { icon: "logos:telegram", label: "Telegram", value: "@vanixjnk", href: "https://t.me/vanixjnk" },
+    {
+      icon: "solar:letter-line-duotone",
+      label: "Email",
+      value: settings?.contactEmail || "vanixjnk@gmail.com",
+      href: `mailto:${settings?.contactEmail || "vanixjnk@gmail.com"}`
+    },
+    {
+      icon: "logos:facebook",
+      label: "Facebook",
+      value: settings?.socialFacebook ? (settings.socialFacebook.split("/").pop() || "Facebook") : "Nguyễn Đình Bảo",
+      href: settings?.socialFacebook || "https://facebook.com/vanixjnk"
+    },
+    {
+      icon: "logos:telegram",
+      label: "Telegram",
+      value: settings?.socialTelegram ? (settings.socialTelegram.split("/").pop() || "Telegram") : "@vanixjnk",
+      href: settings?.socialTelegram || "https://t.me/vanixjnk"
+    },
   ];
 
   return (

@@ -12,9 +12,13 @@ export const seoRoutes = new Elysia()
       return new Response(`Error: ${error.message}`, { status: 500 });
     }
   })
-  .get("/robots.txt", () => {
-    const text = seoService.getRobotsTxt();
-    return new Response(text, {
-      headers: { "Content-Type": "text/plain; charset=utf-8" },
-    });
+  .get("/robots.txt", async () => {
+    try {
+      const text = await seoService.getRobotsTxt();
+      return new Response(text, {
+        headers: { "Content-Type": "text/plain; charset=utf-8" },
+      });
+    } catch (error: any) {
+      return new Response(`Error: ${error.message}`, { status: 500 });
+    }
   });

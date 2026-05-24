@@ -12,6 +12,8 @@ export async function getSiteSettings(): Promise<Record<string, string>> {
       siteUrl: "",
       siteTagline: "",
       siteDescription: "",
+      siteLogo: "",
+      siteFavicon: "",
       siteLanguage: "vi",
       siteMetaTitle: "Vani Studio",
       siteMetaDescription: "",
@@ -22,6 +24,17 @@ export async function getSiteSettings(): Promise<Record<string, string>> {
       siteOgImage: "",
       siteOgType: "website",
       siteOgLocale: "vi_VN",
+      siteGoogleAnalyticsId: "",
+      siteGoogleTagManagerId: "",
+      siteFacebookPixelId: "",
+      contactEmail: "",
+      contactPhone: "",
+      contactAddress: "",
+      socialFacebook: "",
+      socialGithub: "",
+      socialYoutube: "",
+      socialZalo: "",
+      socialTelegram: "",
     };
   }
 
@@ -30,6 +43,8 @@ export async function getSiteSettings(): Promise<Record<string, string>> {
     siteUrl: row.siteUrl || "",
     siteTagline: row.siteTagline || "",
     siteDescription: row.siteDescription || "",
+    siteLogo: row.siteLogo || "",
+    siteFavicon: row.siteFavicon || "",
     siteLanguage: row.siteLanguage || "vi",
     siteMetaTitle: row.siteMetaTitle || row.siteName || "",
     siteMetaDescription: row.siteMetaDescription || row.siteDescription || "",
@@ -40,6 +55,17 @@ export async function getSiteSettings(): Promise<Record<string, string>> {
     siteOgImage: row.siteOgImage || "",
     siteOgType: row.siteOgType || "website",
     siteOgLocale: row.siteOgLocale || "vi_VN",
+    siteGoogleAnalyticsId: row.siteGoogleAnalyticsId || "",
+    siteGoogleTagManagerId: row.siteGoogleTagManagerId || "",
+    siteFacebookPixelId: row.siteFacebookPixelId || "",
+    contactEmail: row.contactEmail || "",
+    contactPhone: row.contactPhone || "",
+    contactAddress: row.contactAddress || "",
+    socialFacebook: row.socialFacebook || "",
+    socialGithub: row.socialGithub || "",
+    socialYoutube: row.socialYoutube || "",
+    socialZalo: row.socialZalo || "",
+    socialTelegram: row.socialTelegram || "",
   };
 
   return cachedSettings;
@@ -76,6 +102,14 @@ export const settingService = {
     siteGoogleAnalyticsId: string;
     siteGoogleTagManagerId: string;
     siteFacebookPixelId: string;
+    contactEmail: string;
+    contactPhone: string;
+    contactAddress: string;
+    socialFacebook: string;
+    socialGithub: string;
+    socialYoutube: string;
+    socialZalo: string;
+    socialTelegram: string;
   }>) {
     const existing = await settingRepository.get();
     if (!existing) throw new Error("Chưa có cài đặt website");

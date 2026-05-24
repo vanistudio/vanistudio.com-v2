@@ -57,6 +57,14 @@ export default function AdminSettings() {
     siteGoogleAnalyticsId: "",
     siteGoogleTagManagerId: "",
     siteFacebookPixelId: "",
+    contactEmail: "",
+    contactPhone: "",
+    contactAddress: "",
+    socialFacebook: "",
+    socialGithub: "",
+    socialYoutube: "",
+    socialZalo: "",
+    socialTelegram: "",
   });
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -88,6 +96,14 @@ export default function AdminSettings() {
           siteGoogleAnalyticsId: s.siteGoogleAnalyticsId || "",
           siteGoogleTagManagerId: s.siteGoogleTagManagerId || "",
           siteFacebookPixelId: s.siteFacebookPixelId || "",
+          contactEmail: s.contactEmail || "",
+          contactPhone: s.contactPhone || "",
+          contactAddress: s.contactAddress || "",
+          socialFacebook: s.socialFacebook || "",
+          socialGithub: s.socialGithub || "",
+          socialYoutube: s.socialYoutube || "",
+          socialZalo: s.socialZalo || "",
+          socialTelegram: s.socialTelegram || "",
         });
       }
     }).catch(() => {
@@ -219,6 +235,52 @@ export default function AdminSettings() {
                   <Input className="text-sm" placeholder="vi_VN" value={form.siteOgLocale} onChange={(e) => set("siteOgLocale", e.target.value)} />
                 </Field>
               </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          <div>
+            <SectionHeader icon="solar:letter-line-duotone" title="Thông tin liên hệ" />
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <Field label="Email liên hệ">
+                  <Input className="text-sm" placeholder="contact@domain.com" value={form.contactEmail} onChange={(e) => set("contactEmail", e.target.value)} />
+                </Field>
+                <Field label="Số điện thoại liên hệ">
+                  <Input className="text-sm" placeholder="09xxxxxxx" value={form.contactPhone} onChange={(e) => set("contactPhone", e.target.value)} />
+                </Field>
+              </div>
+              <Field label="Địa chỉ liên hệ">
+                <Input className="text-sm" placeholder="123 Đường ABC, Quận XYZ..." value={form.contactAddress} onChange={(e) => set("contactAddress", e.target.value)} />
+              </Field>
+            </div>
+          </div>
+
+          <Separator />
+
+          <div>
+            <SectionHeader icon="solar:share-line-duotone" title="Liên kết mạng xã hội" />
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <Field label="Facebook Page / Profile">
+                  <Input className="text-sm" placeholder="https://facebook.com/..." value={form.socialFacebook} onChange={(e) => set("socialFacebook", e.target.value)} />
+                </Field>
+                <Field label="GitHub Profile">
+                  <Input className="text-sm" placeholder="https://github.com/..." value={form.socialGithub} onChange={(e) => set("socialGithub", e.target.value)} />
+                </Field>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <Field label="YouTube Channel">
+                  <Input className="text-sm" placeholder="https://youtube.com/..." value={form.socialYoutube} onChange={(e) => set("socialYoutube", e.target.value)} />
+                </Field>
+                <Field label="Telegram Chat / Channel">
+                  <Input className="text-sm" placeholder="https://t.me/..." value={form.socialTelegram} onChange={(e) => set("socialTelegram", e.target.value)} />
+                </Field>
+              </div>
+              <Field label="Zalo URL / Phone">
+                <Input className="text-sm" placeholder="https://zalo.me/..." value={form.socialZalo} onChange={(e) => set("socialZalo", e.target.value)} />
+              </Field>
             </div>
           </div>
 
