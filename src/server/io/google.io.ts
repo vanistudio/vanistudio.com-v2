@@ -1,5 +1,5 @@
 import axios from "axios";
-import { OAuthUserInfo } from "./types";
+import { OAuthUserInfo } from "@/server/services/types";
 
 export interface GoogleConfig {
     clientId: string;

@@ -9,7 +9,7 @@ const BAD_NAMES = ['error', 'facebook', 'page not found', 'content not found', '
 
 function cleanName(raw?: string) {
   if (!raw) return undefined;
-  const cleaned = raw.replace(/ \| Facebook$/, '').replace(/ - Facebook$/, '').replace(/ \| Фейсбук$/, '').trim();
+  const cleaned = raw.replace(/ \| Facebook$/, '').replace(/ - Facebook$/, '').replace(/ \| Фейсбуuk$/, '').trim();
   if (!cleaned) return undefined;
   const lower = cleaned.toLowerCase();
   if (BAD_NAMES.some(bad => lower.includes(bad))) return undefined;

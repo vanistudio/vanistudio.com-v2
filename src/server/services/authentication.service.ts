@@ -1,7 +1,7 @@
 import { userRepository } from "@/server/repositories/user.repository";
 import { roleRepository } from "@/server/repositories/role.repository";
-import { githubOAuthService, type GitHubConfig } from "./github.service";
-import { googleOAuthService, type GoogleConfig } from "./google.service";
+import { githubOAuthService, type GitHubConfig } from "@/server/io/github.io";
+import { googleOAuthService, type GoogleConfig } from "@/server/io/google.io";
 import type { OAuthUserInfo } from "./types";
 
 function base64url(str: string): string {

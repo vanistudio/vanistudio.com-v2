@@ -1,5 +1,5 @@
 import { Elysia } from "elysia";
-import { toolService } from "@/server/services/tool.service";
+import { toolService } from "@/server/io/tool.io";
 
 export const toolsPublicRoutes = new Elysia({ prefix: "/tools" })
   .get("/check-id", async ({ query }) => {

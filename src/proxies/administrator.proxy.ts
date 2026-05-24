@@ -12,8 +12,6 @@ export const adminProxy = new Elysia({ name: "admin-proxy" })
     if (!user) return { admin: null };
 
     const permissions = user.permissions || [];
-
-    // Chỉ cho phép nếu có ít nhất 1 permission
     if (permissions.length === 0) return { admin: null };
 
     return {
@@ -31,11 +29,6 @@ export const adminProxy = new Elysia({ name: "admin-proxy" })
       return { success: false, error: "Bạn không có quyền truy cập" };
     }
   });
-
-/**
- * Middleware factory: kiểm tra permission cụ thể.
- * Sử dụng: .onBeforeHandle(requirePermission("products.view"))
- */
 export function requirePermission(permission: string) {
   return ({ admin, set }: any) => {
     if (!admin || !hasPermission(admin.permissions, permission)) {
