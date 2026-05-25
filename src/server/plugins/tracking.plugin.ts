@@ -7,8 +7,9 @@ import { extractIPAddress, getIPVersion, isPrivateIP } from "./ip-extractor.plug
 export { extractIPAddress, getIPVersion, getIPInfo, isPrivateIP };
 
 import { extractLocationInfo, generateFingerprint } from "./location.plugin";
+import type { LocationInfo } from "./location.plugin";
 export { extractLocationInfo, generateFingerprint };
-export type { LocationInfo } from "./location.plugin";
+export type { LocationInfo };
 
 export interface ActivityTrackingData {
   deviceId: string;
@@ -38,11 +39,9 @@ export async function extractActivityTracking(
   const ipAddress = extractIPAddress(headers);
   const deviceInfo = extractDeviceInfo(userAgent);
 
-  const ipInfo = await getIPInfo(ipAddress).catch(() => ({ 
-    city: "", region: "", country: "", isp: "", org: "", asn: "" 
-  }));
+  const locationInfo = await extractLocationInfo(ipAddress, headers).catch(() => ({} as LocationInfo));
 
-  const locationParts = [ipInfo.city, ipInfo.region, ipInfo.country].filter(Boolean);
+  const locationParts = [locationInfo.city, locationInfo.regionName || locationInfo.region, locationInfo.country].filter(Boolean);
 
   return {
     deviceId,
@@ -54,6 +53,6 @@ export async function extractActivityTracking(
         [deviceInfo.browser?.name, deviceInfo.browser?.version].filter(Boolean).join(" "),
     ].filter(Boolean).join(" · ") || "",
     userAgent,
-    organization: ipInfo.org || ipInfo.isp || "",
+    organization: locationInfo.org || locationInfo.isp || "",
   };
 }
