@@ -42,6 +42,25 @@ export interface OauthProvidersConfig {
   zalo: OauthProviderItem;
 }
 
+export interface CaptchaConfig {
+  activeProvider: "none" | "google" | "cloudflare" | "hcaptcha";
+  google: { siteKey: string; secretKey: string };
+  cloudflare: { siteKey: string; secretKey: string };
+  hcaptcha: { siteKey: string; secretKey: string };
+}
+
+export interface AnalyticsMarketingConfig {
+  googleAnalytics: {
+    measurementId: string;
+    isEnabled: boolean;
+  };
+  googleAdsRemarketing: {
+    conversionId: string;
+    label: string;
+    isEnabled: boolean;
+  };
+}
+
 export interface DefaultExtension {
   id: string;
   name: string;
@@ -85,5 +104,27 @@ export const DEFAULT_EXTENSIONS: DefaultExtension[] = [
       gitlab: { clientId: "", clientSecret: "", isEnabled: false },
       zalo: { clientId: "", clientSecret: "", isEnabled: false },
     } as OauthProvidersConfig,
+  },
+  {
+    id: "captcha_provider",
+    name: "Cấu hình bảo mật CAPTCHA",
+    description: "Tích hợp Google reCAPTCHA, Cloudflare Turnstile, hoặc hCaptcha chống spam/bot.",
+    isEnabled: false,
+    config: {
+      activeProvider: "none",
+      google: { siteKey: "", secretKey: "" },
+      cloudflare: { siteKey: "", secretKey: "" },
+      hcaptcha: { siteKey: "", secretKey: "" },
+    } as CaptchaConfig,
+  },
+  {
+    id: "analytics_marketing",
+    name: "Cấu hình Analytics & Marketing",
+    description: "Tích hợp Google Analytics (GA4) và Google Ads Remarketing để theo dõi lượng truy cập và tối ưu quảng cáo.",
+    isEnabled: false,
+    config: {
+      googleAnalytics: { measurementId: "", isEnabled: false },
+      googleAdsRemarketing: { conversionId: "", label: "", isEnabled: false },
+    } as AnalyticsMarketingConfig,
   },
 ];
