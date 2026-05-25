@@ -83,7 +83,6 @@ export function extractDeviceInfo(userAgent: string | null): DeviceData {
       isBot: isBotDetected,
     };
   } catch {
-    // Tránh việc bowser quăng lỗi với user agent không đúng định dạng
     return {
       device: {
         type: null,
