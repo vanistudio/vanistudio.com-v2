@@ -28,6 +28,20 @@ export interface VNPayPaymentConfig {
   environment: "sandbox" | "production";
 }
 
+export interface OauthProviderItem {
+  clientId: string;
+  clientSecret: string;
+  isEnabled: boolean;
+}
+
+export interface OauthProvidersConfig {
+  google: OauthProviderItem;
+  discord: OauthProviderItem;
+  github: OauthProviderItem;
+  gitlab: OauthProviderItem;
+  zalo: OauthProviderItem;
+}
+
 export interface DefaultExtension {
   id: string;
   name: string;
@@ -60,26 +74,16 @@ export const DEFAULT_EXTENSIONS: DefaultExtension[] = [
     } as RegistrationFieldsConfig,
   },
   {
-    id: "payment_momo",
-    name: "Cổng thanh toán MoMo",
-    description: "Tích hợp cổng ví điện tử MoMo thanh toán quét mã QR.",
+    id: "oauth_providers",
+    name: "Cấu hình Social Login (OAuth)",
+    description: "Cấu hình đăng nhập bằng tài khoản mạng xã hội như Google, Discord, GitHub, GitLab và Zalo.",
     isEnabled: false,
     config: {
-      partnerCode: "",
-      accessKey: "",
-      secretKey: "",
-      environment: "sandbox",
-    } as MomoPaymentConfig,
-  },
-  {
-    id: "payment_vnpay",
-    name: "Cổng thanh toán VNPay",
-    description: "Tích hợp cổng VNPay hỗ trợ thẻ ATM nội địa, thẻ quốc tế và mã QR ngân hàng.",
-    isEnabled: false,
-    config: {
-      tmnCode: "",
-      hashKey: "",
-      environment: "sandbox",
-    } as VNPayPaymentConfig,
+      google: { clientId: "", clientSecret: "", isEnabled: false },
+      discord: { clientId: "", clientSecret: "", isEnabled: false },
+      github: { clientId: "", clientSecret: "", isEnabled: false },
+      gitlab: { clientId: "", clientSecret: "", isEnabled: false },
+      zalo: { clientId: "", clientSecret: "", isEnabled: false },
+    } as OauthProvidersConfig,
   },
 ];
