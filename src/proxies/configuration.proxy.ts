@@ -17,8 +17,7 @@ export async function checkConfiguration(request: NextRequest): Promise<NextResp
     if (settingRecord.length === 0 || adminRecord.length === 0) {
       return NextResponse.redirect(new URL("/configuration", request.url));
     }
-  } catch (err) {
-    console.error("[ConfigurationProxy] Error checking DB setup:", err);
+  } catch {
     return NextResponse.redirect(new URL("/configuration", request.url));
   }
 
