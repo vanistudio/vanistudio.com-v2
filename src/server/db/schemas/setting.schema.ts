@@ -10,6 +10,7 @@ export const settings = pgTable("settings", {
   siteMetaKeywords: text("site_meta_keywords"),
   siteMetaAuthor: text("site_meta_author"),
   siteOgImage: text("site_og_image"),
+  siteColor: text("site_color").default("#7c3aed").notNull(),
   siteTimezone: text("site_timezone").default("Asia/Ho_Chi_Minh").notNull(),
   siteLanguage: text("site_language").default("vi").notNull(),
   siteCurrency: text("site_currency").default("VND").notNull(),
