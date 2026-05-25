@@ -58,8 +58,8 @@ export const userProfile = pgTable("user_profile", {
     .references(() => users.id, { onDelete: "cascade" }),
   phone: text("phone"),
   address: text("address"),
-  identityCard: text("identity_card"), // Căn cước công dân
-  taxId: text("tax_id"),               // Mã số thuế
+  identityCard: text("identity_card"),
+  taxId: text("tax_id"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
