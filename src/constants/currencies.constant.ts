@@ -37,7 +37,6 @@ export const CURRENCY_DATA: Record<string, Currency> = {
   "BTN": { code: "BTN", name: "Bhutan Ngultrum", symbol: "Nu.", flag: "bt" },
   "BWP": { code: "BWP", name: "Botswana Pula", symbol: "P", flag: "bw" },
   "BYN": { code: "BYN", name: "Belarus Ruble", symbol: "Br", flag: "by" },
-  "BWP_OLD": { code: "BWP", name: "Botswana Pula", symbol: "P", flag: "bw" }, // Duplicate helper
   "BZD": { code: "BZD", name: "Belize Dollar", symbol: "$", flag: "bz" },
   "CAD": { code: "CAD", name: "Canada Dollar", symbol: "C$", flag: "ca" },
   "CDF": { code: "CDF", name: "Congo/Kinshasa Franc", symbol: "FC", flag: "cd" },
