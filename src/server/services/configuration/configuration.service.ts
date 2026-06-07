@@ -10,6 +10,16 @@ export class ConfigurationService {
   async setupSite(data: {
     siteName: string;
     siteUrl: string;
+    siteLogo?: string | null;
+    siteFavicon?: string | null;
+    siteMetaDescription?: string | null;
+    siteMetaKeywords?: string | null;
+    siteMetaAuthor?: string | null;
+    siteOgImage?: string | null;
+    siteColor: string;
+    siteTimezone: string;
+    siteLanguage: string;
+    siteCurrency: string;
     admin: {
       name: string;
       email: string;
@@ -29,6 +39,16 @@ export class ConfigurationService {
     await configurationRepository.saveConfiguration({
       siteName: data.siteName,
       siteUrl: data.siteUrl,
+      siteLogo: data.siteLogo,
+      siteFavicon: data.siteFavicon,
+      siteMetaDescription: data.siteMetaDescription,
+      siteMetaKeywords: data.siteMetaKeywords,
+      siteMetaAuthor: data.siteMetaAuthor,
+      siteOgImage: data.siteOgImage,
+      siteColor: data.siteColor,
+      siteTimezone: data.siteTimezone,
+      siteLanguage: data.siteLanguage,
+      siteCurrency: data.siteCurrency,
       admin: {
         id: adminId,
         name: data.admin.name,

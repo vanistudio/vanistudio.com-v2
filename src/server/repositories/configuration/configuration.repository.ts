@@ -20,6 +20,16 @@ export class ConfigurationRepository {
   async saveConfiguration(data: {
     siteName: string;
     siteUrl: string;
+    siteLogo?: string | null;
+    siteFavicon?: string | null;
+    siteMetaDescription?: string | null;
+    siteMetaKeywords?: string | null;
+    siteMetaAuthor?: string | null;
+    siteOgImage?: string | null;
+    siteColor: string;
+    siteTimezone: string;
+    siteLanguage: string;
+    siteCurrency: string;
     admin: {
       id: string;
       name: string;
@@ -31,10 +41,16 @@ export class ConfigurationRepository {
       await tx.insert(settings).values({
         siteName: data.siteName,
         siteUrl: data.siteUrl,
-        siteColor: "#7c3aed",
-        siteTimezone: "Asia/Ho_Chi_Minh",
-        siteLanguage: "vi",
-        siteCurrency: "VND",
+        siteLogo: data.siteLogo,
+        siteFavicon: data.siteFavicon,
+        siteMetaDescription: data.siteMetaDescription,
+        siteMetaKeywords: data.siteMetaKeywords,
+        siteMetaAuthor: data.siteMetaAuthor,
+        siteOgImage: data.siteOgImage,
+        siteColor: data.siteColor,
+        siteTimezone: data.siteTimezone,
+        siteLanguage: data.siteLanguage,
+        siteCurrency: data.siteCurrency,
       });
 
       await tx.insert(users).values({

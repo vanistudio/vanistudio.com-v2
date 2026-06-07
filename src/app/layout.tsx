@@ -1,28 +1,34 @@
 import "./globals.css";
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
+import Script from "next/script";
+export const dynamic = "force-dynamic";
 import type { Metadata } from "next";
+import { Signika } from "next/font/google";
+import { ProgressProviders } from "@/components/providers/ProgressProvider";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "@/components/ui/sonner";
+import { TRPCProvider } from "@/components/providers/TRPCProvider";
+import { getVanixjnkColor } from "@/lib/color";
 import { headers } from "next/headers";
 import { db } from "@/server/db";
 import { settings } from "@/server/db/schemas/setting.schema";
 import { SettingProvider } from "@/contexts/SettingContext";
 import { UserProvider } from "@/contexts/UserContext";
-import { getServerSession } from "@/server/auth";
-import { getVanixjnkColor } from "@/lib/color";
+import { getServerSession } from "@/lib/auth";
 
-import { TRPCProvider } from "@/components/providers/TRPCProvider";
-import { ThemeProvider } from "@/components/providers/ThemeProvider";
-import { ProgressProviders } from "@/components/providers/ProgressProvider";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { Toaster } from "@/components/ui/sonner";
-
-export const dynamic = "force-dynamic";
+const signika = Signika({
+  subsets: ["latin", "vietnamese"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-sans",
+});
 
 export async function generateMetadata(): Promise<Metadata> {
   let initialSetting = null;
   try {
     const settingsData = await db.select().from(settings).limit(1);
     initialSetting = settingsData.length > 0 ? settingsData[0] : null;
-  } catch {
-    // Treat as null if DB doesn't exist yet
+  } catch (e) {
   }
 
   const headersList = await headers();
@@ -83,42 +89,47 @@ export default async function RootLayout({
   try {
     const settingsData = await db.select().from(settings).limit(1);
     initialSetting = settingsData.length > 0 ? settingsData[0] : null;
-  } catch {
-    // Treat as null if DB doesn't exist yet
+  } catch (e) {
   }
 
-  const vanixjnkColor = getVanixjnkColor(initialSetting?.siteColor || "oklch(0.6882 0.2338 16.94)");
-
-  const primaryFont = "Signika";
-  const secondaryFont = primaryFont;
-  const fontWeights = "400;500;600;700";
-  const googleFontUrl = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(primaryFont)}:wght@${fontWeights}&display=swap`;
+  const vanixjnkColor = getVanixjnkColor(initialSetting?.siteColor || "#7c3aed");
 
   const { user: initialUser } = await getServerSession(true);
+
+  const headersList = await headers();
+  const host = headersList.get("host") || "localhost:3000";
+  const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+  const metadataBase = `${protocol}://${host}`;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": initialSetting?.siteName || "MMOSTORE",
+    "description": initialSetting?.siteMetaDescription || "",
+    "url": metadataBase,
+    "logo": initialSetting?.siteLogo ? (initialSetting.siteLogo.startsWith("http") ? initialSetting.siteLogo : `${metadataBase}${initialSetting.siteLogo}`) : undefined,
+  };
 
   return (
     <html
       lang="en"
+      className={signika.variable}
       suppressHydrationWarning
     >
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href={googleFontUrl} rel="stylesheet" />
-      </head>
-      <body className="min-h-full flex flex-col selection:bg-vanixjnk/15 selection:text-vanixjnk antialiased" style={{ fontFamily: `"${primaryFont}", sans-serif` }} suppressHydrationWarning>
+      <body className="selection:bg-vanixjnk/15 selection:text-vanixjnk antialiased" suppressHydrationWarning>
+        <Script
+          id="json-ld"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <style
           dangerouslySetInnerHTML={{
             __html: `
               :root {
                 --vanixjnk: ${vanixjnkColor};
-                --font-primary: "${primaryFont}", sans-serif;
-                --font-secondary: "${secondaryFont}", sans-serif;
               }
               .dark {
                 --vanixjnk: ${vanixjnkColor};
-                --font-primary: "${primaryFont}", sans-serif;
-                --font-secondary: "${secondaryFont}", sans-serif;
               }
             `,
           }}
@@ -126,14 +137,21 @@ export default async function RootLayout({
         <SettingProvider initialSetting={initialSetting}>
           <UserProvider initialUser={initialUser}>
             <TRPCProvider>
-              <ThemeProvider>
-                <ProgressProviders>
-                  <TooltipProvider>
-                    <Toaster richColors position="top-center" closeButton />
-                    {children}
-                  </TooltipProvider>
-                </ProgressProviders>
-              </ThemeProvider>
+              <ProgressProviders>
+                <ThemeProvider
+                  attribute="class"
+                  defaultTheme="system"
+                  enableSystem
+                  disableTransitionOnChange
+                >
+                  <NuqsAdapter>
+                    <TooltipProvider>
+                      <Toaster richColors position="top-center" visibleToasts={4} closeButton />
+                      {children}
+                    </TooltipProvider>
+                  </NuqsAdapter>
+                </ThemeProvider>
+              </ProgressProviders>
             </TRPCProvider>
           </UserProvider>
         </SettingProvider>
@@ -141,3 +159,4 @@ export default async function RootLayout({
     </html>
   );
 }
+
