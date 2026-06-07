@@ -104,7 +104,6 @@ export function ConfPage() {
   const [adminPassword, setAdminPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { data: statusData, isLoading: isStatusLoading } = trpc.configuration.status.useQuery();
 
   const setupMutation = trpc.configuration.setup.useMutation({
     onSuccess: () => {
@@ -235,49 +234,6 @@ export function ConfPage() {
     });
   };
 
-  if (isStatusLoading) {
-    return (
-      <div className="min-h-screen bg-background flex flex-col justify-center items-center py-12 px-4 relative">
-        {renderThemeToggle()}
-        <div className="flex flex-col items-center gap-2">
-          <Icon icon="line-md:loading-twotone-loop" className="text-vanixjnk size-10" />
-          <span className="text-sm text-muted-foreground">Đang tải cấu hình...</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (statusData?.configured) {
-    return (
-      <div className="min-h-screen bg-background flex flex-col justify-center items-center py-12 px-4 relative">
-        {renderThemeToggle()}
-        <Card className="w-full max-w-lg">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="size-10 rounded-full text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 flex items-center justify-center">
-                <Icon icon="solar:check-circle-line-duotone" className="size-6" />
-              </div>
-              <div>
-                <CardTitle>Hệ thống đã được cấu hình</CardTitle>
-                <CardDescription>Trang web đã hoàn tất các thiết lập ban đầu.</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-muted-foreground leading-relaxed text-sm">
-              Hệ thống VaniStudio đã được cấu hình từ trước và đang hoạt động bình thường. Bạn không thể thực hiện cấu hình lại qua trang wizard này.
-            </p>
-          </CardContent>
-          <div className="flex items-center px-4 pt-0">
-            <Button onClick={() => router.push('/')} variant="vanixjnk" className="w-full">
-              Quay về trang chủ
-            </Button>
-          </div>
-        </Card>
-      </div>
-    );
-  }
-
   const stepsConfig = [
     { id: 1, label: 'Giới thiệu' },
     { id: 2, label: 'Cấu hình Website' },
@@ -375,7 +331,6 @@ export function ConfPage() {
                   )}
                 </h4>
 
-                {/* Status messages and actions */}
                 <div className="text-xs space-y-2.5">
                   {isDbStatusLoading && !dbStatus ? (
                     <>
@@ -970,7 +925,6 @@ export function ConfPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Push Logs Dialog */}
       <Dialog open={pushDialogOpen} onOpenChange={setPushDialogOpen}>
         <DialogContent className="sm:max-w-[600px] max-h-[85vh] flex flex-col p-6">
           <DialogHeader className="pr-6">
