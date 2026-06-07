@@ -39,6 +39,7 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-vanixjnk: var(--vanixjnk);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -67,6 +68,7 @@
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
+  --vanixjnk: oklch(0.6882 0.2338 16.94);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -102,6 +104,7 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
+  --vanixjnk: oklch(0.6882 0.2338 16.94);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -124,7 +127,52 @@
   body {
     @apply bg-background text-foreground;
   }
-  html {
-    @apply font-sans;
-  }
+}
+
+*::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.overflow-x-auto,
+.overflow-x-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(from var(--vanixjnk) l c h / 30%) transparent;
+}
+
+.overflow-x-auto::-webkit-scrollbar,
+.overflow-x-scroll::-webkit-scrollbar {
+  height: 6px;
+  width: 0;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track,
+.overflow-x-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb,
+.overflow-x-scroll::-webkit-scrollbar-thumb {
+  background: oklch(from var(--vanixjnk) l c h / 30%);
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover,
+.overflow-x-scroll::-webkit-scrollbar-thumb:hover {
+  background: oklch(from var(--vanixjnk) l c h / 50%);
+}
+
+.overflow-x-auto::-webkit-scrollbar-button,
+.overflow-x-scroll::-webkit-scrollbar-button,
+.overflow-x-auto::-webkit-scrollbar-button:start:decrement,
+.overflow-x-scroll::-webkit-scrollbar-button:start:decrement,
+.overflow-x-auto::-webkit-scrollbar-button:end:increment,
+.overflow-x-scroll::-webkit-scrollbar-button:end:increment,
+.overflow-x-auto::-webkit-scrollbar-button:start:increment,
+.overflow-x-scroll::-webkit-scrollbar-button:start:increment,
+.overflow-x-auto::-webkit-scrollbar-button:end:decrement,
+.overflow-x-scroll::-webkit-scrollbar-button:end:decrement {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  appearance: none !important;
 }
