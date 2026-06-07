@@ -166,29 +166,51 @@ export function ConfPage() {
     );
   }
 
+  const stepsConfig = [
+    { id: 1, label: 'Giới thiệu' },
+    { id: 2, label: 'Cấu hình Website' },
+    { id: 3, label: 'Tạo tài khoản' },
+    { id: 4, label: 'Hoàn tất' }
+  ];
+
   return (
     <div className="min-h-screen bg-background flex flex-col justify-center items-center py-12 px-4">
-      <div className="w-full max-w-2xl flex flex-col items-center">
-        {/* Step Indicator tracks Progress visually */}
-        <div className="flex items-center justify-between w-full max-w-md mb-8">
-          {[1, 2, 3, 4].map((s) => (
-            <div key={s} className="flex items-center">
-              <div className={`size-8 rounded-full flex items-center justify-center font-medium border text-sm transition-all ${
-                step === s
-                  ? 'bg-vanixjnk text-white border-vanixjnk'
-                  : step > s
-                  ? 'bg-vanixjnk/15 text-vanixjnk border-vanixjnk/20 font-semibold'
-                  : 'bg-muted text-muted-foreground border-border'
-              }`}>
-                {step > s ? <Icon icon="mdi:check" className="size-4" /> : s}
-              </div>
-              {s < 4 && (
-                <div className={`w-12 h-0.5 mx-2 ${
-                  step > s ? 'bg-vanixjnk/40' : 'bg-muted'
-                }`} />
-              )}
+      <div className="w-full max-w-xl flex flex-col items-center">
+        <div className="w-full mb-10 select-none">
+          <div className="flex items-start justify-between relative">
+            <div className="absolute left-10 right-10 top-4 h-[2px] bg-border -translate-y-1/2 z-0">
+              <div 
+                className="bg-vanixjnk h-full transition-all duration-300" 
+                style={{ width: `${((step - 1) / 3) * 100}%` }}
+              />
             </div>
-          ))}
+            {stepsConfig.map((s) => (
+              <div key={s.id} className="flex flex-col items-center z-10 w-20">
+                <div className={`size-8 rounded-full flex items-center justify-center font-medium border text-sm transition-all duration-300 ${
+                  step === s.id
+                    ? 'bg-vanixjnk text-white border-vanixjnk ring-4 ring-vanixjnk/15'
+                    : step > s.id
+                    ? 'bg-vanixjnk text-white border-vanixjnk'
+                    : 'bg-background text-muted-foreground border-border'
+                }`}>
+                  {step > s.id ? (
+                    <Icon icon="mdi:check" className="size-4 animate-scale" />
+                  ) : (
+                    s.id
+                  )}
+                </div>
+                <span className={`text-[11px] mt-1.5 font-medium text-center leading-tight transition-colors duration-300 max-w-[80px] break-words ${
+                  step === s.id
+                    ? 'text-vanixjnk font-semibold'
+                    : step > s.id
+                    ? 'text-foreground'
+                    : 'text-muted-foreground'
+                }`}>
+                  {s.label}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
 
         {step === 1 && (
