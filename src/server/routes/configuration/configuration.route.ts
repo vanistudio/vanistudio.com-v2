@@ -8,6 +8,14 @@ export const configurationRouter = router({
     return { configured: isConfigured };
   }),
 
+  dbStatus: publicProcedure.query(async () => {
+    return await configurationService.checkDbStatus();
+  }),
+
+  pushSchema: publicProcedure.mutation(async () => {
+    return await configurationService.pushSchema();
+  }),
+
   setup: publicProcedure
     .input(
       z.object({
@@ -26,6 +34,7 @@ export const configurationRouter = router({
         admin: z.object({
           name: z.string().min(1, "Tên quản trị viên không được để trống"),
           email: z.string().email("Email quản trị viên không hợp lệ"),
+          username: z.string().min(3, "Tên tài khoản phải có ít nhất 3 ký tự"),
           password: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
         }),
       })

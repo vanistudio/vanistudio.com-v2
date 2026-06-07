@@ -1,10 +1,28 @@
 import { configurationRepository } from "@/server/repositories/configuration/configuration.repository";
 import bcrypt from "bcryptjs";
 import { uuidv7 } from "@/lib/utils";
+import { exec } from "child_process";
 
 export class ConfigurationService {
   async checkStatus(): Promise<boolean> {
     return await configurationRepository.checkConfigurationStatus();
+  }
+
+  async checkDbStatus(): Promise<{ connectionOk: boolean; tablesExist: boolean; error?: string }> {
+    return await configurationRepository.checkDbStatus();
+  }
+
+  async pushSchema(): Promise<{ success: boolean; output: string; error?: string }> {
+    return new Promise((resolve) => {
+      exec("npx drizzle-kit push", { env: process.env }, (error, stdout, stderr) => {
+        const output = stdout + "\n" + stderr;
+        if (error) {
+          resolve({ success: false, output, error: error.message });
+        } else {
+          resolve({ success: true, output });
+        }
+      });
+    });
   }
 
   async setupSite(data: {
@@ -23,6 +41,7 @@ export class ConfigurationService {
     admin: {
       name: string;
       email: string;
+      username: string;
       password: string;
     };
   }): Promise<void> {
@@ -53,6 +72,7 @@ export class ConfigurationService {
         id: adminId,
         name: data.admin.name,
         email: data.admin.email,
+        username: data.admin.username,
         passwordHash,
       },
     });

@@ -3,7 +3,7 @@ import { settings } from "@/server/db/schemas/setting.schema";
 import { users, provider } from "@/server/db/schemas/user.schema";
 import { extensions } from "@/server/db/schemas/extension.schema";
 import { DEFAULT_EXTENSIONS } from "@/defaults/extension.default";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { uuidv7 } from "@/lib/utils";
 
 export class ConfigurationRepository {
@@ -14,6 +14,22 @@ export class ConfigurationRepository {
       return settingRecord.length > 0 && adminRecord.length > 0;
     } catch {
       return false;
+    }
+  }
+
+  async checkDbStatus(): Promise<{ connectionOk: boolean; tablesExist: boolean; error?: string }> {
+    try {
+      await db.execute(sql`SELECT 1`);
+    } catch (e) {
+      const errorMsg = e instanceof Error ? e.message : String(e);
+      return { connectionOk: false, tablesExist: false, error: errorMsg || "Không thể kết nối đến cơ sở dữ liệu." };
+    }
+
+    try {
+      await db.select().from(users).limit(1);
+      return { connectionOk: true, tablesExist: true };
+    } catch {
+      return { connectionOk: true, tablesExist: false, error: "Bảng không tồn tại hoặc cơ cấu schema chưa được đồng bộ." };
     }
   }
 
@@ -34,6 +50,7 @@ export class ConfigurationRepository {
       id: string;
       name: string;
       email: string;
+      username: string;
       passwordHash: string;
     };
   }): Promise<void> {
@@ -57,6 +74,7 @@ export class ConfigurationRepository {
         id: data.admin.id,
         name: data.admin.name,
         email: data.admin.email,
+        username: data.admin.username,
         emailVerified: true,
         role: "admin",
         banned: false,

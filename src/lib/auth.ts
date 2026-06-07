@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
+import { username } from "better-auth/plugins";
 import { db } from "@/server/db";
 import * as schema from "@/server/db/schemas/user.schema";
 import { headers } from "next/headers";
@@ -28,6 +29,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  plugins: [username()],
 });
 
 export async function getServerSession(_force: boolean = false) {
