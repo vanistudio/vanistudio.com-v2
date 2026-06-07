@@ -6,19 +6,30 @@ import { eq } from "drizzle-orm";
 
 export async function checkConfiguration(request: NextRequest): Promise<NextResponse> {
   const url = request.nextUrl;
-  if (url.pathname.startsWith('/configuration') || url.pathname.startsWith('/api') || url.pathname.startsWith('/_')) {
+
+  if (url.pathname.startsWith('/api') || url.pathname.startsWith('/_')) {
     return NextResponse.next();
   }
 
   try {
     const settingRecord = await db.select().from(settings).limit(1);
     const adminRecord = await db.select().from(users).where(eq(users.role, "admin")).limit(1);
+    const isConfigured = settingRecord.length > 0 && adminRecord.length > 0;
 
-    if (settingRecord.length === 0 || adminRecord.length === 0) {
+    if (url.pathname.startsWith('/configuration')) {
+      if (isConfigured) {
+        return NextResponse.redirect(new URL("/", request.url));
+      }
+      return NextResponse.next();
+    }
+
+    if (!isConfigured) {
       return NextResponse.redirect(new URL("/configuration", request.url));
     }
   } catch {
-    return NextResponse.redirect(new URL("/configuration", request.url));
+    if (!url.pathname.startsWith('/configuration')) {
+      return NextResponse.redirect(new URL("/configuration", request.url));
+    }
   }
 
   return NextResponse.next();
