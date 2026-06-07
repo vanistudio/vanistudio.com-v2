@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# VaniStudio.com v2
 
-## Getting Started
+Đây là mã nguồn chính thức của **[VaniStudio](https://vanistudio.com)** — Đơn vị hàng đầu chuyên thiết kế website chuyên nghiệp, lập trình ứng dụng di động (iOS & Android), xây dựng chatbot AI thông minh và thiết kế UI/UX hiện đại.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🛠️ Công nghệ sử dụng (Tech Stack)
+
+Để phát triển ứng dụng này, chúng tôi sử dụng các công nghệ tiên tiến nhất hiện nay:
+
+[![Tech Stack](https://skillicons.dev/icons?i=nextjs,react,ts,tailwind,postgres,nodejs,git,docker,postman,vscode)](https://skillicons.dev)
+
+- **Core Framework**: Next.js 16 (App Router) & React 19
+- **Ngôn ngữ**: TypeScript
+- **Styling**: Tailwind CSS v4
+- **Database**: PostgreSQL & Drizzle ORM
+- **API Communication**: tRPC
+- **Authentication**: Better Auth
+
+---
+
+## 🚀 Hướng dẫn khởi chạy cục bộ (Getting Started)
+
+### 1. Cấu hình biến môi trường
+Tạo file `.env` tại thư mục gốc của dự án với các thông số kết nối cơ sở dữ liệu:
+```env
+APP_DATABASE_URI_VALUE=postgresql://postgres:postgres@localhost:5432/vanistudio
+APP_BETTER_AUTH_DOMAIN=localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Cài đặt thư viện
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Khởi tạo cấu trúc bảng (Push Schema)
+Chạy lệnh sau để đồng bộ schema từ mã nguồn vào cơ sở dữ liệu PostgreSQL cục bộ của bạn:
+```bash
+npx drizzle-kit push
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 4. Chạy môi trường phát triển (Dev Server)
+```bash
+npm run dev
+```
+Mở [http://localhost:3000](http://localhost:3000) trên trình duyệt để xem kết quả.
+Truy cập [http://localhost:3000/configuration](http://localhost:3000/configuration) để thực hiện thiết lập cấu hình website & khởi tạo tài khoản quản trị Admin.
