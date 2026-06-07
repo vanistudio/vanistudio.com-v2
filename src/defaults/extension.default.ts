@@ -61,6 +61,38 @@ export interface AnalyticsMarketingConfig {
   };
 }
 
+export interface StorageConfig {
+  siteActiveStorage: "local" | "cloudinary" | "r2" | "tigris";
+  siteCloudinary: {
+    siteCloudName: string;
+    siteApiKey: string;
+    siteApiSecret: string;
+  };
+  siteR2: {
+    siteAccountId: string;
+    siteAccessKeyId: string;
+    siteSecretAccessKey: string;
+    siteBucketName: string;
+    sitePublicUrl: string;
+  };
+  siteTigris: {
+    siteAccessKeyId: string;
+    siteSecretAccessKey: string;
+    siteBucketName: string;
+  };
+  siteImageProcessing: {
+    enabled: boolean;
+    convertToWebp: boolean;
+    convertFormats: string[];
+    quality: number;
+    maxWidth: number;
+    maxHeight: number;
+    stripMetadata: boolean;
+    progressive: boolean;
+    preserveOriginal: boolean;
+  };
+}
+
 export interface DefaultExtension {
   id: string;
   name: string;
@@ -126,5 +158,28 @@ export const DEFAULT_EXTENSIONS: DefaultExtension[] = [
       googleAnalytics: { measurementId: "", isEnabled: false },
       googleAdsRemarketing: { conversionId: "", label: "", isEnabled: false },
     } as AnalyticsMarketingConfig,
+  },
+  {
+    id: "storage_config",
+    name: "Cấu hình Lưu trữ & Tối ưu hình ảnh",
+    description: "Cấu hình lưu trữ đám mây (Cloudinary, Cloudflare R2, Tigris) hoặc lưu trữ cục bộ (Local), đi kèm với các thiết lập xử lý và tối ưu hóa hình ảnh tải lên.",
+    isEnabled: true,
+    config: {
+      siteActiveStorage: "local",
+      siteCloudinary: { siteCloudName: "", siteApiKey: "", siteApiSecret: "" },
+      siteR2: { siteAccountId: "", siteAccessKeyId: "", siteSecretAccessKey: "", siteBucketName: "", sitePublicUrl: "" },
+      siteTigris: { siteAccessKeyId: "", siteSecretAccessKey: "", siteBucketName: "" },
+      siteImageProcessing: {
+        enabled: false,
+        convertToWebp: true,
+        convertFormats: ["png", "jpg", "jpeg", "bmp", "tiff"],
+        quality: 80,
+        maxWidth: 1920,
+        maxHeight: 1080,
+        stripMetadata: true,
+        progressive: true,
+        preserveOriginal: false,
+      },
+    } as StorageConfig,
   },
 ];
