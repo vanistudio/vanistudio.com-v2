@@ -12,7 +12,6 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-  CardFooter,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -156,11 +155,11 @@ export function ConfPage() {
               Hệ thống VaniStudio đã được cấu hình từ trước và đang hoạt động bình thường. Bạn không thể thực hiện cấu hình lại qua trang wizard này.
             </p>
           </CardContent>
-          <CardFooter>
-            <Button onClick={() => router.push('/')} className="w-full bg-vanixjnk text-white hover:bg-vanixjnk/90">
+          <div className="flex items-center px-4 pt-0">
+            <Button onClick={() => router.push('/')} variant="vanixjnk" className="w-full">
               Quay về trang chủ
             </Button>
-          </CardFooter>
+          </div>
         </Card>
       </div>
     );
@@ -252,12 +251,12 @@ export function ConfPage() {
                 </ul>
               </div>
             </CardContent>
-            <CardFooter>
-              <Button onClick={() => setStep(2)} className="w-full bg-vanixjnk text-white hover:bg-vanixjnk/90">
+            <div className="flex items-center px-4 pt-0">
+              <Button onClick={() => setStep(2)} variant="vanixjnk" className="w-full">
                 Bắt đầu ngay
                 <Icon icon="mdi:arrow-right" className="ml-2 size-4" />
               </Button>
-            </CardFooter>
+            </div>
           </Card>
         )}
 
@@ -274,7 +273,7 @@ export function ConfPage() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-6 max-h-[60vh] overflow-y-auto pr-1">
+            <CardContent className="space-y-6 max-h-[60vh] overflow-y-auto">
               {/* Basic configuration group */}
               <div className="space-y-4">
                 <h3 className="font-semibold text-sm text-foreground border-b border-border pb-1">1. Thông tin chung</h3>
@@ -431,14 +430,14 @@ export function ConfPage() {
                 </div>
               </div>
             </CardContent>
-            <CardFooter className="flex justify-between gap-3 pt-4 border-t border-border mt-4">
+            <div className="flex justify-between px-4 gap-3">
               <Button type="button" onClick={() => setStep(1)} variant="outline" className="flex-1">
                 Quay lại
               </Button>
-              <Button type="button" onClick={handleNextStep2} className="flex-1 bg-vanixjnk text-white hover:bg-vanixjnk/90">
+              <Button type="button" onClick={handleNextStep2} variant="vanixjnk" className="flex-1">
                 Tiếp tục
               </Button>
-            </CardFooter>
+            </div>
           </Card>
         )}
 
@@ -502,11 +501,11 @@ export function ConfPage() {
                   </div>
                 </div>
               </CardContent>
-              <CardFooter className="flex justify-between gap-3 pt-4 border-t border-border mt-4">
+              <div className="flex justify-between gap-3 px-4 pt-0">
                 <Button type="button" onClick={() => setStep(2)} variant="outline" className="flex-1" disabled={isSubmitting}>
                   Quay lại
                 </Button>
-                <Button type="submit" disabled={isSubmitting} className="flex-1 bg-vanixjnk text-white hover:bg-vanixjnk/90">
+                <Button type="submit" disabled={isSubmitting} variant="vanixjnk" className="flex-1">
                   {isSubmitting ? (
                     <div className="flex items-center justify-center gap-2">
                       <Icon icon="line-md:loading-twotone-loop" className="size-4 animate-spin" />
@@ -516,7 +515,7 @@ export function ConfPage() {
                     <span>Hoàn tất & Khởi chạy</span>
                   )}
                 </Button>
-              </CardFooter>
+              </div>
             </form>
           </Card>
         )}
@@ -550,15 +549,15 @@ export function ConfPage() {
                 </div>
               </div>
             </CardContent>
-            <CardFooter>
+            <div className="flex items-center px-4 pt-0">
               <Button onClick={() => {
                 router.push('/');
                 router.refresh();
-              }} className="w-full bg-vanixjnk text-white hover:bg-vanixjnk/90">
+              }} variant="vanixjnk" className="w-full">
                 Đi đến Trang chủ
                 <Icon icon="mdi:arrow-right" className="ml-2 size-4" />
               </Button>
-            </CardFooter>
+            </div>
           </Card>
         )}
       </div>

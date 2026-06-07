@@ -93,7 +93,32 @@ src/
     - *Ví dụ*: `text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25` hoặc `text-red-600 bg-red-600/10 border border-red-600/25`.
   - **CẤM SỬ DỤNG MÀU TỐI / XÁM MẶC ĐỊNH**: Không sử dụng các class màu tối/xám mặc định của Tailwind như `bg-zinc-*`, `bg-gray-*`, `bg-slate-*`, `bg-neutral-*` làm màu nền chính hoặc cho các thành phần lớn.
   - **NỀN TOÀN CỤC**: Sử dụng class `bg-background` trên toàn cục (layout chung).
-  - **SỬ DỤNG CARD COMPONENT**: Khi thiết kế các khối dạng thẻ, hãy sử dụng component `Card` của Shadcn (không tự code thẻ div với các class tùy tiện).
+  - **SỬ DỤNG CARD COMPONENT**: Khi thiết kế các khối dạng thẻ, hãy sử dụng component `Card` của Shadcn (không tự code thẻ div với các class tùy tiện). **Tuy nhiên, cấm sử dụng CardFooter**; phần chân thẻ (footer) phải tự viết cấu trúc container HTML/CSS thủ công tùy biến theo nhu cầu thiết kế để tăng tính linh hoạt tối đa.
+  - **BIẾN THỂ MÀU SẮC NÚT BẤM (BUTTON VARIANTS)**:
+    Khi sử dụng nút bấm (`Button` component):
+    - Khi áp dụng màu chủ đạo của website, bắt buộc phải sử dụng variant `vanixjnk`.
+    - Các biến thể màu sắc khác được thiết kế riêng gồm có:
+      - `vanixjnk`: `"border border-transparent border-vanixjnk/25 bg-vanixjnk/15 text-vanixjnk hover:bg-vanixjnk/15"`
+      - `success`: `"border border-green-500/25 bg-green-500/15 text-green-500 hover:bg-green-500/15"`
+      - `danger`: `"border border-red-500/25 bg-red-500/15 text-red-500 hover:bg-red-500/15"`
+      - `warning`: `"border border-yellow-500/25 bg-yellow-500/15 text-yellow-500 hover:bg-yellow-500/15"`
+      - `sky`: `"border border-sky-500/25 bg-sky-500/15 text-sky-500 hover:bg-sky-500/15"`
+      - `fuschia`: `"border border-fuschia-500/25 bg-fuschia-500/15 text-fuschia-500 hover:bg-fuschia-500/15"`
+      - `rose`: `"border border-rose-500/25 bg-rose-500/15 text-rose-500 hover:bg-rose-500/15"`
+      - `indigo`: `"border border-indigo-500/25 bg-indigo-500/15 text-indigo-500 hover:bg-indigo-500/15"`
+      - `violet`: `"border border-violet-500/25 bg-violet-500/15 text-violet-500 hover:bg-violet-500/15"`
+      - `orange`: `"border border-orange-500/25 bg-orange-500/15 text-orange-500 hover:bg-orange-500/15"`
+      - `pink`: `"border border-pink-500/25 bg-pink-500/15 text-pink-500 hover:bg-pink-500/15"`
+      - `lime`: `"border border-lime-500/25 bg-lime-500/15 text-lime-500 hover:bg-lime-500/15"`
+      - `emerald`: `"border border-emerald-500/25 bg-emerald-500/15 text-emerald-500 hover:bg-emerald-500/15"`
+      - `teal`: `"border border-teal-500/25 bg-teal-500/15 text-teal-500 hover:bg-teal-500/15"`
+      - `cyan`: `"border border-cyan-500/25 bg-cyan-500/15 text-cyan-500 hover:bg-cyan-500/15"`
+      - `default`: `"bg-primary text-primary-foreground [a]:hover:bg-primary/80"`
+      - `outline`: `"border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50"`
+      - `secondary`: `"bg-secondary text-secondary-foreground hover:bg-secondary/80 aria-expanded:bg-secondary aria-expanded:text-secondary-foreground"`
+      - `ghost`: `"hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50"`
+      - `destructive`: `"bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40"`
+      - `link`: `"text-primary underline-offset-4 hover:underline"`
   - **MÀU CHỮ & QUẢN LÝ THEME**: 
     - Không sử dụng các class màu chữ tối cố định (như `text-zinc-*`, `text-gray-*`, `text-slate-*`...). Hãy để màu chữ hiển thị tự nhiên vì dự án đã tích hợp `next-themes` để tự động đảo màu chữ theo theme (light/dark mode).
     - Khi cần thể hiện màu chữ nhạt/phụ (muted text), hãy sử dụng `text-muted` hoặc `text-muted-foreground` (có thể kết hợp chia opacity nếu cần, ví dụ: `text-muted-foreground/80`).
