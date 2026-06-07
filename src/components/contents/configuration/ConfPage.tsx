@@ -117,7 +117,10 @@ export function ConfPage() {
     },
   });
 
-  const { data: dbStatus, isLoading: isDbStatusLoading, refetch: refetchDbStatus } = trpc.configuration.dbStatus.useQuery();
+  const { data: dbStatus, isLoading: isDbStatusLoading, refetch: refetchDbStatus } = trpc.configuration.dbStatus.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+    retry: false,
+  });
   const pushSchemaMutation = trpc.configuration.pushSchema.useMutation();
 
   const [pushDialogOpen, setPushDialogOpen] = useState(false);
@@ -131,13 +134,17 @@ export function ConfPage() {
 
     pushSchemaMutation.mutate(undefined, {
       onSuccess: (res) => {
-        setPushLogs((prev) => prev + '\nKết quả lệnh chạy:\n' + res.output + '\n');
+        // eslint-disable-next-line no-control-regex
+        const cleanOutput = res.output.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, "");
+        setPushLogs((prev) => prev + '\nKết quả lệnh chạy:\n' + cleanOutput + '\n');
+        
         if (res.success) {
           setPushState('success');
           toast.success('Đồng bộ cơ sở dữ liệu thành công!');
           refetchDbStatus();
         } else {
           setPushState('error');
+          setPushLogs((prev) => prev + '\n[Gợi ý lỗi] Đồng bộ thất bại. Vui lòng đảm bảo rằng:\n1. PostgreSQL đã được khởi động và đang chạy (cổng 5432).\n2. Cấu hình APP_DATABASE_URI_VALUE trong file .env chính xác.\n');
           toast.error(res.error || 'Đồng bộ cơ sở dữ liệu thất bại.');
         }
       },
@@ -351,31 +358,60 @@ export function ConfPage() {
                   ) : dbStatus?.connectionOk ? (
                     dbStatus?.tablesExist ? (
                       <span className="text-xs text-emerald-500 flex items-center gap-1 font-semibold">
-                        <Icon icon="solar:check-circle-bold" className="size-4" />
+                        <Icon icon="solar:check-circle-line-duotone" className="size-4" />
                         Sẵn sàng
                       </span>
                     ) : (
                       <span className="text-xs text-amber-500 flex items-center gap-1 font-semibold animate-pulse">
-                        <Icon icon="solar:danger-triangle-bold" className="size-4" />
+                        <Icon icon="solar:danger-triangle-line-duotone" className="size-4" />
                         Chưa đồng bộ
                       </span>
                     )
                   ) : (
                     <span className="text-xs text-destructive flex items-center gap-1 font-semibold">
-                      <Icon icon="solar:close-circle-bold" className="size-4" />
+                      <Icon icon="solar:close-circle-line-duotone" className="size-4" />
                       Mất kết nối
                     </span>
                   )}
                 </h4>
 
                 {/* Status messages and actions */}
-                {!isDbStatusLoading && (
-                  <div className="text-xs space-y-2.5">
-                    {!dbStatus?.connectionOk ? (
-                      <>
-                        <div className="text-destructive bg-destructive/10 border border-destructive/20 rounded-lg p-2.5 leading-relaxed">
-                          <strong>Lỗi kết nối:</strong> {dbStatus?.error || "Không thể kết nối đến cơ sở dữ liệu. Vui lòng kiểm tra lại cấu hình DB trong file `.env` hoặc bật dịch vụ Database."}
-                        </div>
+                <div className="text-xs space-y-2.5">
+                  {isDbStatusLoading && !dbStatus ? (
+                    <>
+                      <div className="text-muted-foreground bg-muted/50 border border-border rounded-lg p-2.5 leading-relaxed flex items-center gap-2">
+                        <Icon icon="line-md:loading-twotone-loop" className="size-4 shrink-0 text-emerald-500 animate-spin" />
+                        <span>Đang kiểm tra kết nối cơ sở dữ liệu... Nếu quá trình này diễn ra quá lâu, bạn có thể kiểm tra cấu hình trong file `.env` hoặc thử các thao tác dưới đây.</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => refetchDbStatus()}
+                          className="w-full flex items-center justify-center gap-1.5 cursor-pointer"
+                        >
+                          <Icon icon="solar:refresh-line-duotone" className="size-4" />
+                          Kiểm tra lại
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="vanixjnk"
+                          size="sm"
+                          onClick={handlePushSchema}
+                          className="w-full flex items-center justify-center gap-1.5 cursor-pointer"
+                        >
+                          <Icon icon="solar:database-line-duotone" className="size-4" />
+                          Đồng bộ bảng (Push Schema)
+                        </Button>
+                      </div>
+                    </>
+                  ) : !dbStatus?.connectionOk ? (
+                    <>
+                      <div className="text-destructive bg-destructive/10 border border-destructive/20 rounded-lg p-2.5 leading-relaxed">
+                        <strong>Lỗi kết nối:</strong> {dbStatus?.error || "Không thể kết nối đến cơ sở dữ liệu. Vui lòng kiểm tra lại cấu hình DB trong file `.env` hoặc bật dịch vụ Database."}
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
                         <Button
                           type="button"
                           variant="outline"
@@ -386,12 +422,6 @@ export function ConfPage() {
                           <Icon icon="solar:refresh-line-duotone" className="size-4" />
                           Thử kết nối lại
                         </Button>
-                      </>
-                    ) : !dbStatus?.tablesExist ? (
-                      <>
-                        <div className="text-amber-600 dark:text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-lg p-2.5 leading-relaxed">
-                          Kết nối thành công! Tuy nhiên cấu trúc các bảng dữ liệu chưa được khởi tạo. Vui lòng bấm vào nút dưới đây để tạo bảng dữ liệu.
-                        </div>
                         <Button
                           type="button"
                           variant="vanixjnk"
@@ -399,18 +429,34 @@ export function ConfPage() {
                           onClick={handlePushSchema}
                           className="w-full flex items-center justify-center gap-1.5 cursor-pointer"
                         >
-                          <Icon icon="solar:database-transfer-line-duotone" className="size-4" />
-                          Đồng bộ cấu trúc bảng (Push Schema)
+                          <Icon icon="solar:database-line-duotone" className="size-4" />
+                          Đồng bộ bảng (Push Schema)
                         </Button>
-                      </>
-                    ) : (
-                      <div className="text-emerald-600 dark:text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-2.5 leading-relaxed flex items-center gap-2">
-                        <Icon icon="solar:check-circle-line-duotone" className="size-4 shrink-0" />
-                        <span>Hệ thống đã kết nối cơ sở dữ liệu và cấu trúc bảng đã sẵn sàng cho bước tiếp theo.</span>
                       </div>
-                    )}
-                  </div>
-                )}
+                    </>
+                  ) : !dbStatus?.tablesExist ? (
+                    <>
+                      <div className="text-amber-600 dark:text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-lg p-2.5 leading-relaxed">
+                        Kết nối thành công! Tuy nhiên cấu trúc các bảng dữ liệu chưa được khởi tạo. Vui lòng bấm vào nút dưới đây để tạo bảng dữ liệu.
+                      </div>
+                      <Button
+                        type="button"
+                        variant="vanixjnk"
+                        size="sm"
+                        onClick={handlePushSchema}
+                        className="w-full flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        <Icon icon="solar:database-line-duotone" className="size-4" />
+                        Đồng bộ cấu trúc bảng (Push Schema)
+                      </Button>
+                    </>
+                  ) : (
+                    <div className="text-emerald-600 dark:text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-2.5 leading-relaxed flex items-center gap-2">
+                      <Icon icon="solar:check-circle-line-duotone" className="size-4 shrink-0" />
+                      <span>Hệ thống đã kết nối cơ sở dữ liệu và cấu trúc bảng đã sẵn sàng cho bước tiếp theo.</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="bg-vanixjnk/5 border border-vanixjnk/15 rounded-xl p-4 space-y-3">
@@ -930,7 +976,7 @@ export function ConfPage() {
           <DialogHeader className="pr-6">
             <DialogTitle className="flex items-center gap-2.5">
               <div className="size-8 rounded-full text-emerald-500 bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center shrink-0">
-                <Icon icon="solar:database-transfer-line-duotone" className="size-4.5" />
+                <Icon icon="solar:database-line-duotone" className="size-4.5" />
               </div>
               <span>Đồng bộ cơ sở dữ liệu</span>
             </DialogTitle>
@@ -947,13 +993,13 @@ export function ConfPage() {
                 )}
                 {pushState === 'success' && (
                   <span className="text-emerald-500 flex items-center gap-1">
-                    <Icon icon="solar:check-circle-bold" className="size-4" />
+                    <Icon icon="solar:check-circle-line-duotone" className="size-4" />
                     Đồng bộ thành công
                   </span>
                 )}
                 {pushState === 'error' && (
                   <span className="text-destructive flex items-center gap-1">
-                    <Icon icon="solar:close-circle-bold" className="size-4" />
+                    <Icon icon="solar:close-circle-line-duotone" className="size-4" />
                     Lỗi đồng bộ
                   </span>
                 )}

@@ -16,7 +16,7 @@ const globalForPostgres = globalThis as unknown as {
 };
 
 export const pgClient =
-  globalForPostgres.postgresClient ?? postgres(connectionString);
+  globalForPostgres.postgresClient ?? postgres(connectionString, { connect_timeout: 3 });
 
 if (process.env.NODE_ENV !== "production") globalForPostgres.postgresClient = pgClient;
 
