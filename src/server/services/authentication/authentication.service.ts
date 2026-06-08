@@ -14,21 +14,28 @@ export class AuthenticationService {
     }
 
     let result;
+    let responseHeaders: Headers | undefined;
     try {
       if (data.identity.includes("@") && user.email) {
-        result = await auth.api.signInEmail({
+        const res = await auth.api.signInEmail({
           body: {
             email: user.email,
             password: data.password,
           },
+          returnHeaders: true,
         });
+        result = res.response;
+        responseHeaders = res.headers;
       } else if (user.username) {
-        result = await auth.api.signInUsername({
+        const res = await auth.api.signInUsername({
           body: {
             username: user.username,
             password: data.password,
           },
+          returnHeaders: true,
         });
+        result = res.response;
+        responseHeaders = res.headers;
       } else {
         throw new Error("Tài khoản hoặc mật khẩu không chính xác");
       }
@@ -40,20 +47,45 @@ export class AuthenticationService {
       throw new Error("Không thể tạo phiên đăng nhập");
     }
 
-    const cookieJar = await cookies();
-    const cookieName = process.env.NODE_ENV === "production"
-      ? "__secure-better-auth.session_token"
-      : "better-auth.session_token";
+    if (responseHeaders) {
+      const cookieJar = await cookies();
+      const setCookies = (responseHeaders as any).getSetCookie
+        ? (responseHeaders as any).getSetCookie()
+        : responseHeaders.get("set-cookie")
+        ? [responseHeaders.get("set-cookie")]
+        : [];
 
-    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+      for (const cookieStr of setCookies) {
+        if (!cookieStr) continue;
+        const parts = cookieStr.split(";").map((p: string) => p.trim());
+        if (parts.length === 0) continue;
+        const [nameValue, ...attrs] = parts;
+        const eqIdx = nameValue.indexOf("=");
+        if (eqIdx === -1) continue;
+        const name = nameValue.slice(0, eqIdx);
+        const value = decodeURIComponent(nameValue.slice(eqIdx + 1));
 
-    cookieJar.set(cookieName, result.token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      expires: expiresAt,
-      path: "/",
-    });
+        const opt: any = {};
+        for (const attr of attrs) {
+          const [attrName, attrVal] = attr.split("=");
+          const key = attrName.toLowerCase();
+          if (key === "path") {
+            opt.path = attrVal;
+          } else if (key === "expires") {
+            opt.expires = new Date(attrVal);
+          } else if (key === "max-age") {
+            opt.maxAge = parseInt(attrVal, 10);
+          } else if (key === "httponly") {
+            opt.httpOnly = true;
+          } else if (key === "secure") {
+            opt.secure = true;
+          } else if (key === "samesite") {
+            opt.sameSite = attrVal.toLowerCase() as "lax" | "strict" | "none";
+          }
+        }
+        cookieJar.set(name, value, opt);
+      }
+    }
 
     return {
       user: result.user,
