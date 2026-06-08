@@ -182,7 +182,7 @@ export default function AdminHeader() {
     pathname === href || (href !== "/" && pathname.startsWith(href));
 
   return (
-    <header className="sticky top-3 z-20 w-full px-3 sm:px-5">
+    <header className="fixed top-3 left-0 right-0 z-20 px-3 sm:px-5">
       <div className="flex items-center h-14 gap-2 px-3 py-2 rounded-xl border border-border/80 bg-background/80 backdrop-blur-xl shadow-sm">
         <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
           <SheetTrigger asChild>

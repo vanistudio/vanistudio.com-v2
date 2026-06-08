@@ -411,15 +411,20 @@ export default function AdminMenu() {
   };
 
   return (
-    <div className="flex flex-col w-full gap-6 flex-1">
+    <div className="flex flex-col w-full flex-1">
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="border-l border-r border-dashed border-primary/20 p-6">
+        <div className="border-l border-r border-dashed border-primary/20 pt-[88px] pb-6 px-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight text-foreground">Quản lý Menu</h1>
-              <p className="text-sm text-muted-foreground mt-1">
-                Thiết lập cấu trúc nhóm menu và sơ đồ cây các liên kết điều hướng DND.
-              </p>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center justify-center size-12 rounded-xl text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 shrink-0">
+                <Icon icon="solar:menu-list-line-duotone" className="text-2xl" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight text-foreground">Quản lý Menu</h1>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  Thiết lập cấu trúc nhóm menu và sơ đồ cây các liên kết điều hướng DND.
+                </p>
+              </div>
             </div>
             <Button variant="vanixjnk" onClick={() => handleOpenGroupDialog(null)} className="h-9 gap-2">
               <Icon icon="solar:folder-open-line-duotone" className="text-lg" />
@@ -428,8 +433,6 @@ export default function AdminMenu() {
           </div>
         </div>
       </div>
-
-      {/* Top repeating pattern strip */}
       <div
         className="relative w-full border-t border-b border-dashed border-primary/20 overflow-hidden text-primary/20"
         style={{ height: "36px" }}
@@ -445,194 +448,194 @@ export default function AdminMenu() {
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col">
           <div className="grid grid-cols-1 lg:grid-cols-12 border-t border-b border-border/60 flex-1">
-        {/* Left Column: Menu Groups */}
-        <div className="lg:col-span-4 p-6 border-b lg:border-b-0 lg:border-r border-border/60 flex flex-col gap-4">
-          <div className="pb-3 border-b border-border/60">
-            <h3 className="text-base font-bold text-foreground">Nhóm Menu</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Chọn nhóm menu để quản lý các liên kết bên trong.
-            </p>
-          </div>
-          <div className="flex flex-col gap-1.5">
-            {loadingGroups ? (
-              <div className="flex items-center justify-center py-12 text-muted-foreground gap-2">
-                <Icon icon="solar:spinner-line-duotone" className="text-xl animate-spin text-vanixjnk" />
-                <span className="text-sm font-semibold">Đang tải nhóm menu...</span>
+            {/* Left Column: Menu Groups */}
+            <div className="lg:col-span-4 p-6 border-b lg:border-b-0 lg:border-r border-border/60 flex flex-col gap-4">
+              <div className="pb-3 border-b border-border/60">
+                <h3 className="text-base font-bold text-foreground">Nhóm Menu</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Chọn nhóm menu để quản lý các liên kết bên trong.
+                </p>
               </div>
-            ) : !groups || groups.length === 0 ? (
-              <Empty className="py-8">
-                <EmptyHeader>
-                  <EmptyMedia variant="icon">
-                    <Icon icon="solar:folder-open-line-duotone" className="text-lg text-muted-foreground" />
-                  </EmptyMedia>
-                  <EmptyTitle className="text-xs">Chưa có nhóm menu</EmptyTitle>
-                  <EmptyDescription className="text-xxs">
-                    Tạo nhóm menu đầu tiên để bắt đầu thêm liên kết.
-                  </EmptyDescription>
-                </EmptyHeader>
-              </Empty>
-            ) : (
-              groups.map((group) => (
-                <div
-                  key={group.id}
-                  onClick={() => setSelectedGroupId(group.id)}
-                  className={cn(
-                    "group flex items-center justify-between p-3 rounded-lg border transition-all cursor-pointer",
-                    selectedGroupId === group.id
-                      ? "text-vanixjnk bg-vanixjnk/10 border-vanixjnk/25 font-semibold"
-                      : "border-border/50 bg-background/50 hover:bg-muted/40 text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  <div className="flex flex-col min-w-0 pr-2">
-                    <span className="text-sm truncate">{group.name}</span>
-                    <span className="text-[10px] opacity-75 font-mono truncate">{group.key}</span>
+              <div className="flex flex-col gap-1.5">
+                {loadingGroups ? (
+                  <div className="flex items-center justify-center py-12 text-muted-foreground gap-2">
+                    <Icon icon="solar:spinner-line-duotone" className="text-xl animate-spin text-vanixjnk" />
+                    <span className="text-sm font-semibold">Đang tải nhóm menu...</span>
                   </div>
-                  <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
-                    <Switch
-                      checked={group.isActive}
-                      onCheckedChange={(checked) => handleToggleGroupStatus(group, checked)}
-                      className="scale-75"
-                    />
-                    <button
-                      onClick={() => handleOpenGroupDialog(group)}
-                      className="size-7 rounded-md flex items-center justify-center hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      <Icon icon="solar:pen-line-duotone" className="text-sm" />
-                    </button>
-                    <button
-                      onClick={() => setDeletingGroup(group)}
-                      className="size-7 rounded-md flex items-center justify-center hover:bg-red-500/10 text-muted-foreground hover:text-red-500 transition-colors"
-                    >
-                      <Icon icon="solar:trash-bin-trash-line-duotone" className="text-sm" />
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        {/* Right Column: Menu Items Tree */}
-        <div className="lg:col-span-8 p-6 flex flex-col gap-4">
-          <div className="pb-3 border-b border-border/60 flex flex-row items-center justify-between gap-4">
-            <div>
-              <h3 className="text-base font-bold text-foreground">Cấu trúc Menu</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Kéo thả các phần tử để thay đổi thứ tự và cấp bậc hiển thị.
-              </p>
-            </div>
-            {selectedGroupId && (
-              <Button variant="vanixjnk" size="sm" onClick={() => handleOpenMenuDialog(null)} className="gap-1.5">
-                <Icon icon="solar:add-circle-line-duotone" className="text-base" />
-                <span>Thêm liên kết</span>
-              </Button>
-            )}
-          </div>
-          <div className="flex-1">
-            {!selectedGroupId ? (
-              <div className="flex flex-col items-center justify-center py-20 text-muted-foreground text-center">
-                <Icon icon="solar:info-circle-line-duotone" className="text-3xl text-muted-foreground/60 mb-2" />
-                <p className="text-sm font-semibold">Vui lòng chọn hoặc tạo mới một nhóm menu bên trái</p>
-              </div>
-            ) : loadingMenus ? (
-              <div className="flex items-center justify-center py-20 text-muted-foreground gap-2">
-                <Icon icon="solar:spinner-line-duotone" className="text-xl animate-spin text-vanixjnk" />
-                <span className="text-sm font-semibold">Đang tải danh sách menu...</span>
-              </div>
-            ) : flatTree.length === 0 ? (
-              <Empty className="py-16">
-                <EmptyHeader>
-                  <EmptyMedia variant="icon">
-                    <Icon icon="solar:link-round-angle-line-duotone" className="text-lg text-muted-foreground" />
-                  </EmptyMedia>
-                  <EmptyTitle className="text-sm">Chưa có liên kết nào</EmptyTitle>
-                  <EmptyDescription className="text-xs">
-                    Nhấp vào nút "Thêm liên kết" ở trên để bắt đầu xây dựng cây menu.
-                  </EmptyDescription>
-                </EmptyHeader>
-              </Empty>
-            ) : (
-              <div className="flex flex-col gap-1.5 min-h-[300px]">
-                {flatTree.map((item) => {
-                  const isOver = dragOverId === item.id;
-                  const isSelfDragged = draggedId === item.id;
-
-                  return (
+                ) : !groups || groups.length === 0 ? (
+                  <Empty className="py-8">
+                    <EmptyHeader>
+                      <EmptyMedia variant="icon">
+                        <Icon icon="solar:folder-open-line-duotone" className="text-lg text-muted-foreground" />
+                      </EmptyMedia>
+                      <EmptyTitle className="text-xs">Chưa có nhóm menu</EmptyTitle>
+                      <EmptyDescription className="text-xxs">
+                        Tạo nhóm menu đầu tiên để bắt đầu thêm liên kết.
+                      </EmptyDescription>
+                    </EmptyHeader>
+                  </Empty>
+                ) : (
+                  groups.map((group) => (
                     <div
-                      key={item.id}
-                      draggable
-                      onDragStart={(e) => handleDragStart(e, item.id)}
-                      onDragOver={(e) => handleDragOver(e, item.id)}
-                      onDragLeave={handleDragLeave}
-                      onDragEnd={handleDragEnd}
-                      onDrop={(e) => handleDrop(e, item.id)}
+                      key={group.id}
+                      onClick={() => setSelectedGroupId(group.id)}
                       className={cn(
-                        "group flex items-center justify-between p-3 rounded-lg border bg-background/60 hover:bg-muted/30 select-none transition-all duration-150 relative",
-                        isSelfDragged && "opacity-40 border-dashed border-muted-foreground/40",
-                        !isSelfDragged && "border-border/40",
-                        isOver && dragPosition === "inside" && "bg-vanixjnk/15 border-vanixjnk/30 scale-[1.01]",
-                        isOver && dragPosition === "before" && "border-t-2 border-t-vanixjnk scale-[1.005]",
-                        isOver && dragPosition === "after" && "border-b-2 border-b-vanixjnk scale-[1.005]"
+                        "group flex items-center justify-between p-3 rounded-lg border transition-all cursor-pointer",
+                        selectedGroupId === group.id
+                          ? "text-vanixjnk bg-vanixjnk/10 border-vanixjnk/25 font-semibold"
+                          : "border-border/50 bg-background/50 hover:bg-muted/40 text-muted-foreground hover:text-foreground"
                       )}
-                      style={{
-                        marginLeft: `${item.depth * 28}px`,
-                      }}
                     >
-                      {/* Left border line helper for nested items */}
-                      {item.depth > 0 && (
-                        <div
-                          className="absolute top-0 bottom-0 left-[-16px] w-[1px] border-l border-dashed border-border/70"
-                          style={{ left: "-18px" }}
-                        />
-                      )}
-
-                      <div className="flex items-center gap-3 min-w-0">
-                        {/* Drag Handle */}
-                        <div className="cursor-grab active:cursor-grabbing text-muted-foreground/50 hover:text-foreground shrink-0 py-1 px-0.5">
-                          <Icon icon="solar:reorder-line-duotone" className="text-lg" />
-                        </div>
-
-                        {/* Custom Icon / Default Icon */}
-                        <div className="size-8 rounded-lg bg-muted flex items-center justify-center text-muted-foreground shrink-0 border border-border/40">
-                          <Icon icon={item.icon || "solar:link-round-angle-line-duotone"} className="text-lg" />
-                        </div>
-
-                        <div className="flex flex-col min-w-0">
-                          <span className="text-sm font-semibold text-foreground truncate">{item.name}</span>
-                          <span className="text-[11px] text-muted-foreground font-mono truncate">
-                            {item.url || "—"}
-                          </span>
-                        </div>
+                      <div className="flex flex-col min-w-0 pr-2">
+                        <span className="text-sm truncate">{group.name}</span>
+                        <span className="text-[10px] opacity-75 font-mono truncate">{group.key}</span>
                       </div>
-
-                      <div className="flex items-center gap-2 shrink-0">
+                      <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
                         <Switch
-                          checked={item.isActive}
-                          onCheckedChange={(checked) => handleToggleMenuStatus(item, checked)}
+                          checked={group.isActive}
+                          onCheckedChange={(checked) => handleToggleGroupStatus(group, checked)}
                           className="scale-75"
                         />
                         <button
-                          onClick={() => handleOpenMenuDialog(item)}
-                          className="size-8 rounded-md flex items-center justify-center hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                          onClick={() => handleOpenGroupDialog(group)}
+                          className="size-7 rounded-md flex items-center justify-center hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
                         >
-                          <Icon icon="solar:pen-line-duotone" className="text-base" />
+                          <Icon icon="solar:pen-line-duotone" className="text-sm" />
                         </button>
                         <button
-                          onClick={() => setDeletingMenu(item)}
-                          className="size-8 rounded-md flex items-center justify-center hover:bg-red-500/10 text-muted-foreground hover:text-red-500 transition-colors"
+                          onClick={() => setDeletingGroup(group)}
+                          className="size-7 rounded-md flex items-center justify-center hover:bg-red-500/10 text-muted-foreground hover:text-red-500 transition-colors"
                         >
-                          <Icon icon="solar:trash-bin-trash-line-duotone" className="text-base" />
+                          <Icon icon="solar:trash-bin-trash-line-duotone" className="text-sm" />
                         </button>
                       </div>
                     </div>
-                  );
-                })}
+                  ))
+                )}
               </div>
-            )}
+            </div>
+
+            {/* Right Column: Menu Items Tree */}
+            <div className="lg:col-span-8 p-6 flex flex-col gap-4">
+              <div className="pb-3 border-b border-border/60 flex flex-row items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-base font-bold text-foreground">Cấu trúc Menu</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Kéo thả các phần tử để thay đổi thứ tự và cấp bậc hiển thị.
+                  </p>
+                </div>
+                {selectedGroupId && (
+                  <Button variant="vanixjnk" size="sm" onClick={() => handleOpenMenuDialog(null)} className="gap-1.5">
+                    <Icon icon="solar:add-circle-line-duotone" className="text-base" />
+                    <span>Thêm liên kết</span>
+                  </Button>
+                )}
+              </div>
+              <div className="flex-1">
+                {!selectedGroupId ? (
+                  <div className="flex flex-col items-center justify-center py-20 text-muted-foreground text-center">
+                    <Icon icon="solar:info-circle-line-duotone" className="text-3xl text-muted-foreground/60 mb-2" />
+                    <p className="text-sm font-semibold">Vui lòng chọn hoặc tạo mới một nhóm menu bên trái</p>
+                  </div>
+                ) : loadingMenus ? (
+                  <div className="flex items-center justify-center py-20 text-muted-foreground gap-2">
+                    <Icon icon="solar:spinner-line-duotone" className="text-xl animate-spin text-vanixjnk" />
+                    <span className="text-sm font-semibold">Đang tải danh sách menu...</span>
+                  </div>
+                ) : flatTree.length === 0 ? (
+                  <Empty className="py-16">
+                    <EmptyHeader>
+                      <EmptyMedia variant="icon">
+                        <Icon icon="solar:link-round-angle-line-duotone" className="text-lg text-muted-foreground" />
+                      </EmptyMedia>
+                      <EmptyTitle className="text-sm">Chưa có liên kết nào</EmptyTitle>
+                      <EmptyDescription className="text-xs">
+                        Nhấp vào nút "Thêm liên kết" ở trên để bắt đầu xây dựng cây menu.
+                      </EmptyDescription>
+                    </EmptyHeader>
+                  </Empty>
+                ) : (
+                  <div className="flex flex-col gap-1.5 min-h-[300px]">
+                    {flatTree.map((item) => {
+                      const isOver = dragOverId === item.id;
+                      const isSelfDragged = draggedId === item.id;
+
+                      return (
+                        <div
+                          key={item.id}
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, item.id)}
+                          onDragOver={(e) => handleDragOver(e, item.id)}
+                          onDragLeave={handleDragLeave}
+                          onDragEnd={handleDragEnd}
+                          onDrop={(e) => handleDrop(e, item.id)}
+                          className={cn(
+                            "group flex items-center justify-between p-3 rounded-lg border bg-background/60 hover:bg-muted/30 select-none transition-all duration-150 relative",
+                            isSelfDragged && "opacity-40 border-dashed border-muted-foreground/40",
+                            !isSelfDragged && "border-border/40",
+                            isOver && dragPosition === "inside" && "bg-vanixjnk/15 border-vanixjnk/30 scale-[1.01]",
+                            isOver && dragPosition === "before" && "border-t-2 border-t-vanixjnk scale-[1.005]",
+                            isOver && dragPosition === "after" && "border-b-2 border-b-vanixjnk scale-[1.005]"
+                          )}
+                          style={{
+                            marginLeft: `${item.depth * 28}px`,
+                          }}
+                        >
+                          {/* Left border line helper for nested items */}
+                          {item.depth > 0 && (
+                            <div
+                              className="absolute top-0 bottom-0 left-[-16px] w-[1px] border-l border-dashed border-border/70"
+                              style={{ left: "-18px" }}
+                            />
+                          )}
+
+                          <div className="flex items-center gap-3 min-w-0">
+                            {/* Drag Handle */}
+                            <div className="cursor-grab active:cursor-grabbing text-muted-foreground/50 hover:text-foreground shrink-0 py-1 px-0.5">
+                              <Icon icon="solar:reorder-line-duotone" className="text-lg" />
+                            </div>
+
+                            {/* Custom Icon / Default Icon */}
+                            <div className="size-8 rounded-lg bg-muted flex items-center justify-center text-muted-foreground shrink-0 border border-border/40">
+                              <Icon icon={item.icon || "solar:link-round-angle-line-duotone"} className="text-lg" />
+                            </div>
+
+                            <div className="flex flex-col min-w-0">
+                              <span className="text-sm font-semibold text-foreground truncate">{item.name}</span>
+                              <span className="text-[11px] text-muted-foreground font-mono truncate">
+                                {item.url || "—"}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 shrink-0">
+                            <Switch
+                              checked={item.isActive}
+                              onCheckedChange={(checked) => handleToggleMenuStatus(item, checked)}
+                              className="scale-75"
+                            />
+                            <button
+                              onClick={() => handleOpenMenuDialog(item)}
+                              className="size-8 rounded-md flex items-center justify-center hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                              <Icon icon="solar:pen-line-duotone" className="text-base" />
+                            </button>
+                            <button
+                              onClick={() => setDeletingMenu(item)}
+                              className="size-8 rounded-md flex items-center justify-center hover:bg-red-500/10 text-muted-foreground hover:text-red-500 transition-colors"
+                            >
+                              <Icon icon="solar:trash-bin-trash-line-duotone" className="text-base" />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      </div>
       </div>
 
       {/* Group Create/Edit Dialog */}
