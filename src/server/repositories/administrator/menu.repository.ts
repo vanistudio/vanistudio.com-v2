@@ -1,10 +1,15 @@
 import { db } from "@/server/db";
 import { menus, menuGroups, type MenuGroup, type NewMenuGroup, type Menu, type NewMenu } from "@/server/db/schemas/menu.schema";
-import { eq, asc } from "drizzle-orm";
+import { eq, asc, and } from "drizzle-orm";
 
 export class MenuRepository {
   async getGroups(): Promise<MenuGroup[]> {
-    return await db.select().from(menuGroups).orderBy(asc(menuGroups.name));
+    let groups = await db.select().from(menuGroups).orderBy(asc(menuGroups.name));
+    if (groups.length === 0) {
+      await this.seedDefaultMenus();
+      groups = await db.select().from(menuGroups).orderBy(asc(menuGroups.name));
+    }
+    return groups;
   }
 
   async getMenusByGroupId(groupId: string): Promise<Menu[]> {

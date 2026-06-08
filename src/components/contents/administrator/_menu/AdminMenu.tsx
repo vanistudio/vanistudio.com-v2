@@ -417,7 +417,7 @@ export default function AdminMenu() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="flex items-center justify-center size-12 rounded-xl text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 shrink-0">
-                <Icon icon="solar:menu-list-line-duotone" className="text-2xl" />
+                <Icon icon="solar:hamburger-menu-line-duotone" className="text-2xl" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold tracking-tight text-foreground">Quản lý Menu</h1>
