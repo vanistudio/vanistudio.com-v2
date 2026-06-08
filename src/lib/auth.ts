@@ -4,6 +4,7 @@ import { username } from "better-auth/plugins";
 import { db } from "@/server/db";
 import * as schema from "@/server/db/schemas/user.schema";
 import { headers } from "next/headers";
+import bcrypt from "bcryptjs";
 
 function getBaseUrl() {
   let url = process.env.APP_BETTER_AUTH_DOMAIN;
@@ -28,6 +29,15 @@ export const auth = betterAuth({
   baseURL: getBaseUrl(),
   emailAndPassword: {
     enabled: true,
+    password: {
+      hash: async (password: string) => {
+        const salt = bcrypt.genSaltSync(10);
+        return bcrypt.hashSync(password, salt);
+      },
+      verify: async ({ hash, password }: { hash: string; password: string }) => {
+        return bcrypt.compareSync(password, hash);
+      },
+    },
   },
   plugins: [username()],
 });
