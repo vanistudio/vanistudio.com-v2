@@ -1,8 +1,9 @@
 export interface DefaultMenuItem {
   name: string;
-  url: string;
+  url?: string;
   icon: string;
   order: number;
+  children?: DefaultMenuItem[];
 }
 
 export interface DefaultMenuGroup {
@@ -13,6 +14,29 @@ export interface DefaultMenuGroup {
 }
 
 export const DEFAULT_MENU_GROUPS: DefaultMenuGroup[] = [
+  {
+    name: "Menu chính",
+    key: "header",
+    description: "Thanh điều hướng chính ở đầu trang của website.",
+    items: [
+      { name: "Trang chủ", url: "/", icon: "solar:home-2-line-duotone", order: 1 },
+      {
+        name: "Dịch vụ",
+        icon: "solar:server-square-line-duotone",
+        order: 2,
+        children: [
+          { name: "Thiết kế Website", url: "/services/website", icon: "solar:monitor-line-duotone", order: 1 },
+          { name: "Lập trình di động", url: "/services/mobile", icon: "solar:smartphone-line-duotone", order: 2 },
+          { name: "Chatbot AI", url: "/services/chatbot", icon: "solar:magic-stick-3-line-duotone", order: 3 },
+          { name: "Thiết kế UI/UX", url: "/services/ui-ux", icon: "solar:palette-line-duotone", order: 4 },
+        ],
+      },
+      { name: "Dự án", url: "/projects", icon: "solar:folder-open-line-duotone", order: 3 },
+      { name: "Sản phẩm", url: "/products", icon: "solar:box-line-duotone", order: 4 },
+      { name: "Tin tức", url: "/blog", icon: "solar:document-text-line-duotone", order: 5 },
+      { name: "Liên hệ", url: "/contact", icon: "solar:letter-line-duotone", order: 6 },
+    ],
+  },
   {
     name: "Giới thiệu",
     key: "intro",

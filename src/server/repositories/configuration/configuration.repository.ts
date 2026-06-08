@@ -121,17 +121,26 @@ export class ConfigurationRepository {
               isActive: true,
             }).returning();
 
-            if (insertedGroup && group.items.length > 0) {
-              for (const item of group.items) {
-                await tx.insert(menus).values({
-                  groupId: insertedGroup.id,
+            const seedMenuItems = async (items: any[], groupId: string, parentId: string | null = null) => {
+              for (const item of items) {
+                const [insertedItem] = await tx.insert(menus).values({
+                  groupId,
+                  parentId,
                   name: item.name,
-                  url: item.url,
+                  url: item.url || null,
                   icon: item.icon,
                   order: item.order,
                   isActive: true,
-                });
+                }).returning();
+
+                if (insertedItem && item.children && item.children.length > 0) {
+                  await seedMenuItems(item.children, groupId, insertedItem.id);
+                }
               }
+            };
+
+            if (insertedGroup && group.items.length > 0) {
+              await seedMenuItems(group.items, insertedGroup.id);
             }
           }
         }

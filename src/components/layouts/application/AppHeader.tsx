@@ -25,6 +25,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { trpc } from "@/lib/trpc";
 
 type NavItem = { name: string; href: string; icon: string };
 type NavGroup = { name: string; icon: string; children: NavItem[] };
@@ -32,23 +33,53 @@ type NavEntry = NavItem | NavGroup;
 
 const isGroup = (entry: NavEntry): entry is NavGroup => "children" in entry;
 
-const navEntries: NavEntry[] = [
-  { name: "Trang chủ", href: "/", icon: "solar:home-2-line-duotone" },
-  {
-    name: "Dịch vụ",
-    icon: "solar:server-square-line-duotone",
-    children: [
-      { name: "Thiết kế Website", href: "/services/website", icon: "solar:monitor-line-duotone" },
-      { name: "Lập trình di động", href: "/services/mobile", icon: "solar:smartphone-line-duotone" },
-      { name: "Chatbot AI", href: "/services/chatbot", icon: "solar:magic-stick-3-line-duotone" },
-      { name: "Thiết kế UI/UX", href: "/services/ui-ux", icon: "solar:palette-line-duotone" },
-    ],
-  },
-  { name: "Dự án", href: "/projects", icon: "solar:folder-open-line-duotone" },
-  { name: "Sản phẩm", href: "/products", icon: "solar:box-line-duotone" },
-  { name: "Tin tức", href: "/blog", icon: "solar:document-text-line-duotone" },
-  { name: "Liên hệ", href: "/contact", icon: "solar:letter-line-duotone" },
-];
+interface MenuItemNode {
+  id?: string;
+  name: string;
+  url?: string | null;
+  icon: string | null;
+  parentId?: string | null;
+  order: number;
+  children: MenuItemNode[];
+}
+
+const buildMenuTree = (items: any[]): MenuItemNode[] => {
+  const map: Record<string, MenuItemNode> = {};
+  const roots: MenuItemNode[] = [];
+
+  items.forEach((item) => {
+    map[item.id] = {
+      id: item.id,
+      name: item.name,
+      url: item.url,
+      icon: item.icon,
+      parentId: item.parentId,
+      order: item.order,
+      children: [],
+    };
+  });
+
+  items.forEach((item) => {
+    const node = map[item.id];
+    if (item.parentId && map[item.parentId]) {
+      map[item.parentId].children.push(node);
+    } else {
+      roots.push(node);
+    }
+  });
+
+  const sortNodes = (nodes: MenuItemNode[]) => {
+    nodes.sort((a, b) => a.order - b.order);
+    nodes.forEach((node) => {
+      if (node.children.length > 0) {
+        sortNodes(node.children);
+      }
+    });
+  };
+
+  sortNodes(roots);
+  return roots;
+};
 
 function NavGroupPopover({ group, isLinkActive }: { group: NavGroup; isLinkActive: (href: string) => boolean }) {
   const [open, setOpen] = useState(false);
@@ -177,6 +208,30 @@ export default function AppHeader() {
   const { theme, setTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const user = useUser();
+
+  const { data: publicMenus } = trpc.administrator.menu.getPublicMenus.useQuery();
+  const headerGroup = publicMenus?.find((g) => g.group.key === "header");
+  const headerItems = headerGroup ? buildMenuTree(headerGroup.items) : [];
+
+  const navEntries: NavEntry[] = headerItems.map((item) => {
+    if (item.children && item.children.length > 0) {
+      return {
+        name: item.name,
+        icon: item.icon || "",
+        children: item.children.map((c) => ({
+          name: c.name,
+          href: c.url || "#",
+          icon: c.icon || "",
+        })),
+      };
+    } else {
+      return {
+        name: item.name,
+        href: item.url || "#",
+        icon: item.icon || "",
+      };
+    }
+  });
 
   const isLinkActive = (href: string) =>
     pathname === href || (href !== "/" && pathname.startsWith(href));
