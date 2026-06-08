@@ -95,7 +95,7 @@ export default function AdminFooter() {
           }}
         />
       </div>
-      <div className="w-full">
+      {/* <div className="w-full">
         <div className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-4 border-l border-r border-dashed border-primary/20">
 
@@ -247,7 +247,7 @@ export default function AdminFooter() {
             backgroundImage: "repeating-linear-gradient(45deg, currentColor, currentColor 1px, transparent 1px, transparent 10px)"
           }}
         />
-      </div>
+      </div> */}
 
       <div className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="py-8 flex flex-col md:flex-row items-center justify-between gap-6">
