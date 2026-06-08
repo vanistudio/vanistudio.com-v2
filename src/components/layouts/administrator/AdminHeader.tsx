@@ -170,7 +170,7 @@ function MobileAccordion({
   );
 }
 
-export default function AppHeader() {
+export default function AdminHeader() {
   const pathname = usePathname();
   const router = useRouter();
   const setting = useSetting();
@@ -417,4 +417,3 @@ export default function AppHeader() {
     </header>
   );
 }
-
