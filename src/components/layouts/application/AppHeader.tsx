@@ -301,9 +301,9 @@ export default function AppHeader() {
                     <DropdownMenuGroup>
                       <DropdownMenuLabel className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-muted-foreground/60">Hệ thống</DropdownMenuLabel>
                       <DropdownMenuItem asChild className="cursor-pointer py-2 px-2.5 rounded-lg">
-                        <Link href="/configuration" className="w-full flex items-center gap-2.5 text-sm">
+                        <Link href="/adminPanel/dashboard" className="w-full flex items-center gap-2.5 text-sm">
                           <Icon icon="solar:settings-line-duotone" className="text-lg text-primary" />
-                          <span className="font-semibold text-foreground">Cấu hình hệ thống</span>
+                          <span className="font-semibold text-foreground">Trang quản trị</span>
                         </Link>
                       </DropdownMenuItem>
                     </DropdownMenuGroup>
