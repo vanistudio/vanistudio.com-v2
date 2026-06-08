@@ -8,6 +8,18 @@ import { useSetting } from "@/contexts/SettingContext";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { useUser } from "@/contexts/UserContext";
+import { signOut } from "@/lib/auth-client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 
 type NavItem = { name: string; href: string; icon: string };
 type NavGroup = { name: string; icon: string; children: NavItem[] };
@@ -158,6 +170,7 @@ export default function AppHeader() {
   const setting = useSetting();
   const { theme, setTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const user = useUser();
 
   const isLinkActive = (href: string) =>
     pathname === href || (href !== "/" && pathname.startsWith(href));
@@ -241,6 +254,89 @@ export default function AppHeader() {
             <Icon icon="solar:sun-line-duotone" className="text-xl dark:hidden" />
             <Icon icon="solar:moon-line-duotone" className="text-xl hidden dark:block" />
           </button>
+
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-2 hover:opacity-90 outline-none select-none">
+                  <Avatar className="cursor-pointer border border-primary/20">
+                    <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                      {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 mt-1.5 p-1.5">
+                <DropdownMenuLabel className="flex flex-col gap-0.5 p-2.5">
+                  <span className="font-semibold text-foreground text-sm leading-none truncate">{user.name}</span>
+                  <span className="text-[11px] text-muted-foreground leading-none truncate">{user.email}</span>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                
+                {user.role === "admin" && (
+                  <DropdownMenuItem asChild className="cursor-pointer py-2 px-2.5 rounded-lg">
+                    <Link href="/configuration" className="w-full flex items-center gap-2.5 text-sm">
+                      <Icon icon="solar:settings-line-duotone" className="text-lg text-muted-foreground" />
+                      <span>Cấu hình hệ thống</span>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+
+                <DropdownMenuItem asChild className="cursor-pointer py-2 px-2.5 rounded-lg mt-0.5">
+                  <Link href="/profile" className="w-full flex items-center gap-2.5 text-sm">
+                    <Icon icon="solar:user-id-line-duotone" className="text-lg text-muted-foreground" />
+                    <span>Hồ sơ cá nhân</span>
+                  </Link>
+                </DropdownMenuItem>
+                
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={async () => {
+                    await signOut({
+                      fetchOptions: {
+                        onSuccess: () => {
+                          window.location.reload();
+                        }
+                      }
+                    });
+                  }}
+                  variant="destructive"
+                  className="flex items-center gap-2.5 cursor-pointer py-2 px-2.5 rounded-lg text-sm focus:bg-destructive/10"
+                >
+                  <Icon icon="solar:logout-line-duotone" className="text-lg" />
+                  <span>Đăng xuất</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="h-9 rounded-xl text-sm font-semibold outline-none select-none gap-2 cursor-pointer"
+                >
+                  <Icon icon="solar:user-line-duotone" className="text-lg" />
+                  <span>Tài khoản</span>
+                  <Icon icon="solar:alt-arrow-down-line-duotone" className="text-xs opacity-50" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48 mt-1.5 p-1.5">
+                <DropdownMenuItem asChild className="cursor-pointer py-2 px-2.5 rounded-lg">
+                  <Link href="/authentication/login" className="w-full flex items-center gap-2.5 text-sm">
+                    <Icon icon="solar:login-line-duotone" className="text-lg text-muted-foreground" />
+                    <span>Đăng nhập</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="cursor-pointer py-2 px-2.5 rounded-lg mt-0.5">
+                  <Link href="/authentication/register" className="w-full flex items-center gap-2.5 text-sm">
+                    <Icon icon="solar:user-plus-line-duotone" className="text-lg text-muted-foreground" />
+                    <span>Đăng ký</span>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </div>
     </header>
