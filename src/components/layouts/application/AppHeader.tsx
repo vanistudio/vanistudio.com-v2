@@ -206,18 +206,11 @@ export default function AppHeader() {
         </Sheet>
 
         <Link href="/" className="flex items-center gap-2 shrink-0 mr-2 md:mr-6">
-          {setting?.siteLogo ? (
-            <img src={setting.siteLogo} alt="Logo" className="h-9 w-auto object-contain" />
-          ) : (
-            <div className="flex items-center gap-1.5">
-              <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/25">
-                <Icon icon="solar:star-fall-minimalistic-line-duotone" className="text-primary text-lg" />
-              </div>
-              <span className="font-bold text-base tracking-tight text-foreground">
-                {setting?.siteName || "Vani Studio"}
-              </span>
-            </div>
-          )}
+          <img
+            src={setting?.siteLogo || "/vani-1.png"}
+            alt="Logo"
+            className="h-9 w-auto object-contain rounded-lg"
+          />
         </Link>
 
         <nav className="hidden xl:flex items-center gap-0.5 grow">

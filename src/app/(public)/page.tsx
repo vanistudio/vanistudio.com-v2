@@ -18,7 +18,7 @@ export default function Home() {
 
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-foreground leading-[1.15]">
           Kiến tạo trải nghiệm số{" "}
-          <span className="bg-gradient-to-r from-primary to-violet-500 bg-clip-text text-transparent">
+          <span className="text-primary">
             Đột phá & Đỉnh cao
           </span>
         </h1>
@@ -167,7 +167,7 @@ export default function Home() {
         </div>
 
         <div className="flex-1 w-full relative aspect-video lg:aspect-square max-w-lg mx-auto rounded-3xl overflow-hidden border border-border/80 bg-muted/30 flex items-center justify-center select-none shadow-sm">
-          <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-violet-500/10" />
+          <div className="absolute inset-0 bg-primary/5" />
           <div className="flex flex-col items-center gap-3 z-10 text-center px-6">
             <div className="size-16 rounded-2xl bg-background border border-border flex items-center justify-center shadow-md">
               <Icon icon="solar:code-file-line-duotone" className="text-3xl text-primary" />
@@ -182,9 +182,7 @@ export default function Home() {
 
       {/* 4. Call to Action Banner */}
       <section className="px-4 mt-6">
-        <div className="relative rounded-3xl border border-primary/20 bg-gradient-to-r from-primary/5 to-violet-500/5 p-8 sm:p-12 overflow-hidden flex flex-col items-center text-center gap-6">
-          <div className="absolute -bottom-16 -right-16 size-48 rounded-full bg-violet-500/10 blur-3xl" />
-          <div className="absolute -top-16 -left-16 size-48 rounded-full bg-primary/10 blur-3xl" />
+        <div className="relative rounded-3xl border border-primary/25 bg-primary/10 p-8 sm:p-12 overflow-hidden flex flex-col items-center text-center gap-6">
 
           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground z-10">
             Sẵn sàng nâng tầm doanh nghiệp của bạn?
