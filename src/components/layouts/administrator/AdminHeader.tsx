@@ -40,6 +40,7 @@ const navEntries: NavEntry[] = [
     children: [
       { name: "Quản lý Blog", href: "/adminPanel/blog", icon: "solar:pen-2-line-duotone" },
       { name: "Trang CMS", href: "/adminPanel/cms", icon: "solar:bookmark-line-duotone" },
+      { name: "Thư viện ảnh", href: "/adminPanel/media", icon: "solar:gallery-line-duotone" },
       { name: "Tài liệu API", href: "/adminPanel/docs", icon: "solar:document-line-duotone" },
     ],
   },
@@ -50,19 +51,38 @@ const navEntries: NavEntry[] = [
       { name: "Dịch vụ", href: "/adminPanel/services", icon: "solar:server-line-duotone" },
       { name: "Sản phẩm", href: "/adminPanel/products", icon: "solar:cart-large-2-line-duotone" },
       { name: "Dự án", href: "/adminPanel/projects", icon: "solar:rocket-line-duotone" },
+      { name: "Quản lý bản quyền", href: "/adminPanel/license", icon: "solar:key-square-line-duotone" },
+    ],
+  },
+  {
+    name: "Marketing",
+    icon: "solar:volume-loud-line-duotone",
+    children: [
+      { name: "Email Campaign", href: "/adminPanel/marketing/email", icon: "arcticons:mail" },
+      { name: "Telegram Campaign", href: "/adminPanel/marketing/telegram", icon: "arcticons:telegram" },
+      { name: "Discord Campaign", href: "/adminPanel/marketing/discord", icon: "arcticons:discord" },
+      { name: "Slack Campaign", href: "/adminPanel/marketing/slack", icon: "arcticons:slack" },
+    ],
+  },
+  {
+    name: "Cấu hình",
+    icon: "solar:settings-minimalistic-line-duotone",
+    children: [
+      { name: "Cấu hình hệ thống", href: "/adminPanel/settings", icon: "solar:settings-minimalistic-line-duotone" },
+      { name: "Quản lý Menu", href: "/adminPanel/menu", icon: "solar:menu-dots-square-line-duotone" },
+      { name: "Quản lý ngôn ngữ", href: "/adminPanel/languages", icon: "solar:translation-line-duotone" },
+      { name: "Quản lý tiền tệ", href: "/adminPanel/currencies", icon: "solar:dollar-minimalistic-line-duotone" },
     ],
   },
   {
     name: "Hệ thống",
-    icon: "solar:settings-minimalistic-line-duotone",
+    icon: "solar:server-square-line-duotone",
     children: [
-      { name: "Quản lý Menu", href: "/adminPanel/menu", icon: "solar:menu-dots-square-line-duotone" },
       { name: "Người dùng", href: "/adminPanel/users", icon: "solar:users-group-two-rounded-line-duotone" },
-      { name: "Quản lý ngôn ngữ", href: "/adminPanel/languages", icon: "solar:translation-line-duotone" },
-      { name: "Quản lý tiền tệ", href: "/adminPanel/currencies", icon: "solar:dollar-minimalistic-line-duotone" },
+      { name: "Chặn truy cập", href: "/adminPanel/block-access", icon: "solar:shield-minus-line-duotone" },
+      { name: "Quản lý Database", href: "/adminPanel/database", icon: "solar:database-line-duotone" },
+      { name: "Console hệ thống", href: "/adminPanel/console", icon: "solar:code-square-line-duotone" },
       { name: "Gói mở rộng", href: "/adminPanel/extensions", icon: "solar:cpu-line-duotone" },
-      { name: "Quản lý bản quyền", href: "/adminPanel/license", icon: "solar:key-square-line-duotone" },
-      { name: "Cấu hình hệ thống", href: "/adminPanel/settings", icon: "solar:settings-minimalistic-line-duotone" },
     ],
   },
 ];
