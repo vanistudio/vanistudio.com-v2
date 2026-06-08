@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, SortingState } from "@tanstack/react-table";
 import { DataTable, DataTableColumnHeader } from "@/components/vanixjnk/data-table";
 
 
@@ -22,17 +22,40 @@ function formatBytes(bytes: number, decimals = 2) {
 }
 
 export default function AdminDatabase() {
-  const { data, isLoading, refetch, isFetching, error } = trpc.administrator.database.getStats.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-  });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+  const [sorting, setSorting] = useState<SortingState>([]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  const sortField = sorting[0]?.id;
+  const sortOrder = sorting[0]?.desc ? ("desc" as const) : ("asc" as const);
+
+  const { data, isLoading, refetch, isFetching, error } = trpc.administrator.database.getStats.useQuery(
+    {
+      search: debouncedSearch,
+      page: pagination.pageIndex + 1,
+      limit: pagination.pageSize,
+      sortField,
+      sortOrder,
+    },
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
 
   useEffect(() => {
     if (error) {
       toast.error(error.message || "Không thể tải dữ liệu thống kê database");
     }
   }, [error]);
-
-  const [searchTerm, setSearchTerm] = useState("");
 
   const handleRefresh = async () => {
     try {
@@ -43,15 +66,19 @@ export default function AdminDatabase() {
     }
   };
 
-  const filteredTables = data?.tables.filter((table) =>
-    table.tableName.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
-
   const columns = React.useMemo<ColumnDef<any>[]>(() => [
     {
       id: "index",
       header: "#",
-      cell: ({ row }) => <span className="text-muted-foreground font-normal">{row.index + 1}</span>,
+      cell: ({ row }) => {
+        const page = data?.data.pagination.page || 1;
+        const limit = data?.data.pagination.limit || 10;
+        return (
+          <span className="text-muted-foreground font-normal">
+            {(page - 1) * limit + row.index + 1}
+          </span>
+        );
+      },
     },
     {
       accessorKey: "tableName",
@@ -132,7 +159,7 @@ export default function AdminDatabase() {
                       {isLoading ? (
                         <Skeleton className="h-8 w-16" />
                       ) : (
-                        data?.stats.totalTables
+                        data?.data.stats.totalTables
                       )}
                     </h3>
                   </div>
@@ -147,7 +174,7 @@ export default function AdminDatabase() {
                       {isLoading ? (
                         <Skeleton className="h-8 w-24" />
                       ) : (
-                        formatBytes(data?.stats.totalSize || 0)
+                        formatBytes(data?.data.stats.totalSize || 0)
                       )}
                     </h3>
                   </div>
@@ -162,7 +189,7 @@ export default function AdminDatabase() {
                       {isLoading ? (
                         <Skeleton className="h-8 w-20" />
                       ) : (
-                        data?.stats.totalRows.toLocaleString()
+                        data?.data.stats.totalRows.toLocaleString()
                       )}
                     </h3>
                   </div>
@@ -198,9 +225,15 @@ export default function AdminDatabase() {
               </div>
               <DataTable
                 columns={columns}
-                data={filteredTables}
+                data={data?.data.items || []}
                 isLoading={isLoading}
                 searchPlaceholder="Tìm kiếm bảng theo tên..."
+                pageCount={data?.data.pagination.totalPages}
+                totalRecords={data?.data.pagination.total}
+                pagination={pagination}
+                onPaginationChange={setPagination}
+                sorting={sorting}
+                onSortingChange={setSorting}
                 toolbarInput={
                   <div className="relative w-full">
                     <Icon
