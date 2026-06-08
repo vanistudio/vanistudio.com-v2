@@ -426,10 +426,7 @@ export default function AdminMenu() {
                 </p>
               </div>
             </div>
-            <Button variant="vanixjnk" onClick={() => handleOpenGroupDialog(null)} className="h-9 gap-2">
-              <Icon icon="solar:folder-open-line-duotone" className="text-lg" />
-              <span>Tạo nhóm menu</span>
-            </Button>
+
           </div>
         </div>
       </div>
@@ -482,8 +479,8 @@ export default function AdminMenu() {
                       className={cn(
                         "group flex items-center justify-between p-3 rounded-lg border transition-all cursor-pointer",
                         selectedGroupId === group.id
-                          ? "text-vanixjnk bg-vanixjnk/10 border-vanixjnk/25 font-semibold"
-                          : "border-border/50 bg-background/50 hover:bg-muted/40 text-muted-foreground hover:text-foreground"
+                          ? "text-vanixjnk bg-vanixjnk/10 border-vanixjnk/25"
+                          : "border-border bg-background/50 hover:bg-muted/40 text-muted-foreground hover:text-foreground"
                       )}
                     >
                       <div className="flex flex-col min-w-0 pr-2">
@@ -514,8 +511,6 @@ export default function AdminMenu() {
                 )}
               </div>
             </div>
-
-            {/* Right Column: Menu Items Tree */}
             <div className="lg:col-span-8 p-6 flex flex-col gap-4">
               <div className="pb-3 border-b border-border/60 flex flex-row items-center justify-between gap-4">
                 <div>
@@ -535,7 +530,7 @@ export default function AdminMenu() {
                 {!selectedGroupId ? (
                   <div className="flex flex-col items-center justify-center py-20 text-muted-foreground text-center">
                     <Icon icon="solar:info-circle-line-duotone" className="text-3xl text-muted-foreground/60 mb-2" />
-                    <p className="text-sm font-semibold">Vui lòng chọn hoặc tạo mới một nhóm menu bên trái</p>
+                    <p className="text-sm font-semibold">Vui lòng chọn một nhóm menu bên trái để tiếp tục thiết lập</p>
                   </div>
                 ) : loadingMenus ? (
                   <div className="flex items-center justify-center py-20 text-muted-foreground gap-2">
@@ -571,17 +566,16 @@ export default function AdminMenu() {
                           onDrop={(e) => handleDrop(e, item.id)}
                           className={cn(
                             "group flex items-center justify-between p-3 rounded-lg border bg-background/60 hover:bg-muted/30 select-none transition-all duration-150 relative",
-                            isSelfDragged && "opacity-40 border-dashed border-muted-foreground/40",
-                            !isSelfDragged && "border-border/40",
+                            isSelfDragged && "opacity-40 border-dashed border-muted-foreground",
+                            !isSelfDragged && "border-border",
                             isOver && dragPosition === "inside" && "bg-vanixjnk/15 border-vanixjnk/30 scale-[1.01]",
-                            isOver && dragPosition === "before" && "border-t-2 border-t-vanixjnk scale-[1.005]",
-                            isOver && dragPosition === "after" && "border-b-2 border-b-vanixjnk scale-[1.005]"
+                            isOver && dragPosition === "before" && "border-t-2 border-t-vanixjnk/30",
+                            isOver && dragPosition === "after" && "border-b-2 border-b-vanixjnk/30"
                           )}
                           style={{
                             marginLeft: `${item.depth * 28}px`,
                           }}
                         >
-                          {/* Left border line helper for nested items */}
                           {item.depth > 0 && (
                             <div
                               className="absolute top-0 bottom-0 left-[-16px] w-[1px] border-l border-dashed border-border/70"
@@ -590,12 +584,9 @@ export default function AdminMenu() {
                           )}
 
                           <div className="flex items-center gap-3 min-w-0">
-                            {/* Drag Handle */}
                             <div className="cursor-grab active:cursor-grabbing text-muted-foreground/50 hover:text-foreground shrink-0 py-1 px-0.5">
                               <Icon icon="solar:reorder-line-duotone" className="text-lg" />
                             </div>
-
-                            {/* Custom Icon / Default Icon */}
                             <div className="size-8 rounded-lg bg-muted flex items-center justify-center text-muted-foreground shrink-0 border border-border/40">
                               <Icon icon={item.icon || "solar:link-round-angle-line-duotone"} className="text-lg" />
                             </div>
@@ -640,14 +631,16 @@ export default function AdminMenu() {
 
       {/* Group Create/Edit Dialog */}
       <Dialog open={isGroupDialogOpen} onOpenChange={setIsGroupDialogOpen}>
-        <DialogContent className="sm:max-w-[420px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Icon icon="solar:folder-open-line-duotone" className="text-xl text-vanixjnk" />
+        <DialogContent className="sm:max-w-[550px] max-h-[85vh] flex flex-col p-6">
+          <DialogHeader className="pr-6">
+            <DialogTitle className="flex items-center gap-2.5">
+              <div className="size-8 rounded-full text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 flex items-center justify-center shrink-0">
+                <Icon icon="solar:folder-open-line-duotone" className="size-4.5" />
+              </div>
               <span>{editingGroup ? "Cập nhật nhóm menu" : "Tạo nhóm menu mới"}</span>
             </DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSaveGroup} className="space-y-4 py-2">
+          <form onSubmit={handleSaveGroup} className="space-y-4 py-2 flex-1 overflow-y-auto">
             <div className="space-y-1.5">
               <Label htmlFor="group-name">Tên nhóm</Label>
               <Input
@@ -663,13 +656,16 @@ export default function AdminMenu() {
               <Input
                 id="group-key"
                 required
-                disabled={!!editingGroup}
-                placeholder="Ví dụ: header-main"
+                placeholder="Ví dụ: intro, services, explore, contact"
                 value={groupForm.key}
                 onChange={(e) => setGroupForm({ ...groupForm, key: e.target.value })}
                 className="font-mono text-xs"
               />
+              <span className="text-[10px] text-muted-foreground block mt-0.5">
+                Các key tương ứng với Footer: <code className="font-semibold text-primary">intro</code>, <code className="font-semibold text-primary">services</code>, <code className="font-semibold text-primary">explore</code>, <code className="font-semibold text-primary">contact</code>
+              </span>
             </div>
+
             <div className="space-y-1.5">
               <Label htmlFor="group-desc">Mô tả chi tiết</Label>
               <Textarea
@@ -705,14 +701,16 @@ export default function AdminMenu() {
 
       {/* Menu Item Create/Edit Dialog */}
       <Dialog open={isMenuDialogOpen} onOpenChange={setIsMenuDialogOpen}>
-        <DialogContent className="sm:max-w-[450px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Icon icon="solar:link-round-angle-line-duotone" className="text-xl text-vanixjnk" />
+        <DialogContent className="sm:max-w-[550px] max-h-[85vh] flex flex-col p-6">
+          <DialogHeader className="pr-6">
+            <DialogTitle className="flex items-center gap-2.5">
+              <div className="size-8 rounded-full text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 flex items-center justify-center shrink-0">
+                <Icon icon="solar:link-round-angle-line-duotone" className="size-4.5" />
+              </div>
               <span>{editingMenu ? "Cập nhật liên kết" : "Thêm liên kết mới"}</span>
             </DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSaveMenu} className="space-y-4 py-2">
+          <form onSubmit={handleSaveMenu} className="space-y-4 py-2 flex-1 overflow-y-auto">
             <div className="space-y-1.5">
               <Label htmlFor="menu-name">Tên hiển thị</Label>
               <Input
@@ -740,7 +738,7 @@ export default function AdminMenu() {
                   placeholder="Ví dụ: solar:home-2-line-duotone"
                   value={menuForm.icon}
                   onChange={(e) => setMenuForm({ ...menuForm, icon: e.target.value })}
-                  className="font-mono text-xs"
+                  className="font-mono text-xs w-full"
                 />
                 <div className="size-8 rounded-lg border bg-muted flex items-center justify-center text-muted-foreground shrink-0">
                   <Icon icon={menuForm.icon || "solar:link-round-angle-line-duotone"} className="text-lg" />
@@ -753,7 +751,7 @@ export default function AdminMenu() {
                 value={menuForm.parentId}
                 onValueChange={(val) => setMenuForm({ ...menuForm, parentId: val })}
               >
-                <SelectTrigger id="menu-parent">
+                <SelectTrigger id="menu-parent" className="w-full">
                   <SelectValue placeholder="Chọn liên kết cha..." />
                 </SelectTrigger>
                 <SelectContent>

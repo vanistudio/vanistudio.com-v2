@@ -5,6 +5,8 @@ import { extensions } from "@/server/db/schemas/extension.schema";
 import { DEFAULT_EXTENSIONS } from "@/defaults/extension.default";
 import { eq, sql } from "drizzle-orm";
 import { uuidv7 } from "@/lib/utils";
+import { menuGroups, menus } from "@/server/db/schemas/menu.schema";
+import { DEFAULT_MENU_GROUPS } from "@/defaults/menu.default";
 
 export class ConfigurationRepository {
   async checkConfigurationStatus(): Promise<boolean> {
@@ -105,6 +107,33 @@ export class ConfigurationRepository {
               config: ext.config,
             }))
           );
+        }
+      }
+
+      if (DEFAULT_MENU_GROUPS && DEFAULT_MENU_GROUPS.length > 0) {
+        const existingMenuGroups = await tx.select().from(menuGroups).limit(1);
+        if (existingMenuGroups.length === 0) {
+          for (const group of DEFAULT_MENU_GROUPS) {
+            const [insertedGroup] = await tx.insert(menuGroups).values({
+              name: group.name,
+              key: group.key,
+              description: group.description,
+              isActive: true,
+            }).returning();
+
+            if (insertedGroup && group.items.length > 0) {
+              for (const item of group.items) {
+                await tx.insert(menus).values({
+                  groupId: insertedGroup.id,
+                  name: item.name,
+                  url: item.url,
+                  icon: item.icon,
+                  order: item.order,
+                  isActive: true,
+                });
+              }
+            }
+          }
         }
       }
     });

@@ -1,6 +1,7 @@
 import { db } from "@/server/db";
 import { menus, menuGroups, type MenuGroup, type NewMenuGroup, type Menu, type NewMenu } from "@/server/db/schemas/menu.schema";
 import { eq, asc, and } from "drizzle-orm";
+import { DEFAULT_MENU_GROUPS } from "@/defaults/menu.default";
 
 export class MenuRepository {
   async getGroups(): Promise<MenuGroup[]> {
@@ -71,6 +72,66 @@ export class MenuRepository {
           .where(eq(menus.id, item.id));
       }
     });
+  }
+
+  async seedDefaultMenus(): Promise<void> {
+    const existingGroups = await db.select().from(menuGroups).limit(1);
+    if (existingGroups.length > 0) return; // already seeded
+
+    await db.transaction(async (tx) => {
+      for (const group of DEFAULT_MENU_GROUPS) {
+        const [insertedGroup] = await tx.insert(menuGroups).values({
+          name: group.name,
+          key: group.key,
+          description: group.description,
+          isActive: true,
+        }).returning();
+
+        for (const item of group.items) {
+          await tx.insert(menus).values({
+            groupId: insertedGroup.id,
+            name: item.name,
+            url: item.url,
+            icon: item.icon,
+            order: item.order,
+            isActive: true,
+          });
+        }
+      }
+    });
+  }
+
+  async getPublicMenus(): Promise<{ group: MenuGroup; items: Menu[] }[]> {
+    let groups = await db
+      .select()
+      .from(menuGroups)
+      .where(eq(menuGroups.isActive, true))
+      .orderBy(asc(menuGroups.name));
+    
+    if (groups.length === 0) {
+      await this.seedDefaultMenus();
+      groups = await db
+        .select()
+        .from(menuGroups)
+        .where(eq(menuGroups.isActive, true))
+        .orderBy(asc(menuGroups.name));
+    }
+
+    const result = [];
+    for (const group of groups) {
+      const activeItems = await db
+        .select()
+        .from(menus)
+        .where(
+          and(
+            eq(menus.groupId, group.id),
+            eq(menus.isActive, true)
+          )
+        )
+        .orderBy(asc(menus.order));
+      result.push({ group, items: activeItems });
+    }
+    return result;
   }
 }
 

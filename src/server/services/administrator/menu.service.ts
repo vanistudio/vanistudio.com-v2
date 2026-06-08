@@ -45,6 +45,10 @@ export class MenuService {
   ): Promise<void> {
     await menuRepository.updateMenuOrders(items);
   }
+
+  async getPublicMenus(): Promise<{ group: MenuGroup; items: Menu[] }[]> {
+    return await menuRepository.getPublicMenus();
+  }
 }
 
 export const menuService = new MenuService();

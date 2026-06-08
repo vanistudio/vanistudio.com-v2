@@ -127,4 +127,8 @@ export const menuRouter = router({
       );
       return { success: true };
     }),
+
+  getPublicMenus: publicProcedure.query(async () => {
+    return await menuService.getPublicMenus();
+  }),
 });
