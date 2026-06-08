@@ -13,6 +13,8 @@ import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyContent, EmptyMe
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
+import { IconPicker } from "@/components/vanixjnk/icon-picker";
 
 interface MenuGroup {
   id: string;
@@ -38,7 +40,6 @@ interface TreeItem extends Menu {
   children: TreeItem[];
 }
 
-// Helper functions for trees
 function buildTree(items: Menu[], parentId: string | null = null, depth = 0): TreeItem[] {
   return items
     .filter((item) => item.parentId === parentId)
@@ -135,7 +136,6 @@ function SmoothAccordion({ children, open }: { children: React.ReactNode; open: 
 }
 
 export default function AdminMenu() {
-  // Queries
   const { data: groups, refetch: refetchGroups, isLoading: loadingGroups } = trpc.administrator.menu.getGroups.useQuery();
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
 
@@ -147,12 +147,10 @@ export default function AdminMenu() {
   const [menuItems, setMenuItems] = useState<Menu[]>([]);
   const [collapsedIds, setCollapsedIds] = useState<Record<string, boolean>>({});
 
-  // Reset collapsed state when group changes
   useEffect(() => {
     setCollapsedIds({});
   }, [selectedGroupId]);
 
-  // Update local menu items when server data changes
   useEffect(() => {
     if (serverMenus) {
       setMenuItems(serverMenus);
@@ -161,14 +159,12 @@ export default function AdminMenu() {
     }
   }, [serverMenus]);
 
-  // Set default selected group
   useEffect(() => {
     if (groups && groups.length > 0 && !selectedGroupId) {
       setSelectedGroupId(groups[0].id);
     }
   }, [groups, selectedGroupId]);
 
-  // Mutations
   const createGroupMutation = trpc.administrator.menu.createGroup.useMutation();
   const updateGroupMutation = trpc.administrator.menu.updateGroup.useMutation();
   const deleteGroupMutation = trpc.administrator.menu.deleteGroup.useMutation();
@@ -178,12 +174,10 @@ export default function AdminMenu() {
   const deleteMenuMutation = trpc.administrator.menu.deleteMenu.useMutation();
   const updateOrderMutation = trpc.administrator.menu.updateOrder.useMutation();
 
-  // Dialog states for Group
   const [isGroupDialogOpen, setIsGroupDialogOpen] = useState(false);
   const [editingGroup, setEditingGroup] = useState<MenuGroup | null>(null);
   const [groupForm, setGroupForm] = useState({ name: "", key: "", description: "", isActive: true });
 
-  // Dialog states for Menu Item
   const [isMenuDialogOpen, setIsMenuDialogOpen] = useState(false);
   const [editingMenu, setEditingMenu] = useState<Menu | null>(null);
   const [menuForm, setMenuForm] = useState({
@@ -194,20 +188,16 @@ export default function AdminMenu() {
     isActive: true,
   });
 
-  // Delete confirmations
   const [deletingGroup, setDeletingGroup] = useState<MenuGroup | null>(null);
   const [deletingMenu, setDeletingMenu] = useState<Menu | null>(null);
 
-  // Drag and Drop States
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
   const [dragPosition, setDragPosition] = useState<"before" | "after" | "inside" | null>(null);
 
-  // Tree calculations
   const tree = buildTree(menuItems);
   const flatTree = flattenTree(tree);
 
-  // Group Handlers
   const handleOpenGroupDialog = (group: MenuGroup | null = null) => {
     if (group) {
       setEditingGroup(group);
@@ -260,7 +250,6 @@ export default function AdminMenu() {
     }
   };
 
-  // Menu Item Handlers
   const handleOpenMenuDialog = (menu: Menu | null = null) => {
     if (menu) {
       setEditingMenu(menu);
@@ -301,7 +290,6 @@ export default function AdminMenu() {
         });
         toast.success("Đã cập nhật menu thành công");
       } else {
-        // Calculate order: max order + 10
         const siblings = menuItems.filter((m) => m.parentId === payloadParentId);
         const maxOrder = siblings.length > 0 ? Math.max(...siblings.map((s) => s.order)) : 0;
         await createMenuMutation.mutateAsync({
@@ -334,7 +322,6 @@ export default function AdminMenu() {
     }
   };
 
-  // Drag and Drop Logic
   const handleDragStart = (e: React.DragEvent, id: string) => {
     setDraggedId(id);
     e.dataTransfer.effectAllowed = "move";
@@ -438,7 +425,6 @@ export default function AdminMenu() {
     }
   };
 
-  // Switch toggles
   const handleToggleGroupStatus = async (group: MenuGroup, checked: boolean) => {
     try {
       await updateGroupMutation.mutateAsync({
@@ -596,9 +582,8 @@ export default function AdminMenu() {
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col">
           <div className="grid grid-cols-1 lg:grid-cols-12 border-t border-b border-border/60 flex-1">
-            {/* Left Column: Menu Groups */}
             <div className="lg:col-span-4 p-6 border-b lg:border-b-0 lg:border-r border-border/60 flex flex-col gap-4">
-              <div className="pb-3 border-b border-border/60">
+              <div className="pb-3">
                 <h3 className="text-base font-bold text-foreground">Nhóm Menu</h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Chọn nhóm menu để quản lý các liên kết bên trong.
@@ -606,9 +591,23 @@ export default function AdminMenu() {
               </div>
               <div className="flex flex-col gap-1.5">
                 {loadingGroups ? (
-                  <div className="flex items-center justify-center py-12 text-muted-foreground gap-2">
-                    <Icon icon="solar:spinner-line-duotone" className="text-xl animate-spin text-vanixjnk" />
-                    <span className="text-sm font-semibold">Đang tải nhóm menu...</span>
+                  <div className="flex flex-col gap-1.5 animate-pulse">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div
+                        key={i}
+                        className="flex items-center justify-between p-3 rounded-lg border border-border/40 bg-background/40"
+                      >
+                        <div className="flex flex-col gap-1.5 min-w-0 flex-1">
+                          <Skeleton className="h-4 w-28 rounded" />
+                          <Skeleton className="h-3 w-16 rounded" />
+                        </div>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <Skeleton className="h-5 w-9 rounded-full" />
+                          <Skeleton className="size-7 rounded-md" />
+                          <Skeleton className="size-7 rounded-md" />
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 ) : !groups || groups.length === 0 ? (
                   <Empty className="py-8">
@@ -663,7 +662,7 @@ export default function AdminMenu() {
               </div>
             </div>
             <div className="lg:col-span-8 p-6 flex flex-col gap-4">
-              <div className="pb-3 border-b border-border/60 flex flex-row items-center justify-between gap-4">
+              <div className="pb-3 flex flex-row items-center justify-between gap-4">
                 <div>
                   <h3 className="text-base font-bold text-foreground">Cấu trúc Menu</h3>
                   <p className="text-xs text-muted-foreground mt-0.5">
@@ -678,15 +677,79 @@ export default function AdminMenu() {
                 )}
               </div>
               <div className="flex-1">
-                {!selectedGroupId ? (
+                {loadingGroups || (selectedGroupId && loadingMenus) ? (
+                  <div className="flex flex-col gap-1.5 min-h-[300px] animate-pulse">
+                    <div className="flex items-center justify-between p-3 rounded-lg border border-border/40 bg-background/40">
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                        <Skeleton className="h-5 w-5 rounded shrink-0" />
+                        <Skeleton className="size-6 rounded shrink-0" />
+                        <Skeleton className="size-8 rounded-lg shrink-0" />
+                        <div className="flex flex-col gap-1.5 min-w-0 flex-1">
+                          <Skeleton className="h-4 w-36 rounded" />
+                          <Skeleton className="h-3 w-24 rounded" />
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Skeleton className="h-5 w-9 rounded-full" />
+                        <Skeleton className="size-8 rounded-md" />
+                        <Skeleton className="size-8 rounded-md" />
+                      </div>
+                    </div>
+                    <div className="pl-6 border-l border-dashed border-border/70 flex flex-col gap-1.5 mt-0.5 ml-[36px]">
+                      <div className="flex items-center justify-between p-3 rounded-lg border border-border/40 bg-background/40">
+                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                          <Skeleton className="h-5 w-5 rounded shrink-0" />
+                          <Skeleton className="size-6 rounded shrink-0" />
+                          <Skeleton className="size-8 rounded-lg shrink-0" />
+                          <div className="flex flex-col gap-1.5 min-w-0 flex-1">
+                            <Skeleton className="h-4 w-32 rounded" />
+                            <Skeleton className="h-3 w-40 rounded" />
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <Skeleton className="h-5 w-9 rounded-full" />
+                          <Skeleton className="size-8 rounded-md" />
+                          <Skeleton className="size-8 rounded-md" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between p-3 rounded-lg border border-border/40 bg-background/40">
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                        <Skeleton className="h-5 w-5 rounded shrink-0" />
+                        <div className="size-6 shrink-0" />
+                        <Skeleton className="size-8 rounded-lg shrink-0" />
+                        <div className="flex flex-col gap-1.5 min-w-0 flex-1">
+                          <Skeleton className="h-4 w-28 rounded" />
+                          <Skeleton className="h-3 w-16 rounded" />
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Skeleton className="h-5 w-9 rounded-full" />
+                        <Skeleton className="size-8 rounded-md" />
+                        <Skeleton className="size-8 rounded-md" />
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between p-3 rounded-lg border border-border/40 bg-background/40">
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                        <Skeleton className="h-5 w-5 rounded shrink-0" />
+                        <div className="size-6 shrink-0" />
+                        <Skeleton className="size-8 rounded-lg shrink-0" />
+                        <div className="flex flex-col gap-1.5 min-w-0 flex-1">
+                          <Skeleton className="h-4 w-44 rounded" />
+                          <Skeleton className="h-3 w-32 rounded" />
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Skeleton className="h-5 w-9 rounded-full" />
+                        <Skeleton className="size-8 rounded-md" />
+                        <Skeleton className="size-8 rounded-md" />
+                      </div>
+                    </div>
+                  </div>
+                ) : !selectedGroupId ? (
                   <div className="flex flex-col items-center justify-center py-20 text-muted-foreground text-center">
                     <Icon icon="solar:info-circle-line-duotone" className="text-3xl text-muted-foreground/60 mb-2" />
                     <p className="text-sm font-semibold">Vui lòng chọn một nhóm menu bên trái để tiếp tục thiết lập</p>
-                  </div>
-                ) : loadingMenus ? (
-                  <div className="flex items-center justify-center py-20 text-muted-foreground gap-2">
-                    <Icon icon="solar:spinner-line-duotone" className="text-xl animate-spin text-vanixjnk" />
-                    <span className="text-sm font-semibold">Đang tải danh sách menu...</span>
                   </div>
                 ) : flatTree.length === 0 ? (
                   <Empty className="py-16">
@@ -710,8 +773,6 @@ export default function AdminMenu() {
           </div>
         </div>
       </div>
-
-      {/* Group Create/Edit Dialog */}
       <Dialog open={isGroupDialogOpen} onOpenChange={setIsGroupDialogOpen}>
         <DialogContent className="sm:max-w-[550px] max-h-[85vh] flex flex-col p-6">
           <DialogHeader className="pr-6">
@@ -780,8 +841,6 @@ export default function AdminMenu() {
           </form>
         </DialogContent>
       </Dialog>
-
-      {/* Menu Item Create/Edit Dialog */}
       <Dialog open={isMenuDialogOpen} onOpenChange={setIsMenuDialogOpen}>
         <DialogContent className="sm:max-w-[550px] max-h-[85vh] flex flex-col p-6">
           <DialogHeader className="pr-6">
@@ -818,14 +877,27 @@ export default function AdminMenu() {
                 <Input
                   id="menu-icon"
                   placeholder="Ví dụ: solar:home-2-line-duotone"
-                  value={menuForm.icon}
+                  value={menuForm.icon || ""}
                   onChange={(e) => setMenuForm({ ...menuForm, icon: e.target.value })}
                   className="font-mono text-xs w-full"
                 />
-                <div className="size-8 rounded-lg border bg-muted flex items-center justify-center text-muted-foreground shrink-0">
-                  <Icon icon={menuForm.icon || "solar:link-round-angle-line-duotone"} className="text-lg" />
-                </div>
+                <IconPicker
+                  value={menuForm.icon || ""}
+                  onChange={(val) => setMenuForm({ ...menuForm, icon: val })}
+                  trigger={
+                    <button
+                      type="button"
+                      title="Chọn biểu tượng"
+                      className="size-9 rounded-lg border bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/80 shrink-0 transition-colors cursor-pointer outline-none"
+                    >
+                      <Icon icon={menuForm.icon || "solar:link-round-angle-line-duotone"} className="text-lg" />
+                    </button>
+                  }
+                />
               </div>
+              <p className="text-[11px] text-muted-foreground/80 leading-normal">
+                Mẹo: Nhấp vào ô vuông bên cạnh để chọn nhanh icon có sẵn hoặc tìm kiếm trực tiếp trên Iconify. Hoặc tự nhập mã key (ví dụ: <code className="bg-muted px-1.5 py-0.5 rounded font-mono text-[10px] text-foreground">solar:home-2-line-duotone</code>).
+              </p>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="menu-parent">Liên kết cha</Label>
@@ -871,8 +943,6 @@ export default function AdminMenu() {
           </form>
         </DialogContent>
       </Dialog>
-
-      {/* Delete Group Confirmation Dialog */}
       <Dialog open={!!deletingGroup} onOpenChange={(open) => !open && setDeletingGroup(null)}>
         <DialogContent className="sm:max-w-[380px]">
           <DialogHeader>
@@ -894,8 +964,6 @@ export default function AdminMenu() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      {/* Delete Menu Item Confirmation Dialog */}
       <Dialog open={!!deletingMenu} onOpenChange={(open) => !open && setDeletingMenu(null)}>
         <DialogContent className="sm:max-w-[380px]">
           <DialogHeader>
