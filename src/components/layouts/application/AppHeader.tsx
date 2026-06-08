@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Icon } from "@iconify/react";
 import { useSetting } from "@/contexts/SettingContext";
 import { useTheme } from "next-themes";
@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 type NavItem = { name: string; href: string; icon: string };
 type NavGroup = { name: string; icon: string; children: NavItem[] };
@@ -167,6 +168,7 @@ function MobileAccordion({
 
 export default function AppHeader() {
   const pathname = usePathname();
+  const router = useRouter();
   const setting = useSetting();
   const { theme, setTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -295,7 +297,9 @@ export default function AppHeader() {
                     await signOut({
                       fetchOptions: {
                         onSuccess: () => {
-                          window.location.reload();
+                          toast.success("Đăng xuất thành công");
+                          router.push("/");
+                          router.refresh();
                         }
                       }
                     });

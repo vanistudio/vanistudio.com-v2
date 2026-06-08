@@ -26,6 +26,21 @@ export const auth = betterAuth({
       verification: schema.userVerification,
     },
   }),
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        defaultValue: "user",
+      },
+      banned: {
+        type: "boolean",
+        defaultValue: false,
+      },
+      banReason: {
+        type: "string",
+      },
+    },
+  },
   baseURL: getBaseUrl(),
   emailAndPassword: {
     enabled: true,
