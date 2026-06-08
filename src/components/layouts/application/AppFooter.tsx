@@ -152,8 +152,6 @@ export default function AppFooter() {
           </div>
         </div>
       </div>
-
-      {/* Decorative Diagonal Stripe Band */}
       <div 
         className="relative w-full border-t border-b border-dashed border-primary/20 overflow-hidden text-primary/20" 
         style={{ height: "36px" }}
@@ -165,7 +163,6 @@ export default function AppFooter() {
           }}
         />
       </div>
-
       <div className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-[11px] text-muted-foreground font-mono select-none">
