@@ -61,8 +61,10 @@ const buildMenuTree = (items: any[]): MenuItemNode[] => {
 
   items.forEach((item) => {
     const node = map[item.id];
-    if (item.parentId && map[item.parentId]) {
-      map[item.parentId].children.push(node);
+    if (item.parentId) {
+      if (map[item.parentId]) {
+        map[item.parentId].children.push(node);
+      }
     } else {
       roots.push(node);
     }

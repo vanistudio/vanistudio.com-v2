@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { trpc } from "@/lib/trpc";
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
@@ -85,6 +85,55 @@ function getParentOptions(flatItems: TreeItem[], currentId?: string): TreeItem[]
   });
 }
 
+function SmoothAccordion({ children, open }: { children: React.ReactNode; open: boolean }) {
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
+
+    if (open) {
+      el.style.display = "block";
+      el.style.overflow = "hidden";
+      const height = el.scrollHeight;
+      const anim = el.animate(
+        [
+          { opacity: 0, transform: "translateY(-8px)", maxHeight: "0px" },
+          { opacity: 1, transform: "translateY(0)", maxHeight: `${height}px` },
+        ],
+        { duration: 450, easing: "cubic-bezier(0.16,1,0.3,1)", fill: "forwards" }
+      );
+      anim.onfinish = () => {
+        el.style.opacity = "1";
+        el.style.transform = "none";
+        el.style.maxHeight = "none";
+        el.style.overflow = "visible";
+        anim.cancel();
+      };
+    } else {
+      el.style.overflow = "hidden";
+      const currentHeight = el.scrollHeight;
+      const anim = el.animate(
+        [
+          { opacity: 1, transform: "translateY(0)", maxHeight: `${currentHeight}px` },
+          { opacity: 0, transform: "translateY(-6px)", maxHeight: "0px" },
+        ],
+        { duration: 350, easing: "cubic-bezier(0.87,0,0.13,1)", fill: "forwards" }
+      );
+      anim.onfinish = () => {
+        el.style.display = "none";
+        anim.cancel();
+      };
+    }
+  }, [open]);
+
+  return (
+    <div ref={contentRef} className="hidden">
+      {children}
+    </div>
+  );
+}
+
 export default function AdminMenu() {
   // Queries
   const { data: groups, refetch: refetchGroups, isLoading: loadingGroups } = trpc.administrator.menu.getGroups.useQuery();
@@ -96,6 +145,12 @@ export default function AdminMenu() {
   );
 
   const [menuItems, setMenuItems] = useState<Menu[]>([]);
+  const [collapsedIds, setCollapsedIds] = useState<Record<string, boolean>>({});
+
+  // Reset collapsed state when group changes
+  useEffect(() => {
+    setCollapsedIds({});
+  }, [selectedGroupId]);
 
   // Update local menu items when server data changes
   useEffect(() => {
@@ -410,6 +465,102 @@ export default function AdminMenu() {
     }
   };
 
+  const renderNode = (node: TreeItem) => {
+    const isOver = dragOverId === node.id;
+    const isSelfDragged = draggedId === node.id;
+    const hasChildren = node.children && node.children.length > 0;
+    const isExpanded = !!collapsedIds[node.id];
+
+    return (
+      <div key={node.id} className="flex flex-col gap-1.5 w-full">
+        <div
+          draggable
+          onDragStart={(e) => handleDragStart(e, node.id)}
+          onDragOver={(e) => handleDragOver(e, node.id)}
+          onDragLeave={handleDragLeave}
+          onDragEnd={handleDragEnd}
+          onDrop={(e) => handleDrop(e, node.id)}
+          className={cn(
+            "group flex items-center justify-between p-3 rounded-lg border bg-background/60 hover:bg-muted/30 select-none transition-all duration-150 relative",
+            isSelfDragged && "opacity-40 border-dashed border-muted-foreground",
+            !isSelfDragged && "border-border",
+            isOver && dragPosition === "inside" && "bg-vanixjnk/15 border-vanixjnk/30 scale-[1.01]",
+            isOver && dragPosition === "before" && "border-t-2 border-t-vanixjnk/30",
+            isOver && dragPosition === "after" && "border-b-2 border-b-vanixjnk/30"
+          )}
+        >
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="cursor-grab active:cursor-grabbing text-muted-foreground/50 hover:text-foreground shrink-0 py-1 px-0.5">
+              <Icon icon="solar:reorder-line-duotone" className="text-lg" />
+            </div>
+
+            {hasChildren ? (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCollapsedIds((prev) => ({
+                    ...prev,
+                    [node.id]: !prev[node.id],
+                  }));
+                }}
+                className="size-6 rounded flex items-center justify-center hover:bg-muted text-muted-foreground hover:text-foreground shrink-0 transition-colors"
+              >
+                <Icon
+                  icon="solar:alt-arrow-down-line-duotone"
+                  className={cn("text-base transition-transform duration-200", !isExpanded && "-rotate-90")}
+                />
+              </button>
+            ) : (
+              <div className="size-6 shrink-0" />
+            )}
+
+            <div className="size-8 rounded-lg bg-muted flex items-center justify-center text-muted-foreground shrink-0 border border-border/40">
+              <Icon icon={node.icon || "solar:link-round-angle-line-duotone"} className="text-lg" />
+            </div>
+
+            <div className="flex flex-col min-w-0">
+              <span className="text-sm font-semibold text-foreground truncate">{node.name}</span>
+              <span className="text-[11px] text-muted-foreground font-mono truncate">
+                {node.url || "—"}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <Switch
+              checked={node.isActive}
+              onCheckedChange={(checked) => handleToggleMenuStatus(node, checked)}
+              className="scale-75"
+            />
+            <button
+              type="button"
+              onClick={() => handleOpenMenuDialog(node)}
+              className="size-8 rounded-md flex items-center justify-center hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Icon icon="solar:pen-line-duotone" className="text-base" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setDeletingMenu(node)}
+              className="size-8 rounded-md flex items-center justify-center hover:bg-red-500/10 text-muted-foreground hover:text-red-500 transition-colors"
+            >
+              <Icon icon="solar:trash-bin-trash-line-duotone" className="text-base" />
+            </button>
+          </div>
+        </div>
+
+        {hasChildren && (
+          <SmoothAccordion open={isExpanded}>
+            <div className="pl-6 border-l border-dashed border-border/70 flex flex-col gap-1.5 mt-1.5 ml-[36px]">
+              {node.children.map((child) => renderNode(child))}
+            </div>
+          </SmoothAccordion>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="flex flex-col w-full flex-1">
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -551,76 +702,7 @@ export default function AdminMenu() {
                   </Empty>
                 ) : (
                   <div className="flex flex-col gap-1.5 min-h-[300px]">
-                    {flatTree.map((item) => {
-                      const isOver = dragOverId === item.id;
-                      const isSelfDragged = draggedId === item.id;
-
-                      return (
-                        <div
-                          key={item.id}
-                          draggable
-                          onDragStart={(e) => handleDragStart(e, item.id)}
-                          onDragOver={(e) => handleDragOver(e, item.id)}
-                          onDragLeave={handleDragLeave}
-                          onDragEnd={handleDragEnd}
-                          onDrop={(e) => handleDrop(e, item.id)}
-                          className={cn(
-                            "group flex items-center justify-between p-3 rounded-lg border bg-background/60 hover:bg-muted/30 select-none transition-all duration-150 relative",
-                            isSelfDragged && "opacity-40 border-dashed border-muted-foreground",
-                            !isSelfDragged && "border-border",
-                            isOver && dragPosition === "inside" && "bg-vanixjnk/15 border-vanixjnk/30 scale-[1.01]",
-                            isOver && dragPosition === "before" && "border-t-2 border-t-vanixjnk/30",
-                            isOver && dragPosition === "after" && "border-b-2 border-b-vanixjnk/30"
-                          )}
-                          style={{
-                            marginLeft: `${item.depth * 28}px`,
-                          }}
-                        >
-                          {item.depth > 0 && (
-                            <div
-                              className="absolute top-0 bottom-0 left-[-16px] w-[1px] border-l border-dashed border-border/70"
-                              style={{ left: "-18px" }}
-                            />
-                          )}
-
-                          <div className="flex items-center gap-3 min-w-0">
-                            <div className="cursor-grab active:cursor-grabbing text-muted-foreground/50 hover:text-foreground shrink-0 py-1 px-0.5">
-                              <Icon icon="solar:reorder-line-duotone" className="text-lg" />
-                            </div>
-                            <div className="size-8 rounded-lg bg-muted flex items-center justify-center text-muted-foreground shrink-0 border border-border/40">
-                              <Icon icon={item.icon || "solar:link-round-angle-line-duotone"} className="text-lg" />
-                            </div>
-
-                            <div className="flex flex-col min-w-0">
-                              <span className="text-sm font-semibold text-foreground truncate">{item.name}</span>
-                              <span className="text-[11px] text-muted-foreground font-mono truncate">
-                                {item.url || "—"}
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-2 shrink-0">
-                            <Switch
-                              checked={item.isActive}
-                              onCheckedChange={(checked) => handleToggleMenuStatus(item, checked)}
-                              className="scale-75"
-                            />
-                            <button
-                              onClick={() => handleOpenMenuDialog(item)}
-                              className="size-8 rounded-md flex items-center justify-center hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-                            >
-                              <Icon icon="solar:pen-line-duotone" className="text-base" />
-                            </button>
-                            <button
-                              onClick={() => setDeletingMenu(item)}
-                              className="size-8 rounded-md flex items-center justify-center hover:bg-red-500/10 text-muted-foreground hover:text-red-500 transition-colors"
-                            >
-                              <Icon icon="solar:trash-bin-trash-line-duotone" className="text-base" />
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })}
+                    {tree.map((node) => renderNode(node))}
                   </div>
                 )}
               </div>
