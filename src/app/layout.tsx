@@ -15,6 +15,8 @@ import { db } from "@/server/db";
 import { settings } from "@/server/db/schemas/setting.schema";
 import { SettingProvider } from "@/contexts/SettingContext";
 import { UserProvider } from "@/contexts/UserContext";
+import { MenuProvider } from "@/contexts/MenuContext";
+import { menuRepository } from "@/server/repositories/administrator/menu.repository";
 import { getServerSession } from "@/lib/auth";
 
 const signika = Signika({
@@ -96,6 +98,13 @@ export default async function RootLayout({
 
   const { user: initialUser } = await getServerSession(true);
 
+  let initialMenus = [];
+  try {
+    const rawMenus = await menuRepository.getPublicMenus();
+    initialMenus = JSON.parse(JSON.stringify(rawMenus));
+  } catch (e) {
+  }
+
   const headersList = await headers();
   const host = headersList.get("host") || "localhost:3000";
   const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
@@ -137,21 +146,23 @@ export default async function RootLayout({
         <SettingProvider initialSetting={initialSetting}>
           <UserProvider initialUser={initialUser}>
             <TRPCProvider>
-              <ProgressProviders>
-                <ThemeProvider
-                  attribute="class"
-                  defaultTheme="system"
-                  enableSystem
-                  disableTransitionOnChange
-                >
-                  <NuqsAdapter>
-                    <TooltipProvider>
-                      <Toaster richColors position="top-center" visibleToasts={4} closeButton />
-                      {children}
-                    </TooltipProvider>
-                  </NuqsAdapter>
-                </ThemeProvider>
-              </ProgressProviders>
+              <MenuProvider initialMenus={initialMenus}>
+                <ProgressProviders>
+                  <ThemeProvider
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                    disableTransitionOnChange
+                  >
+                    <NuqsAdapter>
+                      <TooltipProvider>
+                        <Toaster richColors position="top-center" visibleToasts={4} closeButton />
+                        {children}
+                      </TooltipProvider>
+                    </NuqsAdapter>
+                  </ThemeProvider>
+                </ProgressProviders>
+              </MenuProvider>
             </TRPCProvider>
           </UserProvider>
         </SettingProvider>

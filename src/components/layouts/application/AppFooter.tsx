@@ -11,7 +11,7 @@ import { TIMEZONE_DATA } from "@/constants/timezones.constant";
 import { LANGUAGE_DATA } from "@/constants/languages.constant";
 import { CURRENCY_DATA } from "@/constants/currencies.constant";
 import { useTheme } from "next-themes";
-import { trpc } from "@/lib/trpc";
+import { useMenu } from "@/contexts/MenuContext";
 
 export default function AppFooter() {
   const setting = useSetting();
@@ -83,8 +83,8 @@ export default function AppFooter() {
     curr.name.toLowerCase().includes(currencySearch.toLowerCase())
   );
 
-  // Fetch public menus
-  const { data: publicMenus } = trpc.administrator.menu.getPublicMenus.useQuery();
+  // Fetch public menus from context
+  const { publicMenus } = useMenu();
 
   const intro = publicMenus?.find((g) => g.group.key === "intro");
   const services = publicMenus?.find((g) => g.group.key === "services");

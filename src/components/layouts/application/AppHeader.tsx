@@ -25,7 +25,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { trpc } from "@/lib/trpc";
+import { useMenu } from "@/contexts/MenuContext";
 
 type NavItem = { name: string; href: string; icon: string };
 type NavGroup = { name: string; icon: string; children: NavItem[] };
@@ -209,7 +209,7 @@ export default function AppHeader() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const user = useUser();
 
-  const { data: publicMenus } = trpc.administrator.menu.getPublicMenus.useQuery();
+  const { publicMenus } = useMenu();
   const headerGroup = publicMenus?.find((g) => g.group.key === "header");
   const headerItems = headerGroup ? buildMenuTree(headerGroup.items) : [];
 
