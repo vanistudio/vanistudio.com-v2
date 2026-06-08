@@ -33,21 +33,9 @@ type NavEntry = NavItem | NavGroup;
 const isGroup = (entry: NavEntry): entry is NavGroup => "children" in entry;
 
 const navEntries: NavEntry[] = [
-  { name: "Trang chủ", href: "/", icon: "solar:home-2-line-duotone" },
-  {
-    name: "Dịch vụ",
-    icon: "solar:server-square-line-duotone",
-    children: [
-      { name: "Thiết kế Website", href: "/services/website", icon: "solar:monitor-line-duotone" },
-      { name: "Lập trình di động", href: "/services/mobile", icon: "solar:smartphone-line-duotone" },
-      { name: "Chatbot AI", href: "/services/chatbot", icon: "solar:magic-stick-3-line-duotone" },
-      { name: "Thiết kế UI/UX", href: "/services/ui-ux", icon: "solar:palette-line-duotone" },
-    ],
-  },
-  { name: "Dự án", href: "/projects", icon: "solar:folder-open-line-duotone" },
-  { name: "Sản phẩm", href: "/products", icon: "solar:box-line-duotone" },
-  { name: "Tin tức", href: "/blog", icon: "solar:document-text-line-duotone" },
-  { name: "Liên hệ", href: "/contact", icon: "solar:letter-line-duotone" },
+  { name: "Tổng quan", href: "/adminPanel/dashboard", icon: "solar:widget-line-duotone" },
+  { name: "Quản lý Menu", href: "/adminPanel/menu", icon: "solar:menu-list-line-duotone" },
+  { name: "Xem Website", href: "/", icon: "solar:square-share-line-duotone" },
 ];
 
 function NavGroupPopover({ group, isLinkActive }: { group: NavGroup; isLinkActive: (href: string) => boolean }) {
