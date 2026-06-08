@@ -34,8 +34,37 @@ const isGroup = (entry: NavEntry): entry is NavGroup => "children" in entry;
 
 const navEntries: NavEntry[] = [
   { name: "Tổng quan", href: "/adminPanel/dashboard", icon: "solar:widget-line-duotone" },
-  { name: "Quản lý Menu", href: "/adminPanel/menu", icon: "solar:menu-list-line-duotone" },
-  { name: "Xem Website", href: "/", icon: "solar:square-share-line-duotone" },
+  {
+    name: "Nội dung",
+    icon: "solar:document-text-line-duotone",
+    children: [
+      { name: "Quản lý Blog", href: "/adminPanel/blog", icon: "solar:pen-2-line-duotone" },
+      { name: "Trang CMS", href: "/adminPanel/cms", icon: "solar:bookmark-line-duotone" },
+      { name: "Tài liệu API", href: "/adminPanel/docs", icon: "solar:document-line-duotone" },
+    ],
+  },
+  {
+    name: "Kinh doanh",
+    icon: "solar:bag-3-line-duotone",
+    children: [
+      { name: "Dịch vụ", href: "/adminPanel/services", icon: "solar:server-line-duotone" },
+      { name: "Sản phẩm", href: "/adminPanel/products", icon: "solar:cart-large-2-line-duotone" },
+      { name: "Dự án", href: "/adminPanel/projects", icon: "solar:rocket-line-duotone" },
+    ],
+  },
+  {
+    name: "Hệ thống",
+    icon: "solar:settings-minimalistic-line-duotone",
+    children: [
+      { name: "Quản lý Menu", href: "/adminPanel/menu", icon: "solar:menu-dots-square-line-duotone" },
+      { name: "Người dùng", href: "/adminPanel/users", icon: "solar:users-group-two-rounded-line-duotone" },
+      { name: "Quản lý ngôn ngữ", href: "/adminPanel/languages", icon: "solar:translation-line-duotone" },
+      { name: "Quản lý tiền tệ", href: "/adminPanel/currencies", icon: "solar:dollar-minimalistic-line-duotone" },
+      { name: "Gói mở rộng", href: "/adminPanel/extensions", icon: "solar:cpu-line-duotone" },
+      { name: "Quản lý bản quyền", href: "/adminPanel/license", icon: "solar:key-square-line-duotone" },
+      { name: "Cấu hình hệ thống", href: "/adminPanel/settings", icon: "solar:settings-minimalistic-line-duotone" },
+    ],
+  },
 ];
 
 function NavGroupPopover({ group, isLinkActive }: { group: NavGroup; isLinkActive: (href: string) => boolean }) {
@@ -241,6 +270,14 @@ export default function AdminHeader() {
         </nav>
 
         <div className="flex items-center gap-1.5 shrink-0 ml-auto">
+          <Link
+            href="/"
+            className="flex size-9 rounded-xl items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors outline-none"
+            title="Xem Website"
+          >
+            <Icon icon="solar:share-circle-line-duotone" className="text-xl" />
+          </Link>
+
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             className="flex size-9 rounded-xl items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors outline-none"
@@ -282,48 +319,6 @@ export default function AdminHeader() {
                     </div>
                   </div>
                 </DropdownMenuLabel>
-
-                {user.role === "admin" && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuGroup>
-                      <DropdownMenuLabel className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-muted-foreground/60">Hệ thống</DropdownMenuLabel>
-                      <DropdownMenuItem asChild className="cursor-pointer py-2 px-2.5 rounded-lg">
-                        <Link href="/adminPanel/dashboard" className="w-full flex items-center gap-2.5 text-sm">
-                          <Icon icon="solar:settings-line-duotone" className="text-lg text-primary" />
-                          <span className="font-semibold text-foreground">Trang quản trị</span>
-                        </Link>
-                      </DropdownMenuItem>
-                    </DropdownMenuGroup>
-                  </>
-                )}
-
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuLabel className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-muted-foreground/60">Tài khoản</DropdownMenuLabel>
-
-                  <DropdownMenuItem asChild className="cursor-pointer py-2 px-2.5 rounded-lg">
-                    <Link href="/profile" className="w-full flex items-center gap-2.5 text-sm">
-                      <Icon icon="solar:user-id-line-duotone" className="text-lg text-muted-foreground/80" />
-                      <span className="font-medium">Hồ sơ cá nhân</span>
-                    </Link>
-                  </DropdownMenuItem>
-
-                  <DropdownMenuItem asChild className="cursor-pointer py-2 px-2.5 rounded-lg mt-0.5">
-                    <Link href="/profile/security" className="w-full flex items-center gap-2.5 text-sm">
-                      <Icon icon="solar:shield-keyhole-line-duotone" className="text-lg text-muted-foreground/80" />
-                      <span className="font-medium">Bảo mật tài khoản</span>
-                    </Link>
-                  </DropdownMenuItem>
-
-                  <DropdownMenuItem asChild className="cursor-pointer py-2 px-2.5 rounded-lg mt-0.5">
-                    <Link href="/profile/history" className="w-full flex items-center gap-2.5 text-sm">
-                      <Icon icon="solar:history-line-duotone" className="text-lg text-muted-foreground/80" />
-                      <span className="font-medium">Lịch sử giao dịch</span>
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <DropdownMenuSub>
