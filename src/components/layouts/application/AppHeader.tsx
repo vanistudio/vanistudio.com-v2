@@ -17,6 +17,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuGroup,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -268,31 +272,98 @@ export default function AppHeader() {
                   </Avatar>
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 mt-1.5 p-1.5">
-                <DropdownMenuLabel className="flex flex-col gap-0.5 p-2.5">
-                  <span className="font-semibold text-foreground text-sm leading-none truncate">{user.name}</span>
-                  <span className="text-[11px] text-muted-foreground leading-none truncate">{user.email}</span>
+              <DropdownMenuContent align="end" className="w-64 mt-1.5 p-1.5">
+                <DropdownMenuLabel className="p-3">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="size-10 border border-primary/20">
+                      <AvatarFallback className="bg-primary/10 text-primary font-bold text-sm">
+                        {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col min-w-0">
+                      <span className="font-bold text-foreground text-[13px] leading-tight truncate">{user.name}</span>
+                      <span className="text-[11px] text-muted-foreground leading-normal truncate">{user.email}</span>
+                      <span className={cn(
+                        "mt-1.5 self-start px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wide uppercase border",
+                        user.role === "admin"
+                          ? "bg-purple-500/10 text-purple-600 border-purple-500/20 dark:text-purple-400 dark:bg-purple-500/20"
+                          : "bg-primary/5 text-primary border-primary/15"
+                      )}>
+                        {user.role === "admin" ? "Quản trị viên" : "Thành viên"}
+                      </span>
+                    </div>
+                  </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
                 
                 {user.role === "admin" && (
-                  <DropdownMenuItem asChild className="cursor-pointer py-2 px-2.5 rounded-lg">
-                    <Link href="/configuration" className="w-full flex items-center gap-2.5 text-sm">
-                      <Icon icon="solar:settings-line-duotone" className="text-lg text-muted-foreground" />
-                      <span>Cấu hình hệ thống</span>
-                    </Link>
-                  </DropdownMenuItem>
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      <DropdownMenuLabel className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-muted-foreground/60">Hệ thống</DropdownMenuLabel>
+                      <DropdownMenuItem asChild className="cursor-pointer py-2 px-2.5 rounded-lg">
+                        <Link href="/configuration" className="w-full flex items-center gap-2.5 text-sm">
+                          <Icon icon="solar:settings-line-duotone" className="text-lg text-primary" />
+                          <span className="font-semibold text-foreground">Cấu hình hệ thống</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                  </>
                 )}
 
-                <DropdownMenuItem asChild className="cursor-pointer py-2 px-2.5 rounded-lg mt-0.5">
-                  <Link href="/profile" className="w-full flex items-center gap-2.5 text-sm">
-                    <Icon icon="solar:user-id-line-duotone" className="text-lg text-muted-foreground" />
-                    <span>Hồ sơ cá nhân</span>
-                  </Link>
-                </DropdownMenuItem>
-                
                 <DropdownMenuSeparator />
-                <DropdownMenuItem 
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-muted-foreground/60">Tài khoản</DropdownMenuLabel>
+                  
+                  <DropdownMenuItem asChild className="cursor-pointer py-2 px-2.5 rounded-lg">
+                    <Link href="/profile" className="w-full flex items-center gap-2.5 text-sm">
+                      <Icon icon="solar:user-id-line-duotone" className="text-lg text-muted-foreground/80" />
+                      <span className="font-medium">Hồ sơ cá nhân</span>
+                    </Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem asChild className="cursor-pointer py-2 px-2.5 rounded-lg mt-0.5">
+                    <Link href="/profile/security" className="w-full flex items-center gap-2.5 text-sm">
+                      <Icon icon="solar:shield-keyhole-line-duotone" className="text-lg text-muted-foreground/80" />
+                      <span className="font-medium">Bảo mật tài khoản</span>
+                    </Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem asChild className="cursor-pointer py-2 px-2.5 rounded-lg mt-0.5">
+                    <Link href="/profile/history" className="w-full flex items-center gap-2.5 text-sm">
+                      <Icon icon="solar:history-line-duotone" className="text-lg text-muted-foreground/80" />
+                      <span className="font-medium">Lịch sử giao dịch</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger className="cursor-pointer py-2 px-2.5 rounded-lg">
+                      <div className="flex items-center gap-2.5 text-sm w-full">
+                        <Icon icon="solar:palette-line-duotone" className="text-lg text-muted-foreground/80" />
+                        <span className="font-medium">Giao diện</span>
+                      </div>
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent className="w-36 p-1">
+                      <DropdownMenuItem onClick={() => setTheme("light")} className="cursor-pointer py-2 px-2.5 rounded-md text-xs font-semibold">
+                        <Icon icon="solar:sun-line-duotone" className="text-base mr-2" />
+                        Sáng
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setTheme("dark")} className="cursor-pointer py-2 px-2.5 rounded-md text-xs font-semibold">
+                        <Icon icon="solar:moon-line-duotone" className="text-base mr-2" />
+                        Tối
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setTheme("system")} className="cursor-pointer py-2 px-2.5 rounded-md text-xs font-semibold">
+                        <Icon icon="solar:monitor-line-duotone" className="text-base mr-2" />
+                        Hệ thống
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                </DropdownMenuGroup>
+
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
                   onClick={async () => {
                     await signOut({
                       fetchOptions: {
@@ -304,11 +375,11 @@ export default function AppHeader() {
                       }
                     });
                   }}
-                  variant="destructive"
+                  variant="danger"
                   className="flex items-center gap-2.5 cursor-pointer py-2 px-2.5 rounded-lg text-sm focus:bg-destructive/10"
                 >
                   <Icon icon="solar:logout-line-duotone" className="text-lg" />
-                  <span>Đăng xuất</span>
+                  <span className="font-bold">Đăng xuất</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
