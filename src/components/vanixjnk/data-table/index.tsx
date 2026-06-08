@@ -121,7 +121,7 @@ export function DataTable<TData, TValue>({
           <Table className="w-full min-w-max ">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id} className="border-border bg-card hover:bg-card/80">
+                <TableRow key={headerGroup.id} className="border-border bg-background/60 hover:bg-background/80">
                   {headerGroup.headers.map((header) => {
                     return (
                       <TableHead 
@@ -147,7 +147,7 @@ export function DataTable<TData, TValue>({
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
-                    className="border-border bg-card hover:bg-card/80 transition-none group/row"
+                    className="border-border bg-background/60 hover:bg-background/80 transition-none group/row"
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell 
