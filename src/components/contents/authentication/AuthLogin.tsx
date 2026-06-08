@@ -2,8 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Icon } from "@iconify/react";
+import { toast } from "sonner";
+import { trpc } from "@/lib/trpc";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,8 +16,11 @@ import { useSetting } from "@/contexts/SettingContext";
 
 export default function AuthLogin() {
     const setting = useSetting();
+    const router = useRouter();
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
+    const [identity, setIdentity] = useState("");
+    const [password, setPassword] = useState("");
 
     useEffect(() => {
         setMounted(true);
@@ -22,6 +28,22 @@ export default function AuthLogin() {
 
     const toggleTheme = () => {
         setTheme(theme === "dark" ? "light" : "dark");
+    };
+
+    const loginMutation = trpc.authentication.login.useMutation({
+        onSuccess: () => {
+            toast.success("Đăng nhập thành công!");
+            router.push("/");
+            router.refresh();
+        },
+        onError: (err) => {
+            toast.error(err.message || "Đăng nhập thất bại");
+        },
+    });
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        loginMutation.mutate({ identity, password });
     };
 
     return (
@@ -70,7 +92,7 @@ export default function AuthLogin() {
                         <CardTitle className="text-2xl">Đăng nhập tài khoản</CardTitle>
                         <CardDescription>Chào mừng trở lại! Vui lòng nhập thông tin đăng nhập</CardDescription>
                     </CardHeader>
-                    <form onSubmit={(e) => e.preventDefault()}>
+                    <form onSubmit={handleSubmit}>
                         <CardContent className="space-y-4">
                             <div className="space-y-1.5">
                                 <Label htmlFor="identity">Email hoặc Tên tài khoản</Label>
@@ -81,9 +103,12 @@ export default function AuthLogin() {
                                     <Input
                                         id="identity"
                                         type="text"
+                                        value={identity}
+                                        onChange={(e) => setIdentity(e.target.value)}
                                         placeholder="name@example.com hoặc username"
                                         className="pl-10 h-10 rounded-xl"
                                         required
+                                        disabled={loginMutation.isPending}
                                     />
                                 </div>
                             </div>
@@ -96,15 +121,18 @@ export default function AuthLogin() {
                                     <Input
                                         id="password"
                                         type="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
                                         placeholder="••••••••"
                                         className="pl-10 h-10 rounded-xl"
                                         required
+                                        disabled={loginMutation.isPending}
                                     />
                                 </div>
                             </div>
                             <div className="flex items-center justify-between pt-1">
                                 <div className="flex items-center gap-2">
-                                    <Checkbox id="remember" />
+                                    <Checkbox id="remember" disabled={loginMutation.isPending} />
                                     <Label
                                         htmlFor="remember"
                                         className="text-xs text-muted-foreground cursor-pointer select-none"
@@ -124,8 +152,13 @@ export default function AuthLogin() {
                                 type="submit"
                                 variant="vanixjnk"
                                 className="w-full h-10 rounded-xl text-sm font-semibold cursor-pointer mt-2"
+                                disabled={loginMutation.isPending}
                             >
-                                <span>Đăng nhập</span>
+                                {loginMutation.isPending ? (
+                                    <Icon icon="solar:spinner-line-duotone" className="size-5 animate-spin mx-auto" />
+                                ) : (
+                                    <span>Đăng nhập</span>
+                                )}
                             </Button>
                             <div className="relative flex py-1 items-center">
                                 <div className="flex-grow border-t border-border/60"></div>
@@ -133,11 +166,11 @@ export default function AuthLogin() {
                                 <div className="flex-grow border-t border-border/60"></div>
                             </div>
                             <div className="grid grid-cols-2 gap-3 pb-1">
-                                <Button id="login-google" variant="outline" className="w-full h-10 rounded-xl cursor-pointer gap-2">
+                                <Button id="login-google" variant="outline" className="w-full h-10 rounded-xl cursor-pointer gap-2" disabled={loginMutation.isPending}>
                                     <Icon icon="logos:google-icon" className="text-base" />
                                     <span className="text-xs font-semibold">Google</span>
                                 </Button>
-                                <Button id="login-github" variant="outline" className="w-full h-10 rounded-xl cursor-pointer gap-2">
+                                <Button id="login-github" variant="outline" className="w-full h-10 rounded-xl cursor-pointer gap-2" disabled={loginMutation.isPending}>
                                     <Icon icon="logos:github-icon" className="text-base dark:invert" />
                                     <span className="text-xs font-semibold">GitHub</span>
                                 </Button>
