@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,138 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import QRCode from "qrcode";
+import Image from "next/image";
+
+interface CustomQRCodeProps {
+  value: string;
+  size?: number;
+  color?: string;
+  backgroundColor?: string;
+  logoUrl?: string;
+  logoSize?: number;
+  status?: string;
+}
+
+export function CustomQRCode({
+  value,
+  size = 200,
+  color = "#000000",
+  backgroundColor = "#ffffff",
+  logoUrl,
+  logoSize = 40,
+  status = "pending"
+}: CustomQRCodeProps) {
+  const qrData = useMemo(() => {
+    try {
+      return QRCode.create(value, {
+        errorCorrectionLevel: "H",
+      });
+    } catch (e) {
+      console.error("QR Generation Error", e);
+      return null;
+    }
+  }, [value]);
+
+  if (!qrData) return null;
+
+  const { modules } = qrData;
+  const matrixSize = modules.size;
+  const data = modules.data;
+  const logoRatio = logoSize / size;
+  const logoMatrixSize = Math.floor(matrixSize * logoRatio);
+  const center = matrixSize / 2;
+  const startExclusion = Math.floor(center - logoMatrixSize / 2);
+  const endExclusion = Math.ceil(center + logoMatrixSize / 2);
+
+  const renderModules = () => {
+    const ops = [];
+    for (let row = 0; row < matrixSize; row++) {
+      for (let col = 0; col < matrixSize; col++) {
+        if (!data[row * matrixSize + col]) continue;
+        if (logoUrl) {
+          if (row >= startExclusion && row < endExclusion && col >= startExclusion && col < endExclusion) {
+            continue;
+          }
+        }
+
+        const isFinder = (
+          (row < 7 && col < 7) ||
+          (row < 7 && col >= matrixSize - 7) ||
+          (row >= matrixSize - 7 && col < 7)
+        );
+
+        if (isFinder) {
+          ops.push(
+            <rect
+              key={`m-${row}-${col}`}
+              x={col}
+              y={row}
+              width={1}
+              height={1}
+              fill={color}
+              rx={0.25}
+            />
+          );
+        } else {
+          ops.push(
+            <circle
+              key={`m-${row}-${col}`}
+              cx={col + 0.5}
+              cy={row + 0.5}
+              r={0.4}
+              fill={color}
+            />
+          );
+        }
+      }
+    }
+    return ops;
+  };
+
+  return (
+    <div
+      className="relative overflow-hidden group"
+      style={{
+        width: size,
+        height: size,
+        background: backgroundColor,
+        padding: size * 0.02,
+        borderRadius: size * 0.08
+      }}
+    >
+      <div className="relative z-10 w-full h-full">
+        <svg
+          width="100%"
+          height="100%"
+          viewBox={`0 0 ${matrixSize} ${matrixSize}`}
+          style={{ display: "block" }}
+        >
+          {renderModules()}
+        </svg>
+      </div>
+
+      {logoUrl && (
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-md flex items-center justify-center shadow-lg border border-gray-100 z-30"
+          style={{ width: logoSize + 8, height: logoSize + 8 }}
+        >
+          <div className="relative overflow-hidden rounded-sm" style={{ width: logoSize, height: logoSize }}>
+            <Image
+              src={logoUrl}
+              alt="Logo"
+              fill
+              className="object-contain"
+              priority
+              unoptimized
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface SavedKey {
   id: string;
@@ -23,7 +155,6 @@ interface SavedKey {
   account?: string;
 }
 
-// Client-side Base32 Decoding
 function decodeBase32(base32: string): Uint8Array {
   const base32chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
   const clean = base32.replace(/=+$/, "").replace(/[\s-]/g, "").toUpperCase();
@@ -37,7 +168,7 @@ function decodeBase32(base32: string): Uint8Array {
     const c = clean[i];
     const idx = base32chars.indexOf(c);
     if (idx === -1) {
-      return new Uint8Array(0); // Invalid characters, return empty
+      return new Uint8Array(0);
     }
     val = (val << 5) | idx;
     bits += 5;
@@ -49,7 +180,6 @@ function decodeBase32(base32: string): Uint8Array {
   return out.subarray(0, index);
 }
 
-// Client-side TOTP calculation (Web Crypto API)
 async function generateClientTOTP(secretBase32: string, timeOffset = 0): Promise<string> {
   try {
     const secretBytes = decodeBase32(secretBase32);
@@ -89,7 +219,6 @@ async function generateClientTOTP(secretBase32: string, timeOffset = 0): Promise
   }
 }
 
-// Generate random Base32 Secret Key (Client-side)
 function generateRandomBase32Secret(length = 16): string {
   const base32chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
   let secret = "";
@@ -110,19 +239,16 @@ function generateRandomBase32Secret(length = 16): string {
 export default function PubTwoFactor() {
   const [activeTab, setActiveTab] = useState<"generator" | "verifier" | "guide">("generator");
 
-  // Generator State
   const [secretKey, setSecretKey] = useState("");
   const [issuer, setIssuer] = useState("VaniStudio");
   const [account, setAccount] = useState("");
   const [saveLabel, setSaveLabel] = useState("");
   const [savedKeys, setSavedKeys] = useState<SavedKey[]>([]);
 
-  // Generated TOTP values
   const [token, setToken] = useState("");
   const [timeLeft, setTimeLeft] = useState(30);
   const [copied, setCopied] = useState(false);
 
-  // Verifier State
   const [verifySecret, setVerifySecret] = useState("");
   const [verifyOtp, setVerifyOtp] = useState("");
   const [verifyResult, setVerifyResult] = useState<{
@@ -130,10 +256,11 @@ export default function PubTwoFactor() {
     message: string;
   }>({ status: "idle", message: "" });
 
-  // System Time State (for Drift check)
   const [systemTime, setSystemTime] = useState("");
 
-  // Load Saved Keys on mount
+  const [isClearAllDialogOpen, setIsClearAllDialogOpen] = useState(false);
+  const [deletingKeyId, setDeletingKeyId] = useState<string | null>(null);
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const raw = localStorage.getItem("vani_2fa_keys");
@@ -141,13 +268,11 @@ export default function PubTwoFactor() {
         try {
           setSavedKeys(JSON.parse(raw));
         } catch {
-          // ignore
         }
       }
     }
   }, []);
 
-  // Update Clock / Time Left & Generated Tokens
   useEffect(() => {
     let active = true;
 
@@ -183,7 +308,6 @@ export default function PubTwoFactor() {
     };
   }, [secretKey]);
 
-  // Copy code to Clipboard
   const copyToClipboard = () => {
     if (!token) return;
     navigator.clipboard.writeText(token);
@@ -192,7 +316,6 @@ export default function PubTwoFactor() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Save Key to LocalStorage
   const handleSaveKey = () => {
     if (!secretKey || !saveLabel.trim()) return;
 
@@ -211,7 +334,6 @@ export default function PubTwoFactor() {
     toast.success(`Đã lưu cấu hình "${newKey.label}"`);
   };
 
-  // Delete key from LocalStorage
   const handleDeleteKey = (id: string) => {
     const updated = savedKeys.filter((k) => k.id !== id);
     setSavedKeys(updated);
@@ -219,7 +341,6 @@ export default function PubTwoFactor() {
     toast.success("Đã xóa khóa khỏi thiết bị");
   };
 
-  // Verify manual OTP
   const handleVerify = async () => {
     if (!verifySecret) {
       toast.error("Vui lòng nhập khóa bí mật!");
@@ -231,7 +352,6 @@ export default function PubTwoFactor() {
     }
 
     let isValid = false;
-    // Check tolerance range [-1, 0, 1] for 30s network skew
     for (let offset = -1; offset <= 1; offset++) {
       const computed = await generateClientTOTP(verifySecret, offset);
       if (computed && computed === verifyOtp) {
@@ -255,7 +375,6 @@ export default function PubTwoFactor() {
     }
   };
 
-  // Generate OTP Auth URI
   const otpAuthUri = secretKey
     ? `otpauth://totp/${encodeURIComponent(issuer || "VaniStudio")}:${encodeURIComponent(
         account || "user"
@@ -295,11 +414,11 @@ export default function PubTwoFactor() {
       </div>
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col p-6 gap-6">
-          <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-xl bg-muted/20 border border-border/60 self-start">
+          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-muted/20 border border-border/60 w-full overflow-x-auto sm:w-auto sm:self-start whitespace-nowrap scrollbar-none">
             <button
               onClick={() => setActiveTab("generator")}
               className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200",
+                "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 shrink-0",
                 activeTab === "generator"
                   ? "bg-vanixjnk/15 border border-vanixjnk/25 text-vanixjnk shadow-sm"
                   : "border border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
@@ -311,7 +430,7 @@ export default function PubTwoFactor() {
             <button
               onClick={() => setActiveTab("verifier")}
               className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200",
+                "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 shrink-0",
                 activeTab === "verifier"
                   ? "bg-vanixjnk/15 border border-vanixjnk/25 text-vanixjnk shadow-sm"
                   : "border border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
@@ -323,7 +442,7 @@ export default function PubTwoFactor() {
             <button
               onClick={() => setActiveTab("guide")}
               className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200",
+                "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 shrink-0",
                 activeTab === "guide"
                   ? "bg-vanixjnk/15 border border-vanixjnk/25 text-vanixjnk shadow-sm"
                   : "border border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
@@ -415,13 +534,14 @@ export default function PubTwoFactor() {
                   </div>
                   {otpAuthUri && (
                     <div className="flex flex-col items-center justify-center p-4 rounded-xl border border-border bg-muted/20 gap-3 mt-2">
-                      <div className="bg-white p-3 rounded-xl shadow-sm border border-border">
-                        <img
-                          src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
-                            otpAuthUri
-                          )}`}
-                          alt="2FA QR Code"
-                          className="size-36 select-none"
+                      <div className="bg-white p-3 rounded-2xl shadow-sm border border-border">
+                        <CustomQRCode
+                          value={otpAuthUri}
+                          size={150}
+                          color="#0f172a"
+                          backgroundColor="#ffffff"
+                          logoUrl="/vani-1.png"
+                          logoSize={32}
                         />
                       </div>
                       <span className="text-[10px] font-medium text-muted-foreground text-center max-w-[280px] leading-relaxed">
@@ -539,13 +659,7 @@ export default function PubTwoFactor() {
                     </div>
                     {savedKeys.length > 0 && (
                       <button
-                        onClick={() => {
-                          if (confirm("Bạn có chắc chắn muốn xóa toàn bộ các khóa đã lưu?")) {
-                            setSavedKeys([]);
-                            localStorage.removeItem("vani_2fa_keys");
-                            toast.success("Đã xóa danh sách");
-                          }
-                        }}
+                        onClick={() => setIsClearAllDialogOpen(true)}
                         className="text-xs text-rose-500 hover:underline font-bold"
                       >
                         Xóa tất cả
@@ -611,7 +725,7 @@ export default function PubTwoFactor() {
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleDeleteKey(keyItem.id);
+                                  setDeletingKeyId(keyItem.id);
                                 }}
                                 className="p-1 rounded text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
                                 title="Xóa khóa này"
@@ -778,9 +892,72 @@ export default function PubTwoFactor() {
 
             </div>
           )}
-
         </div>
       </div>
+
+      <Dialog open={isClearAllDialogOpen} onOpenChange={setIsClearAllDialogOpen}>
+        <DialogContent className="sm:max-w-[380px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-500">
+              <Icon icon="solar:danger-triangle-line-duotone" className="text-xl" />
+              <span>Xác nhận xóa toàn bộ khóa</span>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-2 text-sm text-muted-foreground">
+            Hành động này sẽ xóa vĩnh viễn toàn bộ danh sách khóa bí mật đã lưu trên thiết bị này. Bạn có chắc chắn muốn tiếp tục?
+          </div>
+          <DialogFooter className="pt-2">
+            <Button variant="outline" onClick={() => setIsClearAllDialogOpen(false)}>
+              Hủy
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() => {
+                setSavedKeys([]);
+                localStorage.removeItem("vani_2fa_keys");
+                setIsClearAllDialogOpen(false);
+                toast.success("Đã xóa toàn bộ danh sách khóa");
+              }}
+            >
+              Xác nhận xóa
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!deletingKeyId} onOpenChange={(open) => !open && setDeletingKeyId(null)}>
+        <DialogContent className="sm:max-w-[380px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-500">
+              <Icon icon="solar:danger-triangle-line-duotone" className="text-xl" />
+              <span>Xác nhận xóa khóa bí mật</span>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-2 text-sm text-muted-foreground">
+            Hành động này sẽ xóa vĩnh viễn khóa bí mật{" "}
+            <strong className="text-foreground">
+              &quot;{savedKeys.find((k) => k.id === deletingKeyId)?.label}&quot;
+            </strong>{" "}
+            khỏi thiết bị. Bạn có chắc chắn muốn tiếp tục?
+          </div>
+          <DialogFooter className="pt-2">
+            <Button variant="outline" onClick={() => setDeletingKeyId(null)}>
+              Hủy
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() => {
+                if (deletingKeyId) {
+                  handleDeleteKey(deletingKeyId);
+                  setDeletingKeyId(null);
+                }
+              }}
+            >
+              Xác nhận xóa
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
