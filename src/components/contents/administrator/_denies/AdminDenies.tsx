@@ -53,13 +53,11 @@ export default function AdminDenies() {
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [sorting, setSorting] = useState<SortingState>([]);
 
-  // Dialog & Sheet States
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [sheetMode, setSheetMode] = useState<"add" | "edit">("add");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
-  // Form State (No advanced fields, whoBanned/geo coordinates are automatic now!)
   const [ip, setIp] = useState("");
   const [reason, setReason] = useState("");
   const [expireType, setExpireType] = useState<"permanent" | "1day" | "7days" | "30days" | "custom">("permanent");

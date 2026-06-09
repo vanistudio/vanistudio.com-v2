@@ -83,7 +83,6 @@ export default function AppFooter() {
     curr.name.toLowerCase().includes(currencySearch.toLowerCase())
   );
 
-  // Fetch public menus from context
   const { publicMenus } = useMenu();
 
   const intro = publicMenus?.find((g) => g.group.key === "intro");

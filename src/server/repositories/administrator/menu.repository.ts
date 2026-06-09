@@ -76,7 +76,7 @@ export class MenuRepository {
 
   async seedDefaultMenus(): Promise<void> {
     const existingGroups = await db.select().from(menuGroups).limit(1);
-    if (existingGroups.length > 0) return; // already seeded
+    if (existingGroups.length > 0) return;
 
     await db.transaction(async (tx) => {
       for (const group of DEFAULT_MENU_GROUPS) {

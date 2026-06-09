@@ -283,7 +283,6 @@ export function getHttpInfo(domain: string): Promise<HttpInfo> {
 
     const start = Date.now();
     
-    // Try HTTPS HEAD check
     const req = https.request({
       method: "HEAD",
       hostname: hostname,
@@ -308,7 +307,6 @@ export function getHttpInfo(domain: string): Promise<HttpInfo> {
     });
 
     req.on("error", () => {
-      // Fallback HTTP
       const httpReq = http.request({
         method: "HEAD",
         hostname: hostname,

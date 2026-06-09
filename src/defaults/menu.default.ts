@@ -36,7 +36,6 @@ export const DEFAULT_MENU_GROUPS: DefaultMenuGroup[] = [
           { name: "Kiểm tra Domain", url: "/tools/check-domain", icon: "solar:global-line-duotone", order: 4 },
           { name: "Kiểm tra Bản quyền", url: "/tools/check-license", icon: "solar:verified-check-line-duotone", order: 5 },
           { name: "Tạo mã QR", url: "/tools/qr-generator", icon: "solar:qr-code-line-duotone", order: 6 },
-          { name: "Phân tích SEO", url: "/tools/seo-audit", icon: "solar:ranking-line-duotone", order: 7 },
         ],
       },
       {
