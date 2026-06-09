@@ -83,6 +83,20 @@ export default function StorageConfig({
     });
   };
 
+  const handleTigrisChange = (key: string, value: string) => {
+    const tigris = config.siteTigris || {
+      siteAccessKeyId: "",
+      siteSecretAccessKey: "",
+      siteBucketName: "",
+    };
+    onConfigChange({
+      siteTigris: {
+        ...tigris,
+        [key]: value,
+      },
+    });
+  };
+
   return (
     <div className="flex flex-col gap-10">
       <div className="flex flex-col gap-4">
@@ -97,7 +111,7 @@ export default function StorageConfig({
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-border/50">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-4 border-t border-border/50">
           <button
             onClick={() => onConfigChange({ siteActiveStorage: "local" })}
             className={`flex items-center gap-3 px-5 py-4 rounded-xl border transition-all ${activeStorage === "local" ? "border-vanixjnk bg-vanixjnk/10 shadow-sm text-vanixjnk ring-1 ring-vanixjnk/25" : "border-border bg-muted/20 text-muted-foreground hover:bg-muted/50"}`}
@@ -128,6 +142,17 @@ export default function StorageConfig({
             <div className="flex flex-col items-start gap-1">
               <span className="text-sm font-bold text-foreground">Cloudflare R2</span>
               <span className="text-[11px] font-medium leading-tight text-left">Lưu trữ Object mạnh mẽ, CDN toàn cầu</span>
+            </div>
+          </button>
+
+          <button
+            onClick={() => onConfigChange({ siteActiveStorage: "tigris" })}
+            className={`flex items-center gap-3 px-5 py-4 rounded-xl border transition-all ${activeStorage === "tigris" ? "border-[#FF7034] bg-[#FF7034]/10 shadow-sm text-[#FF7034] ring-1 ring-[#FF7034]/30" : "border-border bg-muted/20 text-muted-foreground hover:bg-muted/50"}`}
+          >
+            <Icon icon="solar:box-minimalistic-line-duotone" className="w-8 h-8 text-[#FF7034]" />
+            <div className="flex flex-col items-start gap-1">
+              <span className="text-sm font-bold text-foreground">Tigris Storage</span>
+              <span className="text-[11px] font-medium leading-tight text-left">Object Storage phân tán không máy chủ</span>
             </div>
           </button>
         </div>
@@ -174,6 +199,20 @@ export default function StorageConfig({
                 className="bg-background h-9 shadow-sm text-[13px]"
                 placeholder="Nhập khóa bí mật API (Secret Key)..."
               />
+            </div>
+
+            <div className="flex gap-3 p-4 rounded-xl bg-blue-500/5 border border-blue-500/15 md:col-span-2">
+              <Icon icon="solar:info-circle-line-duotone" className="size-5 text-blue-500 shrink-0 mt-0.5" />
+              <div className="flex flex-col gap-1.5 text-[12px] text-muted-foreground leading-relaxed">
+                <p className="font-bold text-foreground text-[13px]">Hướng dẫn lấy thông tin Cloudinary:</p>
+                <ol className="list-decimal list-inside space-y-1 pl-1">
+                  <li>Đăng nhập vào <a href="https://cloudinary.com" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline font-semibold">Cloudinary Console</a> (hoặc đăng ký tài khoản miễn phí).</li>
+                  <li>Tại màn hình <strong>Dashboard</strong> chính, tìm mục <strong>Product Environment Credentials</strong>.</li>
+                  <li>Sao chép <strong>Cloud name</strong> điền vào ô *Tên Tài khoản*.</li>
+                  <li>Sao chép <strong>API Key</strong> điền vào ô *Mã API Key*.</li>
+                  <li>Nhấp vào nút hiển thị (mắt) bên cạnh <strong>API Secret</strong> để hiện mã bảo mật và sao chép điền vào ô *API Secret Bí mật*.</li>
+                </ol>
+              </div>
             </div>
           </div>
         </div>
@@ -238,6 +277,83 @@ export default function StorageConfig({
                 className="bg-background h-9 shadow-sm text-[13px]"
                 placeholder="Nhập tên miền tùy chỉnh gán với Bucket (VD: https://cdn.domain)..."
               />
+            </div>
+
+            <div className="flex gap-3 p-4 rounded-xl bg-orange-500/5 border border-orange-500/15 md:col-span-2">
+              <Icon icon="solar:info-circle-line-duotone" className="size-5 text-[#f38020] shrink-0 mt-0.5" />
+              <div className="flex flex-col gap-1.5 text-[12px] text-muted-foreground leading-relaxed">
+                <p className="font-bold text-foreground text-[13px]">Hướng dẫn lấy cấu hình Cloudflare R2:</p>
+                <ol className="list-decimal list-inside space-y-1 pl-1">
+                  <li>Đăng nhập vào <a href="https://dash.cloudflare.com" target="_blank" rel="noopener noreferrer" className="text-[#f38020] hover:underline font-semibold">Cloudflare Dashboard</a>.</li>
+                  <li>Chọn <strong>R2 Object Storage</strong> ở menu bên trái.</li>
+                  <li><strong>Tạo Bucket</strong>: Chọn <strong>Create Bucket</strong>, nhập tên bất kỳ và điền vào ô *Tên Bucket*.</li>
+                  <li><strong>Lấy Account ID</strong>: Quay lại trang R2 chính, copy mã <strong>Account ID</strong> ở cột bên phải.</li>
+                  <li><strong>Tạo Access Key</strong>: Nhấp vào <strong>Manage R2 API Tokens</strong> → <strong>Create API Token</strong>.</li>
+                  <li>Đặt tên token, chọn quyền <strong>Edit</strong> (hoặc Read/Write), kéo xuống nhấn <strong>Create API Token</strong>.</li>
+                  <li>Sao chép <strong>Access Key ID</strong> và <strong>Secret Access Key</strong> điền tương ứng vào form bên trên.</li>
+                  <li><strong>Public CNAME URL</strong>: Để ảnh hiển thị công khai, vào mục <strong>Settings</strong> của Bucket → <strong>Public Access</strong> → cấu hình domain tùy chỉnh (Custom Domain) hoặc bật <strong>R2.dev Subdomain</strong>.</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeStorage === "tigris" && (
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between pb-2">
+            <div className="flex items-center gap-3.5">
+              <div className="size-11 rounded-xl bg-[#FF7034]/10 text-[#FF7034] flex items-center justify-center shrink-0">
+                <Icon icon="solar:server-square-line-duotone" className="size-6" />
+              </div>
+              <div className="flex flex-col gap-1">
+                <h3 className="font-bold text-base text-foreground leading-none">Cấu hình Tigris Storage</h3>
+                <p className="text-[13px] text-muted-foreground font-medium">Điền Access Key, Secret Key và Tên Bucket để đồng bộ.</p>
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-border/50">
+            <div className="flex flex-col gap-2">
+              <label className="text-[13px] font-bold text-foreground flex items-center gap-1.5"><Icon icon="solar:key-minimalistic-square-2-line-duotone" className="size-4 text-muted-foreground" /> Access Key ID</label>
+              <Input
+                value={config.siteTigris?.siteAccessKeyId || ""}
+                onChange={e => handleTigrisChange("siteAccessKeyId", e.target.value)}
+                className="bg-background h-9 shadow-sm text-[13px]"
+                placeholder="Nhập mã định danh Token truy cập Tigris..."
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-[13px] font-bold text-foreground flex items-center gap-1.5"><Icon icon="solar:lock-keyhole-line-duotone" className="size-4 text-muted-foreground" /> Secret Access Key</label>
+              <Input
+                type="password"
+                value={config.siteTigris?.siteSecretAccessKey || ""}
+                onChange={e => handleTigrisChange("siteSecretAccessKey", e.target.value)}
+                className="bg-background h-9 shadow-sm text-[13px]"
+                placeholder="Nhập mã token bí mật Tigris..."
+              />
+            </div>
+            <div className="flex flex-col gap-2 md:col-span-2">
+              <label className="text-[13px] font-bold text-foreground flex items-center gap-1.5"><Icon icon="solar:archive-line-duotone" className="size-4 text-muted-foreground" /> Tên Bucket Lưu trữ</label>
+              <Input
+                value={config.siteTigris?.siteBucketName || ""}
+                onChange={e => handleTigrisChange("siteBucketName", e.target.value)}
+                className="bg-background h-9 shadow-sm text-[13px]"
+                placeholder="Tên vùng chứa dữ liệu Tigris (Vd: my-bucket)..."
+              />
+            </div>
+
+            <div className="flex gap-3 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15 md:col-span-2">
+              <Icon icon="solar:info-circle-line-duotone" className="size-5 text-[#FF7034] shrink-0 mt-0.5" />
+              <div className="flex flex-col gap-1.5 text-[12px] text-muted-foreground leading-relaxed">
+                <p className="font-bold text-foreground text-[13px]">Hướng dẫn lấy cấu hình Tigris Storage:</p>
+                <ol className="list-decimal list-inside space-y-1 pl-1">
+                  <li>Đăng nhập vào <a href="https://console.tigris.dev" target="_blank" rel="noopener noreferrer" className="text-[#FF7034] hover:underline font-semibold">Tigris Console</a> (hoặc Fly.io dashboard).</li>
+                  <li><strong>Tạo Bucket</strong>: Tạo một dự án mới hoặc chọn dự án hiện tại, chọn mục <strong>Buckets</strong> và tạo một bucket lưu trữ mới, sao chép điền vào *Tên Bucket*.</li>
+                  <li><strong>Tạo API Key</strong>: Đến mục <strong>Access Keys</strong> → <strong>Create Access Key</strong>.</li>
+                  <li>Chọn phạm vi truy cập (Read/Write cho bucket của bạn).</li>
+                  <li>Hệ thống sẽ cấp cho bạn <strong>Access Key ID</strong> và <strong>Secret Access Key</strong> một lần duy nhất. Sao chép và dán vào các ô tương ứng phía trên.</li>
+                </ol>
+              </div>
             </div>
           </div>
         </div>
