@@ -22,4 +22,25 @@ export const toolsRouter = router({
     .mutation(async ({ input }) => {
       return await toolsService.checkLiveUid(input.uids);
     }),
+
+  checkFacebookCookieLive: publicProcedure
+    .input(
+      z.object({
+        cookie: z.string().min(1, "Vui lòng nhập cookie Facebook"),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await toolsService.checkFacebookCookieLive(input.cookie);
+    }),
+
+  lookupFacebookId: publicProcedure
+    .input(
+      z.object({
+        link: z.string().min(1, "Vui lòng nhập liên kết hoặc ID"),
+        cookie: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await toolsService.lookupFacebookId(input.link, input.cookie);
+    }),
 });
