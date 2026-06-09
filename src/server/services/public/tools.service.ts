@@ -193,7 +193,8 @@ export class ToolsService {
           const data = await http.get(`https://graph.facebook.com/${uid}/picture?redirect=false`, {
             headers: { "User-Agent": UA_DESKTOP },
           });
-          const isLive = !!(data?.data?.url);
+          const imgUrl = data?.data?.url;
+          const isLive = !!imgUrl && !imgUrl.includes("static.xx.fbcdn.net") && !imgUrl.includes("rsrc.php");
           return { uid, isLive };
         } catch {
           return { uid, isLive: false };

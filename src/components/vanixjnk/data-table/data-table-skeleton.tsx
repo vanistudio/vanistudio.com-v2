@@ -26,7 +26,7 @@ export function DataTableSkeleton({
       <div className="rounded-xl border border-border bg-card overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="border-border hover:bg-transparent bg-muted/30">
+            <TableRow className="border-border hover:bg-transparent bg-background/60">
               {Array.from({ length: columnCount }).map((_, i) => (
                 <TableHead key={i} className="py-1 px-4 h-9">
                   <Skeleton className="h-5 w-full max-w-[150px] rounded-md" />
@@ -36,7 +36,7 @@ export function DataTableSkeleton({
           </TableHeader>
           <TableBody>
             {Array.from({ length: rowCount }).map((_, i) => (
-              <TableRow key={i} className="border-border hover:bg-transparent transition-none">
+              <TableRow key={i} className="border-border hover:bg-transparent bg-background/60 transition-none">
                 {Array.from({ length: columnCount }).map((_, j) => (
                   <TableCell key={j} className="py-3 px-4">
                     <Skeleton className="h-5 w-full max-w-[200px] rounded-md" />

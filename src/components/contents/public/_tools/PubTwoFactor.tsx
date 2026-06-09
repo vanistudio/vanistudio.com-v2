@@ -279,7 +279,7 @@ function generateRandomBase32Secret(length = 16): string {
 }
 
 export default function PubTwoFactor() {
-  const [activeTab, setActiveTab] = useState<"generator" | "verifier" | "guide">("generator");
+  const [activeTab, setActiveTab] = useState<"generator" | "guide">("generator");
 
   const [secretKey, setSecretKey] = useState("");
   const [issuer, setIssuer] = useState("VaniStudio");
@@ -290,15 +290,6 @@ export default function PubTwoFactor() {
   const [token, setToken] = useState("");
   const [timeLeft, setTimeLeft] = useState(30);
   const [copied, setCopied] = useState(false);
-
-  const [verifySecret, setVerifySecret] = useState("");
-  const [verifyOtp, setVerifyOtp] = useState("");
-  const [verifyResult, setVerifyResult] = useState<{
-    status: "idle" | "success" | "error";
-    message: string;
-  }>({ status: "idle", message: "" });
-
-  const [systemTime, setSystemTime] = useState("");
 
   const [isClearAllDialogOpen, setIsClearAllDialogOpen] = useState(false);
   const [deletingKeyId, setDeletingKeyId] = useState<string | null>(null);
@@ -319,15 +310,6 @@ export default function PubTwoFactor() {
     let active = true;
 
     const tick = async () => {
-      const now = new Date();
-      setSystemTime(
-        now.toLocaleTimeString("vi-VN", {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        })
-      );
-
       const seconds = 30 - (Math.floor(Date.now() / 1000) % 30);
       setTimeLeft(seconds);
 
@@ -383,39 +365,6 @@ export default function PubTwoFactor() {
     toast.success("Đã xóa khóa khỏi thiết bị");
   };
 
-  const handleVerify = async () => {
-    if (!verifySecret) {
-      toast.error("Vui lòng nhập khóa bí mật!");
-      return;
-    }
-    if (verifyOtp.length !== 6) {
-      toast.error("Mã xác thực phải gồm 6 chữ số!");
-      return;
-    }
-
-    let isValid = false;
-    for (let offset = -1; offset <= 1; offset++) {
-      const computed = await generateClientTOTP(verifySecret, offset);
-      if (computed && computed === verifyOtp) {
-        isValid = true;
-        break;
-      }
-    }
-
-    if (isValid) {
-      setVerifyResult({
-        status: "success",
-        message: "Xác minh thành công! Mã OTP hợp lệ và khớp với khóa bí mật.",
-      });
-      toast.success("Mã xác minh chính xác!");
-    } else {
-      setVerifyResult({
-        status: "error",
-        message: "Mã OTP không hợp lệ hoặc thiết bị của bạn bị lệch thời gian.",
-      });
-      toast.error("Mã OTP không chính xác!");
-    }
-  };
 
   const otpAuthUri = secretKey
     ? `otpauth://totp/${encodeURIComponent(issuer || "VaniStudio")}:${encodeURIComponent(
@@ -456,11 +405,11 @@ export default function PubTwoFactor() {
       </div>
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col p-6 gap-6">
-          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-muted/20 border border-border/60 w-full overflow-x-auto sm:w-auto sm:self-start whitespace-nowrap scrollbar-none">
+          <div className="grid grid-cols-2 sm:flex items-center gap-1.5 p-1 rounded-xl bg-muted/20 border border-border/60 w-full sm:w-auto sm:self-start whitespace-nowrap">
             <button
               onClick={() => setActiveTab("generator")}
               className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 shrink-0",
+                "flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 shrink-0 w-full sm:w-auto",
                 activeTab === "generator"
                   ? "bg-vanixjnk/15 border border-vanixjnk/25 text-vanixjnk shadow-sm"
                   : "border border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
@@ -470,21 +419,9 @@ export default function PubTwoFactor() {
               <span>Trình tạo & Quản lý</span>
             </button>
             <button
-              onClick={() => setActiveTab("verifier")}
-              className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 shrink-0",
-                activeTab === "verifier"
-                  ? "bg-vanixjnk/15 border border-vanixjnk/25 text-vanixjnk shadow-sm"
-                  : "border border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
-              )}
-            >
-              <Icon icon="solar:check-circle-line-duotone" className="size-4" />
-              <span>Xác minh mã OTP</span>
-            </button>
-            <button
               onClick={() => setActiveTab("guide")}
               className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 shrink-0",
+                "flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 shrink-0 w-full sm:w-auto",
                 activeTab === "guide"
                   ? "bg-vanixjnk/15 border border-vanixjnk/25 text-vanixjnk shadow-sm"
                   : "border border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
@@ -811,110 +748,7 @@ export default function PubTwoFactor() {
 
             </div>
           )}
-          {activeTab === "verifier" && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="p-5 bg-card/30 border-border flex flex-col gap-5">
-                <div className="flex flex-col gap-1">
-                  <h3 className="font-bold text-sm text-foreground">Công cụ kiểm thử mã OTP</h3>
-                  <p className="text-[11px] text-muted-foreground">Nhập khóa bí mật và mã OTP để kiểm tra tính đồng bộ.</p>
-                </div>
-                <div className="flex flex-col gap-4">
-                  <div className="flex flex-col gap-1.5">
-                    <Label className="text-xs font-bold">Khóa bí mật (Secret Key)</Label>
-                    <Input
-                      value={verifySecret}
-                      onChange={(e) => setVerifySecret(e.target.value.replace(/\s+/g, ""))}
-                      className="bg-background h-10 shadow-sm text-xs border-border font-mono tracking-wider"
-                      placeholder="Nhập khóa bí mật Base32 cần xác thực..."
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2.5">
-                    <Label className="text-xs font-bold">Nhập mã OTP hiển thị trên ứng dụng (6 chữ số)</Label>
-                    <div className="flex justify-center py-2 bg-background/30 rounded-xl border border-border/40">
-                      <InputOTP
-                        maxLength={6}
-                        value={verifyOtp}
-                        onChange={(val) => setVerifyOtp(val)}
-                      >
-                        <InputOTPGroup>
-                          <InputOTPSlot index={0} className="size-11 text-base font-bold font-mono" />
-                          <InputOTPSlot index={1} className="size-11 text-base font-bold font-mono" />
-                          <InputOTPSlot index={2} className="size-11 text-base font-bold font-mono" />
-                          <InputOTPSlot index={3} className="size-11 text-base font-bold font-mono" />
-                          <InputOTPSlot index={4} className="size-11 text-base font-bold font-mono" />
-                          <InputOTPSlot index={5} className="size-11 text-base font-bold font-mono" />
-                        </InputOTPGroup>
-                      </InputOTP>
-                    </div>
-                  </div>
-                  <Button
-                    variant="vanixjnk"
-                    className="w-full font-bold text-xs h-10 mt-2"
-                    onClick={handleVerify}
-                    disabled={!verifySecret || verifyOtp.length !== 6}
-                  >
-                    <Icon icon="solar:shield-check-line-duotone" className="size-4.5 mr-2" />
-                    Xác minh ngay
-                  </Button>
-                  {verifyResult.status !== "idle" && (
-                    <div
-                      className={cn(
-                        "p-4 rounded-xl border flex items-start gap-3 mt-2 transition-all",
-                        verifyResult.status === "success"
-                          ? "bg-green-500/10 border-green-500/20 text-green-500"
-                          : "bg-rose-500/10 border-rose-500/20 text-rose-500"
-                      )}
-                    >
-                      <Icon
-                        icon={
-                          verifyResult.status === "success"
-                            ? "solar:check-circle-line-duotone"
-                            : "solar:danger-circle-line-duotone"
-                        }
-                        className="text-lg shrink-0 mt-0.5"
-                      />
-                      <div className="flex flex-col gap-0.5">
-                        <span className="text-xs font-bold">
-                          {verifyResult.status === "success" ? "Mã hợp lệ" : "Lỗi xác thực"}
-                        </span>
-                        <span className="text-[11px] leading-relaxed opacity-90">{verifyResult.message}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </Card>
-              <Card className="p-5 bg-card/30 border-border flex flex-col gap-4">
-                <div className="flex items-center gap-2 pb-2 border-b border-border/50">
-                  <Icon icon="solar:clock-circle-line-duotone" className="size-5 text-muted-foreground" />
-                  <span className="font-bold text-xs text-foreground">Kiểm tra đồng bộ đồng hồ hệ thống</span>
-                </div>
-                <div className="flex flex-col gap-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="p-4 rounded-xl border border-border bg-background/50 flex flex-col gap-1 text-center">
-                      <span className="text-[10px] font-bold text-muted-foreground uppercase">Giờ thiết bị (Local)</span>
-                      <span className="text-lg font-black font-mono text-foreground">{systemTime || "--:--:--"}</span>
-                    </div>
-                    <div className="p-4 rounded-xl border border-border bg-background/50 flex flex-col gap-1 text-center">
-                      <span className="text-[10px] font-bold text-muted-foreground uppercase">Thời gian chu kỳ</span>
-                      <span className="text-lg font-black font-mono text-vanixjnk">30 giây</span>
-                    </div>
-                  </div>
-                  <div className="flex gap-3 p-4 rounded-xl bg-amber-500/5 border border-amber-500/10 text-amber-500">
-                    <Icon icon="solar:info-circle-line-duotone" className="text-lg shrink-0 mt-0.5" />
-                    <div className="flex flex-col gap-1 text-[11px] leading-relaxed">
-                      <p className="font-bold">Lưu ý về đồng bộ thời gian (Clock Drift):</p>
-                      <p className="opacity-90">
-                        Thuật toán TOTP dựa trên thời gian tuyệt đối. Nếu đồng hồ máy tính hoặc điện thoại của bạn bị lệch quá 30 giây so với múi giờ chuẩn quốc tế (UTC), các mã OTP được tạo ra sẽ không khớp và việc đăng nhập sẽ thất bại.
-                      </p>
-                      <p className="opacity-90 mt-1 font-semibold">
-                        Khắc phục: Vào cài đặt Thời gian trên thiết bị và bật chế độ &quot;Đặt giờ tự động&quot; (Set time automatically).
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </div>
-          )}
+
           {activeTab === "guide" && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               

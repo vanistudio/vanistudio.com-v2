@@ -45,17 +45,7 @@ export default function PubCheckLiveUid() {
     checkLiveMutation.mutate({ uids: uids.slice(0, 50) });
   };
 
-  const handleLoadDemo = () => {
-    const demoUids = [
-      "4",
-      "100000000000001",
-      "zuck",
-      "100004128362629",
-      "100000000000002"
-    ];
-    setUidInput(demoUids.join("\n"));
-    toast.info("Đã tải danh sách UID mẫu.");
-  };
+
 
   const copyToClipboard = (text: string, message: string) => {
     navigator.clipboard.writeText(text);
@@ -123,55 +113,42 @@ export default function PubCheckLiveUid() {
                     />
                   </div>
 
-                  <div className="flex gap-2 justify-between items-center border-t border-border/40 pt-4">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={handleLoadDemo}
-                      disabled={checkLiveMutation.isPending}
-                      className="text-xs font-semibold"
-                    >
-                      Tải UID mẫu
-                    </Button>
-
-                    <div className="flex gap-2">
-                      {uidInput && (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setUidInput("");
-                            setCheckedResults([]);
-                          }}
-                          disabled={checkLiveMutation.isPending}
-                          className="text-xs text-muted-foreground hover:text-foreground"
-                        >
-                          Xóa
-                        </Button>
-                      )}
-
+                  <div className="flex gap-2 justify-end items-center border-t border-border/40 pt-4">
+                    {uidInput && (
                       <Button
-                        type="submit"
-                        variant="vanixjnk"
+                        type="button"
+                        variant="ghost"
                         size="sm"
+                        onClick={() => {
+                          setUidInput("");
+                          setCheckedResults([]);
+                        }}
                         disabled={checkLiveMutation.isPending}
-                        className="font-bold text-xs px-4"
+                        className="text-xs text-muted-foreground hover:text-foreground"
                       >
-                        {checkLiveMutation.isPending ? (
-                          <>
-                            <Icon icon="solar:spinner-line-duotone" className="size-4 animate-spin" />
-                            <span>Đang kiểm tra...</span>
-                          </>
-                        ) : (
-                          <>
-                            <Icon icon="solar:play-line-duotone" className="size-4" />
-                            <span>Bắt đầu</span>
-                          </>
-                        )}
+                        Xóa
                       </Button>
-                    </div>
+                    )}
+
+                    <Button
+                      type="submit"
+                      variant="vanixjnk"
+                      size="sm"
+                      disabled={checkLiveMutation.isPending}
+                      className="font-bold text-xs px-4"
+                    >
+                      {checkLiveMutation.isPending ? (
+                        <>
+                          <Icon icon="solar:spinner-line-duotone" className="size-4 animate-spin" />
+                          <span>Đang kiểm tra...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Icon icon="solar:play-line-duotone" className="size-4" />
+                          <span>Bắt đầu</span>
+                        </>
+                      )}
+                    </Button>
                   </div>
                 </form>
               </Card>
