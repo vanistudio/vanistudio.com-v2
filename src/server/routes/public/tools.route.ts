@@ -1,0 +1,25 @@
+import { router, publicProcedure } from "../t";
+import { z } from "zod";
+import { toolsService } from "@/server/services/public/tools.service";
+
+export const toolsRouter = router({
+  checkDomain: publicProcedure
+    .input(
+      z.object({
+        domain: z.string().min(1, "Vui lòng nhập tên miền cần kiểm tra"),
+      })
+    )
+    .query(async ({ input }) => {
+      return await toolsService.checkDomain(input.domain);
+    }),
+
+  checkLiveUid: publicProcedure
+    .input(
+      z.object({
+        uids: z.array(z.string()).min(1, "Vui lòng nhập ít nhất một UID"),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await toolsService.checkLiveUid(input.uids);
+    }),
+});
