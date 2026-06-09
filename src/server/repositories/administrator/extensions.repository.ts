@@ -18,7 +18,6 @@ export class ExtensionsRepository {
         config: m.config,
       }));
       await db.insert(extensions).values(toInsert).onConflictDoNothing();
-      // Fetch again to get everything sorted
       return await db.select().from(extensions);
     }
 
@@ -62,7 +61,6 @@ export class ExtensionsRepository {
       .returning();
 
     if (!updated) {
-      // If not in database but in defaults, insert and return
       const defaultExt = DEFAULT_EXTENSIONS.find((e) => e.id === id);
       if (defaultExt) {
         const [inserted] = await db
