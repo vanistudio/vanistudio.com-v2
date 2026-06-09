@@ -136,7 +136,7 @@ export default function AdminExtensions() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handleReset}
+                onClick={() => handleReset()}
                 disabled={isLoading || isFetching || updateMutation.isPending}
                 className="gap-1.5 shrink-0"
               >
@@ -149,7 +149,7 @@ export default function AdminExtensions() {
               <Button
                 variant="vanixjnk"
                 size="sm"
-                onClick={handleSave}
+                onClick={() => handleSave()}
                 disabled={isLoading || updateMutation.isPending || !activeExt}
                 className="gap-1.5 shrink-0 font-semibold"
               >
@@ -206,7 +206,6 @@ export default function AdminExtensions() {
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-12 border-t border-b border-border/60 flex-1">
-              {/* Sidebar */}
               <div className="lg:col-span-4 p-6 border-b lg:border-b-0 lg:border-r border-border/60 flex flex-col gap-4">
                 <div className="pb-3">
                   <h3 className="text-base font-bold text-foreground">Danh mục tính năng</h3>
@@ -236,8 +235,6 @@ export default function AdminExtensions() {
                   ))}
                 </div>
               </div>
-
-              {/* Form Content */}
               <div className="lg:col-span-8 p-6">
                 <div className="mb-6">
                   <h3 className="text-base font-bold text-foreground">{activeTabMeta?.title}</h3>
