@@ -13,6 +13,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "
 import { type GalleryItem } from "@/server/db/schemas/gallery.schema";
 import Link from "next/link";
 import { http } from "@/lib/http";
+import { useSetting } from "@/contexts/SettingContext";
+import { formatWithSiteTimezone } from "@/helpers/administrator/timezone.helper";
 
 const FILTER_TABS = [
   { id: "all", title: "Tất cả", icon: "solar:gallery-line-duotone" },
@@ -23,6 +25,9 @@ const FILTER_TABS = [
 ];
 
 export default function AdminMedia() {
+  const setting = useSetting();
+  const siteTimezone = setting?.siteTimezone || "Asia/Ho_Chi_Minh";
+
   const { data: items, isLoading, refetch, isFetching } = trpc.administrator.gallery.getAll.useQuery(undefined, {
     refetchOnWindowFocus: false,
   });
@@ -562,7 +567,7 @@ export default function AdminMedia() {
                   <div>
                     <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Ngày tải lên</label>
                     <p className="font-semibold text-foreground mt-0.5">
-                      {new Date(selectedItem.createdAt).toLocaleString("vi-VN")}
+                      {formatWithSiteTimezone(selectedItem.createdAt, siteTimezone)}
                     </p>
                   </div>
                 </div>

@@ -7,8 +7,8 @@ export const gallery = pgTable("gallery", {
   size: integer("size").notNull().default(0),
   mediaType: varchar("media_type", { length: 50 }).notNull(),
   storageType: varchar("storage_type", { length: 20 }).notNull(),
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" }).defaultNow().notNull(),
 });
 
 export type GalleryItem = typeof gallery.$inferSelect;
