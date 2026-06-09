@@ -31,7 +31,7 @@ export const DEFAULT_MENU_GROUPS: DefaultMenuGroup[] = [
         order: 7,
         children: [
           { name: "Lấy mã 2fa", url: "/tools/2fa", icon: "solar:key-minimalistic-line-duotone", order: 1 },
-          { name: "Check ID", url: "/tools/check-id", icon: "solar:user-id-line-duotone", order: 2 },
+          { name: "Check Cookie", url: "/tools/check-cookie", icon: "solar:donut-bitten-line-duotone", order: 2 },
           { name: "Check Live UID", url: "/tools/check-live-uid", icon: "solar:user-rounded-line-duotone", order: 3 },
           { name: "Kiểm tra Domain", url: "/tools/check-domain", icon: "solar:global-line-duotone", order: 4 },
           { name: "Kiểm tra Bản quyền", url: "/tools/check-license", icon: "solar:verified-check-line-duotone", order: 5 },
