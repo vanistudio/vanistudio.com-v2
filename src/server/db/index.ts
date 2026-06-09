@@ -6,6 +6,7 @@ import * as extensionSchema from "@/server/db/schemas/extension.schema";
 import * as menuSchema from "@/server/db/schemas/menu.schema";
 import * as relationsSchema from "@/server/db/r";
 import * as denySchema from "@/server/db/schemas/deny.schema";
+import * as cmsPageSchema from "@/server/db/schemas/cms-page.schema";
 
 const connectionString = process.env.APP_DATABASE_URI_VALUE;
 
@@ -30,6 +31,7 @@ export const db = drizzle(pgClient, {
     ...relationsSchema,
     ...menuSchema,
     ...denySchema,
+    ...cmsPageSchema,
   },
 });
 
