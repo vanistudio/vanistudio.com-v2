@@ -43,10 +43,9 @@ export interface OauthProvidersConfig {
 }
 
 export interface CaptchaConfig {
-  activeProvider: "none" | "google" | "cloudflare" | "hcaptcha";
-  google: { siteKey: string; secretKey: string };
-  cloudflare: { siteKey: string; secretKey: string };
-  hcaptcha: { siteKey: string; secretKey: string };
+  siteGoogleV2: { siteStatus: boolean; siteKey: string; siteSecretKey: string; siteAppliedFunctions: string[] };
+  siteCloudflare: { siteStatus: boolean; siteKey: string; siteSecretKey: string; siteAppliedFunctions: string[] };
+  siteHCaptcha: { siteStatus: boolean; siteKey: string; siteSecretKey: string; siteAppliedFunctions: string[] };
 }
 
 export interface AnalyticsMarketingConfig {
@@ -134,7 +133,6 @@ export const DEFAULT_EXTENSIONS: DefaultExtension[] = [
       discord: { clientId: "", clientSecret: "", isEnabled: false },
       github: { clientId: "", clientSecret: "", isEnabled: false },
       gitlab: { clientId: "", clientSecret: "", isEnabled: false },
-      zalo: { clientId: "", clientSecret: "", isEnabled: false },
     } as OauthProvidersConfig,
   },
   {
@@ -143,10 +141,9 @@ export const DEFAULT_EXTENSIONS: DefaultExtension[] = [
     description: "Tích hợp Google reCAPTCHA, Cloudflare Turnstile, hoặc hCaptcha chống spam/bot.",
     isEnabled: false,
     config: {
-      activeProvider: "none",
-      google: { siteKey: "", secretKey: "" },
-      cloudflare: { siteKey: "", secretKey: "" },
-      hcaptcha: { siteKey: "", secretKey: "" },
+      siteGoogleV2: { siteStatus: false, siteKey: "", siteSecretKey: "", siteAppliedFunctions: [] },
+      siteCloudflare: { siteStatus: false, siteKey: "", siteSecretKey: "", siteAppliedFunctions: [] },
+      siteHCaptcha: { siteStatus: false, siteKey: "", siteSecretKey: "", siteAppliedFunctions: [] },
     } as CaptchaConfig,
   },
   {
