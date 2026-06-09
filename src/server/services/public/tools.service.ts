@@ -62,49 +62,41 @@ export function parseWhois(raw: string) {
     line = line.trim();
     if (!line) continue;
 
-    // Domain name
     if (!result.domainName) {
       const match = line.match(/^(?:domain\s*name|domain):\s*(.+)$/i);
       if (match) result.domainName = match[1].trim().toUpperCase();
     }
 
-    // Registrar
     if (!result.registrar) {
       const match = line.match(/^(?:registrar|sponsoring\s*registrar|nhà\s*đăng\s*ký):\s*(.+)$/i);
       if (match) result.registrar = match[1].trim();
     }
 
-    // Registrant Name
     if (!result.registrantName) {
       const match = line.match(/^(?:registrant\s*name|registrant):\s*(.+)$/i);
       if (match) result.registrantName = match[1].trim();
     }
 
-    // Registrant Organization
     if (!result.registrantOrganization) {
       const match = line.match(/^(?:registrant\s*organization|registrant\s*org):\s*(.+)$/i);
       if (match) result.registrantOrganization = match[1].trim();
     }
 
-    // Registrant Country
     if (!result.registrantCountry) {
       const match = line.match(/^(?:registrant\s*country):\s*(.+)$/i);
       if (match) result.registrantCountry = match[1].trim();
     }
 
-    // Registrant Email
     if (!result.registrantEmail) {
       const match = line.match(/^(?:registrant\s*email|registrant\s*contact\s*email):\s*(.+)$/i);
       if (match) result.registrantEmail = match[1].trim();
     }
 
-    // Registrant Phone
     if (!result.registrantPhone) {
       const match = line.match(/^(?:registrant\s*phone):\s*(.+)$/i);
       if (match) result.registrantPhone = match[1].trim();
     }
 
-    // Creation date
     if (!result.creationDate) {
       const match = line.match(/^(?:creation\s*date|created\s*on|created\s*date|registered\s*on|ngày\s*tạo):\s*(.+)$/i);
       if (match) {
@@ -113,7 +105,6 @@ export function parseWhois(raw: string) {
       }
     }
 
-    // Expiry date
     if (!result.expiryDate) {
       const match = line.match(/^(?:registry\s*expiry\s*date|expiration\s*date|expiration\s*on|expiry\s*date|ngày\s*hết\s*hạn):\s*(.+)$/i);
       if (match) {
@@ -122,7 +113,6 @@ export function parseWhois(raw: string) {
       }
     }
 
-    // Updated date
     if (!result.updatedDate) {
       const match = line.match(/^(?:updated\s*date|last\s*updated|ngày\s*cập\s*nhật):\s*(.+)$/i);
       if (match) {
@@ -131,7 +121,6 @@ export function parseWhois(raw: string) {
       }
     }
 
-    // Name servers
     const nsMatch = line.match(/^(?:name\s*server|nserver|ns):\s*(\S+)/i);
     if (nsMatch) {
       const ns = nsMatch[1].trim().toLowerCase().replace(/\.$/, "");
@@ -140,7 +129,6 @@ export function parseWhois(raw: string) {
       }
     }
 
-    // Statuses
     const statusMatch = line.match(/^(?:domain\s*status|status|trạng\s*thái):\s*([^\(]+)/i);
     if (statusMatch) {
       const status = statusMatch[1].trim().toLowerCase();
