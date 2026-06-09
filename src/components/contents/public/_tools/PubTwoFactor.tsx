@@ -15,8 +15,17 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import QRCode from "qrcode";
 import Image from "next/image";
+
+function AppStore({ className }: { className?: string }) {
+  return <Icon icon="ri:apple-fill" className={className} />;
+}
+
+function GooglePlay({ className }: { className?: string }) {
+  return <Icon icon="ri:google-play-fill" className={className} />;
+}
 
 interface CustomQRCodeProps {
   value: string;
@@ -146,6 +155,39 @@ export function CustomQRCode({
     </div>
   );
 }
+
+const SUGGESTED_AUTH_APPS = [
+  {
+    name: "Google Authenticator",
+    logoUrl: "https://is1-ssl.mzstatic.com/image/thumb/Purple116/v4/c8/21/57/c821574f-4153-3432-693a-49f96d51d2d1/AppIcon-0-0-1x_U007emarketing-0-0-0-6-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/400x400ia-75.webp",
+    appStoreUrl: "https://apps.apple.com/app/google-authenticator/id388497605",
+    playStoreUrl: "https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2",
+  },
+  {
+    name: "Microsoft Authenticator",
+    logoUrl: "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/e5/f9/e9/e5f9e91d-6cbd-bd40-44af-0cf8f41222af/logo_authenticator_color-0-1x_U007emarketing-0-0-0-6-0-0-0-85-220-0.png/400x400ia-75.webp",
+    appStoreUrl: "https://apps.apple.com/app/microsoft-authenticator/id983156458",
+    playStoreUrl: "https://play.google.com/store/apps/details?id=com.azure.authenticator",
+  },
+  {
+    name: "Authy",
+    logoUrl: "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/31/b7/a8/31b7a8f3-a164-d1f8-cc20-0ae39d5cef7d/AppIcon-0-1x_U007emarketing-0-11-0-sRGB-85-220-0.png/400x400ia-75.webp",
+    appStoreUrl: "https://apps.apple.com/app/authy/id494168017",
+    playStoreUrl: "https://play.google.com/store/apps/details?id=com.authy.authy",
+  },
+  {
+    name: "1Password",
+    logoUrl: "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/47/89/7c/47897c81-ab79-5430-b15a-820875290ca7/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/400x400ia-75.webp",
+    appStoreUrl: "https://apps.apple.com/app/1password-password-manager/id568903335",
+    playStoreUrl: "https://play.google.com/store/apps/details?id=com.agilebits.onepassword",
+  },
+  {
+    name: "LastPass",
+    logoUrl: "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/fa/23/a4/fa23a474-c042-d18c-754c-3381ab71b72c/AppIconRelease-0-0-1x_U007epad-0-1-0-85-220.png/400x400ia-75.webp",
+    appStoreUrl: "https://apps.apple.com/app/lastpass-authenticator/id1079110004",
+    playStoreUrl: "https://play.google.com/store/apps/details?id=com.lastpass.authenticator",
+  },
+];
 
 interface SavedKey {
   id: string;
@@ -462,55 +504,81 @@ export default function PubTwoFactor() {
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-col gap-2">
                     <Label className="text-xs font-bold text-foreground">Khóa bí mật (Secret Key)</Label>
-                    <div className="relative flex items-center">
-                      <Input
-                        value={secretKey}
-                        onChange={(e) => setSecretKey(e.target.value.replace(/\s+/g, ""))}
-                        className="pr-20 text-xs"
-                        placeholder="Nhập chuỗi khóa Base32..."
-                      />
-                      <div className="absolute right-2 flex items-center gap-1">
-                        {secretKey && (
+                    <div className="flex gap-2">
+                      <div className="relative flex-1 flex items-center">
+                        <Input
+                          value={secretKey}
+                          onChange={(e) => setSecretKey(e.target.value.replace(/\s+/g, ""))}
+                          className="pr-20 text-xs h-10"
+                          placeholder="Nhập chuỗi khóa Base32..."
+                        />
+                        <div className="absolute right-2 flex items-center gap-1">
+                          {secretKey && (
+                            <button
+                              onClick={() => setSecretKey("")}
+                              className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                              title="Xóa khóa"
+                            >
+                              <Icon icon="solar:close-circle-line-duotone" className="size-4" />
+                            </button>
+                          )}
                           <button
-                            onClick={() => setSecretKey("")}
-                            className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted/60"
-                            title="Xóa khóa"
+                            onClick={async () => {
+                              try {
+                                const text = await navigator.clipboard.readText();
+                                setSecretKey(text.trim().replace(/\s+/g, ""));
+                                toast.success("Đã dán khóa bí mật từ bộ nhớ đệm");
+                              } catch {
+                                toast.error("Không thể đọc Clipboard. Vui lòng tự dán.");
+                              }
+                            }}
+                            className="p-1 rounded"
+                            title="Dán từ Clipboard"
                           >
-                            <Icon icon="solar:close-circle-line-duotone" className="size-4" />
+                            <Icon icon="solar:clipboard-line-duotone" className="size-4" />
                           </button>
-                        )}
-                        <button
-                          onClick={async () => {
-                            try {
-                              const text = await navigator.clipboard.readText();
-                              setSecretKey(text.trim().replace(/\s+/g, ""));
-                              toast.success("Đã dán khóa bí mật từ bộ nhớ đệm");
-                            } catch {
-                              toast.error("Không thể đọc Clipboard. Vui lòng tự dán.");
-                            }
-                          }}
-                          className="p-1 rounded"
-                          title="Dán từ Clipboard"
-                        >
-                          <Icon icon="solar:clipboard-line-duotone" className="size-4" />
-                        </button>
+                        </div>
                       </div>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          const randomSec = generateRandomBase32Secret(16);
+                          setSecretKey(randomSec);
+                          toast.success("Đã tạo khóa ngẫu nhiên mới!");
+                        }}
+                        className="gap-1.5 font-bold text-xs shrink-0 h-10 px-3"
+                        title="Tạo khóa ngẫu nhiên mới"
+                      >
+                        <Icon icon="solar:restart-line-duotone" className="size-4" />
+                      </Button>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        const randomSec = generateRandomBase32Secret(16);
-                        setSecretKey(randomSec);
-                        toast.success("Đã tạo khóa ngẫu nhiên mới!");
-                      }}
-                      className="gap-1.5 font-bold text-xs shrink-0"
-                    >
-                      <Icon icon="solar:restart-line-duotone" className="size-4" />
-                      Tạo khóa ngẫu nhiên
-                    </Button>
+
+                  <div className="flex items-center justify-center gap-1.5 py-1">
+                    {SUGGESTED_AUTH_APPS.map((app) => (
+                      <Popover key={app.name}>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className="size-12 p-1 rounded-xl shadow-sm border-border bg-white hover:bg-muted animate-fade-in" title={app.name}>
+                            <img src={app.logoUrl} alt={app.name} className="w-full h-full object-cover rounded-lg" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[200px] p-1.5 z-50" align="center" sideOffset={8}>
+                          <div className="flex flex-col gap-1">
+                            <p className="text-[10px] font-bold px-2 py-1 text-muted-foreground uppercase tracking-wide">
+                              Tải {app.name}
+                            </p>
+                            <a href={app.appStoreUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2.5 px-2 py-2 hover:bg-muted rounded-md transition-colors text-[13px] font-semibold text-foreground">
+                              <AppStore className="size-5" />
+                              App Store
+                            </a>
+                            <a href={app.playStoreUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2.5 px-2 py-2 hover:bg-muted rounded-md transition-colors text-[13px] font-semibold text-foreground">
+                              <GooglePlay className="size-5" />
+                              Google Play
+                            </a>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    ))}
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 border-t border-border/40 pt-4 mt-1">
                     <div className="flex flex-col gap-1.5">
