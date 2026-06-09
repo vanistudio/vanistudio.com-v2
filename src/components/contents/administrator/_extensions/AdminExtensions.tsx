@@ -61,6 +61,16 @@ export default function AdminExtensions() {
   }, [dbExtensions]);
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get("tab");
+      if (tab && TABS.some((t) => t.id === tab)) {
+        setActiveTab(tab);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     if (error) {
       toast.error(error.message || "Không thể tải cấu hình gói mở rộng");
     }

@@ -10,3 +10,6 @@ export const gallery = pgTable("gallery", {
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
 });
+
+export type GalleryItem = typeof gallery.$inferSelect;
+export type NewGalleryItem = typeof gallery.$inferInsert;

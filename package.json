@@ -19,6 +19,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1064.0",
     "@base-ui/react": "^1.5.0",
     "@better-auth/drizzle-adapter": "^1.6.11",
     "@bprogress/next": "^3.2.12",
@@ -33,6 +34,7 @@
     "better-auth": "^1.6.11",
     "bowser": "^2.14.1",
     "class-variance-authority": "^0.7.1",
+    "cloudinary": "^2.10.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.3.0",
@@ -58,6 +60,7 @@
     "react-resizable-panels": "^4.11.2",
     "recharts": "^3.8.0",
     "shadcn": "^4.8.0",
+    "sharp": "^0.34.5",
     "sonner": "^2.0.7",
     "superjson": "^2.2.6",
     "tailwind-merge": "^3.6.0",
