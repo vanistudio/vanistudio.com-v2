@@ -79,7 +79,7 @@ const navEntries: NavEntry[] = [
     icon: "solar:server-square-line-duotone",
     children: [
       { name: "Người dùng", href: "/adminPanel/users", icon: "solar:users-group-two-rounded-line-duotone" },
-      { name: "Chặn truy cập", href: "/adminPanel/block-access", icon: "solar:shield-minus-line-duotone" },
+      { name: "Chặn truy cập", href: "/adminPanel/denies", icon: "solar:shield-minus-line-duotone" },
       { name: "Quản lý Database", href: "/adminPanel/database", icon: "solar:database-line-duotone" },
       { name: "Console hệ thống", href: "/adminPanel/console", icon: "solar:code-square-line-duotone" },
       { name: "Gói mở rộng", href: "/adminPanel/extensions", icon: "solar:cpu-line-duotone" },
