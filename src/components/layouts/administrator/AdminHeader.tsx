@@ -295,7 +295,7 @@ export default function AdminHeader() {
             className="flex size-9 rounded-xl items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors outline-none"
             title="Xem Website"
           >
-            <Icon icon="solar:share-circle-line-duotone" className="text-xl" />
+            <Icon icon="solar:home-2-line-duotone" className="text-xl" />
           </Link>
 
           <button
