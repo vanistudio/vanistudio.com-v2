@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import AdminCMS from "@/components/contents/administrator/_cms/AdminCMS";
+import CmsPageList from "@/components/contents/administrator/_cms/AdminCmsPageList";
 
 export const metadata: Metadata = {
   title: "Quản lý trang CMS | Trang quản trị",
@@ -7,5 +7,6 @@ export const metadata: Metadata = {
 };
 
 export default function AdminCMSPage() {
-  return <AdminCMS />;
+  return <CmsPageList />;
 }
+

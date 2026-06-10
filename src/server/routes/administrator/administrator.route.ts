@@ -5,6 +5,7 @@ import { settingsRouter } from "./settings.route";
 import { extensionsRouter } from "./extensions.route";
 import { deniesRouter } from "./denies.route";
 import { galleryRouter } from "./gallery.route";
+import { cmsRouter } from "./cms.route";
 
 export const administratorRouter = router({
   menu: menuRouter,
@@ -13,4 +14,5 @@ export const administratorRouter = router({
   extensions: extensionsRouter,
   denies: deniesRouter,
   gallery: galleryRouter,
+  cms: cmsRouter,
 });
