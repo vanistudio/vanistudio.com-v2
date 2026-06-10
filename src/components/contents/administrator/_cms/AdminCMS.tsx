@@ -14,6 +14,7 @@ import { GalleryDialog } from "@/components/vanixjnk/gallery-dialog";
 import { DataTable, DataTableColumnHeader } from "@/components/vanixjnk/data-table";
 import { ColumnDef, SortingState } from "@tanstack/react-table";
 import { toast } from "sonner";
+import { MdxRenderer, MdxEditor, UI_COMPONENTS_TEMPLATES, insertMdxAtCursor } from "@/components/vanixjnk/mdx-builder";
 import { cn } from "@/lib/utils";
 
 // Định nghĩa Interface dữ liệu CMS
@@ -43,11 +44,65 @@ const INITIAL_PAGES: CmsPageMock[] = [
 
 Chúng tôi là một tập thể sáng tạo chuyên thiết kế **Website chuyên nghiệp**, phát triển **Ứng dụng di động**, giải pháp **Chatbot AI** và **giao diện UI/UX** chất lượng cao.
 
-## Tầm nhìn
-Trở thành đơn vị tiên phong kiến tạo giải pháp công nghệ hiện đại, nâng tầm trải nghiệm người dùng và giúp các doanh nghiệp tối ưu hoạt động kinh doanh trực tuyến.
+<Alert variant="default" className="border-vanixjnk/20 bg-vanixjnk/5 text-foreground my-4">
+  <Icon icon="solar:info-square-line-duotone" className="size-5 text-vanixjnk" />
+  <AlertTitle className="text-vanixjnk font-bold">Thông báo</AlertTitle>
+  <AlertDescription>Vani Studio vừa ra mắt phiên bản v2 với giao diện quản trị hiện đại, hỗ trợ soạn thảo MDX phong phú.</AlertDescription>
+</Alert>
 
-## Sứ mệnh
-Mang lại giá trị tối đa cho khách hàng thông qua những sản phẩm chất lượng tốt nhất với thiết kế chỉn chu, hiện đại.`,
+## Tầm nhìn & Sứ mệnh
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+  <Card className="border-border/60 bg-card">
+    <CardHeader>
+      <CardTitle className="flex items-center gap-2 text-vanixjnk">
+        <Icon icon="solar:eye-line-duotone" className="size-5" />
+        <span>Tầm nhìn</span>
+      </CardTitle>
+    </CardHeader>
+    <CardContent>
+      Trở thành đơn vị tiên phong kiến tạo giải pháp công nghệ hiện đại, nâng tầm trải nghiệm người dùng.
+    </CardContent>
+  </Card>
+
+  <Card className="border-border/60 bg-card">
+    <CardHeader>
+      <CardTitle className="flex items-center gap-2 text-vanixjnk">
+        <Icon icon="solar:stars-line-duotone" className="size-5" />
+        <span>Sứ mệnh</span>
+      </CardTitle>
+    </CardHeader>
+    <CardContent>
+      Mang lại giá trị tối đa cho khách hàng thông qua những sản phẩm chất lượng tốt nhất với thiết kế chỉn chu.
+    </CardContent>
+  </Card>
+</div>
+
+## Câu hỏi thường gặp
+
+<Accordion type="single" collapsible className="w-full border border-border/60 rounded-xl px-4 py-2 bg-muted/10">
+  <AccordionItem value="item-1">
+    <AccordionTrigger>Thời gian hoàn thành một dự án thiết kế UI/UX là bao lâu?</AccordionTrigger>
+    <AccordionContent>
+      Thời gian trung bình khoảng từ 2 đến 4 tuần tùy thuộc vào quy mô và yêu cầu cụ thể của từng dự án.
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="item-2">
+    <AccordionTrigger>Vani Studio có hỗ trợ sau bàn giao không?</AccordionTrigger>
+    <AccordionContent>
+      Có, chúng tôi cung cấp gói bảo hành 12 tháng miễn phí và hỗ trợ kỹ thuật 24/7 sau khi bàn giao sản phẩm.
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>
+
+<div className="flex gap-2.5 mt-6">
+  <Button variant="default" className="bg-vanixjnk text-white hover:bg-vanixjnk/90">
+    Liên hệ ngay
+  </Button>
+  <Button variant="outline" className="border-border/80">
+    Xem bảng giá
+  </Button>
+</div>`,
     thumbnail: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80",
     metaTitle: "Giới thiệu về Vani Studio | Thiết kế UI/UX & Website",
     metaDescription: "Tìm hiểu thêm về đội ngũ phát triển, văn hóa và dịch vụ thiết kế UI/UX, website chuyên nghiệp tại Vani Studio.",
@@ -164,8 +219,16 @@ export default function AdminCMS() {
   // State tab trong Trình soạn thảo (content = Nội dung, seo = Cấu hình SEO)
   const [editorTab, setEditorTab] = useState<"content" | "seo">("content");
 
-  // State tab trong Khung Soạn thảo Markdown (write = Soạn thảo, preview = Xem thử trực quan)
-  const [contentTab, setContentTab] = useState<"write" | "preview">("write");
+  // Trình target cho gallery picker (thumbnail = Ảnh đại diện, editor = Chèn vào nội dung)
+  const [galleryTarget, setGalleryTarget] = useState<"thumbnail" | "editor">("thumbnail");
+
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+
+  const insertAtCursor = (textToInsert: string) => {
+    insertMdxAtCursor(textareaRef.current, textToInsert, formData.content || "", (val) => {
+      setFormData((prev) => ({ ...prev, content: val }));
+    });
+  };
 
   // Debounce tìm kiếm
   useEffect(() => {
@@ -211,7 +274,6 @@ export default function AdminCMS() {
     });
     setEditingPage(null);
     setEditorTab("content");
-    setContentTab("write");
     setViewMode("editor");
   };
 
@@ -220,7 +282,6 @@ export default function AdminCMS() {
     setEditingPage(page);
     setFormData({ ...page });
     setEditorTab("content");
-    setContentTab("write");
     setViewMode("editor");
   };
 
@@ -481,21 +542,9 @@ export default function AdminCMS() {
     },
   ], [pagination]);
 
-  // Render định dạng Markdown đơn giản (cho khung Preview)
+  // Render định dạng MDX (sử dụng component dùng chung)
   const renderMarkdown = (text: string) => {
-    if (!text) return <p className="text-muted-foreground italic text-xs">Chưa có nội dung soạn thảo...</p>;
-    return text.split("\n").map((line, idx) => {
-      if (line.startsWith("# ")) {
-        return <h1 key={idx} className="text-2xl font-extrabold text-foreground mt-4 mb-2 border-b pb-1">{line.slice(2)}</h1>;
-      }
-      if (line.startsWith("## ")) {
-        return <h2 key={idx} className="text-xl font-bold text-foreground mt-3 mb-2">{line.slice(3)}</h2>;
-      }
-      if (line.startsWith("- ")) {
-        return <li key={idx} className="list-disc list-inside ml-4 my-1 text-[13px] text-muted-foreground">{line.slice(2)}</li>;
-      }
-      return <p key={idx} className="text-[13px] leading-relaxed text-muted-foreground my-2">{line}</p>;
-    });
+    return <MdxRenderer content={text} scope={{ formData }} />;
   };
 
   return (
@@ -746,71 +795,17 @@ export default function AdminCMS() {
                         />
                       </div>
 
-                      {/* Khung Editor Markdown giả lập */}
-                      <div className="border border-border/80 rounded-xl overflow-hidden bg-background">
-                        {/* Editor Toolbar Header */}
-                        <div className="flex items-center justify-between border-b border-border/80 bg-muted/10 p-2">
-                          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-                            <button type="button" className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground" title="Đậm"><Icon icon="solar:text-bold-bold" className="size-4" /></button>
-                            <button type="button" className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground" title="Nghiêng"><Icon icon="solar:text-italic-bold" className="size-4" /></button>
-                            <button type="button" className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground" title="Tiêu đề 1"><Icon icon="solar:text-square-bold" className="size-4" /></button>
-                            <div className="w-px h-4 bg-border/80 mx-1 shrink-0" />
-                            <button type="button" className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground" title="Danh sách"><Icon icon="solar:list-down-minimalistic-bold" className="size-4" /></button>
-                            <button type="button" className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground" title="Khối mã"><Icon icon="solar:code-line-duotone" className="size-4" /></button>
-                            <button type="button" className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground" title="Đường dẫn"><Icon icon="solar:link-broken-bold" className="size-4" /></button>
-                            <button
-                              type="button"
-                              onClick={() => setGalleryOpen(true)}
-                              className="p-1 rounded hover:bg-muted text-vanixjnk hover:text-vanixjnk flex items-center gap-0.5"
-                              title="Thêm ảnh từ thư viện"
-                            >
-                              <Icon icon="solar:gallery-line-duotone" className="size-4" />
-                              <span className="text-[9px] font-bold hidden sm:inline">Thêm ảnh</span>
-                            </button>
-                          </div>
-
-                          <div className="flex items-center gap-1 p-0.5 rounded-lg bg-muted/20 border border-border/60 whitespace-nowrap shrink-0">
-                            <button
-                              type="button"
-                              onClick={() => setContentTab("write")}
-                              className={cn(
-                                "flex items-center justify-center gap-1.5 px-3 py-1 rounded-md text-[11px] font-bold transition-all duration-200 shrink-0",
-                                contentTab === "write"
-                                  ? "bg-vanixjnk/15 border border-vanixjnk/25 text-vanixjnk shadow-xs"
-                                  : "border border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
-                              )}
-                            >
-                              <span>Viết</span>
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setContentTab("preview")}
-                              className={cn(
-                                "flex items-center justify-center gap-1.5 px-3 py-1 rounded-md text-[11px] font-bold transition-all duration-200 shrink-0",
-                                contentTab === "preview"
-                                  ? "bg-vanixjnk/15 border border-vanixjnk/25 text-vanixjnk shadow-xs"
-                                  : "border border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
-                              )}
-                            >
-                              <span>Xem trước</span>
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Editor Body */}
-                        {contentTab === "write" ? (
-                          <Textarea
-                            value={formData.content}
-                            onChange={(e) => setFormData((prev) => ({ ...prev, content: e.target.value }))}
-                            placeholder="Soạn thảo nội dung trang bằng định dạng Markdown hoặc văn bản thuần..."
-                            className="h-[300px] border-0 rounded-none focus-visible:ring-0 text-xs font-mono p-4 resize-none leading-relaxed"
-                          />
-                        ) : (
-                          <div className="h-[300px] overflow-y-auto p-4 bg-muted/5 font-sans prose dark:prose-invert max-w-none">
-                            {renderMarkdown(formData.content || "")}
-                          </div>
-                        )}
-                      </div>
+                      {/* Khung Editor MDX / Markdown tích hợp */}
+                      <MdxEditor
+                        ref={textareaRef}
+                        value={formData.content || ""}
+                        onChange={(val) => setFormData((prev) => ({ ...prev, content: val }))}
+                        onOpenGallery={() => {
+                          setGalleryTarget("editor");
+                          setGalleryOpen(true);
+                        }}
+                        scope={{ formData }}
+                      />
                     </div>
                   )}
 
@@ -857,7 +852,7 @@ export default function AdminCMS() {
                   {/* Card trạng thái hoạt động */}
                   <div className="border border-border/60 rounded-xl bg-muted/10 p-4 space-y-4">
                     <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5 border-b pb-2 border-border/60">
-                      <Icon icon="solar:settings-bold" className="size-4 text-vanixjnk" />
+                      <Icon icon="solar:settings-line-duotone" className="size-4 text-vanixjnk" />
                       Trạng thái & Xuất bản
                     </h4>
                     
@@ -888,7 +883,7 @@ export default function AdminCMS() {
                   {/* Card Thumbnail ảnh đại diện */}
                   <div className="border border-border/60 rounded-xl bg-muted/10 p-4 space-y-3">
                     <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5 border-b pb-2 border-border/60">
-                      <Icon icon="solar:gallery-bold" className="size-4 text-vanixjnk" />
+                      <Icon icon="solar:gallery-line-duotone" className="size-4 text-vanixjnk" />
                       Ảnh đại diện trang (Thumbnail)
                     </h4>
 
@@ -901,7 +896,10 @@ export default function AdminCMS() {
                       />
                       <button
                         type="button"
-                        onClick={() => setGalleryOpen(true)}
+                        onClick={() => {
+                          setGalleryTarget("thumbnail");
+                          setGalleryOpen(true);
+                        }}
                         className="size-9 flex items-center justify-center bg-vanixjnk/10 text-vanixjnk border border-vanixjnk/20 rounded-md hover:bg-vanixjnk/20 transition-colors shrink-0"
                         title="Chọn ảnh"
                       >
@@ -915,6 +913,40 @@ export default function AdminCMS() {
                       ) : (
                         <span className="text-[11px] text-muted-foreground flex items-center gap-1.5"><Icon icon="solar:gallery-remove-line-duotone" /> Chưa có ảnh bìa</span>
                       )}
+                    </div>
+                  </div>
+
+                  {/* Card Thư viện Component (Shadcn UI & MDX) */}
+                  <div className="border border-border/60 rounded-xl bg-muted/10 p-4 space-y-3">
+                    <div className="flex flex-col gap-0.5 border-b pb-2 border-border/60">
+                      <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                        <Icon icon="solar:widget-add-line-duotone" className="size-4 text-vanixjnk" />
+                        Thành phần UI (MDX & Shadcn)
+                      </h4>
+                      <span className="text-[10px] text-muted-foreground">Click để chèn nhanh component tại con trỏ</span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      {UI_COMPONENTS_TEMPLATES.map((comp) => (
+                        <button
+                          key={`side-${comp.name}`}
+                          type="button"
+                          onClick={() => insertAtCursor(comp.template)}
+                          className="flex flex-col items-start gap-1 p-2 rounded-lg bg-background border border-border/60 hover:border-vanixjnk/40 hover:bg-vanixjnk/5 transition-all duration-200 group text-left w-full shadow-2xs"
+                        >
+                          <div className="flex items-center gap-1.5 w-full">
+                            <div className="size-6 rounded-md bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-vanixjnk/10 group-hover:text-vanixjnk transition-colors shrink-0">
+                              <Icon icon={comp.icon} className="size-4" />
+                            </div>
+                            <span className="text-[11px] font-bold text-foreground group-hover:text-vanixjnk transition-colors truncate">
+                              {comp.name}
+                            </span>
+                          </div>
+                          <span className="text-[9px] text-muted-foreground line-clamp-1">
+                            {comp.description}
+                          </span>
+                        </button>
+                      ))}
                     </div>
                   </div>
 
@@ -934,15 +966,18 @@ export default function AdminCMS() {
         open={galleryOpen}
         onOpenChange={setGalleryOpen}
         onSelect={(url) => {
-          setFormData((prev) => {
-            if (contentTab === "write" && editorTab === "content") {
-              const newContent = prev.content 
-                ? prev.content + `\n![Hình ảnh](${url})`
-                : `![Hình ảnh](${url})`;
-              return { ...prev, content: newContent, thumbnail: prev.thumbnail || url };
-            }
-            return { ...prev, thumbnail: url };
-          });
+          if (galleryTarget === "editor") {
+            insertAtCursor(`\n![Hình ảnh](${url})\n`);
+            setFormData((prev) => ({
+              ...prev,
+              thumbnail: prev.thumbnail || url
+            }));
+          } else {
+            setFormData((prev) => ({
+              ...prev,
+              thumbnail: url
+            }));
+          }
           setGalleryOpen(false);
           toast.success("Đã chọn ảnh thành công!");
         }}
