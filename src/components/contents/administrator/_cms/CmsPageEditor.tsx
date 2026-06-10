@@ -82,12 +82,8 @@ export default function CmsPageEditor({ mode, initialId }: CmsPageEditorProps) {
     });
   };
 
-  const handleGenerateSlug = () => {
-    if (!formData.title) {
-      toast.error("Vui lòng nhập Tiêu đề trước khi tạo Slug!");
-      return;
-    }
-    const slug = formData.title
+  const slugify = (text: string) => {
+    return text
       .toLowerCase()
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
@@ -96,9 +92,6 @@ export default function CmsPageEditor({ mode, initialId }: CmsPageEditorProps) {
       .trim()
       .replace(/\s+/g, "-")
       .replace(/-+/g, "-");
-    
-    setFormData((prev) => ({ ...prev, slug }));
-    toast.success("Đã tạo Slug tự động thành công!");
   };
 
   const handleSave = async () => {
@@ -288,23 +281,22 @@ export default function CmsPageEditor({ mode, initialId }: CmsPageEditorProps) {
                       </label>
                       <Input
                         value={formData.title || ""}
-                        onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setFormData((prev) => ({
+                            ...prev,
+                            title: val,
+                            slug: slugify(val),
+                          }));
+                        }}
                         placeholder="Ví dụ: Về chúng tôi - Vani Studio"
                         className="h-9 text-xs"
                       />
                     </div>
 
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-foreground flex items-center justify-between w-full">
-                        <span>Đường dẫn URL thân thiện (Slug) <span className="text-red-500">*</span></span>
-                        <button
-                          type="button"
-                          onClick={handleGenerateSlug}
-                          className="text-[10px] text-vanixjnk hover:underline flex items-center gap-1 font-bold"
-                        >
-                          <Icon icon="solar:magic-stick-2-line-duotone" />
-                          Tự động tạo
-                        </button>
+                      <label className="text-xs font-bold text-foreground">
+                        Đường dẫn URL thân thiện (Slug) <span className="text-red-500">*</span>
                       </label>
                       <div className="flex gap-2">
                         <div className="flex items-center bg-muted/40 border border-border/80 px-2.5 rounded-md text-[11px] text-muted-foreground select-none font-mono">

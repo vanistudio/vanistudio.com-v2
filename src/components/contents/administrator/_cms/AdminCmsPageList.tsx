@@ -6,6 +6,7 @@ import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -21,7 +22,7 @@ import { CmsPageMock } from "./types";
 export default function CmsPageList() {
   const router = useRouter();
 
-  const { data: serverPages, isLoading, refetch } = trpc.administrator.cms.getAll.useQuery(undefined, {
+  const { data: serverPages, isLoading, refetch, isFetching } = trpc.administrator.cms.getAll.useQuery(undefined, {
     refetchOnWindowFocus: false,
   });
 
@@ -255,7 +256,7 @@ export default function CmsPageList() {
           <Button
             variant="ghost"
             size="icon"
-            className="size-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+            className="size-8 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10"
             onClick={() => triggerDelete(row.original)}
           >
             <Icon icon="solar:trash-bin-trash-line-duotone" className="size-4" />
@@ -285,20 +286,9 @@ export default function CmsPageList() {
                 </p>
               </div>
             </div>
-            
-            <Button
-              variant="vanixjnk"
-              size="sm"
-              onClick={handleCreateNew}
-              className="gap-1.5 shrink-0 font-semibold shadow-md"
-            >
-              <Icon icon="solar:add-circle-line-duotone" className="text-lg" />
-              <span>Tạo trang mới</span>
-            </Button>
           </div>
         </div>
       </div>
-
       <div
         className="relative w-full border-t border-b border-dashed border-primary/20 overflow-hidden text-primary/20"
         style={{ height: "36px" }}
@@ -311,107 +301,173 @@ export default function CmsPageList() {
         />
       </div>
 
-      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col mb-10">
-        <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col p-6 min-h-[500px]">
-          <div className="space-y-6">
-            <DataTable
-              columns={columns}
-              data={paginatedPages}
-              isLoading={!isLoaded}
-              searchPlaceholder="Tìm kiếm theo tiêu đề hoặc slug..."
-              pageCount={Math.ceil(filteredPages.length / pagination.pageSize)}
-              totalRecords={filteredPages.length}
-              pagination={pagination}
-              onPaginationChange={setPagination}
-              sorting={sorting}
-              onSortingChange={setSorting}
-              toolbarInput={
-                <div className="flex items-center gap-2 w-full">
-                  <div className="relative flex-1">
-                    <Icon
-                      icon="solar:magnifer-line-duotone"
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm"
-                    />
-                    <Input
-                      placeholder="Tìm kiếm theo tiêu đề hoặc slug..."
-                      className="pl-9 h-9 text-sm w-full"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                  </div>
-                  
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className={cn(
-                          "h-9 w-9 border-border bg-background hover:bg-muted/50 shrink-0",
-                          filterActive !== "all" && "text-vanixjnk border-vanixjnk/30 bg-vanixjnk/5 hover:bg-vanixjnk/10"
-                        )}
-                        title="Lọc trạng thái"
-                      >
-                        <Icon icon="solar:filter-line-duotone" className="size-4 shrink-0" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-56 p-3 flex flex-col gap-2" align="end">
-                      <div className="flex flex-col gap-1.5">
-                        <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-                          Trạng thái
-                        </label>
-                        <Select value={filterActive} onValueChange={(val: any) => setFilterActive(val)}>
-                          <SelectTrigger size="sm" className="w-full justify-between bg-background border-border">
-                            <SelectValue placeholder="Chọn trạng thái" />
-                          </SelectTrigger>
-                          <SelectContent position="popper" align="start">
-                            <SelectItem value="all">Tất cả</SelectItem>
-                            <SelectItem value="active">Hoạt động</SelectItem>
-                            <SelectItem value="inactive">Tạm ẩn</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
+      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
+        <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col">
+          <div className="p-6 border-b border-border/60 flex flex-col gap-6">
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="p-4 rounded-xl border bg-background/60 flex items-center justify-between">
+                <div className="space-y-1">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Tổng số trang CMS</p>
+                  <h3 className="text-2xl font-extrabold text-foreground tracking-tight">
+                    {isLoading ? <Skeleton className="h-8 w-16" /> : pages.length}
+                  </h3>
                 </div>
-              }
-            />
+                <div className="size-10 rounded-lg text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 flex items-center justify-center shrink-0">
+                  <Icon icon="solar:bookmark-line-duotone" className="text-xl" />
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl border bg-background/60 flex items-center justify-between">
+                <div className="space-y-1">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Đã xuất bản</p>
+                  <h3 className="text-2xl font-extrabold text-foreground tracking-tight">
+                    {isLoading ? <Skeleton className="h-8 w-16" /> : pages.filter((p) => p.isActive).length}
+                  </h3>
+                </div>
+                <div className="size-10 rounded-lg text-green-500 bg-green-500/10 border border-green-500/25 flex items-center justify-center shrink-0">
+                  <Icon icon="solar:check-circle-line-duotone" className="text-xl" />
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl border bg-background/60 flex items-center justify-between">
+                <div className="space-y-1">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Bản nháp</p>
+                  <h3 className="text-2xl font-extrabold text-foreground tracking-tight">
+                    {isLoading ? <Skeleton className="h-8 w-16" /> : pages.filter((p) => !p.isActive).length}
+                  </h3>
+                </div>
+                <div className="size-10 rounded-lg text-amber-500 bg-amber-500/10 border border-amber-500/25 flex items-center justify-center shrink-0">
+                  <Icon icon="solar:file-text-line-duotone" className="text-xl" />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4 pt-4 border-t border-border/50">
+              <div className="flex flex-row items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-base font-bold text-foreground">Danh sách trang hoạt động</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Danh sách các trang thông tin tĩnh và bài viết CMS trên website.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => refetch()}
+                    disabled={isLoading || isFetching}
+                    className="gap-1.5 shrink-0"
+                  >
+                    <Icon
+                      icon="solar:restart-line-duotone"
+                      className={cn("text-base", (isLoading || isFetching) && "animate-spin")}
+                    />
+                    <span>Làm mới</span>
+                  </Button>
+                  <Button
+                    variant="vanixjnk"
+                    size="sm"
+                    onClick={handleCreateNew}
+                    className="gap-1.5 shrink-0"
+                  >
+                    <Icon icon="solar:add-circle-line-duotone" className="text-base" />
+                    <span>Tạo trang mới</span>
+                  </Button>
+                </div>
+              </div>
+
+              <DataTable
+                columns={columns}
+                data={paginatedPages}
+                isLoading={isLoading}
+                searchPlaceholder="Tìm kiếm theo tiêu đề hoặc slug..."
+                pageCount={Math.ceil(filteredPages.length / pagination.pageSize)}
+                totalRecords={filteredPages.length}
+                pagination={pagination}
+                onPaginationChange={setPagination}
+                sorting={sorting}
+                onSortingChange={setSorting}
+                toolbarInput={
+                  <div className="flex items-center gap-2 w-full">
+                    <div className="relative flex-1">
+                      <Icon
+                        icon="solar:magnifer-line-duotone"
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm"
+                      />
+                      <Input
+                        placeholder="Tìm kiếm theo tiêu đề hoặc slug..."
+                        className="pl-9 h-9 text-sm w-full"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                    </div>
+                    
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className={cn(
+                            "h-9 w-9 border-border bg-background hover:bg-muted/50 shrink-0",
+                            filterActive !== "all" && "text-vanixjnk border-vanixjnk/30 bg-vanixjnk/5 hover:bg-vanixjnk/10"
+                          )}
+                          title="Lọc trạng thái"
+                        >
+                          <Icon icon="solar:filter-line-duotone" className="size-4 shrink-0" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-56 p-3 flex flex-col gap-2" align="end">
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                            Trạng thái
+                          </label>
+                          <Select value={filterActive} onValueChange={(val: any) => setFilterActive(val)}>
+                            <SelectTrigger size="sm" className="w-full justify-between bg-background border-border">
+                              <SelectValue placeholder="Chọn trạng thái" />
+                            </SelectTrigger>
+                            <SelectContent position="popper" align="start">
+                              <SelectItem value="all">Tất cả</SelectItem>
+                              <SelectItem value="active">Hoạt động</SelectItem>
+                              <SelectItem value="inactive">Tạm ẩn</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                }
+              />
+            </div>
+
           </div>
         </div>
       </div>
 
-      <GalleryDialog
-        open={false}
-        onOpenChange={() => {}}
-        onSelect={() => {}}
-      />
-
       <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-        <DialogContent className="sm:max-w-[420px] p-6">
+        <DialogContent className="sm:max-w-[380px]">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2.5 text-destructive font-bold">
-              <Icon icon="solar:danger-line-duotone" className="size-5" />
-              <span>Xác nhận xóa trang?</span>
+            <DialogTitle className="flex items-center gap-2 text-red-500">
+              <Icon icon="solar:danger-triangle-line-duotone" className="text-xl" />
+              <span>Xác nhận xóa trang CMS</span>
             </DialogTitle>
-            <DialogDescription className="text-xs text-muted-foreground pt-1.5">
-              Hành động này sẽ xóa vĩnh viễn trang CMS <strong>{pageToDelete?.title}</strong> khỏi cơ sở dữ liệu. Bạn chắc chắn muốn tiếp tục chứ?
-            </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="mt-4 gap-2 sm:gap-0">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setDeleteConfirmOpen(false)}
-              className="text-xs"
-            >
+          <div className="py-2 text-sm text-muted-foreground">
+            Bạn có chắc chắn muốn xóa trang CMS <strong className="text-foreground font-semibold">{pageToDelete?.title}</strong> không? Hành động này không thể hoàn tác và trang sẽ bị xóa hoàn toàn khỏi hệ thống.
+          </div>
+          <DialogFooter className="pt-2">
+            <Button variant="outline" onClick={() => setDeleteConfirmOpen(false)}>
               Hủy
             </Button>
             <Button
-              variant="destructive"
-              size="sm"
+              variant="danger"
               onClick={confirmDelete}
-              className="text-xs font-bold"
+              disabled={deleteMutation.isPending}
             >
-              Xóa trang
+              {deleteMutation.isPending && (
+                <Icon icon="solar:restart-line-duotone" className="mr-1.5 size-4 animate-spin" />
+              )}
+              Xác nhận xóa trang
             </Button>
           </DialogFooter>
         </DialogContent>
