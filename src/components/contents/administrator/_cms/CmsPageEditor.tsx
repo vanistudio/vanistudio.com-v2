@@ -12,7 +12,8 @@ import { GalleryDialog } from "@/components/vanixjnk/gallery-dialog";
 import { toast } from "sonner";
 import { MdxEditor, UI_COMPONENTS_TEMPLATES, insertMdxAtCursor } from "@/components/vanixjnk/mdx-builder";
 import { cn } from "@/lib/utils";
-import { CmsPageMock, getStoredPages, saveStoredPages } from "./types";
+import { trpc } from "@/lib/trpc";
+import { CmsPageMock } from "./types";
 
 interface CmsPageEditorProps {
   mode: "create" | "edit";
@@ -21,7 +22,6 @@ interface CmsPageEditorProps {
 
 export default function CmsPageEditor({ mode, initialId }: CmsPageEditorProps) {
   const router = useRouter();
-  const [pages, setPages] = useState<CmsPageMock[]>([]);
   const [formData, setFormData] = useState<Partial<CmsPageMock>>({
     title: "",
     slug: "",
@@ -37,22 +37,44 @@ export default function CmsPageEditor({ mode, initialId }: CmsPageEditorProps) {
   const [editorTab, setEditorTab] = useState<"content" | "seo">("content");
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryTarget, setGalleryTarget] = useState<"thumbnail" | "editor">("thumbnail");
+  const [isSaving, setIsSaving] = useState(false);
 
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
-  useEffect(() => {
-    const allPages = getStoredPages();
-    setPages(allPages);
-    if (mode === "edit" && initialId) {
-      const page = allPages.find((p) => p.id === initialId);
-      if (page) {
-        setFormData({ ...page });
-      } else {
-        toast.error("Không tìm thấy trang CMS yêu cầu!");
-        router.push("/adminPanel/cms");
-      }
+  const { data: serverPage, isLoading: isLoadingPage, error: loadError } = trpc.administrator.cms.getById.useQuery(
+    { id: initialId as string },
+    {
+      enabled: mode === "edit" && !!initialId,
+      refetchOnWindowFocus: false,
+      retry: false,
     }
-  }, [mode, initialId, router]);
+  );
+
+  const createMutation = trpc.administrator.cms.create.useMutation();
+  const updateMutation = trpc.administrator.cms.update.useMutation();
+
+  useEffect(() => {
+    if (serverPage) {
+      setFormData({
+        title: serverPage.title,
+        slug: serverPage.slug,
+        description: serverPage.description || "",
+        content: serverPage.content,
+        thumbnail: serverPage.thumbnail || "",
+        metaTitle: serverPage.metaTitle || "",
+        metaDescription: serverPage.metaDescription || "",
+        metaKeywords: serverPage.metaKeywords || "",
+        isActive: serverPage.isActive,
+      });
+    }
+  }, [serverPage]);
+
+  useEffect(() => {
+    if (loadError) {
+      toast.error(loadError.message || "Không thể tải dữ liệu trang CMS!");
+      router.push("/adminPanel/cms");
+    }
+  }, [loadError, router]);
 
   const insertAtCursor = (textToInsert: string) => {
     insertMdxAtCursor(textareaRef.current, textToInsert, formData.content || "", (val) => {
@@ -79,7 +101,7 @@ export default function CmsPageEditor({ mode, initialId }: CmsPageEditorProps) {
     toast.success("Đã tạo Slug tự động thành công!");
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData.title?.trim()) {
       toast.error("Tiêu đề trang không được để trống!");
       return;
@@ -93,45 +115,59 @@ export default function CmsPageEditor({ mode, initialId }: CmsPageEditorProps) {
       return;
     }
 
-    let updatedPages = [...pages];
-
-    if (mode === "edit" && initialId) {
-      updatedPages = pages.map((p) =>
-        p.id === initialId
-          ? ({
-              ...p,
-              ...formData,
-              publishedAt: formData.isActive ? (p.publishedAt || new Date().toISOString()) : null,
-            } as CmsPageMock)
-          : p
-      );
-      toast.success("Cập nhật trang CMS thành công!");
-    } else {
-      const newPage: CmsPageMock = {
-        id: Date.now().toString(),
-        title: formData.title,
-        slug: formData.slug,
-        description: formData.description || "",
-        content: formData.content,
-        thumbnail: formData.thumbnail || "",
-        metaTitle: formData.metaTitle || "",
-        metaDescription: formData.metaDescription || "",
-        metaKeywords: formData.metaKeywords || "",
-        isActive: formData.isActive || false,
-        publishedAt: formData.isActive ? new Date().toISOString() : null,
-        createdAt: new Date().toISOString(),
-      };
-      updatedPages = [newPage, ...pages];
-      toast.success("Thêm mới trang CMS thành công!");
+    try {
+      setIsSaving(true);
+      if (mode === "edit" && initialId) {
+        await updateMutation.mutateAsync({
+          id: initialId,
+          data: {
+            title: formData.title,
+            slug: formData.slug,
+            description: formData.description || null,
+            content: formData.content,
+            thumbnail: formData.thumbnail || null,
+            metaTitle: formData.metaTitle || null,
+            metaDescription: formData.metaDescription || null,
+            metaKeywords: formData.metaKeywords || null,
+            isActive: formData.isActive ?? true,
+          },
+        });
+        toast.success("Cập nhật trang CMS thành công!");
+      } else {
+        await createMutation.mutateAsync({
+          title: formData.title,
+          slug: formData.slug,
+          description: formData.description || null,
+          content: formData.content,
+          thumbnail: formData.thumbnail || null,
+          metaTitle: formData.metaTitle || null,
+          metaDescription: formData.metaDescription || null,
+          metaKeywords: formData.metaKeywords || null,
+          isActive: formData.isActive ?? true,
+        });
+        toast.success("Thêm mới trang CMS thành công!");
+      }
+      router.push("/adminPanel/cms");
+      router.refresh();
+    } catch (err: any) {
+      toast.error(err.message || "Lỗi khi lưu bài viết");
+    } finally {
+      setIsSaving(false);
     }
-
-    saveStoredPages(updatedPages);
-    router.push("/adminPanel/cms");
   };
 
   const handleCancel = () => {
     router.push("/adminPanel/cms");
   };
+
+  if (mode === "edit" && isLoadingPage) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] w-full gap-3 text-muted-foreground pt-32">
+        <Icon icon="solar:restart-line-duotone" className="size-8 animate-spin text-vanixjnk" />
+        <span className="text-xs font-semibold">Đang tải thông tin bài viết...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col w-full flex-1">
@@ -202,9 +238,14 @@ export default function CmsPageEditor({ mode, initialId }: CmsPageEditorProps) {
                   variant="vanixjnk"
                   size="sm"
                   onClick={handleSave}
+                  disabled={isSaving}
                   className="gap-1.5 font-bold shadow-md text-xs"
                 >
-                  <Icon icon="solar:diskette-line-duotone" className="size-4" />
+                  {isSaving ? (
+                    <Icon icon="solar:restart-line-duotone" className="size-4 animate-spin" />
+                  ) : (
+                    <Icon icon="solar:diskette-line-duotone" className="size-4" />
+                  )}
                   <span>Lưu bài viết</span>
                 </Button>
               </div>

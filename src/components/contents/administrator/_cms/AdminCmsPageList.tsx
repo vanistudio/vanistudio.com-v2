@@ -15,12 +15,24 @@ import { toast } from "sonner";
 import { MdxRenderer } from "@/components/vanixjnk/mdx-builder";
 import { GalleryDialog } from "@/components/vanixjnk/gallery-dialog";
 import { cn } from "@/lib/utils";
-import { CmsPageMock, getStoredPages, saveStoredPages } from "./types";
+import { trpc } from "@/lib/trpc";
+import { CmsPageMock } from "./types";
 
 export default function CmsPageList() {
   const router = useRouter();
-  const [pages, setPages] = useState<CmsPageMock[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+
+  const { data: serverPages, isLoading, refetch } = trpc.administrator.cms.getAll.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
+
+  const deleteMutation = trpc.administrator.cms.delete.useMutation({
+    onSuccess: () => {
+      refetch();
+    },
+  });
+
+  const pages = serverPages || [];
+  const isLoaded = !isLoading;
 
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -29,14 +41,9 @@ export default function CmsPageList() {
   const [filterActive, setFilterActive] = useState<"all" | "active" | "inactive">("all");
 
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [pageToDelete, setPageToDelete] = useState<CmsPageMock | null>(null);
+  const [pageToDelete, setPageToDelete] = useState<any | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewPage, setPreviewPage] = useState<CmsPageMock | null>(null);
-
-  useEffect(() => {
-    setPages(getStoredPages());
-    setIsLoaded(true);
-  }, []);
+  const [previewPage, setPreviewPage] = useState<any | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -59,14 +66,16 @@ export default function CmsPageList() {
     setDeleteConfirmOpen(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (pageToDelete) {
-      const updated = pages.filter((p) => p.id !== pageToDelete.id);
-      setPages(updated);
-      saveStoredPages(updated);
-      toast.success(`Đã xóa thành công trang "${pageToDelete.title}"!`);
-      setDeleteConfirmOpen(false);
-      setPageToDelete(null);
+      try {
+        await deleteMutation.mutateAsync({ id: pageToDelete.id });
+        toast.success(`Đã xóa thành công trang "${pageToDelete.title}"!`);
+        setDeleteConfirmOpen(false);
+        setPageToDelete(null);
+      } catch (err: any) {
+        toast.error(err.message || "Không thể xóa trang CMS này");
+      }
     }
   };
 

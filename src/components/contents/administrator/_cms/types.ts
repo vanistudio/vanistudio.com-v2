@@ -2,15 +2,16 @@ export interface CmsPageMock {
   id: string;
   title: string;
   slug: string;
-  description: string;
+  description: string | null;
   content: string;
-  thumbnail: string;
-  metaTitle: string;
-  metaDescription: string;
-  metaKeywords: string;
+  thumbnail: string | null;
+  metaTitle: string | null;
+  metaDescription: string | null;
+  metaKeywords: string | null;
   isActive: boolean;
-  publishedAt: string | null;
-  createdAt: string;
+  publishedAt: Date | string | null;
+  createdAt: Date | string;
+  updatedAt?: Date | string;
 }
 
 export const INITIAL_PAGES: CmsPageMock[] = [
