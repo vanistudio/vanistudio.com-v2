@@ -230,8 +230,8 @@ export default function AdminExtensions() {
                       onClick={() => setActiveTab(tab.id)}
                       className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl border transition-all duration-200 ${
                         activeTab === tab.id
-                          ? "bg-vanixjnk/10 border-vanixjnk/25 text-vanixjnk shadow-sm"
-                          : "bg-muted/30 border-transparent text-muted-foreground hover:bg-muted/70 hover:text-foreground"
+                          ? "bg-vanixjnk/15 border-vanixjnk/25 text-vanixjnk shadow-sm"
+                          : "border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
                       }`}
                     >
                       <Icon

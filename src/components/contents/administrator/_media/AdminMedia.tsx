@@ -358,8 +358,8 @@ export default function AdminMedia() {
                       className={cn(
                         "flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all duration-200 cursor-pointer",
                         activeTab === tab.id
-                          ? "bg-vanixjnk/10 border-vanixjnk/25 text-vanixjnk shadow-sm"
-                          : "bg-muted/30 border-transparent text-muted-foreground hover:bg-muted/70 hover:text-foreground"
+                          ? "bg-vanixjnk/15 border-vanixjnk/25 text-vanixjnk shadow-sm"
+                          : "border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
                       )}
                     >
                       <Icon icon={tab.icon} className="size-4" />
