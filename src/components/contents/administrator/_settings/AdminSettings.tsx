@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { TIMEZONE_DATA } from "@/constants/timezones.constant";
 import { LANGUAGE_DATA } from "@/constants/languages.constant";
 import { CURRENCY_DATA } from "@/constants/currencies.constant";
+import { GalleryDialog } from "@/components/vanixjnk/gallery-dialog";
 
 const TABS = [
   { id: "general", title: "Cấu hình chung", icon: "solar:globus-line-duotone" },
@@ -50,6 +51,19 @@ export default function AdminSettings() {
   const [timezoneSearch, setTimezoneSearch] = useState("");
   const [languageSearch, setLanguageSearch] = useState("");
   const [currencySearch, setCurrencySearch] = useState("");
+
+  const [galleryDialogOpen, setGalleryDialogOpen] = useState(false);
+  const [activeFieldPicker, setActiveFieldPicker] = useState<"favicon" | "logo" | "ogImage" | null>(null);
+
+  const handleSelectImage = (url: string) => {
+    if (activeFieldPicker === "favicon") {
+      setSiteFavicon(url);
+    } else if (activeFieldPicker === "logo") {
+      setSiteLogo(url);
+    } else if (activeFieldPicker === "ogImage") {
+      setSiteOgImage(url);
+    }
+  };
 
   const filteredTimezones = Object.values(TIMEZONE_DATA).filter((tz) =>
     tz.code.toLowerCase().includes(timezoneSearch.toLowerCase()) ||
@@ -406,7 +420,7 @@ export default function AdminSettings() {
                     </div>
 
                     <div className="space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="grid grid-cols-1 gap-6">
                         <div className="space-y-2">
                           <label className="text-xs font-bold text-foreground">Màu chủ đạo (Theme Color)</label>
                           <ColorPicker
@@ -414,35 +428,100 @@ export default function AdminSettings() {
                             onChange={setSiteColor}
                           />
                         </div>
-
-                        <div className="space-y-2">
-                          <label className="text-xs font-bold text-foreground">Favicon (URL)</label>
-                          <Input
-                            value={siteFavicon || ""}
-                            onChange={(e) => setSiteFavicon(e.target.value)}
-                            placeholder="/favicon.ico"
-                          />
-                        </div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <label className="text-xs font-bold text-foreground">Logo trang web (Logo URL)</label>
-                          <Input
-                            value={siteLogo || ""}
-                            onChange={(e) => setSiteLogo(e.target.value)}
-                            placeholder="/logo.png"
-                          />
+                      <div className="flex flex-col gap-6 pt-4 border-t border-border/50">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                          <div className="flex flex-col gap-2">
+                            <label className="text-[13px] font-bold text-foreground flex items-center gap-1.5"><Icon icon="solar:gallery-line-duotone" className="size-4 text-muted-foreground" /> URL Logo</label>
+                            <div className="flex items-center gap-2">
+                              <Input
+                                value={siteLogo || ""}
+                                onChange={(e) => setSiteLogo(e.target.value)}
+                                placeholder="Ví dụ: https://domain.com/logo.png"
+                                className="h-9 shadow-sm text-[13px] flex-1"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setActiveFieldPicker("logo");
+                                  setGalleryDialogOpen(true);
+                                }}
+                                className="size-9 flex items-center justify-center bg-vanixjnk/10 text-vanixjnk border border-vanixjnk/20 rounded-md hover:bg-vanixjnk/20 transition-colors shrink-0"
+                              >
+                                <Icon icon="solar:gallery-line-duotone" className="size-5" />
+                              </button>
+                            </div>
+                          </div>
+                          <div className="flex flex-col justify-center border border-border/50 rounded-xl bg-muted/10 min-h-[82px] p-2 items-center text-center">
+                            {siteLogo ? (
+                              <img src={siteLogo} alt="Preview Logo" className="max-h-20 max-w-full object-contain drop-shadow-sm" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                            ) : (
+                              <span className="text-[12px] font-medium text-muted-foreground flex items-center gap-1.5"><Icon icon="solar:gallery-remove-line-duotone" /> Chưa có hình ảnh</span>
+                            )}
+                          </div>
                         </div>
 
-                        <div className="space-y-2">
-                          <label className="text-xs font-bold text-foreground">Ảnh OpenGraph (OG Image URL)</label>
-                          <Input
-                            value={siteOgImage || ""}
-                            onChange={(e) => setSiteOgImage(e.target.value)}
-                            placeholder="Đường dẫn ảnh đại diện khi share..."
-                          />
-                          <p className="text-[10px] text-muted-foreground">Kích thước khuyên dùng: 1200x630px.</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                          <div className="flex flex-col gap-2">
+                            <label className="text-[13px] font-bold text-foreground flex items-center gap-1.5"><Icon icon="solar:star-fall-line-duotone" className="size-4 text-muted-foreground" /> URL Favicon</label>
+                            <div className="flex items-center gap-2">
+                              <Input
+                                value={siteFavicon || ""}
+                                onChange={(e) => setSiteFavicon(e.target.value)}
+                                placeholder="Ví dụ: https://domain.com/favicon.ico"
+                                className="h-9 shadow-sm text-[13px] flex-1"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setActiveFieldPicker("favicon");
+                                  setGalleryDialogOpen(true);
+                                }}
+                                className="size-9 flex items-center justify-center bg-vanixjnk/10 text-vanixjnk border border-vanixjnk/20 rounded-md hover:bg-vanixjnk/20 transition-colors shrink-0"
+                              >
+                                <Icon icon="solar:gallery-line-duotone" className="size-5" />
+                              </button>
+                            </div>
+                          </div>
+                          <div className="flex flex-col justify-center border border-border/50 rounded-xl bg-muted/10 min-h-[82px] p-2 items-center text-center">
+                            {siteFavicon ? (
+                              <img src={siteFavicon} alt="Preview Favicon" className="max-h-20 max-w-full object-contain drop-shadow-sm" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                            ) : (
+                              <span className="text-[12px] font-medium text-muted-foreground flex items-center gap-1.5"><Icon icon="solar:gallery-remove-line-duotone" /> Chưa có hình ảnh</span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                          <div className="flex flex-col gap-2">
+                            <label className="text-[13px] font-bold text-foreground flex items-center gap-1.5"><Icon icon="solar:monitor-camera-line-duotone" className="size-4 text-muted-foreground" /> URL OG Image (Ảnh xem trước khi chia sẻ)</label>
+                            <div className="flex items-center gap-2">
+                              <Input
+                                value={siteOgImage || ""}
+                                onChange={(e) => setSiteOgImage(e.target.value)}
+                                placeholder="Ví dụ: https://domain.com/og-image.png"
+                                className="h-9 shadow-sm text-[13px] flex-1"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setActiveFieldPicker("ogImage");
+                                  setGalleryDialogOpen(true);
+                                }}
+                                className="size-9 flex items-center justify-center bg-vanixjnk/10 text-vanixjnk border border-vanixjnk/20 rounded-md hover:bg-vanixjnk/20 transition-colors shrink-0"
+                              >
+                                <Icon icon="solar:gallery-line-duotone" className="size-5" />
+                              </button>
+                            </div>
+                          </div>
+                          <div className="flex flex-col justify-center border border-border/50 rounded-xl bg-muted/10 min-h-[82px] p-2 items-center text-center">
+                            {siteOgImage ? (
+                              <img src={siteOgImage} alt="Preview OG Image" className="max-h-20 max-w-full object-contain drop-shadow-sm" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                            ) : (
+                              <span className="text-[12px] font-medium text-muted-foreground flex items-center gap-1.5"><Icon icon="solar:gallery-remove-line-duotone" /> Chưa có hình ảnh</span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -618,6 +697,11 @@ export default function AdminSettings() {
           </div>
         </DialogContent>
       </Dialog>
+      <GalleryDialog
+        open={galleryDialogOpen}
+        onOpenChange={setGalleryDialogOpen}
+        onSelect={handleSelectImage}
+      />
     </div>
   );
 }
