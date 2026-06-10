@@ -194,280 +194,279 @@ export default function CmsPageEditor({ mode, initialId }: CmsPageEditorProps) {
         />
       </div>
 
-      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col mb-10">
-        <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col p-6 min-h-[500px]">
-          <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/60">
-              <div className="flex items-center gap-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleCancel}
-                  className="size-8 rounded-lg p-0 shrink-0"
-                  title="Quay lại danh sách"
-                >
-                  <Icon icon="solar:arrow-left-line-duotone" className="size-5" />
-                </Button>
-                <div>
-                  <h2 className="text-base font-bold text-foreground">
-                    {mode === "edit" ? "Chỉnh sửa trang CMS" : "Tạo trang CMS mới"}
-                  </h2>
-                  <p className="text-xs text-muted-foreground">
-                    {mode === "edit" ? `Đang chỉnh sửa nội dung cho: ${formData.title}` : "Điền thông tin và tạo bài viết tĩnh mới."}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 self-end sm:self-auto">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleCancel}
-                  className="text-xs font-semibold"
-                >
-                  Hủy
-                </Button>
-                <Button
-                  variant="vanixjnk"
-                  size="sm"
-                  onClick={handleSave}
-                  disabled={isSaving}
-                  className="gap-1.5 font-bold shadow-md text-xs"
-                >
-                  {isSaving ? (
-                    <Icon icon="solar:restart-line-duotone" className="size-4 animate-spin" />
-                  ) : (
-                    <Icon icon="solar:diskette-line-duotone" className="size-4" />
-                  )}
-                  <span>Lưu bài viết</span>
-                </Button>
+      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
+        <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col p-6 gap-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/60">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCancel}
+                className="size-8 rounded-lg p-0 shrink-0"
+                title="Quay lại danh sách"
+              >
+                <Icon icon="solar:arrow-left-line-duotone" className="size-5" />
+              </Button>
+              <div>
+                <h2 className="text-base font-bold text-foreground">
+                  {mode === "edit" ? "Chỉnh sửa trang CMS" : "Tạo trang CMS mới"}
+                </h2>
+                <p className="text-xs text-muted-foreground">
+                  {mode === "edit" ? `Đang chỉnh sửa nội dung cho: ${formData.title}` : "Điền thông tin và tạo bài viết tĩnh mới."}
+                </p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-              <div className="lg:col-span-8 space-y-5">
-                <div className="grid grid-cols-2 sm:flex items-center gap-1.5 p-1 rounded-xl bg-muted/20 border border-border/60 w-full sm:w-auto sm:self-start whitespace-nowrap">
-                  <button
-                    onClick={() => setEditorTab("content")}
-                    className={cn(
-                      "flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 shrink-0 w-full sm:w-auto",
-                      editorTab === "content"
-                        ? "bg-vanixjnk/15 border border-vanixjnk/25 text-vanixjnk shadow-sm"
-                        : "border border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
-                    )}
-                  >
-                    <Icon icon="solar:document-text-line-duotone" className="size-4" />
-                    <span>Nội dung bài viết</span>
-                  </button>
-                  <button
-                    onClick={() => setEditorTab("seo")}
-                    className={cn(
-                      "flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 shrink-0 w-full sm:w-auto",
-                      editorTab === "seo"
-                        ? "bg-vanixjnk/15 border border-vanixjnk/25 text-vanixjnk shadow-sm"
-                        : "border border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
-                    )}
-                  >
-                    <Icon icon="solar:magnifer-zoom-in-line-duotone" className="size-4" />
-                    <span>Tối ưu SEO (Meta)</span>
-                  </button>
-                </div>
+            <div className="flex items-center gap-2 self-end sm:self-auto">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCancel}
+                className="text-xs font-semibold"
+              >
+                Hủy
+              </Button>
+              <Button
+                variant="vanixjnk"
+                size="sm"
+                onClick={handleSave}
+                disabled={isSaving}
+                className="gap-1.5 font-bold shadow-md text-xs"
+              >
+                {isSaving ? (
+                  <Icon icon="solar:restart-line-duotone" className="size-4 animate-spin" />
+                ) : (
+                  <Icon icon="solar:diskette-line-duotone" className="size-4" />
+                )}
+                <span>Lưu bài viết</span>
+              </Button>
+            </div>
+          </div>
 
-                {editorTab === "content" && (
-                  <div className="space-y-4">
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-foreground flex items-center gap-1">
-                        Tiêu đề trang <span className="text-red-500">*</span>
-                      </label>
-                      <Input
-                        value={formData.title || ""}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setFormData((prev) => ({
-                            ...prev,
-                            title: val,
-                            slug: slugify(val),
-                          }));
-                        }}
-                        placeholder="Ví dụ: Về chúng tôi - Vani Studio"
-                        className="h-9 text-xs"
-                      />
-                    </div>
+          <div className="grid grid-cols-2 sm:flex items-center gap-1.5 p-1 rounded-xl bg-muted/20 border border-border/60 w-full sm:w-auto sm:self-start whitespace-nowrap">
+            <button
+              onClick={() => setEditorTab("content")}
+              className={cn(
+                "flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 shrink-0 w-full sm:w-auto",
+                editorTab === "content"
+                  ? "bg-vanixjnk/15 border border-vanixjnk/25 text-vanixjnk shadow-sm"
+                  : "border border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+              )}
+            >
+              <Icon icon="solar:document-text-line-duotone" className="size-4" />
+              <span>Nội dung bài viết</span>
+            </button>
+            <button
+              onClick={() => setEditorTab("seo")}
+              className={cn(
+                "flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 shrink-0 w-full sm:w-auto",
+                editorTab === "seo"
+                  ? "bg-vanixjnk/15 border border-vanixjnk/25 text-vanixjnk shadow-sm"
+                  : "border border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+              )}
+            >
+              <Icon icon="solar:magnifer-zoom-in-line-duotone" className="size-4" />
+              <span>Tối ưu SEO (Meta)</span>
+            </button>
+          </div>
 
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-foreground">
-                        Đường dẫn URL thân thiện (Slug) <span className="text-red-500">*</span>
-                      </label>
-                      <div className="flex gap-2">
-                        <div className="flex items-center bg-muted/40 border border-border/80 px-2.5 rounded-md text-[11px] text-muted-foreground select-none font-mono">
-                          /
-                        </div>
-                        <Input
-                          value={formData.slug || ""}
-                          onChange={(e) => setFormData((prev) => ({ ...prev, slug: e.target.value }))}
-                          placeholder="ve-chung-toi"
-                          className="h-9 text-xs font-mono"
-                        />
-                      </div>
-                    </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <div className="lg:col-span-8 space-y-5">
 
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-foreground">Mô tả ngắn</label>
-                      <Textarea
-                        value={formData.description || ""}
-                        onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-                        placeholder="Tóm tắt ngắn gọn nội dung trang CMS này dùng để hiển thị..."
-                        className="h-16 text-xs resize-none"
-                      />
-                    </div>
-
-                    <MdxEditor
-                      ref={textareaRef}
-                      value={formData.content || ""}
-                      onChange={(val) => setFormData((prev) => ({ ...prev, content: val }))}
-                      onOpenGallery={() => {
-                        setGalleryTarget("editor");
-                        setGalleryOpen(true);
+              {editorTab === "content" && (
+                <div className="space-y-4">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-bold text-foreground flex items-center gap-1">
+                      Tiêu đề trang <span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      value={formData.title || ""}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setFormData((prev) => ({
+                          ...prev,
+                          title: val,
+                          slug: slugify(val),
+                        }));
                       }}
-                      scope={{ formData }}
+                      placeholder="Ví dụ: Về chúng tôi - Vani Studio"
+                      className="h-9 text-xs"
                     />
                   </div>
-                )}
 
-                {editorTab === "seo" && (
-                  <div className="space-y-4">
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-foreground">Meta Title (Tiêu đề SEO)</label>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-bold text-foreground">
+                      Đường dẫn URL thân thiện (Slug) <span className="text-red-500">*</span>
+                    </label>
+                    <div className="flex gap-2">
+                      <div className="flex items-center bg-muted/40 border border-border/80 px-2.5 rounded-md text-[11px] text-muted-foreground select-none font-mono">
+                        /
+                      </div>
                       <Input
-                        value={formData.metaTitle || ""}
-                        onChange={(e) => setFormData((prev) => ({ ...prev, metaTitle: e.target.value }))}
-                        placeholder="Tiêu đề hiển thị trên thẻ trình duyệt Google..."
-                        className="h-9 text-xs"
-                      />
-                    </div>
-
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-foreground">Meta Description (Mô tả SEO)</label>
-                      <Textarea
-                        value={formData.metaDescription || ""}
-                        onChange={(e) => setFormData((prev) => ({ ...prev, metaDescription: e.target.value }))}
-                        placeholder="Nhập mô tả tóm tắt để tối ưu kết quả tìm kiếm..."
-                        className="h-24 text-xs resize-none"
-                      />
-                    </div>
-
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-foreground">Meta Keywords (Từ khóa SEO)</label>
-                      <Input
-                        value={formData.metaKeywords || ""}
-                        onChange={(e) => setFormData((prev) => ({ ...prev, metaKeywords: e.target.value }))}
-                        placeholder="Từ khóa SEO ngăn cách bởi dấu phẩy..."
-                        className="h-9 text-xs"
+                        value={formData.slug || ""}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, slug: e.target.value }))}
+                        placeholder="ve-chung-toi"
+                        className="h-9 text-xs font-mono"
                       />
                     </div>
                   </div>
-                )}
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-bold text-foreground">Mô tả ngắn</label>
+                    <Textarea
+                      value={formData.description || ""}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+                      placeholder="Tóm tắt ngắn gọn nội dung trang CMS này dùng để hiển thị..."
+                      className="h-16 text-xs resize-none"
+                    />
+                  </div>
+
+                  <MdxEditor
+                    ref={textareaRef}
+                    value={formData.content || ""}
+                    onChange={(val) => setFormData((prev) => ({ ...prev, content: val }))}
+                    onOpenGallery={() => {
+                      setGalleryTarget("editor");
+                      setGalleryOpen(true);
+                    }}
+                    scope={{ formData }}
+                  />
+                </div>
+              )}
+
+              {editorTab === "seo" && (
+                <div className="space-y-4">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-bold text-foreground">Meta Title (Tiêu đề SEO)</label>
+                    <Input
+                      value={formData.metaTitle || ""}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, metaTitle: e.target.value }))}
+                      placeholder="Tiêu đề hiển thị trên thẻ trình duyệt Google..."
+                      className="h-9 text-xs"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-bold text-foreground">Meta Description (Mô tả SEO)</label>
+                    <Textarea
+                      value={formData.metaDescription || ""}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, metaDescription: e.target.value }))}
+                      placeholder="Nhập mô tả tóm tắt để tối ưu kết quả tìm kiếm..."
+                      className="h-24 text-xs resize-none"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-bold text-foreground">Meta Keywords (Từ khóa SEO)</label>
+                    <Input
+                      value={formData.metaKeywords || ""}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, metaKeywords: e.target.value }))}
+                      placeholder="Từ khóa SEO ngăn cách bởi dấu phẩy..."
+                      className="h-9 text-xs"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="lg:col-span-4 space-y-6">
+              <div className="border border-border/60 rounded-xl bg-muted/10 p-4 space-y-4">
+                <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5 border-b pb-2 border-border/60">
+                  <Icon icon="solar:settings-line-duotone" className="size-4 text-vanixjnk" />
+                  Trạng thái & Xuất bản
+                </h4>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[12px] font-bold text-foreground">Kích hoạt trang</span>
+                    <span className="text-[10px] text-muted-foreground">Công khai bài viết ra ngoài.</span>
+                  </div>
+                  <Switch
+                    checked={formData.isActive || false}
+                    onCheckedChange={(val) => setFormData((prev) => ({ ...prev, isActive: val }))}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Ngày xuất bản</span>
+                  <div className="flex items-center gap-2 p-2.5 bg-background border border-border rounded-lg text-xs font-mono text-muted-foreground select-none">
+                    <Icon icon="solar:calendar-line-duotone" className="size-4" />
+                    {formData.isActive ? (
+                      <span>Tự động kích hoạt khi lưu</span>
+                    ) : (
+                      <span className="italic text-muted-foreground/60">(Đang ở chế độ ẩn)</span>
+                    )}
+                  </div>
+                </div>
               </div>
 
-              <div className="lg:col-span-4 space-y-6">
-                <div className="border border-border/60 rounded-xl bg-muted/10 p-4 space-y-4">
-                  <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5 border-b pb-2 border-border/60">
-                    <Icon icon="solar:settings-line-duotone" className="size-4 text-vanixjnk" />
-                    Trạng thái & Xuất bản
-                  </h4>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-[12px] font-bold text-foreground">Kích hoạt trang</span>
-                      <span className="text-[10px] text-muted-foreground">Công khai bài viết ra ngoài.</span>
-                    </div>
-                    <Switch
-                      checked={formData.isActive || false}
-                      onCheckedChange={(val) => setFormData((prev) => ({ ...prev, isActive: val }))}
-                    />
-                  </div>
+              <div className="border border-border/60 rounded-xl bg-muted/10 p-4 space-y-3">
+                <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5 border-b pb-2 border-border/60">
+                  <Icon icon="solar:gallery-line-duotone" className="size-4 text-vanixjnk" />
+                  Ảnh đại diện trang (Thumbnail)
+                </h4>
 
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Ngày xuất bản</span>
-                    <div className="flex items-center gap-2 p-2.5 bg-background border border-border rounded-lg text-xs font-mono text-muted-foreground select-none">
-                      <Icon icon="solar:calendar-line-duotone" className="size-4" />
-                      {formData.isActive ? (
-                        <span>Tự động kích hoạt khi lưu</span>
-                      ) : (
-                        <span className="italic text-muted-foreground/60">(Đang ở chế độ ẩn)</span>
-                      )}
-                    </div>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={formData.thumbnail || ""}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, thumbnail: e.target.value }))}
+                    placeholder="Đường dẫn ảnh bìa..."
+                    className="h-9 text-xs flex-1 font-mono"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setGalleryTarget("thumbnail");
+                      setGalleryOpen(true);
+                    }}
+                    className="size-9 flex items-center justify-center bg-vanixjnk/10 text-vanixjnk border border-vanixjnk/20 rounded-md hover:bg-vanixjnk/20 transition-colors shrink-0"
+                    title="Chọn ảnh"
+                  >
+                    <Icon icon="solar:gallery-line-duotone" className="size-5" />
+                  </button>
                 </div>
 
-                <div className="border border-border/60 rounded-xl bg-muted/10 p-4 space-y-3">
-                  <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5 border-b pb-2 border-border/60">
-                    <Icon icon="solar:gallery-line-duotone" className="size-4 text-vanixjnk" />
-                    Ảnh đại diện trang (Thumbnail)
-                  </h4>
+                <div className="flex flex-col justify-center border border-border/50 rounded-xl bg-muted/20 min-h-[120px] p-2 items-center text-center overflow-hidden">
+                  {formData.thumbnail ? (
+                    <img src={formData.thumbnail} alt="Thumbnail preview" className="max-h-24 w-auto object-contain rounded-lg shadow-sm" />
+                  ) : (
+                    <span className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+                      <Icon icon="solar:gallery-remove-line-duotone" /> Chưa có ảnh bìa
+                    </span>
+                  )}
+                </div>
+              </div>
 
-                  <div className="flex items-center gap-2">
-                    <Input
-                      value={formData.thumbnail || ""}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, thumbnail: e.target.value }))}
-                      placeholder="Đường dẫn ảnh bìa..."
-                      className="h-9 text-xs flex-1 font-mono"
-                    />
+              <div className="border border-border/60 rounded-xl bg-muted/10 p-4 space-y-3">
+                <div className="flex flex-col gap-0.5 border-b pb-2 border-border/60">
+                  <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                    <Icon icon="solar:widget-add-line-duotone" className="size-4 text-vanixjnk" />
+                    Thành phần UI (MDX & Shadcn)
+                  </h4>
+                  <span className="text-[10px] text-muted-foreground">Click để chèn nhanh component tại con trỏ</span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  {UI_COMPONENTS_TEMPLATES.map((comp) => (
                     <button
+                      key={`side-${comp.name}`}
                       type="button"
-                      onClick={() => {
-                        setGalleryTarget("thumbnail");
-                        setGalleryOpen(true);
-                      }}
-                      className="size-9 flex items-center justify-center bg-vanixjnk/10 text-vanixjnk border border-vanixjnk/20 rounded-md hover:bg-vanixjnk/20 transition-colors shrink-0"
-                      title="Chọn ảnh"
+                      onClick={() => insertAtCursor(comp.template)}
+                      className="flex flex-col items-start gap-1 p-2 rounded-lg bg-background border border-border/60 hover:border-vanixjnk/40 hover:bg-vanixjnk/5 transition-all duration-200 group text-left w-full shadow-2xs"
                     >
-                      <Icon icon="solar:gallery-line-duotone" className="size-5" />
-                    </button>
-                  </div>
-
-                  <div className="flex flex-col justify-center border border-border/50 rounded-xl bg-muted/20 min-h-[120px] p-2 items-center text-center overflow-hidden">
-                    {formData.thumbnail ? (
-                      <img src={formData.thumbnail} alt="Thumbnail preview" className="max-h-24 w-auto object-contain rounded-lg shadow-sm" />
-                    ) : (
-                      <span className="text-[11px] text-muted-foreground flex items-center gap-1.5">
-                        <Icon icon="solar:gallery-remove-line-duotone" /> Chưa có ảnh bìa
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="border border-border/60 rounded-xl bg-muted/10 p-4 space-y-3">
-                  <div className="flex flex-col gap-0.5 border-b pb-2 border-border/60">
-                    <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                      <Icon icon="solar:widget-add-line-duotone" className="size-4 text-vanixjnk" />
-                      Thành phần UI (MDX & Shadcn)
-                    </h4>
-                    <span className="text-[10px] text-muted-foreground">Click để chèn nhanh component tại con trỏ</span>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    {UI_COMPONENTS_TEMPLATES.map((comp) => (
-                      <button
-                        key={`side-${comp.name}`}
-                        type="button"
-                        onClick={() => insertAtCursor(comp.template)}
-                        className="flex flex-col items-start gap-1 p-2 rounded-lg bg-background border border-border/60 hover:border-vanixjnk/40 hover:bg-vanixjnk/5 transition-all duration-200 group text-left w-full shadow-2xs"
-                      >
-                        <div className="flex items-center gap-1.5 w-full">
-                          <div className="size-6 rounded-md bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-vanixjnk/10 group-hover:text-vanixjnk transition-colors shrink-0">
-                            <Icon icon={comp.icon} className="size-4" />
-                          </div>
-                          <span className="text-[11px] font-bold text-foreground group-hover:text-vanixjnk transition-colors truncate">
-                            {comp.name}
-                          </span>
+                      <div className="flex items-center gap-1.5 w-full">
+                        <div className="size-6 rounded-md bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-vanixjnk/10 group-hover:text-vanixjnk transition-colors shrink-0">
+                          <Icon icon={comp.icon} className="size-4" />
                         </div>
-                        <span className="text-[9px] text-muted-foreground line-clamp-1">
-                          {comp.description}
+                        <span className="text-[11px] font-bold text-foreground group-hover:text-vanixjnk transition-colors truncate">
+                          {comp.name}
                         </span>
-                      </button>
-                    ))}
-                  </div>
+                      </div>
+                      <span className="text-[9px] text-muted-foreground line-clamp-1">
+                        {comp.description}
+                      </span>
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
