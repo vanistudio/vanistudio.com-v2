@@ -17,6 +17,7 @@ import { MdxRenderer } from "@/components/vanixjnk/mdx-builder";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
 import { CmsPageMock } from "./types";
+import { QuickSeedCmsPagesDialog } from "./QuickSeedCmsPagesDialog";
 
 export default function CmsPageList() {
   const router = useRouter();
@@ -50,6 +51,7 @@ export default function CmsPageList() {
   const [pageToDelete, setPageToDelete] = useState<any | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewPage, setPreviewPage] = useState<any | null>(null);
+  const [seedDialogOpen, setSeedDialogOpen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -377,29 +379,45 @@ export default function CmsPageList() {
                     Danh sách các trang thông tin tĩnh và bài viết CMS trên website.
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => refetch()}
-                    disabled={isLoading || isFetching}
-                    className="gap-1.5 shrink-0"
-                  >
-                    <Icon
-                      icon="solar:restart-line-duotone"
-                      className={cn("text-base", (isLoading || isFetching) && "animate-spin")}
-                    />
-                    <span>Làm mới</span>
-                  </Button>
-                  <Button
-                    variant="vanixjnk"
-                    size="sm"
-                    onClick={handleCreateNew}
-                    className="gap-1.5 shrink-0"
-                  >
-                    <Icon icon="solar:add-circle-line-duotone" className="text-base" />
-                    <span>Tạo trang mới</span>
-                  </Button>
+                <div className="flex items-center gap-2 shrink-0">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="vanixjnk" size="sm" className="gap-1.5 shrink-0 cursor-pointer">
+                        <Icon icon="solar:hamburger-menu-line-duotone" className="text-base" />
+                        <span>Thao tác</span>
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-44 p-1 flex flex-col gap-0.5" align="end">
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start text-xs h-8 px-2 cursor-pointer"
+                        onClick={() => refetch()}
+                        disabled={isLoading || isFetching}
+                      >
+                        <Icon
+                          icon="solar:restart-line-duotone"
+                          className={cn("mr-2 size-3.5 text-sky-500", (isLoading || isFetching) && "animate-spin")}
+                        />
+                        Làm mới
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start text-xs h-8 px-2 cursor-pointer"
+                        onClick={handleCreateNew}
+                      >
+                        <Icon icon="solar:add-circle-line-duotone" className="mr-2 size-3.5 text-emerald-500" />
+                        Tạo trang mới
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start text-xs h-8 px-2 cursor-pointer"
+                        onClick={() => setSeedDialogOpen(true)}
+                      >
+                        <Icon icon="solar:database-line-duotone" className="mr-2 size-3.5 text-amber-500" />
+                        Đổ dữ liệu mẫu
+                      </Button>
+                    </PopoverContent>
+                  </Popover>
                 </div>
               </div>
 
@@ -561,6 +579,12 @@ export default function CmsPageList() {
           )}
         </DialogContent>
       </Dialog>
+
+      <QuickSeedCmsPagesDialog
+        open={seedDialogOpen}
+        onOpenChange={setSeedDialogOpen}
+        onSuccess={() => refetch()}
+      />
     </div>
   );
 }

@@ -68,6 +68,11 @@ export class CmsService {
     if (!page) throw new Error("Không tìm thấy trang CMS cần xóa");
     await cmsRepository.deletePage(id);
   }
+
+  async seedPages(customPages?: Omit<NewCmsPage, "id" | "createdAt" | "updatedAt">[]): Promise<any> {
+    await cmsRepository.seedDefaultPages(customPages);
+    return { resultCode: "SUCCESS", message: "Đổ dữ liệu mẫu trang CMS thành công" };
+  }
 }
 
 export const cmsService = new CmsService();

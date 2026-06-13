@@ -39,7 +39,41 @@ const updateSchema = z.object({
   isActive: z.boolean().optional(),
 });
 
+const seedSchema = z.object({
+  title: z.string().min(1, "Tiêu đề không được để trống"),
+  slug: z.string().min(1, "Đường dẫn không được để trống"),
+  description: z.string().optional().nullable(),
+  content: z.string().min(1, "Nội dung không được để trống"),
+  thumbnail: z.string().optional().nullable(),
+  metaTitle: z.string().optional().nullable(),
+  metaDescription: z.string().optional().nullable(),
+  metaKeywords: z.string().optional().nullable(),
+  isActive: z.boolean().default(true),
+  publishedAt: z.preprocess((arg) => {
+    if (typeof arg === "string" || arg instanceof Date) return new Date(arg);
+    return arg;
+  }, z.date().optional().nullable()),
+});
+
 export const cmsRouter = router({
+  seedPages: publicProcedure
+    .input(
+      z.object({
+        customPages: z.array(seedSchema).optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      await ensureAdmin();
+      try {
+        return await cmsService.seedPages(input.customPages);
+      } catch (error: any) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: error.message || "Không thể đổ dữ liệu mẫu trang CMS",
+        });
+      }
+    }),
+
   getAll: publicProcedure.query(async () => {
     await ensureAdmin();
     try {
