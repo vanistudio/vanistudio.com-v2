@@ -258,11 +258,11 @@ function highlightInlineMarkup(text: string): React.ReactNode {
     <>
       {tokens.map((t, idx) => {
         if (!t.type) return t.text;
-        if (t.type === "tag") return <span key={idx} className="text-vanixjnk font-semibold">{t.text}</span>;
-        if (t.type === "link") return <span key={idx} className="text-sky-500 hover:underline">{t.text}</span>;
-        if (t.type === "inline-code") return <span key={idx} className="text-emerald-500 font-mono font-medium bg-muted/30 px-1 py-0.5 rounded">{t.text}</span>;
-        if (t.type === "bold") return <span key={idx} className="font-bold text-foreground">{t.text}</span>;
-        if (t.type === "italic") return <span key={idx} className="italic text-muted-foreground">{t.text}</span>;
+        if (t.type === "tag") return <span key={idx} className="text-vanixjnk">{t.text}</span>;
+        if (t.type === "link") return <span key={idx} className="text-sky-500">{t.text}</span>;
+        if (t.type === "inline-code") return <span key={idx} className="text-emerald-500 font-mono bg-emerald-500/5">{t.text}</span>;
+        if (t.type === "bold") return <span key={idx} className="text-foreground bg-foreground/5">{t.text}</span>;
+        if (t.type === "italic") return <span key={idx} className="text-muted-foreground/90">{t.text}</span>;
         return t.text;
       })}
     </>
@@ -284,14 +284,14 @@ function highlightMarkdownMdx(text: string): React.ReactNode {
           if (line.trim().startsWith("```")) {
             inCodeBlock = false;
             return (
-              <span key={lineIdx} className="text-vanixjnk font-bold">
+              <span key={lineIdx} className="text-vanixjnk">
                 {line}
                 {!isLast && "\n"}
               </span>
             );
           }
           return (
-            <span key={lineIdx} className="text-muted-foreground/70">
+            <span key={lineIdx} className="text-emerald-500/70 dark:text-emerald-400/70 bg-emerald-500/5">
               {line}
               {!isLast && "\n"}
             </span>
@@ -301,7 +301,7 @@ function highlightMarkdownMdx(text: string): React.ReactNode {
         if (line.trim().startsWith("```")) {
           inCodeBlock = true;
           return (
-            <span key={lineIdx} className="text-vanixjnk font-bold">
+            <span key={lineIdx} className="text-vanixjnk">
               {line}
               {!isLast && "\n"}
             </span>
@@ -312,7 +312,7 @@ function highlightMarkdownMdx(text: string): React.ReactNode {
           const match = line.match(/^(#{1,6}\s+)(.*)$/);
           if (match) {
             return (
-              <span key={lineIdx} className="text-vanixjnk font-extrabold">
+              <span key={lineIdx} className="text-vanixjnk">
                 <span className="opacity-50 select-none">{match[1]}</span>
                 {highlightInlineMarkup(match[2])}
                 {!isLast && "\n"}
@@ -323,7 +323,7 @@ function highlightMarkdownMdx(text: string): React.ReactNode {
         
         if (line.startsWith(">")) {
           return (
-            <span key={lineIdx} className="text-muted-foreground/90 italic bg-muted/10 border-l-2 border-vanixjnk/20 pl-2 block my-0.5">
+            <span key={lineIdx} className="text-muted-foreground/80">
               {line}
               {!isLast && "\n"}
             </span>
@@ -335,7 +335,7 @@ function highlightMarkdownMdx(text: string): React.ReactNode {
           if (match) {
             return (
               <span key={lineIdx}>
-                <span className="text-vanixjnk font-bold">{match[1]} </span>
+                <span className="text-vanixjnk">{match[1]} </span>
                 {highlightInlineMarkup(match[2])}
                 {!isLast && "\n"}
               </span>
@@ -450,9 +450,9 @@ function highlightCode(code: string, lang: string): React.ReactNode {
         {tokens.map((t, idx) => {
           if (!t.type) return t.text;
           let colorClass = "";
-          if (t.type === "comment") colorClass = "text-muted-foreground italic opacity-75";
-          else if (t.type === "tag") colorClass = "text-vanixjnk font-semibold dark:text-vanixjnk/90";
-          else if (t.type === "string") colorClass = "text-emerald-500 font-medium dark:text-emerald-400";
+          if (t.type === "comment") colorClass = "text-muted-foreground opacity-75";
+          else if (t.type === "tag") colorClass = "text-vanixjnk dark:text-vanixjnk/90";
+          else if (t.type === "string") colorClass = "text-emerald-500 dark:text-emerald-400";
           else if (t.type === "attr") colorClass = "text-sky-500 dark:text-sky-400";
           return <span key={idx} className={colorClass}>{t.text}</span>;
         })}
@@ -497,8 +497,8 @@ function highlightCode(code: string, lang: string): React.ReactNode {
         {tokens.map((t, idx) => {
           if (!t.type) return t.text;
           let colorClass = "";
-          if (t.type === "comment") colorClass = "text-muted-foreground italic opacity-75";
-          else if (t.type === "selector") colorClass = "text-vanixjnk font-semibold dark:text-vanixjnk/90";
+          if (t.type === "comment") colorClass = "text-muted-foreground opacity-75";
+          else if (t.type === "selector") colorClass = "text-vanixjnk dark:text-vanixjnk/90";
           else if (t.type === "property") colorClass = "text-sky-500 dark:text-sky-400";
           else if (t.type === "value") {
             const valueStr = t.text;
@@ -1083,6 +1083,98 @@ export function MdxRenderer({ content, scope = {}, className }: MdxRendererProps
   }
 }
 
+const commonSmallStyle: React.CSSProperties = {
+  position: "absolute",
+  top: 0,
+  left: 0,
+  width: "100%",
+  height: "100%",
+  margin: 0,
+  padding: "16px",
+  border: "none",
+  outline: "none",
+  boxSizing: "border-box",
+  fontFamily: "var(--font-geist-mono, ui-monospace, monospace)",
+  fontSize: "12px",
+  lineHeight: "20px",
+  whiteSpace: "pre-wrap",
+  wordBreak: "break-word",
+  overflowWrap: "break-word",
+  overflowY: "scroll",
+  overflowX: "hidden",
+  textRendering: "optimizeLegibility",
+  letterSpacing: "normal",
+  wordSpacing: "normal",
+  textTransform: "none",
+  textIndent: "0px",
+  textShadow: "none",
+  textAlign: "start",
+  fontVariantLigatures: "none",
+  fontFeatureSettings: '"liga" 0, "clig" 0, "calt" 0',
+};
+
+const smallOverlayStyle: React.CSSProperties = {
+  ...commonSmallStyle,
+  pointerEvents: "none",
+  userSelect: "none",
+  backgroundColor: "transparent",
+  color: "inherit",
+};
+
+const smallTextareaStyle: React.CSSProperties = {
+  ...commonSmallStyle,
+  resize: "none",
+  color: "transparent",
+  backgroundColor: "transparent",
+  caretColor: "var(--foreground, currentColor)",
+};
+
+const commonMaximizedStyle: React.CSSProperties = {
+  position: "absolute",
+  top: 0,
+  left: 0,
+  width: "100%",
+  height: "100%",
+  margin: 0,
+  padding: "24px",
+  border: "none",
+  outline: "none",
+  boxSizing: "border-box",
+  fontFamily: "var(--font-geist-mono, ui-monospace, monospace)",
+  fontSize: "14px",
+  lineHeight: "24px",
+  whiteSpace: "pre-wrap",
+  wordBreak: "break-word",
+  overflowWrap: "break-word",
+  overflowY: "scroll",
+  overflowX: "hidden",
+  textRendering: "optimizeLegibility",
+  letterSpacing: "normal",
+  wordSpacing: "normal",
+  textTransform: "none",
+  textIndent: "0px",
+  textShadow: "none",
+  textAlign: "start",
+  fontVariantLigatures: "none",
+  fontFeatureSettings: '"liga" 0, "clig" 0, "calt" 0',
+};
+
+const maximizedOverlayStyle: React.CSSProperties = {
+  ...commonMaximizedStyle,
+  pointerEvents: "none",
+  userSelect: "none",
+  backgroundColor: "transparent",
+  color: "inherit",
+};
+
+const maximizedTextareaStyle: React.CSSProperties = {
+  ...commonMaximizedStyle,
+  resize: "none",
+  color: "transparent",
+  backgroundColor: "transparent",
+  caretColor: "var(--foreground, currentColor)",
+};
+
 export interface MdxEditorProps {
   value: string;
   onChange: (val: string) => void;
@@ -1339,13 +1431,11 @@ export const MdxEditor = React.forwardRef<HTMLTextAreaElement, MdxEditorProps>((
         <div className="relative w-full h-[300px] border-0 rounded-none overflow-hidden bg-background">
           <pre
             ref={smallOverlayRef}
-            className="absolute inset-0 w-full h-full p-4 text-xs font-mono whitespace-pre-wrap wrap-break-word leading-relaxed overflow-hidden bg-transparent border-0 pointer-events-none select-none text-foreground"
-            style={{
-              fontFamily: 'var(--font-geist-mono, monospace)',
-              margin: 0,
-            }}
+            className="absolute inset-0 pointer-events-none select-none text-foreground bg-transparent"
+            style={smallOverlayStyle}
           >
             {highlightMarkdownMdx(value)}
+            {value.endsWith("\n") ? "\n" : ""}
           </pre>
           <textarea
             ref={setRef}
@@ -1353,11 +1443,8 @@ export const MdxEditor = React.forwardRef<HTMLTextAreaElement, MdxEditorProps>((
             onScroll={handleSmallScroll}
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
-            className="absolute inset-0 w-full h-full border-0 focus:outline-none focus:ring-0 text-xs font-mono p-4 resize-none leading-relaxed bg-transparent text-transparent caret-foreground overflow-y-auto"
-            style={{
-              fontFamily: 'var(--font-geist-mono, monospace)',
-              resize: 'none',
-            }}
+            className="absolute inset-0 bg-transparent text-transparent caret-foreground outline-none focus:outline-none focus:ring-0"
+            style={smallTextareaStyle}
           />
         </div>
       ) : (
@@ -1634,13 +1721,11 @@ export const MdxEditor = React.forwardRef<HTMLTextAreaElement, MdxEditorProps>((
                     )}>
                       <pre
                         ref={maximizedOverlayRef}
-                        className="absolute inset-0 w-full h-full p-6 text-sm font-mono whitespace-pre-wrap wrap-break-word leading-relaxed overflow-hidden bg-transparent border-0 pointer-events-none select-none text-foreground"
-                        style={{
-                          fontFamily: 'var(--font-geist-mono, monospace)',
-                          margin: 0,
-                        }}
+                        className="absolute inset-0 pointer-events-none select-none text-foreground bg-transparent"
+                        style={maximizedOverlayStyle}
                       >
                         {highlightMarkdownMdx(value)}
+                        {value.endsWith("\n") ? "\n" : ""}
                       </pre>
                       <textarea
                         ref={setRef}
@@ -1648,11 +1733,8 @@ export const MdxEditor = React.forwardRef<HTMLTextAreaElement, MdxEditorProps>((
                         onScroll={handleMaximizedScroll}
                         onChange={(e) => onChange(e.target.value)}
                         placeholder={placeholder}
-                        className="absolute inset-0 w-full h-full border-0 focus:outline-none focus:ring-0 text-sm font-mono p-6 resize-none leading-relaxed bg-transparent text-transparent caret-foreground overflow-y-auto"
-                        style={{
-                          fontFamily: 'var(--font-geist-mono, monospace)',
-                          resize: 'none',
-                        }}
+                        className="absolute inset-0 bg-transparent text-transparent caret-foreground outline-none focus:outline-none focus:ring-0"
+                        style={maximizedTextareaStyle}
                       />
                     </div>
 
