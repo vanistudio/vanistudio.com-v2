@@ -5,12 +5,12 @@ import AppLayout from "@/components/layouts/application/AppLayout";
 import type { Metadata } from "next";
 
 interface Props {
-  params: Promise<{ slug: string }> | { slug: string };
+  params: Promise<{ cms: string }> | { cms: string };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedParams = await params;
-  const page = await cmsService.getPageBySlug(resolvedParams.slug);
+  const page = await cmsService.getPageBySlug(resolvedParams.cms);
 
   if (!page || !page.isActive) {
     return {
@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CmsPublicPage({ params }: Props) {
   const resolvedParams = await params;
-  const page = await cmsService.getPageBySlug(resolvedParams.slug);
+  const page = await cmsService.getPageBySlug(resolvedParams.cms);
 
   if (!page || !page.isActive) {
     notFound();
