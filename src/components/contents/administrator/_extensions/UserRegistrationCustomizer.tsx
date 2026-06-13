@@ -156,8 +156,8 @@ export default function UserRegistrationCustomizer({
           <div className="flex flex-col gap-1">
             <span className="font-bold text-sm text-foreground">Cấu hình không hợp lệ</span>
             <span className="text-[13px] leading-relaxed text-muted-foreground">
-              Bạn đang tắt đồng thời cả <strong>Email</strong>, <strong>Số điện thoại</strong> và <strong>Tên đăng nhập</strong>. 
-              Người dùng mới sẽ <strong>không thể đăng ký tài khoản</strong> vì thiếu thông tin định danh chính. 
+              Bạn đang tắt đồng thời cả <strong>Email</strong>, <strong>Số điện thoại</strong> và <strong>Tên đăng nhập</strong>.
+              Người dùng mới sẽ <strong>không thể đăng ký tài khoản</strong> vì thiếu thông tin định danh chính.
               Vui lòng bật lại ít nhất một trường để lưu cấu hình.
             </span>
           </div>
@@ -235,7 +235,7 @@ export default function UserRegistrationCustomizer({
 
         <Card className="border border-border shadow-sm rounded-xl overflow-hidden bg-card/30! p-0!">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm border-collapse">
+            <table className="w-full text-left text-sm border-collapse whitespace-nowrap">
               <thead>
                 <tr className="border-b border-border/60 bg-muted/40 text-muted-foreground text-xs font-bold uppercase">
                   <th className="p-4">Trường dữ liệu</th>
@@ -303,11 +303,7 @@ export default function UserRegistrationCustomizer({
           </div>
         </Card>
       </div>
-
-      {/* Cấu hình nâng cao - Ràng buộc nghiệp vụ */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        
-        {/* Ràng buộc Mật khẩu & Username */}
         <Card className="flex flex-col gap-6 p-6 border-border bg-card/30! shadow-sm">
           <div className="flex items-center gap-3">
             <div className="size-10 rounded-lg bg-orange-500/10 text-orange-500 flex items-center justify-center shrink-0">
@@ -318,12 +314,9 @@ export default function UserRegistrationCustomizer({
               <span className="text-[11px] text-muted-foreground font-medium">Thiết lập độ phức tạp mật khẩu và định dạng tên đăng nhập.</span>
             </div>
           </div>
-
           <div className="flex flex-col gap-5.5 pt-2">
-            {/* Username Validation */}
             <div className="flex flex-col gap-3 pb-4 border-b border-border/40">
               <span className="text-[13px] font-bold text-foreground/90">Quy tắc Tên đăng nhập</span>
-              
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[11px] font-semibold text-muted-foreground">Độ dài tối thiểu</label>
@@ -358,7 +351,6 @@ export default function UserRegistrationCustomizer({
                   />
                 </div>
               </div>
-
               <div className="flex flex-col gap-1.5">
                 <label className="text-[11px] font-semibold text-muted-foreground">Ký tự được chấp nhận</label>
                 <Select
@@ -381,11 +373,8 @@ export default function UserRegistrationCustomizer({
                 </Select>
               </div>
             </div>
-
-            {/* Password Validation */}
             <div className="flex flex-col gap-3">
               <span className="text-[13px] font-bold text-foreground/90">Quy tắc Mật khẩu</span>
-
               <div className="flex flex-col gap-1.5 pb-2">
                 <label className="text-[11px] font-semibold text-muted-foreground">Độ dài mật khẩu tối thiểu</label>
                 <Input
@@ -456,60 +445,98 @@ export default function UserRegistrationCustomizer({
             </div>
           </div>
         </Card>
-
-        {/* Email Whitelist & Blacklist */}
-        <Card className="flex flex-col gap-6 p-6 border-border bg-card/30! shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="size-10 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0">
-              <Icon icon="solar:global-line-duotone" className="size-5.5" />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-sm text-foreground">Bộ lọc tên miền Email</span>
-              <span className="text-[11px] text-muted-foreground font-medium">Hạn chế hoặc cho phép các tên miền email đăng ký cụ thể.</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-5 pt-2">
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[13px] font-bold text-foreground/90">Danh sách Tên miền Bị chặn</span>
-                <span className="text-[10px] bg-rose-500/10 text-rose-500 border border-rose-500/20 px-1.5 py-0.5 rounded font-semibold uppercase">Blacklist</span>
+        <div className="flex flex-col gap-8">
+          <Card className="flex flex-col gap-6 p-6 border-border bg-card/30! shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="size-10 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0">
+                <Icon icon="solar:global-line-duotone" className="size-5.5" />
               </div>
-              <p className="text-[11px] text-muted-foreground">Ngăn cản các địa chỉ email thuộc các tên miền này đăng ký (ví dụ các dịch vụ email rác). Cách nhau bằng dấu phẩy.</p>
-              <Textarea
-                value={(config.emailValidation?.blockedDomains || []).join(", ")}
-                onChange={(e) => onConfigChange({
-                  emailValidation: {
-                    ...(config.emailValidation || { blockedDomains: [], allowedDomains: [] }),
-                    blockedDomains: e.target.value.split(",").map(d => d.trim()).filter(Boolean)
-                  }
-                })}
-                placeholder="yopmail.com, mailinator.com, tempmail.com"
-                className="min-h-[90px] w-full"
-              />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[13px] font-bold text-foreground/90">Danh sách Tên miền Được phép</span>
-                <span className="text-[10px] bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-1.5 py-0.5 rounded font-semibold uppercase">Whitelist</span>
+              <div className="flex flex-col">
+                <span className="font-bold text-sm text-foreground">Bộ lọc tên miền Email</span>
+                <span className="text-[11px] text-muted-foreground font-medium">Hạn chế hoặc cho phép các tên miền email đăng ký cụ thể.</span>
               </div>
-              <p className="text-[11px] text-muted-foreground">Nếu cấu hình, hệ thống CHỈ cho phép các tên miền email này được đăng ký. Để trống nếu cho phép tất cả.</p>
-              <Textarea
-                value={(config.emailValidation?.allowedDomains || []).join(", ")}
-                onChange={(e) => onConfigChange({
-                  emailValidation: {
-                    ...(config.emailValidation || { blockedDomains: [], allowedDomains: [] }),
-                    allowedDomains: e.target.value.split(",").map(d => d.trim()).filter(Boolean)
-                  }
-                })}
-                placeholder="vanistudio.com, gmail.com"
-                className="min-h-[90px] w-full"
-              />
             </div>
-          </div>
-        </Card>
+            <div className="flex flex-col gap-5 pt-2">
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[13px] font-bold text-foreground/90">Danh sách Tên miền Được phép</span>
+                  <span className="text-[10px] bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-1.5 py-0.5 rounded font-semibold uppercase">Whitelist</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground">Nếu cấu hình, hệ thống CHỈ cho phép các tên miền email này được đăng ký. Để trống nếu cho phép tất cả.</p>
+                <Textarea
+                  value={(config.emailValidation?.allowedDomains || []).join(", ")}
+                  onChange={(e) => onConfigChange({
+                    emailValidation: {
+                      ...(config.emailValidation || { allowedDomains: [] }),
+                      allowedDomains: e.target.value.split(",").map(d => d.trim()).filter(Boolean)
+                    }
+                  })}
+                  placeholder="vanistudio.com, gmail.com"
+                  className="min-h-[90px] w-full"
+                />
+              </div>
+            </div>
+          </Card>
 
+          <Card className="flex flex-col gap-6 p-6 border-border bg-card/30! shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="size-10 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center shrink-0">
+                <Icon icon="solar:palette-round-line-duotone" className="size-5.5" />
+              </div>
+              <div className="flex flex-col">
+                <span className="font-bold text-sm text-foreground">Giao diện Biểu mẫu</span>
+                <span className="text-[11px] text-muted-foreground font-medium">Tùy chỉnh tiêu đề, mô tả ngắn và nhãn nút nhấn đăng ký.</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4 pt-2">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-semibold text-muted-foreground">Tiêu đề biểu mẫu</label>
+                <Input
+                  value={config.uiConfig?.title ?? "Đăng ký tài khoản"}
+                  onChange={(e) => onConfigChange({
+                    uiConfig: {
+                      ...(config.uiConfig || { title: "Đăng ký tài khoản", description: "Tạo tài khoản mới để trải nghiệm dịch vụ.", submitButtonText: "Đăng ký" }),
+                      title: e.target.value
+                    }
+                  })}
+                  placeholder="Nhập tiêu đề trang đăng ký..."
+                  className="h-9"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-semibold text-muted-foreground">Mô tả ngắn</label>
+                <Textarea
+                  value={config.uiConfig?.description ?? "Tạo tài khoản mới để trải nghiệm dịch vụ."}
+                  onChange={(e) => onConfigChange({
+                    uiConfig: {
+                      ...(config.uiConfig || { title: "Đăng ký tài khoản", description: "Tạo tài khoản mới để trải nghiệm dịch vụ.", submitButtonText: "Đăng ký" }),
+                      description: e.target.value
+                    }
+                  })}
+                  placeholder="Nhập mô tả ngắn..."
+                  className="min-h-[60px] w-full"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-semibold text-muted-foreground">Chữ trên nút đăng ký</label>
+                <Input
+                  value={config.uiConfig?.submitButtonText ?? "Đăng ký"}
+                  onChange={(e) => onConfigChange({
+                    uiConfig: {
+                      ...(config.uiConfig || { title: "Đăng ký tài khoản", description: "Tạo tài khoản mới để trải nghiệm dịch vụ.", submitButtonText: "Đăng ký" }),
+                      submitButtonText: e.target.value
+                    }
+                  })}
+                  placeholder="Nhập chữ hiển thị trên nút gửi..."
+                  className="h-9"
+                />
+              </div>
+            </div>
+          </Card>
+        </div>
       </div>
     </div>
   );

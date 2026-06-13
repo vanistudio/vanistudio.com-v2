@@ -104,11 +104,18 @@ interface AuthRegisterProps {
         isEnabled: boolean;
         config: {
             fields?: Record<string, { show: boolean; required: boolean; label?: string }>;
+            allowSocialLogin?: boolean;
+            uiConfig?: {
+                title?: string;
+                description?: string;
+                submitButtonText?: string;
+            };
         };
     };
+    isOauthEnabled?: boolean;
 }
 
-export default function AuthRegister({ initialConfig }: AuthRegisterProps) {
+export default function AuthRegister({ initialConfig, isOauthEnabled = true }: AuthRegisterProps) {
     const setting = useSetting();
     const router = useRouter();
     const { theme, setTheme } = useTheme();
@@ -230,7 +237,7 @@ export default function AuthRegister({ initialConfig }: AuthRegisterProps) {
                 </Button>
             </div>
 
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(124,58,237,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(124,58,237,0.05)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(124,58,237,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(124,58,237,0.05)_1px,transparent_1px)] bg-size-[32px_32px] pointer-events-none" />
 
             <div className={cn(
                 "relative z-10 w-full space-y-6 transition-all duration-300",
@@ -250,7 +257,7 @@ export default function AuthRegister({ initialConfig }: AuthRegisterProps) {
                 </div>
 
                 {!isRegisterEnabled ? (
-                    <Card className="w-full border-rose-500/25 bg-rose-500/[0.02]">
+                    <Card className="w-full border-rose-500/25 bg-rose-500/2">
                         <CardHeader className="text-center">
                             <div className="mx-auto size-14 rounded-full text-rose-500 bg-rose-500/10 border border-rose-500/25 flex items-center justify-center mb-3">
                                 <Icon icon="solar:danger-triangle-line-duotone" className="size-7" />
@@ -272,13 +279,13 @@ export default function AuthRegister({ initialConfig }: AuthRegisterProps) {
                             <div className="mx-auto size-14 rounded-full text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 flex items-center justify-center mb-3">
                                 <Icon icon="solar:user-plus-rounded-line-duotone" className="size-7" />
                             </div>
-                            <CardTitle className="text-2xl">Đăng ký tài khoản</CardTitle>
-                            <CardDescription>Tạo tài khoản mới để trải nghiệm dịch vụ</CardDescription>
+                            <CardTitle className="text-2xl">{regConfig.config?.uiConfig?.title || "Đăng ký tài khoản"}</CardTitle>
+                            <CardDescription>{regConfig.config?.uiConfig?.description || "Tạo tài khoản mới để trải nghiệm dịch vụ"}</CardDescription>
                         </CardHeader>
                         <form onSubmit={handleSubmit}>
                             <CardContent className="space-y-4">
                                 <div className="grid grid-cols-2 gap-x-4 gap-y-3.5">
-                                    {/* Dynamic Fields */}
+
                                     {activeFields.map((field) => {
                                         const meta = FIELD_METADATA[field.key] || {
                                             placeholder: "",
@@ -309,7 +316,7 @@ export default function AuthRegister({ initialConfig }: AuthRegisterProps) {
                                         );
                                     })}
 
-                                    {/* Password */}
+
                                     <div className="space-y-1.5 col-span-2 sm:col-span-1">
                                         <Label htmlFor="password">Mật khẩu <span className="text-rose-500">*</span></Label>
                                         <div className="relative">
@@ -329,7 +336,7 @@ export default function AuthRegister({ initialConfig }: AuthRegisterProps) {
                                         </div>
                                     </div>
 
-                                    {/* Confirm Password */}
+
                                     <div className="space-y-1.5 col-span-2 sm:col-span-1">
                                         <Label htmlFor="confirm-password">Xác nhận mật khẩu <span className="text-rose-500">*</span></Label>
                                         <div className="relative">
@@ -377,26 +384,30 @@ export default function AuthRegister({ initialConfig }: AuthRegisterProps) {
                                     {registerMutation.isPending ? (
                                         <Icon icon="solar:spinner-line-duotone" className="size-5 animate-spin mx-auto" />
                                     ) : (
-                                        <span>Đăng ký</span>
+                                        <span>{regConfig.config?.uiConfig?.submitButtonText || "Đăng ký"}</span>
                                     )}
                                 </Button>
 
-                                <div className="relative flex py-1 items-center">
-                                    <div className="flex-grow border-t border-border/60"></div>
-                                    <span className="flex-shrink mx-4 text-[11px] text-muted-foreground/80 font-medium">Hoặc đăng ký bằng</span>
-                                    <div className="flex-grow border-t border-border/60"></div>
-                                </div>
+                                {((regConfig.config?.allowSocialLogin ?? true) && isOauthEnabled) && (
+                                    <>
+                                        <div className="relative flex py-1 items-center">
+                                            <div className="grow border-t border-border/60"></div>
+                                            <span className="shrink mx-4 text-[11px] text-muted-foreground/80 font-medium">Hoặc đăng ký bằng</span>
+                                            <div className="grow border-t border-border/60"></div>
+                                        </div>
 
-                                <div className="grid grid-cols-2 gap-3 pb-1">
-                                    <Button id="register-google" variant="outline" className="w-full h-10 rounded-xl cursor-pointer gap-2" disabled={registerMutation.isPending}>
-                                        <Icon icon="logos:google-icon" className="text-base" />
-                                        <span className="text-xs font-semibold">Google</span>
-                                    </Button>
-                                    <Button id="register-github" variant="outline" className="w-full h-10 rounded-xl cursor-pointer gap-2" disabled={registerMutation.isPending}>
-                                        <Icon icon="logos:github-icon" className="text-base dark:invert" />
-                                        <span className="text-xs font-semibold">GitHub</span>
-                                    </Button>
-                                </div>
+                                        <div className="grid grid-cols-2 gap-3 pb-1">
+                                            <Button id="register-google" variant="outline" className="w-full h-10 rounded-xl cursor-pointer gap-2" disabled={registerMutation.isPending}>
+                                                <Icon icon="logos:google-icon" className="text-base" />
+                                                <span className="text-xs font-semibold">Google</span>
+                                            </Button>
+                                            <Button id="register-github" variant="outline" className="w-full h-10 rounded-xl cursor-pointer gap-2" disabled={registerMutation.isPending}>
+                                                <Icon icon="logos:github-icon" className="text-base dark:invert" />
+                                                <span className="text-xs font-semibold">GitHub</span>
+                                            </Button>
+                                        </div>
+                                    </>
+                                )}
                             </CardContent>
                         </form>
                     </Card>

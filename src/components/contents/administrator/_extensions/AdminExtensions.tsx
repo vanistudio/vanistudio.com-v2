@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import UserRegistrationCustomizer from "./UserRegistrationCustomizer";
+import UserLoginCustomizer from "./UserLoginCustomizer";
 import OauthProviders from "./OauthProviders";
 import CaptchaProvider from "./CaptchaProvider";
 import AnalyticsMarketing from "./AnalyticsMarketing";
@@ -18,6 +19,12 @@ const TABS = [
     title: "Tùy biến Form Đăng ký",
     icon: "solar:user-rounded-line-duotone",
     desc: "Tùy biến các trường nhập liệu và yêu cầu xác minh khi đăng ký thành viên.",
+  },
+  {
+    id: "user_login_customizer",
+    title: "Tùy biến Form Đăng nhập",
+    icon: "solar:login-2-line-duotone",
+    desc: "Cấu hình phương thức đăng nhập và giao diện của trang đăng nhập thành viên.",
   },
   {
     id: "oauth_providers",
@@ -251,10 +258,17 @@ export default function AdminExtensions() {
                   <p className="text-xs text-muted-foreground mt-0.5">{activeTabMeta?.desc}</p>
                 </div>
 
-                {activeTab === "user_registration_customizer" && (
+                 {activeTab === "user_registration_customizer" && (
                   <UserRegistrationCustomizer
                     isEnabled={activeExt.isEnabled}
                     onEnabledChange={(val) => handleEnabledChange(activeExt.id, val)}
+                    config={activeExt.config as any}
+                    onConfigChange={(val) => handleConfigChange(activeExt.id, val)}
+                  />
+                )}
+
+                {activeTab === "user_login_customizer" && (
+                  <UserLoginCustomizer
                     config={activeExt.config as any}
                     onConfigChange={(val) => handleConfigChange(activeExt.id, val)}
                   />

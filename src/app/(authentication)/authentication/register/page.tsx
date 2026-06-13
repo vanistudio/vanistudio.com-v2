@@ -19,5 +19,8 @@ export default async function RegisterPage() {
         config: {},
       };
 
-  return <AuthRegister initialConfig={initialConfig} />;
+  const oauthExt = await extensionsRepository.getExtensionById("oauth_providers");
+  const isOauthEnabled = oauthExt ? oauthExt.isEnabled : true;
+
+  return <AuthRegister initialConfig={initialConfig} isOauthEnabled={isOauthEnabled} />;
 }

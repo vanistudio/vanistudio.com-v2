@@ -14,13 +14,43 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useSetting } from "@/contexts/SettingContext";
 
-export default function AuthLogin() {
+interface AuthLoginProps {
+    initialConfig: {
+        isEnabled: boolean;
+        config: {
+            allowedMethods?: {
+                email: boolean;
+                phone: boolean;
+                username: boolean;
+            };
+            rememberMe?: {
+                enabled: boolean;
+                defaultChecked: boolean;
+            };
+            forgotPasswordEnabled?: boolean;
+            showRegisterLink?: boolean;
+            allowSocialLogin?: boolean;
+            uiConfig?: {
+                title?: string;
+                description?: string;
+                submitButtonText?: string;
+            };
+        };
+    };
+    isRegisterEnabled?: boolean;
+    isOauthEnabled?: boolean;
+}
+
+export default function AuthLogin({ initialConfig, isRegisterEnabled = true, isOauthEnabled = true }: AuthLoginProps) {
     const setting = useSetting();
     const router = useRouter();
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
     const [identity, setIdentity] = useState("");
     const [password, setPassword] = useState("");
+    const [remember, setRemember] = useState(
+        initialConfig.config?.rememberMe?.defaultChecked ?? true
+    );
 
     useEffect(() => {
         setMounted(true);
@@ -46,6 +76,39 @@ export default function AuthLogin() {
         loginMutation.mutate({ identity, password });
     };
 
+    const loginConfig = initialConfig;
+
+    const allowed = loginConfig.config?.allowedMethods || { email: true, phone: true, username: true };
+    const methodsList: string[] = [];
+    if (allowed?.email ?? true) methodsList.push("Email");
+    if (allowed?.phone ?? true) methodsList.push("Số điện thoại");
+    if (allowed?.username ?? true) methodsList.push("Tên đăng nhập");
+
+    let identityLabel = "Tài khoản";
+    if (methodsList.length > 0) {
+        if (methodsList.length === 1) {
+            identityLabel = methodsList[0];
+        } else {
+            const last = methodsList.pop();
+            identityLabel = `${methodsList.join(", ")} hoặc ${last}`;
+        }
+    }
+
+    const placeholdersList: string[] = [];
+    if (allowed?.email ?? true) placeholdersList.push("name@example.com");
+    if (allowed?.phone ?? true) placeholdersList.push("0901234567");
+    if (allowed?.username ?? true) placeholdersList.push("username");
+
+    let identityPlaceholder = "Nhập thông tin tài khoản";
+    if (placeholdersList.length > 0) {
+        if (placeholdersList.length === 1) {
+            identityPlaceholder = placeholdersList[0];
+        } else {
+            const last = placeholdersList.pop();
+            identityPlaceholder = `${placeholdersList.join(", ")} hoặc ${last}`;
+        }
+    }
+
     return (
         <div className="relative min-h-screen flex flex-col items-center justify-center bg-background px-4 sm:px-6 lg:px-8 py-12 overflow-hidden select-none">
             <div className="absolute top-4 right-4 z-50">
@@ -69,7 +132,7 @@ export default function AuthLogin() {
                 </Button>
             </div>
 
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(124,58,237,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(124,58,237,0.05)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(124,58,237,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(124,58,237,0.05)_1px,transparent_1px)] bg-size-[32px_32px] pointer-events-none" />
 
             <div className="relative z-10 w-full max-w-md space-y-6">
                 <div className="flex flex-col items-center gap-2.5 text-center">
@@ -89,13 +152,17 @@ export default function AuthLogin() {
                         <div className="mx-auto size-14 rounded-full text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 flex items-center justify-center mb-3">
                             <Icon icon="solar:lock-keyhole-line-duotone" className="size-7" />
                         </div>
-                        <CardTitle className="text-2xl">Đăng nhập tài khoản</CardTitle>
-                        <CardDescription>Chào mừng trở lại! Vui lòng nhập thông tin đăng nhập</CardDescription>
+                        <CardTitle className="text-2xl">
+                            {loginConfig.config?.uiConfig?.title || "Đăng nhập tài khoản"}
+                        </CardTitle>
+                        <CardDescription>
+                            {loginConfig.config?.uiConfig?.description || "Chào mừng trở lại! Vui lòng nhập thông tin đăng nhập"}
+                        </CardDescription>
                     </CardHeader>
                     <form onSubmit={handleSubmit}>
                         <CardContent className="space-y-4">
                             <div className="space-y-1.5">
-                                <Label htmlFor="identity">Email hoặc Tên tài khoản</Label>
+                                <Label htmlFor="identity">{identityLabel}</Label>
                                 <div className="relative">
                                     <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground/80">
                                         <Icon icon="solar:user-line-duotone" className="text-lg" />
@@ -105,7 +172,7 @@ export default function AuthLogin() {
                                         type="text"
                                         value={identity}
                                         onChange={(e) => setIdentity(e.target.value)}
-                                        placeholder="name@example.com hoặc username"
+                                        placeholder={identityPlaceholder}
                                         className="pl-10 h-10 rounded-xl"
                                         required
                                         disabled={loginMutation.isPending}
@@ -131,21 +198,32 @@ export default function AuthLogin() {
                                 </div>
                             </div>
                             <div className="flex items-center justify-between pt-1">
-                                <div className="flex items-center gap-2">
-                                    <Checkbox id="remember" disabled={loginMutation.isPending} />
-                                    <Label
-                                        htmlFor="remember"
-                                        className="text-xs text-muted-foreground cursor-pointer select-none"
+                                {(loginConfig.config?.rememberMe?.enabled ?? true) ? (
+                                    <div className="flex items-center gap-2">
+                                        <Checkbox 
+                                            id="remember" 
+                                            checked={remember}
+                                            onCheckedChange={(val) => setRemember(!!val)}
+                                            disabled={loginMutation.isPending} 
+                                        />
+                                        <Label
+                                            htmlFor="remember"
+                                            className="text-xs text-muted-foreground cursor-pointer select-none"
+                                        >
+                                            Ghi nhớ đăng nhập
+                                        </Label>
+                                    </div>
+                                ) : (
+                                    <div />
+                                )}
+                                {(loginConfig.config?.forgotPasswordEnabled ?? true) && (
+                                    <Link
+                                        href="/authentication/forgot-password"
+                                        className="text-xs font-semibold text-vanixjnk hover:underline"
                                     >
-                                        Ghi nhớ đăng nhập
-                                    </Label>
-                                </div>
-                                <Link
-                                    href="/authentication/forgot-password"
-                                    className="text-xs font-semibold text-vanixjnk hover:underline"
-                                >
-                                    Quên mật khẩu?
-                                </Link>
+                                        Quên mật khẩu?
+                                    </Link>
+                                )}
                             </div>
                             <Button
                                 id="login-submit"
@@ -157,36 +235,44 @@ export default function AuthLogin() {
                                 {loginMutation.isPending ? (
                                     <Icon icon="solar:spinner-line-duotone" className="size-5 animate-spin mx-auto" />
                                 ) : (
-                                    <span>Đăng nhập</span>
+                                    <span>
+                                        {loginConfig.config?.uiConfig?.submitButtonText || "Đăng nhập"}
+                                    </span>
                                 )}
                             </Button>
-                            <div className="relative flex py-1 items-center">
-                                <div className="flex-grow border-t border-border/60"></div>
-                                <span className="flex-shrink mx-4 text-[11px] text-muted-foreground/80 font-medium">Hoặc đăng nhập bằng</span>
-                                <div className="flex-grow border-t border-border/60"></div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-3 pb-1">
-                                <Button id="login-google" variant="outline" className="w-full h-10 rounded-xl cursor-pointer gap-2" disabled={loginMutation.isPending}>
-                                    <Icon icon="logos:google-icon" className="text-base" />
-                                    <span className="text-xs font-semibold">Google</span>
-                                </Button>
-                                <Button id="login-github" variant="outline" className="w-full h-10 rounded-xl cursor-pointer gap-2" disabled={loginMutation.isPending}>
-                                    <Icon icon="logos:github-icon" className="text-base dark:invert" />
-                                    <span className="text-xs font-semibold">GitHub</span>
-                                </Button>
-                            </div>
+                            {((loginConfig.config?.allowSocialLogin ?? true) && isOauthEnabled) && (
+                                <>
+                                    <div className="relative flex py-1 items-center">
+                                        <div className="grow border-t border-border/60"></div>
+                                        <span className="shrink mx-4 text-[11px] text-muted-foreground/80 font-medium">Hoặc đăng nhập bằng</span>
+                                        <div className="grow border-t border-border/60"></div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3 pb-1">
+                                        <Button id="login-google" variant="outline" className="w-full h-10 rounded-xl cursor-pointer gap-2" disabled={loginMutation.isPending}>
+                                            <Icon icon="logos:google-icon" className="text-base" />
+                                            <span className="text-xs font-semibold">Google</span>
+                                        </Button>
+                                        <Button id="login-github" variant="outline" className="w-full h-10 rounded-xl cursor-pointer gap-2" disabled={loginMutation.isPending}>
+                                            <Icon icon="logos:github-icon" className="text-base dark:invert" />
+                                            <span className="text-xs font-semibold">GitHub</span>
+                                        </Button>
+                                    </div>
+                                </>
+                            )}
                         </CardContent>
                     </form>
                 </Card>
-                <p className="text-center text-xs text-muted-foreground">
-                    Chưa có tài khoản?{" "}
-                    <Link
-                        href="/authentication/register"
-                        className="font-semibold text-vanixjnk hover:underline"
-                    >
-                        Đăng ký ngay
-                    </Link>
-                </p>
+                {((loginConfig.config?.showRegisterLink ?? true) && isRegisterEnabled) && (
+                    <p className="text-center text-xs text-muted-foreground">
+                        Chưa có tài khoản?{" "}
+                        <Link
+                            href="/authentication/register"
+                            className="font-semibold text-vanixjnk hover:underline"
+                        >
+                            Đăng ký ngay
+                        </Link>
+                    </p>
+                )}
             </div>
         </div>
     );

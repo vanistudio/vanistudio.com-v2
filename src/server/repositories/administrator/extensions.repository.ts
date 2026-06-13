@@ -14,7 +14,7 @@ export class ExtensionsRepository {
         id: m.id,
         name: m.name,
         description: m.description,
-        isEnabled: m.isEnabled,
+        isEnabled: m.isEnabled ?? true,
         config: m.config,
       }));
       await db.insert(extensions).values(toInsert).onConflictDoNothing();
@@ -53,7 +53,7 @@ export class ExtensionsRepository {
             id: defaultExt.id,
             name: defaultExt.name,
             description: defaultExt.description,
-            isEnabled: defaultExt.isEnabled,
+            isEnabled: defaultExt.isEnabled ?? true,
             config: defaultExt.config,
           })
           .onConflictDoNothing()
@@ -98,6 +98,14 @@ export class ExtensionsRepository {
       }
     }
 
+    if (id === "user_login_customizer" && data.config) {
+      const config = data.config as any;
+      const methods = config.allowedMethods || {};
+      if (!methods.email && !methods.phone && !methods.username) {
+        throw new Error("Phải chọn ít nhất một phương thức đăng nhập cho phép.");
+      }
+    }
+
     const updateData: any = { updatedAt: new Date() };
     if (data.isEnabled !== undefined) updateData.isEnabled = data.isEnabled;
     if (data.config !== undefined) updateData.config = data.config;
@@ -117,7 +125,7 @@ export class ExtensionsRepository {
             id: defaultExt.id,
             name: defaultExt.name,
             description: defaultExt.description,
-            isEnabled: data.isEnabled !== undefined ? data.isEnabled : defaultExt.isEnabled,
+            isEnabled: data.isEnabled !== undefined ? data.isEnabled : (defaultExt.isEnabled ?? true),
             config: data.config !== undefined ? data.config : defaultExt.config,
           })
           .returning();

@@ -86,15 +86,10 @@ export class AuthenticationService {
 
     // 3.2 Deep email domain validation
     if (emailVal) {
-      const eVal = config.emailValidation || { blockedDomains: [], allowedDomains: [] };
+      const eVal = config.emailValidation || { allowedDomains: [] };
       const domain = emailVal.split("@")[1]?.toLowerCase();
       if (domain) {
-        const blocked = eVal.blockedDomains || [];
         const allowed = eVal.allowedDomains || [];
-        
-        if (blocked.some((d: string) => d.toLowerCase() === domain || domain.endsWith("." + d.toLowerCase()))) {
-          throw new Error(`Tên miền email '@${domain}' đã bị quản trị viên chặn.`);
-        }
         
         if (allowed.length > 0 && !allowed.some((d: string) => d.toLowerCase() === domain || domain.endsWith("." + d.toLowerCase()))) {
           throw new Error(`Hệ thống chỉ chấp nhận đăng ký với các tên miền email được cho phép.`);
@@ -225,6 +220,22 @@ export class AuthenticationService {
   }
 
   async login(data: { identity: string; password: string }) {
+    const ext = await extensionsRepository.getExtensionById("user_login_customizer");
+    const config = ext?.config as any || {};
+    const methods = config.allowedMethods || { email: true, phone: true, username: true };
+    const isEmail = data.identity.includes("@");
+    const isPhone = /^\+?[0-9]{9,15}$/.test(data.identity);
+    
+    if (isEmail && !methods.email) {
+      throw new Error("Đăng nhập bằng địa chỉ Email hiện không được phép.");
+    }
+    if (isPhone && !methods.phone) {
+      throw new Error("Đăng nhập bằng Số điện thoại hiện không được phép.");
+    }
+    if (!isEmail && !isPhone && !methods.username) {
+      throw new Error("Đăng nhập bằng Tên tài khoản hiện không được phép.");
+    }
+
     const user = await authenticationRepository.findUserByIdentity(data.identity);
     if (!user) {
       throw new Error("Tài khoản hoặc mật khẩu không chính xác");
@@ -237,20 +248,10 @@ export class AuthenticationService {
     let result;
     let responseHeaders: Headers | undefined;
     try {
-      if (data.identity.includes("@") && user.email) {
+      if (user.email) {
         const res = await auth.api.signInEmail({
           body: {
             email: user.email,
-            password: data.password,
-          },
-          returnHeaders: true,
-        });
-        result = res.response;
-        responseHeaders = res.headers;
-      } else if (user.username) {
-        const res = await auth.api.signInUsername({
-          body: {
-            username: user.username,
             password: data.password,
           },
           returnHeaders: true,

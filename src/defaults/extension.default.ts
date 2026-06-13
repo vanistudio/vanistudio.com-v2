@@ -29,8 +29,32 @@ export interface RegistrationFieldsConfig {
     allowedCharacters: "lowercase_alphanumeric" | "alphanumeric" | "all";
   };
   emailValidation?: {
-    blockedDomains: string[];
     allowedDomains: string[];
+  };
+  uiConfig?: {
+    title?: string;
+    description?: string;
+    submitButtonText?: string;
+  };
+}
+
+export interface LoginFieldsConfig {
+  allowedMethods: {
+    email: boolean;
+    phone: boolean;
+    username: boolean;
+  };
+  rememberMe: {
+    enabled: boolean;
+    defaultChecked: boolean;
+  };
+  forgotPasswordEnabled?: boolean;
+  showRegisterLink?: boolean;
+  allowSocialLogin?: boolean;
+  uiConfig?: {
+    title?: string;
+    description?: string;
+    submitButtonText?: string;
   };
 }
 
@@ -115,7 +139,7 @@ export interface DefaultExtension {
   id: string;
   name: string;
   description: string;
-  isEnabled: boolean;
+  isEnabled?: boolean;
   config: Record<string, any>;
 }
 
@@ -136,7 +160,7 @@ export const DEFAULT_EXTENSIONS: DefaultExtension[] = [
         address1: { show: true, required: false, label: "Địa chỉ dòng 1" },
         address2: { show: false, required: false, label: "Địa chỉ dòng 2" },
         city: { show: true, required: false, label: "Thành phố" },
-        district: { show: true, required: false, label: "Quận/Huyện" },
+        district: { show: false, required: false, label: "Quận/Huyện" },
         state: { show: false, required: false, label: "Tỉnh/Bang" },
         postalCode: { show: false, required: false, label: "Mã bưu chính" },
         country: { show: true, required: false, label: "Quốc gia" },
@@ -156,10 +180,38 @@ export const DEFAULT_EXTENSIONS: DefaultExtension[] = [
         allowedCharacters: "lowercase_alphanumeric",
       },
       emailValidation: {
-        blockedDomains: ["yopmail.com", "mailinator.com", "tempmail.com", "guerrillamail.com"],
         allowedDomains: [],
       },
+      uiConfig: {
+        title: "Đăng ký tài khoản",
+        description: "Tạo tài khoản mới để trải nghiệm dịch vụ.",
+        submitButtonText: "Đăng ký",
+      },
     } as RegistrationFieldsConfig,
+  },
+  {
+    id: "user_login_customizer",
+    name: "Tùy biến Form Đăng nhập",
+    description: "Cấu hình phương thức đăng nhập và giao diện của trang đăng nhập thành viên.",
+    config: {
+      allowedMethods: {
+        email: true,
+        phone: true,
+        username: true,
+      },
+      rememberMe: {
+        enabled: true,
+        defaultChecked: true,
+      },
+      forgotPasswordEnabled: true,
+      showRegisterLink: true,
+      allowSocialLogin: true,
+      uiConfig: {
+        title: "Đăng nhập",
+        description: "Đăng nhập tài khoản của bạn để tiếp tục.",
+        submitButtonText: "Đăng nhập",
+      },
+    } as LoginFieldsConfig,
   },
   {
     id: "oauth_providers",

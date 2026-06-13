@@ -1,15 +1,24 @@
 import { db } from "@/server/db";
-import { users, provider } from "@/server/db/schemas/user.schema";
+import { users, provider, userProfile } from "@/server/db/schemas/user.schema";
 import { eq, or } from "drizzle-orm";
 
 export class AuthenticationRepository {
   async findUserByIdentity(identity: string) {
     const result = await db
-      .select()
+      .select({
+        user: users
+      })
       .from(users)
-      .where(or(eq(users.email, identity), eq(users.username, identity)))
+      .leftJoin(userProfile, eq(users.id, userProfile.userId))
+      .where(
+        or(
+          eq(users.email, identity),
+          eq(users.username, identity),
+          eq(userProfile.phone, identity)
+        )
+      )
       .limit(1);
-    return result[0] || null;
+    return result[0]?.user || null;
   }
 
   async getPasswordHash(userId: string) {
