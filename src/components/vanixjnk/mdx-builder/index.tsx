@@ -216,6 +216,308 @@ interface MdxASTNode {
   content?: string;
 }
 
+function highlightInlineMarkup(text: string): React.ReactNode {
+  let tokens: { text: string; type?: string }[] = [{ text }];
+  
+  const applyRule = (regex: RegExp, type: string) => {
+    const newTokens: { text: string; type?: string }[] = [];
+    for (const t of tokens) {
+      if (t.type) {
+        newTokens.push(t);
+        continue;
+      }
+      let lastIdx = 0;
+      t.text.replace(regex, (match, ...args) => {
+        const offset = args[args.length - 2] as number;
+        if (offset > lastIdx) {
+          newTokens.push({ text: t.text.slice(lastIdx, offset) });
+        }
+        newTokens.push({ text: match, type });
+        lastIdx = offset + match.length;
+        return match;
+      });
+      if (lastIdx < t.text.length) {
+        newTokens.push({ text: t.text.slice(lastIdx) });
+      }
+    }
+    tokens = newTokens;
+  };
+
+  // MDX Tags: <Tag ...> or </Tag>
+  applyRule(/(<\/?[a-zA-Z0-9_-]+(?:\s+[a-zA-Z0-9_-]+(?:=(?:"[^"]*"|'[^']*'|\{[^}]+\}))?)*\s*\/?>)/g, "tag");
+  // Links/images
+  applyRule(/(!?\[[^\]]*\]\([^)]+\))/g, "link");
+  // Inline code
+  applyRule(/(`[^`]+`)/g, "inline-code");
+  // Bold
+  applyRule(/(\*\*[^*]+\*\*|__[^_]+__)/g, "bold");
+  // Italic
+  applyRule(/(\*[^*]+\*|_[^_]+_)/g, "italic");
+
+  return (
+    <>
+      {tokens.map((t, idx) => {
+        if (!t.type) return t.text;
+        if (t.type === "tag") return <span key={idx} className="text-vanixjnk font-semibold">{t.text}</span>;
+        if (t.type === "link") return <span key={idx} className="text-sky-500 hover:underline">{t.text}</span>;
+        if (t.type === "inline-code") return <span key={idx} className="text-emerald-500 font-mono font-medium bg-muted/30 px-1 py-0.5 rounded">{t.text}</span>;
+        if (t.type === "bold") return <span key={idx} className="font-bold text-foreground">{t.text}</span>;
+        if (t.type === "italic") return <span key={idx} className="italic text-muted-foreground">{t.text}</span>;
+        return t.text;
+      })}
+    </>
+  );
+}
+
+function highlightMarkdownMdx(text: string): React.ReactNode {
+  if (!text) return "";
+  
+  const lines = text.split("\n");
+  let inCodeBlock = false;
+  
+  return (
+    <>
+      {lines.map((line, lineIdx) => {
+        const isLast = lineIdx === lines.length - 1;
+        
+        if (inCodeBlock) {
+          if (line.trim().startsWith("```")) {
+            inCodeBlock = false;
+            return (
+              <span key={lineIdx} className="text-vanixjnk font-bold">
+                {line}
+                {!isLast && "\n"}
+              </span>
+            );
+          }
+          return (
+            <span key={lineIdx} className="text-muted-foreground/70">
+              {line}
+              {!isLast && "\n"}
+            </span>
+          );
+        }
+        
+        if (line.trim().startsWith("```")) {
+          inCodeBlock = true;
+          return (
+            <span key={lineIdx} className="text-vanixjnk font-bold">
+              {line}
+              {!isLast && "\n"}
+            </span>
+          );
+        }
+        
+        if (line.startsWith("#")) {
+          const match = line.match(/^(#{1,6}\s+)(.*)$/);
+          if (match) {
+            return (
+              <span key={lineIdx} className="text-vanixjnk font-extrabold">
+                <span className="opacity-50 select-none">{match[1]}</span>
+                {highlightInlineMarkup(match[2])}
+                {!isLast && "\n"}
+              </span>
+            );
+          }
+        }
+        
+        if (line.startsWith(">")) {
+          return (
+            <span key={lineIdx} className="text-muted-foreground/90 italic bg-muted/10 border-l-2 border-vanixjnk/20 pl-2 block my-0.5">
+              {line}
+              {!isLast && "\n"}
+            </span>
+          );
+        }
+        
+        if (line.trim().startsWith("- ") || line.trim().startsWith("* ") || /^\s*\d+\.\s/.test(line.trim())) {
+          const match = line.match(/^(\s*[-*+]|\s*\d+\.)\s(.*)$/);
+          if (match) {
+            return (
+              <span key={lineIdx}>
+                <span className="text-vanixjnk font-bold">{match[1]} </span>
+                {highlightInlineMarkup(match[2])}
+                {!isLast && "\n"}
+              </span>
+            );
+          }
+        }
+        
+        return (
+          <span key={lineIdx}>
+            {highlightInlineMarkup(line)}
+            {!isLast && "\n"}
+          </span>
+        );
+      })}
+    </>
+  );
+}
+function highlightCode(code: string, lang: string): React.ReactNode {
+  if (!code) return "";
+  if (!lang) return code;
+  const l = lang.toLowerCase();
+
+  if (l === "markdown" || l === "md" || l === "mdx") {
+    return highlightMarkdownMdx(code);
+  }
+  
+  if (l === "javascript" || l === "typescript" || l === "js" || l === "ts" || l === "json") {
+    let tokens: { text: string; type?: string }[] = [{ text: code }];
+    
+    const applyRule = (regex: RegExp, type: string) => {
+      const newTokens: { text: string; type?: string }[] = [];
+      for (const t of tokens) {
+        if (t.type) {
+          newTokens.push(t);
+          continue;
+        }
+        let lastIdx = 0;
+        t.text.replace(regex, (match, ...args) => {
+          const offset = args[args.length - 2] as number;
+          if (offset > lastIdx) {
+            newTokens.push({ text: t.text.slice(lastIdx, offset) });
+          }
+          newTokens.push({ text: match, type });
+          lastIdx = offset + match.length;
+          return match;
+        });
+        if (lastIdx < t.text.length) {
+          newTokens.push({ text: t.text.slice(lastIdx) });
+        }
+      }
+      tokens = newTokens;
+    };
+
+    applyRule(/(\/\/.*|\/\*[\s\S]*?\*\/)/g, "comment");
+    applyRule(/("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`)/g, "string");
+    applyRule(/\b(const|let|var|function|return|import|export|from|default|class|extends|if|else|for|while|do|switch|case|break|continue|new|try|catch|finally|throw|async|await|type|interface|as|enum|public|private|protected|static|readonly|keyof|typeof|any|string|number|boolean|void|never|unknown)\b/g, "keyword");
+    applyRule(/\b(console|window|document|process|Object|Array|String|Number|Boolean|Function|Promise|Map|Set|Error|React|useState|useEffect|useRef|useMemo|useCallback)\b/g, "builtin");
+    applyRule(/\b(\d+(?:\.\d+)?)\b/g, "number");
+    applyRule(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)(?=\s*\()/g, "fn");
+
+    return (
+      <>
+        {tokens.map((t, idx) => {
+          if (!t.type) return t.text;
+          let colorClass = "";
+          if (t.type === "comment") colorClass = "text-muted-foreground italic opacity-75";
+          else if (t.type === "string") colorClass = "text-emerald-500 font-medium dark:text-emerald-400";
+          else if (t.type === "keyword") colorClass = "text-vanixjnk font-semibold dark:text-vanixjnk/90";
+          else if (t.type === "builtin") colorClass = "text-sky-500 font-medium dark:text-sky-400";
+          else if (t.type === "number") colorClass = "text-amber-500 dark:text-amber-400";
+          else if (t.type === "fn") colorClass = "text-violet-500 dark:text-violet-400";
+          return <span key={idx} className={colorClass}>{t.text}</span>;
+        })}
+      </>
+    );
+  }
+
+  if (l === "html" || l === "xml" || l === "svg") {
+    let tokens: { text: string; type?: string }[] = [{ text: code }];
+    
+    const applyRule = (regex: RegExp, type: string) => {
+      const newTokens: { text: string; type?: string }[] = [];
+      for (const t of tokens) {
+        if (t.type) {
+          newTokens.push(t);
+          continue;
+        }
+        let lastIdx = 0;
+        t.text.replace(regex, (match, ...args) => {
+          const offset = args[args.length - 2] as number;
+          if (offset > lastIdx) {
+            newTokens.push({ text: t.text.slice(lastIdx, offset) });
+          }
+          newTokens.push({ text: match, type });
+          lastIdx = offset + match.length;
+          return match;
+        });
+        if (lastIdx < t.text.length) {
+          newTokens.push({ text: t.text.slice(lastIdx) });
+        }
+      }
+      tokens = newTokens;
+    };
+
+    applyRule(/(<!--[\s\S]*?-->)/g, "comment");
+    applyRule(/(<\/?[a-zA-Z0-9_:-]+)/g, "tag");
+    applyRule(/("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')/g, "string");
+    applyRule(/([a-zA-Z0-9_-]+)(?=\s*=)/g, "attr");
+
+    return (
+      <>
+        {tokens.map((t, idx) => {
+          if (!t.type) return t.text;
+          let colorClass = "";
+          if (t.type === "comment") colorClass = "text-muted-foreground italic opacity-75";
+          else if (t.type === "tag") colorClass = "text-vanixjnk font-semibold dark:text-vanixjnk/90";
+          else if (t.type === "string") colorClass = "text-emerald-500 font-medium dark:text-emerald-400";
+          else if (t.type === "attr") colorClass = "text-sky-500 dark:text-sky-400";
+          return <span key={idx} className={colorClass}>{t.text}</span>;
+        })}
+      </>
+    );
+  }
+
+  if (l === "css") {
+    let tokens: { text: string; type?: string }[] = [{ text: code }];
+    
+    const applyRule = (regex: RegExp, type: string) => {
+      const newTokens: { text: string; type?: string }[] = [];
+      for (const t of tokens) {
+        if (t.type) {
+          newTokens.push(t);
+          continue;
+        }
+        let lastIdx = 0;
+        t.text.replace(regex, (match, ...args) => {
+          const offset = args[args.length - 2] as number;
+          if (offset > lastIdx) {
+            newTokens.push({ text: t.text.slice(lastIdx, offset) });
+          }
+          newTokens.push({ text: match, type });
+          lastIdx = offset + match.length;
+          return match;
+        });
+        if (lastIdx < t.text.length) {
+          newTokens.push({ text: t.text.slice(lastIdx) });
+        }
+      }
+      tokens = newTokens;
+    };
+
+    applyRule(/(\/\*[\s\S]*?\*\/)/g, "comment");
+    applyRule(/([.#]?[a-zA-Z0-9_*-]+)(?=\s*\{)/g, "selector");
+    applyRule(/([a-zA-Z0-9_-]+)(?=\s*:)/g, "property");
+    applyRule(/(:\s*[^;\n]+)/g, "value");
+
+    return (
+      <>
+        {tokens.map((t, idx) => {
+          if (!t.type) return t.text;
+          let colorClass = "";
+          if (t.type === "comment") colorClass = "text-muted-foreground italic opacity-75";
+          else if (t.type === "selector") colorClass = "text-vanixjnk font-semibold dark:text-vanixjnk/90";
+          else if (t.type === "property") colorClass = "text-sky-500 dark:text-sky-400";
+          else if (t.type === "value") {
+            const valueStr = t.text;
+            return (
+              <span key={idx}>
+                <span className="text-foreground">:</span>
+                <span className="text-emerald-500 dark:text-emerald-400">{valueStr.slice(1)}</span>
+              </span>
+            );
+          }
+          return <span key={idx} className={colorClass}>{t.text}</span>;
+        })}
+      </>
+    );
+  }
+
+  return code;
+}
+
 interface MdxRendererProps {
   content: string;
   scope?: Record<string, any>;
@@ -257,7 +559,7 @@ export function MdxRenderer({ content, scope = {}, className }: MdxRendererProps
     const name = parts[0];
     const props: Record<string, any> = {};
     const attrString = tagStr.slice(name.length).trim();
-    const attrRegex = /([a-zA-Z0-9_\-]+)(?:=(?:"([^"]*)"|'([^']*)'|\{([^}]+)\}))?/g;
+    const attrRegex = /([a-zA-Z0-9_-]+)(?:=(?:"([^"]*)"|'([^']*)'|\{([^}]+)\}))?/g;
     
     let match;
     while ((match = attrRegex.exec(attrString)) !== null) {
@@ -411,7 +713,7 @@ export function MdxRenderer({ content, scope = {}, className }: MdxRendererProps
         parts.push(
           <code 
             key={`code-${keyIdx++}`} 
-            className="px-1.5 py-0.5 rounded bg-muted/60 border border-border/50 font-mono text-xs text-foreground font-semibold"
+            className="not-prose px-1.5 py-0.5 rounded bg-muted/60 border border-border/50 font-mono text-xs text-foreground font-semibold"
           >
             {codeMatch[1]}
           </code>
@@ -420,7 +722,7 @@ export function MdxRenderer({ content, scope = {}, className }: MdxRendererProps
         continue;
       }
       
-      const nextSpec = current.search(/[\*!_`\[]/);
+      const nextSpec = current.search(/[*!_`[]/);
       if (nextSpec === -1) {
         parts.push(current);
         break;
@@ -470,8 +772,10 @@ export function MdxRenderer({ content, scope = {}, className }: MdxRendererProps
       if (trimmed.startsWith("```")) {
         if (inCodeBlock) {
           elements.push(
-            <pre key={`code-${keyIdx++}`} className="p-4 rounded-xl bg-muted/30 border border-border/80 font-mono text-xs overflow-x-auto my-4 text-foreground leading-relaxed">
-              <code className={codeLang ? `language-${codeLang}` : ""}>{codeContent.trim()}</code>
+            <pre key={`code-${keyIdx++}`} className="not-prose p-4 rounded-xl bg-muted/30 border border-border/80 font-mono text-xs overflow-x-auto my-4 text-foreground leading-relaxed">
+              <code className={codeLang ? `language-${codeLang}` : ""}>
+                {highlightCode(codeContent.trim(), codeLang)}
+              </code>
             </pre>
           );
           inCodeBlock = false;
@@ -800,7 +1104,31 @@ export const MdxEditor = React.forwardRef<HTMLTextAreaElement, MdxEditorProps>((
   const [isMaximized, setIsMaximized] = React.useState(false);
   const localRef = React.useRef<HTMLTextAreaElement>(null);
   
-  const resolvedRef = (ref || localRef) as React.RefObject<HTMLTextAreaElement | null>;
+  const smallOverlayRef = React.useRef<HTMLPreElement>(null);
+  const maximizedOverlayRef = React.useRef<HTMLPreElement>(null);
+
+  const setRef = React.useCallback((node: HTMLTextAreaElement | null) => {
+    if (typeof ref === "function") {
+      ref(node);
+    } else if (ref) {
+      (ref as any).current = node;
+    }
+    (localRef as any).current = node;
+  }, [ref]);
+
+  const handleSmallScroll = React.useCallback((e: React.UIEvent<HTMLTextAreaElement>) => {
+    if (smallOverlayRef.current) {
+      smallOverlayRef.current.scrollTop = e.currentTarget.scrollTop;
+      smallOverlayRef.current.scrollLeft = e.currentTarget.scrollLeft;
+    }
+  }, []);
+
+  const handleMaximizedScroll = React.useCallback((e: React.UIEvent<HTMLTextAreaElement>) => {
+    if (maximizedOverlayRef.current) {
+      maximizedOverlayRef.current.scrollTop = e.currentTarget.scrollTop;
+      maximizedOverlayRef.current.scrollLeft = e.currentTarget.scrollLeft;
+    }
+  }, []);
 
   React.useEffect(() => {
     if (isMaximized) {
@@ -814,11 +1142,11 @@ export const MdxEditor = React.forwardRef<HTMLTextAreaElement, MdxEditorProps>((
   }, [isMaximized]);
 
   const handleInsert = (textToInsert: string) => {
-    insertMdxAtCursor(resolvedRef.current, textToInsert, value, onChange);
+    insertMdxAtCursor(localRef.current, textToInsert, value, onChange);
   };
 
   const insertFormatting = (prefix: string, suffix: string = "") => {
-    const textarea = resolvedRef.current;
+    const textarea = localRef.current;
     if (!textarea) {
       onChange(value + prefix + suffix);
       return;
@@ -1008,13 +1336,30 @@ export const MdxEditor = React.forwardRef<HTMLTextAreaElement, MdxEditorProps>((
       </div>
 
       {contentTab === "write" ? (
-        <Textarea
-          ref={ref || localRef}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          className="h-[300px] border-0 rounded-none focus-visible:ring-0 text-xs font-mono p-4 resize-none leading-relaxed"
-        />
+        <div className="relative w-full h-[300px] border-0 rounded-none overflow-hidden bg-background">
+          <pre
+            ref={smallOverlayRef}
+            className="absolute inset-0 w-full h-full p-4 text-xs font-mono whitespace-pre-wrap wrap-break-word leading-relaxed overflow-hidden bg-transparent border-0 pointer-events-none select-none text-foreground"
+            style={{
+              fontFamily: 'var(--font-geist-mono, monospace)',
+              margin: 0,
+            }}
+          >
+            {highlightMarkdownMdx(value)}
+          </pre>
+          <textarea
+            ref={setRef}
+            value={value}
+            onScroll={handleSmallScroll}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={placeholder}
+            className="absolute inset-0 w-full h-full border-0 focus:outline-none focus:ring-0 text-xs font-mono p-4 resize-none leading-relaxed bg-transparent text-transparent caret-foreground overflow-y-auto"
+            style={{
+              fontFamily: 'var(--font-geist-mono, monospace)',
+              resize: 'none',
+            }}
+          />
+        </div>
       ) : (
         <div className="h-[300px] overflow-y-auto p-4 bg-muted/5 font-sans prose dark:prose-invert max-w-none">
           <MdxRenderer content={value} scope={scope} />
@@ -1066,7 +1411,7 @@ export const MdxEditor = React.forwardRef<HTMLTextAreaElement, MdxEditorProps>((
             </header>
 
             <div className="flex-1 flex flex-row overflow-hidden relative">
-              <aside className="w-[300px] shrink-0 border-r bg-muted/5 flex flex-col overflow-y-auto p-4 hidden md:flex">
+              <aside className="w-[300px] shrink-0 border-r bg-muted/5 hidden md:flex flex-col overflow-y-auto p-4">
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 px-1">
                     <Icon icon="solar:widget-add-line-duotone" className="size-4 text-vanixjnk" />
@@ -1284,31 +1629,45 @@ export const MdxEditor = React.forwardRef<HTMLTextAreaElement, MdxEditorProps>((
                     contentTab === "preview" ? "flex-col lg:flex-row" : "flex-row"
                   )}>
                     <div className={cn(
-                      "flex-1 relative bg-background overflow-auto min-h-0",
+                      "flex-1 relative bg-background overflow-hidden min-h-0",
                       contentTab === "preview" && "lg:w-1/2 lg:border-r border-border/60"
                     )}>
-                      <textarea
-                        ref={resolvedRef}
-                        value={value}
-                        onChange={(e) => onChange(e.target.value)}
-                        placeholder={placeholder}
-                        className="w-full h-full min-h-full border-0 focus:outline-none focus:ring-0 text-sm font-mono p-6 resize-none leading-relaxed bg-transparent"
+                      <pre
+                        ref={maximizedOverlayRef}
+                        className="absolute inset-0 w-full h-full p-6 text-sm font-mono whitespace-pre-wrap wrap-break-word leading-relaxed overflow-hidden bg-transparent border-0 pointer-events-none select-none text-foreground"
                         style={{
                           fontFamily: 'var(--font-geist-mono, monospace)',
+                          margin: 0,
+                        }}
+                      >
+                        {highlightMarkdownMdx(value)}
+                      </pre>
+                      <textarea
+                        ref={setRef}
+                        value={value}
+                        onScroll={handleMaximizedScroll}
+                        onChange={(e) => onChange(e.target.value)}
+                        placeholder={placeholder}
+                        className="absolute inset-0 w-full h-full border-0 focus:outline-none focus:ring-0 text-sm font-mono p-6 resize-none leading-relaxed bg-transparent text-transparent caret-foreground overflow-y-auto"
+                        style={{
+                          fontFamily: 'var(--font-geist-mono, monospace)',
+                          resize: 'none',
                         }}
                       />
                     </div>
 
                     {contentTab === "preview" && (
                       <div className="flex-1 overflow-y-auto bg-muted/5 min-h-0 lg:w-1/2">
-                        <div className="max-w-3xl mx-auto p-8 md:p-12 min-h-full prose dark:prose-invert max-w-none">
-                          <div className="mb-8 space-y-3 not-prose">
-                            <h2 className="text-3xl font-black uppercase tracking-tighter text-foreground">
-                              {scope?.formData?.title || "Bản xem trước"}
-                            </h2>
-                            <div className="h-1 w-12 bg-vanixjnk rounded-full" />
+                        <div className="max-w-3xl mx-auto p-8 md:p-12 min-h-full">
+                          <div className="prose dark:prose-invert max-w-none">
+                            <div className="mb-8 space-y-3 not-prose">
+                              <h2 className="text-3xl font-black uppercase tracking-tighter text-foreground">
+                                {scope?.formData?.title || "Bản xem trước"}
+                              </h2>
+                              <div className="h-1 w-12 bg-vanixjnk rounded-full" />
+                            </div>
+                            <MdxRenderer content={value} scope={scope} />
                           </div>
-                          <MdxRenderer content={value} scope={scope} />
                         </div>
                       </div>
                     )}
