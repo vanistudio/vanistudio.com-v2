@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { cmsService } from "@/server/services/administrator/cms.service";
 import PubCmsPage from "@/components/contents/public/_cms/PubCmsPage";
+import AppLayout from "@/components/layouts/application/AppLayout";
 import type { Metadata } from "next";
 
 interface Props {
@@ -37,5 +38,9 @@ export default async function CmsPublicPage({ params }: Props) {
     notFound();
   }
 
-  return <PubCmsPage page={page} />;
+  return (
+    <AppLayout>
+      <PubCmsPage page={page} />
+    </AppLayout>
+  );
 }

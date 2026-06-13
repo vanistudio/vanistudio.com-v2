@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { Icon } from "@iconify/react";
+import AppLayout from "@/components/layouts/application/AppLayout";
 
 export default function Home() {
   return (
-    <div className="w-full max-w-[1600px] mx-auto p-3 sm:p-5">
-      <div className="flex flex-col gap-16 py-8 sm:py-12 md:py-16">
+    <AppLayout>
+      <div className="w-full max-w-[1600px] mx-auto p-3 sm:p-5">
+        <div className="flex flex-col gap-16 py-8 sm:py-12 md:py-16">
         {/* 1. Hero Section */}
         <section className="relative flex flex-col items-center text-center gap-6 max-w-4xl mx-auto px-4 select-none">
           {/* Decorative background glow */}
@@ -203,5 +205,6 @@ export default function Home() {
         </section>
       </div>
     </div>
+    </AppLayout>
   );
 }
