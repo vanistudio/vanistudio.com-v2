@@ -351,4 +351,46 @@ export const servicesRouter = router({
         });
       }
     }),
+
+  reorderTypes: publicProcedure
+    .input(z.array(z.object({ id: z.string().uuid(), order: z.number().int() })))
+    .mutation(async ({ input }) => {
+      await ensureAdmin();
+      try {
+        await servicesService.reorderTypes(input);
+        return { resultCode: 0, message: "Cập nhật thứ tự thành công" };
+      } catch (error: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message || "Cập nhật thứ tự thất bại",
+        });
+      }
+    }),
+
+  seedTypes: publicProcedure
+    .input(
+      z.array(
+        z.object({
+          name: z.string(),
+          icon: z.string().optional().nullable(),
+          description: z.string().optional().nullable(),
+          color: z.string().optional().nullable(),
+          bg: z.string().optional().nullable(),
+          border: z.string().optional().nullable(),
+          order: z.number().int(),
+        })
+      ).optional()
+    )
+    .mutation(async ({ input }) => {
+      await ensureAdmin();
+      try {
+        await servicesService.seedTypes(input);
+        return { resultCode: 0, message: "Đổ dữ liệu mẫu thành công" };
+      } catch (error: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message || "Đổ dữ liệu mẫu thất bại",
+        });
+      }
+    }),
 });

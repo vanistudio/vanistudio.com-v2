@@ -8,12 +8,23 @@ import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { DataTable, DataTableColumnHeader } from "@/components/vanixjnk/data-table";
 import { ColumnDef, SortingState } from "@tanstack/react-table";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
 import type { ServiceType } from "@/server/db/schemas/service.schema";
+import { IconPicker } from "@/components/vanixjnk/icon-picker";
+import { QuickReorderServiceTypesDialog } from "./QuickReorderServiceTypesDialog";
+import { QuickSeedServiceTypesDialog } from "./QuickSeedServiceTypesDialog";
 
 const COLOR_PRESETS = [
   { name: "Blue (Mặc định)", color: "text-blue-500", bg: "bg-blue-500/10", border: "border-blue-500/20" },
@@ -57,6 +68,8 @@ export default function AdminServiceTypesTab() {
   });
 
   const typesList = typesData?.data || [];
+  const [sortDialogOpen, setSortDialogOpen] = useState(false);
+  const [seedDialogOpen, setSeedDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
@@ -73,7 +86,6 @@ export default function AdminServiceTypesTab() {
     order: 0,
   });
 
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [typeToDelete, setTypeToDelete] = useState<ServiceType | null>(null);
 
   const openEditor = (typeItem: ServiceType | null) => {
@@ -105,6 +117,14 @@ export default function AdminServiceTypesTab() {
 
   const handleNameChange = (val: string) => {
     setForm((prev) => ({ ...prev, name: val }));
+  };
+
+  const openSortDialog = () => {
+    setSortDialogOpen(true);
+  };
+
+  const handleSeedData = () => {
+    setSeedDialogOpen(true);
   };
 
   const saveType = async () => {
@@ -246,10 +266,7 @@ export default function AdminServiceTypesTab() {
               <Button
                 variant="ghost"
                 className="w-full justify-start text-xs h-8 px-2 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10"
-                onClick={() => {
-                  setTypeToDelete(typeItem);
-                  setDeleteConfirmOpen(true);
-                }}
+                onClick={() => setTypeToDelete(typeItem)}
               >
                 <Icon icon="solar:trash-bin-trash-line-duotone" className="mr-2 size-3.5" />
                 Xóa phân loại
@@ -263,22 +280,57 @@ export default function AdminServiceTypesTab() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex flex-row items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h3 className="text-base font-bold text-foreground">Phân loại dịch vụ</h3>
           <p className="text-xs text-muted-foreground mt-0.5">
             Định nghĩa các danh mục dịch vụ công nghệ, thiết kế thẻ badge và các cấu hình liên quan.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => refetchTypes()} disabled={typesLoading} className="gap-1.5 shrink-0">
-            <Icon icon="solar:restart-line-duotone" className={cn("text-base", typesLoading && "animate-spin")} />
-            <span>Làm mới</span>
-          </Button>
-          <Button variant="vanixjnk" size="sm" onClick={() => openEditor(null)} className="gap-1.5 shrink-0">
-            <Icon icon="solar:add-circle-line-duotone" className="text-base" />
-            <span>Thêm phân loại</span>
-          </Button>
+        <div className="flex items-center gap-2 shrink-0">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="vanixjnk" size="sm" className="gap-1.5 shrink-0 cursor-pointer">
+                <Icon icon="solar:hamburger-menu-line-duotone" className="text-base" />
+                <span>Thao tác</span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-44 p-1 flex flex-col gap-0.5" align="end">
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-xs h-8 px-2 cursor-pointer"
+                onClick={() => refetchTypes()}
+                disabled={typesLoading}
+              >
+                <Icon icon="solar:restart-line-duotone" className={cn("mr-2 size-3.5", typesLoading && "animate-spin")} />
+                Làm mới
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-xs h-8 px-2 cursor-pointer"
+                onClick={() => openEditor(null)}
+              >
+                <Icon icon="solar:add-circle-line-duotone" className="mr-2 size-3.5" />
+                Thêm phân loại
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-xs h-8 px-2 cursor-pointer"
+                onClick={() => openSortDialog()}
+              >
+                <Icon icon="solar:sort-vertical-line-duotone" className="mr-2 size-3.5" />
+                Sắp xếp
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-xs h-8 px-2 cursor-pointer text-amber-600 hover:text-amber-700 hover:bg-amber-500/10"
+                onClick={() => handleSeedData()}
+              >
+                <Icon icon="solar:database-line-duotone" className="mr-2 size-3.5" />
+                Đổ dữ liệu mẫu
+              </Button>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
@@ -351,17 +403,24 @@ export default function AdminServiceTypesTab() {
                   onChange={(e) => setForm((prev) => ({ ...prev, icon: e.target.value }))}
                   className="h-9 shadow-sm text-[13px] flex-1 font-mono"
                 />
-                <div className="size-9 flex items-center justify-center bg-vanixjnk/10 text-vanixjnk border border-vanixjnk/20 rounded-md shrink-0">
-                  <Icon icon={form.icon || "solar:widget-line-duotone"} className="text-base text-vanixjnk" />
-                </div>
+                <IconPicker
+                  value={form.icon}
+                  onChange={(val) => setForm((prev) => ({ ...prev, icon: val }))}
+                  trigger={
+                    <button
+                      type="button"
+                      title="Chọn biểu tượng"
+                      className="size-9 rounded-lg border bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/80 shrink-0 transition-colors cursor-pointer outline-none"
+                    >
+                      <Icon icon={form.icon || "solar:widget-line-duotone"} className="text-lg" />
+                    </button>
+                  }
+                />
               </div>
               <p className="text-[10px] text-muted-foreground">
-                Sử dụng các mã icon từ Iconify (ví dụ: <code className="bg-muted px-1 rounded">solar:cpu-line-duotone</code>).
+                Mẹo: Nhấp vào ô vuông bên cạnh để chọn nhanh icon có sẵn hoặc tìm kiếm trực tiếp trên Iconify. Hoặc tự nhập mã key (ví dụ: <code className="bg-muted px-1 rounded">solar:cpu-line-duotone</code>).
               </p>
             </div>
-
-
-
             <div className="space-y-2 pt-2">
               <label className="text-[13px] font-bold text-foreground">Bộ chọn phong cách (Preset Styles)</label>
               <div className="grid grid-cols-2 gap-2">
@@ -451,42 +510,44 @@ export default function AdminServiceTypesTab() {
         </SheetContent>
       </Sheet>
 
-      <Sheet open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-        <SheetContent className="sm:max-w-[400px] w-full p-0 flex flex-col">
-          <SheetHeader className="p-6">
-            <div className="size-10 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center shrink-0 mb-2">
-              <Icon icon="solar:danger-triangle-line-duotone" className="size-6" />
-            </div>
-            <SheetTitle className="text-xl font-bold text-rose-500">
-              Xác nhận xóa phân loại
-            </SheetTitle>
-            <SheetDescription>
-              Hành động này sẽ xóa vĩnh viễn phân loại dịch vụ. Các dịch vụ thuộc phân loại này sẽ bị hủy liên kết phân loại.
-            </SheetDescription>
-          </SheetHeader>
-
-          <div className="flex-1 p-6 text-sm text-muted-foreground bg-background">
-            Bạn có chắc chắn muốn xóa phân loại <strong className="text-foreground font-semibold">{typeToDelete?.name}</strong> không?
+      <Dialog open={!!typeToDelete} onOpenChange={(open) => !open && setTypeToDelete(null)}>
+        <DialogContent className="sm:max-w-[380px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-500">
+              <Icon icon="solar:danger-triangle-line-duotone" className="text-xl" />
+              <span>Xác nhận xóa phân loại</span>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-2 text-sm text-muted-foreground">
+            Hành động này sẽ xóa vĩnh viễn phân loại dịch vụ <strong className="text-foreground">"{typeToDelete?.name}"</strong>. Các dịch vụ thuộc phân loại này sẽ bị hủy liên kết phân loại.
           </div>
-
-          <div className="p-6 flex items-center justify-end gap-2">
-            <Button variant="outline" size="sm" onClick={() => setDeleteConfirmOpen(false)}>Hủy</Button>
-            <Button
-              variant="danger"
-              size="sm"
-              onClick={() => {
-                if (typeToDelete) {
-                  deleteMutation.mutate({ id: typeToDelete.id });
-                  setDeleteConfirmOpen(false);
-                }
-              }}
-              disabled={deleteMutation.isPending}
-            >
+          <DialogFooter className="pt-2">
+            <Button variant="outline" onClick={() => setTypeToDelete(null)}>
+              Hủy
+            </Button>
+            <Button variant="danger" onClick={() => {
+              if (typeToDelete) {
+                deleteMutation.mutate({ id: typeToDelete.id });
+                setTypeToDelete(null);
+              }
+            }} disabled={deleteMutation.isPending}>
               Xác nhận xóa
             </Button>
-          </div>
-        </SheetContent>
-      </Sheet>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <QuickReorderServiceTypesDialog
+        open={sortDialogOpen}
+        onOpenChange={setSortDialogOpen}
+        onSuccess={() => refetchTypes()}
+      />
+
+      <QuickSeedServiceTypesDialog
+        open={seedDialogOpen}
+        onOpenChange={setSeedDialogOpen}
+        onSuccess={() => refetchTypes()}
+      />
     </div>
   );
 }

@@ -77,9 +77,11 @@ export class ServicesRepository {
     return list;
   }
 
-  async seedDefaultTypes(): Promise<void> {
-    const { DEFAULT_SERVICE_TYPES } = await import("@/defaults/service-type.default");
-    await db.insert(serviceTypes).values(DEFAULT_SERVICE_TYPES);
+  async seedDefaultTypes(customTypes?: any[]): Promise<void> {
+    const typesToInsert = customTypes && customTypes.length > 0
+      ? customTypes
+      : (await import("@/defaults/service-type.default")).DEFAULT_SERVICE_TYPES;
+    await db.insert(serviceTypes).values(typesToInsert);
   }
 
   async getTypeById(id: string): Promise<ServiceType | null> {

@@ -159,6 +159,16 @@ export class ServicesService {
     };
   }
 
+  async reorderTypes(orders: { id: string; order: number }[]) {
+    for (const item of orders) {
+      await servicesRepository.updateType(item.id, { order: item.order });
+    }
+  }
+
+  async seedTypes(customTypes?: any[]) {
+    await servicesRepository.seedDefaultTypes(customTypes);
+  }
+
   async getPackagesByServiceId(serviceId: string): Promise<ServicePackage[]> {
     return await servicesRepository.getPackagesByServiceId(serviceId);
   }
