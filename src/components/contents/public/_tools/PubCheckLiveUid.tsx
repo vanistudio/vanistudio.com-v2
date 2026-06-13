@@ -107,7 +107,7 @@ export default function PubCheckLiveUid() {
                       rows={10}
                       value={uidInput}
                       onChange={(e) => setUidInput(e.target.value)}
-                      placeholder="Ví dụ:&#10;4&#10;100000000000001"
+                      placeholder="Ví dụ: 4, 100000000000001"
                       className="text-xs font-mono resize-y min-h-[200px]"
                       disabled={checkLiveMutation.isPending}
                     />

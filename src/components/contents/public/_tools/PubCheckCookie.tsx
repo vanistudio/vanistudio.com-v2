@@ -136,7 +136,7 @@ export default function PubCheckCookie() {
                       rows={10}
                       value={cookieInput}
                       onChange={(e) => setCookieInput(e.target.value)}
-                      placeholder="c_user=1000...; xs=...;&#10;c_user=1000...; xs=...;"
+                      placeholder="Ví dụ: c_user=1000...; xs=...;"
                       className="text-xs font-mono resize-y min-h-[200px]"
                       disabled={checking}
                     />
