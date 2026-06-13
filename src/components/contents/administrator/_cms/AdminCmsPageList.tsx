@@ -240,35 +240,56 @@ export default function CmsPageList() {
       id: "actions",
       header: "Thao tác",
       cell: ({ row }) => (
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-8 text-muted-foreground hover:text-foreground hover:bg-muted/50"
-            onClick={() => {
-              setPreviewPage(row.original);
-              setPreviewOpen(true);
-            }}
-          >
-            <Icon icon="solar:eye-line-duotone" className="size-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-8 text-vanixjnk hover:text-vanixjnk hover:bg-vanixjnk/10"
-            onClick={() => handleEdit(row.original)}
-          >
-            <Icon icon="solar:pen-line-duotone" className="size-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-8 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10"
-            onClick={() => triggerDelete(row.original)}
-          >
-            <Icon icon="solar:trash-bin-trash-line-duotone" className="size-4" />
-          </Button>
-        </div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-8"
+            >
+              <Icon icon="solar:menu-dots-bold-duotone" className="size-4" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-36 p-1 flex flex-col gap-0.5" align="end">
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-xs h-8 px-2"
+              onClick={() => {
+                setPreviewPage(row.original);
+                setPreviewOpen(true);
+              }}
+            >
+              <Icon icon="solar:eye-line-duotone" className="mr-2 size-3.5" />
+              Xem trước
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-xs h-8 px-2"
+              asChild
+            >
+              <a href={`/${row.original.slug}`} target="_blank" rel="noopener noreferrer">
+                <Icon icon="solar:arrow-right-up-line-duotone" className="mr-2 size-3.5" />
+                Xem trực tiếp
+              </a>
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-xs h-8 px-2 text-vanixjnk hover:text-vanixjnk hover:bg-vanixjnk/10"
+              onClick={() => handleEdit(row.original)}
+            >
+              <Icon icon="solar:pen-line-duotone" className="mr-2 size-3.5" />
+              Chỉnh sửa
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-xs h-8 px-2 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10"
+              onClick={() => triggerDelete(row.original)}
+            >
+              <Icon icon="solar:trash-bin-trash-line-duotone" className="mr-2 size-3.5" />
+              Xóa
+            </Button>
+          </PopoverContent>
+        </Popover>
       ),
     },
   ], [pagination]);
