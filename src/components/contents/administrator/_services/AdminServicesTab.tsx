@@ -25,6 +25,19 @@ import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
 import type { FormFieldConfig, Service, ServicePackage } from "@/server/db/schemas/service.schema";
 import { GalleryDialog } from "@/components/vanixjnk/gallery-dialog";
+import { DeviconPicker } from "./DeviconPicker";
+
+function formatCurrencyInput(value: string | number): string {
+  const strValue = String(value);
+  const raw = strValue.replace(/\D/g, "");
+  if (!raw) return "";
+  return Number(raw).toLocaleString("vi-VN");
+}
+
+function parseCurrencyInput(value: string): number {
+  const raw = value.replace(/\D/g, "");
+  return raw ? Number(raw) : 0;
+}
 
 export default function AdminServicesTab() {
   const [sheetActiveTab, setSheetActiveTab] = useState<"general" | "formConfig" | "features">("general");
@@ -86,7 +99,7 @@ export default function AdminServicesTab() {
     fieldsConfig: [] as FormFieldConfig[],
     metadata: {} as Record<string, any>,
   });
-  const [techInput, setTechInput] = useState("");
+  const [deviconPickerOpen, setDeviconPickerOpen] = useState(false);
   const [galleryOpen, setGalleryOpen] = useState(false);
   
   const [packageManagerOpen, setPackageManagerOpen] = useState(false);
@@ -154,7 +167,6 @@ export default function AdminServicesTab() {
         fieldsConfig: service.fieldsConfig || [],
         metadata: service.metadata || {},
       });
-      setTechInput(service.technologies ? service.technologies.join(", ") : "");
     } else {
       setEditingService(null);
       setServiceForm({
@@ -173,7 +185,6 @@ export default function AdminServicesTab() {
         fieldsConfig: [],
         metadata: {},
       });
-      setTechInput("");
     }
     setSheetActiveTab("general");
     setServiceEditorOpen(true);
@@ -184,14 +195,8 @@ export default function AdminServicesTab() {
     if (!serviceForm.slug.trim()) return toast.error("Đường dẫn (slug) không được trống");
     if (!serviceForm.content.trim()) return toast.error("Nội dung giới thiệu không được trống");
 
-    const processedTechs = techInput
-      .split(",")
-      .map((t) => t.trim())
-      .filter((t) => t !== "");
-
     const payload = {
       ...serviceForm,
-      technologies: processedTechs,
     };
 
     if (editingService) {
@@ -721,7 +726,14 @@ export default function AdminServicesTab() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label className="text-[13px] font-bold text-foreground">Giá khởi điểm (VNĐ)</label>
-                    <Input type="number" value={serviceForm.basePrice} onChange={(e) => setServiceForm(prev => ({ ...prev, basePrice: parseInt(e.target.value) || 0 }))} />
+                    <Input
+                      type="text"
+                      value={formatCurrencyInput(serviceForm.basePrice)}
+                      onChange={(e) => {
+                        const parsed = parseCurrencyInput(e.target.value);
+                        setServiceForm((prev) => ({ ...prev, basePrice: parsed }));
+                      }}
+                    />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[13px] font-bold text-foreground">Trạng thái xuất bản</label>
@@ -780,8 +792,46 @@ export default function AdminServicesTab() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[13px] font-bold text-foreground">Tags công nghệ / công cụ (phân cách bằng dấu phẩy)</label>
-                  <Input placeholder="Ví dụ: React, Typescript, Java, Photoshop" value={techInput} onChange={(e) => setTechInput(e.target.value)} />
+                  <div className="flex items-center justify-between">
+                    <label className="text-[13px] font-bold text-foreground">Tags công nghệ / công cụ</label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-xs font-semibold px-2 cursor-pointer"
+                      onClick={() => setDeviconPickerOpen(true)}
+                    >
+                      <Icon icon="solar:add-circle-line-duotone" className="mr-1 text-sm text-emerald-500" />
+                      Thêm
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 p-2 border border-border/60 bg-muted/20 rounded-lg min-h-[44px]">
+                    {serviceForm.technologies.length === 0 ? (
+                      <span className="text-xs text-muted-foreground self-center px-1">Chưa chọn công nghệ nào</span>
+                    ) : (
+                      serviceForm.technologies.map((tech) => (
+                        <Badge
+                          key={tech}
+                          className="flex items-center gap-1.5 py-1 px-2 bg-background border border-border text-foreground hover:bg-muted font-medium text-xs select-none"
+                        >
+                          <Icon icon={tech} className="text-base shrink-0" />
+                          <span>{tech.replace("devicon:", "").replace("-wordmark", "")}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setServiceForm((prev) => ({
+                                ...prev,
+                                technologies: prev.technologies.filter((t) => t !== tech),
+                              }));
+                            }}
+                            className="text-muted-foreground hover:text-rose-500 transition-colors ml-0.5 cursor-pointer"
+                          >
+                            <Icon icon="solar:close-circle-bold" className="size-3.5" />
+                          </button>
+                        </Badge>
+                      ))
+                    )}
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">
@@ -1040,7 +1090,14 @@ export default function AdminServicesTab() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
                 <label className="text-[13px] font-bold text-foreground">Giá tiền (VNĐ)</label>
-                <Input type="number" value={packageForm.price} onChange={(e) => setPackageForm(prev => ({ ...prev, price: parseInt(e.target.value) || 0 }))} />
+                <Input
+                  type="text"
+                  value={formatCurrencyInput(packageForm.price)}
+                  onChange={(e) => {
+                    const parsed = parseCurrencyInput(e.target.value);
+                    setPackageForm((prev) => ({ ...prev, price: parsed }));
+                  }}
+                />
               </div>
               <div className="space-y-1">
                 <label className="text-[13px] font-bold text-foreground">Thời gian bàn giao (ngày)</label>
@@ -1097,6 +1154,20 @@ export default function AdminServicesTab() {
         open={galleryOpen}
         onOpenChange={setGalleryOpen}
         onSelect={(url) => setServiceForm(prev => ({ ...prev, thumbnail: url }))}
+      />
+
+      <DeviconPicker
+        open={deviconPickerOpen}
+        onOpenChange={setDeviconPickerOpen}
+        onSelect={(iconName) => {
+          if (!serviceForm.technologies.includes(iconName)) {
+            setServiceForm((prev) => ({
+              ...prev,
+              technologies: [...prev.technologies, iconName],
+            }));
+          }
+        }}
+        selectedIcons={serviceForm.technologies}
       />
     </div>
   );

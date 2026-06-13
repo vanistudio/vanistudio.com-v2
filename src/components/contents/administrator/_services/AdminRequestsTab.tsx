@@ -21,6 +21,17 @@ import { ColumnDef, SortingState } from "@tanstack/react-table";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
+function formatCurrencyInput(value: string | number): string {
+  const strValue = String(value);
+  const raw = strValue.replace(/\D/g, "");
+  if (!raw) return "";
+  return Number(raw).toLocaleString("vi-VN");
+}
+
+function parseCurrencyInput(value: string): number {
+  const raw = value.replace(/\D/g, "");
+  return raw ? Number(raw) : 0;
+}
 
 export default function AdminRequestsTab() {
   const { data: requestsData, isLoading: requestsLoading, refetch: refetchRequests, isFetching: requestsFetching } =
@@ -507,7 +518,14 @@ export default function AdminRequestsTab() {
                     </div>
                     <div className="space-y-1">
                       <label className="text-[13px] font-bold text-foreground">Giá tiền chốt thỏa thuận (VNĐ)</label>
-                      <Input type="number" value={requestForm.price} onChange={(e) => setRequestForm(prev => ({ ...prev, price: parseInt(e.target.value) || 0 }))} />
+                      <Input
+                        type="text"
+                        value={formatCurrencyInput(requestForm.price)}
+                        onChange={(e) => {
+                          const parsed = parseCurrencyInput(e.target.value);
+                          setRequestForm((prev) => ({ ...prev, price: parsed }));
+                        }}
+                      />
                     </div>
                   </div>
 
