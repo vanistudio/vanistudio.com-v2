@@ -1,6 +1,7 @@
 import { relations } from "drizzle-orm";
 import { users, userSession, provider, userProfile } from "@/server/db/schemas/user.schema";
 import { menus, menuGroups } from "@/server/db/schemas/menu.schema";
+import { services, servicePackages, serviceRequests, serviceTypes } from "@/server/db/schemas/service.schema";
 
 export const userRelations = relations(users, ({ one, many }) => ({
   profile: one(userProfile, {
@@ -9,6 +10,7 @@ export const userRelations = relations(users, ({ one, many }) => ({
   }),
   sessions: many(userSession),
   providers: many(provider),
+  serviceRequests: many(serviceRequests),
 }));
 
 export const userSessionRelations = relations(userSession, ({ one }) => ({
@@ -50,3 +52,39 @@ export const menuRelations = relations(menus, ({ one, many }) => ({
     relationName: "menuParent",
   }),
 }));
+
+export const serviceTypesRelations = relations(serviceTypes, ({ many }) => ({
+  services: many(services),
+}));
+
+export const servicesRelations = relations(services, ({ one, many }) => ({
+  serviceType: one(serviceTypes, {
+    fields: [services.typeId],
+    references: [serviceTypes.id],
+  }),
+  packages: many(servicePackages),
+  requests: many(serviceRequests),
+}));
+
+export const servicePackagesRelations = relations(servicePackages, ({ one }) => ({
+  service: one(services, {
+    fields: [servicePackages.serviceId],
+    references: [services.id],
+  }),
+}));
+
+export const serviceRequestsRelations = relations(serviceRequests, ({ one }) => ({
+  user: one(users, {
+    fields: [serviceRequests.userId],
+    references: [users.id],
+  }),
+  service: one(services, {
+    fields: [serviceRequests.serviceId],
+    references: [services.id],
+  }),
+  package: one(servicePackages, {
+    fields: [serviceRequests.packageId],
+    references: [servicePackages.id],
+  }),
+}));
+

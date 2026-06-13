@@ -1,0 +1,256 @@
+"use client";
+
+import { useState, useMemo } from "react";
+import Link from "next/link";
+import { Icon } from "@iconify/react";
+import type { Service, ServiceType } from "@/server/db/schemas/service.schema";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+
+const getServiceTypeMeta = (typeObj: ServiceType | null) => {
+  if (!typeObj) {
+    return {
+      label: "Khác",
+      icon: "solar:menu-dots-square-line-duotone",
+      color: "text-zinc-500",
+      bg: "bg-zinc-500/10",
+      border: "border-zinc-500/20",
+    };
+  }
+  return {
+    label: typeObj.name,
+    icon: typeObj.icon || "solar:menu-dots-square-line-duotone",
+    color: typeObj.color || "text-zinc-500",
+    bg: typeObj.bg || "bg-zinc-500/10",
+    border: typeObj.border || "border-zinc-500/20",
+  };
+};
+
+const formatPrice = (price: number) => {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+    maximumFractionDigits: 0,
+  }).format(price);
+};
+
+export default function PubServicesList({
+  initialServices,
+  categories,
+}: {
+  initialServices: (Service & { serviceType: ServiceType | null })[];
+  categories: ServiceType[];
+}) {
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const categoriesList = useMemo(() => {
+    return [
+      { id: "all", name: "Tất cả", icon: "solar:widget-line-duotone" },
+      ...categories.map((cat) => ({
+        id: cat.slug,
+        name: cat.name,
+        icon: cat.icon || "solar:widget-line-duotone",
+      })),
+    ];
+  }, [categories]);
+
+  const filteredServices = useMemo(() => {
+    return initialServices.filter((service) => {
+      const matchesFilter =
+        activeFilter === "all" ||
+        (service.serviceType && service.serviceType.slug === activeFilter);
+      const matchesSearch =
+        service.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (service.description && service.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        service.technologies.some((tech) => tech.toLowerCase().includes(searchQuery.toLowerCase()));
+      return matchesFilter && matchesSearch;
+    });
+  }, [initialServices, activeFilter, searchQuery]);
+
+  return (
+    <div className="flex flex-col w-full flex-1">
+      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="border-l border-r border-dashed border-primary/20 pt-[60px] pb-6 px-6">
+          <div className="flex flex-col items-center text-center gap-4">
+            <div className="flex items-center justify-center rounded-xl text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 shrink-0 p-3">
+              <Icon icon="solar:case-round-line-duotone" className="text-3xl" />
+            </div>
+            <div className="flex flex-col items-center gap-1.5 max-w-xl">
+              <h1 className="text-2xl font-bold tracking-tight text-foreground">Dịch Vụ Cung Cấp</h1>
+              <p className="text-sm text-muted-foreground">
+                Chúng tôi cung cấp các giải pháp thiết kế, lập trình và chuyển đổi số chuyên nghiệp, toàn diện theo yêu cầu.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        className="relative w-full border-t border-b border-dashed border-primary/20 overflow-hidden text-primary/20"
+        style={{ height: "36px" }}
+      >
+        <div
+          className="absolute inset-y-0 left-[-100vw] w-[300vw]"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(45deg, currentColor, currentColor 1px, transparent 1px, transparent 10px)",
+          }}
+        />
+      </div>
+
+      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col mb-12">
+        <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col p-6 gap-6">
+          
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-4 w-full">
+            <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-xl bg-muted/20 border border-border/60 w-full lg:w-auto whitespace-nowrap">
+              {categoriesList.map((cat) => {
+                const isActive = activeFilter === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setActiveFilter(cat.id)}
+                    className={cn(
+                      "flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all duration-200 shrink-0",
+                      isActive
+                        ? "bg-vanixjnk/15 border border-vanixjnk/25 text-vanixjnk shadow-sm"
+                        : "border border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+                    )}
+                  >
+                    <Icon icon={cat.icon} className="size-4" />
+                    <span>{cat.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="relative w-full lg:w-72">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground">
+                <Icon icon="solar:magnifer-line-duotone" className="size-4" />
+              </span>
+              <input
+                type="text"
+                placeholder="Tìm kiếm dịch vụ..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full h-10 pl-9 pr-10 bg-background border border-border rounded-xl text-xs focus:outline-none focus:border-vanixjnk/50 transition-colors"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                  title="Xóa nhập liệu"
+                >
+                  <Icon icon="solar:close-circle-line-duotone" className="size-4" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {filteredServices.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
+              <div className="size-16 rounded-2xl bg-muted/40 border border-border flex items-center justify-center">
+                <Icon icon="solar:folder-error-line-duotone" className="text-3xl text-muted-foreground" />
+              </div>
+              <h3 className="font-semibold text-base text-foreground">Không tìm thấy dịch vụ nào</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground max-w-xs">
+                Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm khác để tìm kiếm dịch vụ bạn cần.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredServices.map((service) => {
+                const meta = getServiceTypeMeta(service.serviceType);
+                return (
+                  <Card key={service.id} className="relative flex flex-col h-full rounded-xl border border-border bg-card overflow-hidden p-0!">
+                    <Link
+                      href={`/services/${service.slug}`}
+                      className="flex flex-col h-full"
+                    >
+                      <div className="relative aspect-video w-full overflow-hidden bg-muted/20 border-b border-border/55 flex items-center justify-center">
+                        {service.thumbnail ? (
+                          <img
+                            src={service.thumbnail}
+                            alt={service.name}
+                            className="object-cover w-full h-full"
+                          />
+                        ) : (
+                          <div className="absolute inset-0 bg-gradient-to-br from-vanixjnk/5 to-vanixjnk/15 flex items-center justify-center">
+                            <Icon icon={meta.icon} className={`text-5xl ${meta.color || "text-primary"} opacity-40`} />
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col flex-1 p-5 gap-3">
+                        <div className="space-y-1">
+                          <h3 className="text-base font-bold text-foreground line-clamp-1">{service.name}</h3>
+                          <p className="text-xs text-muted-foreground line-clamp-2">
+                            {service.description || "Chưa có mô tả ngắn gọn cho dịch vụ này."}
+                          </p>
+                        </div>
+
+                        <div className="flex-1 mt-2">
+                          <ul className="space-y-1.5">
+                            {service.features && service.features.slice(0, 5).map((feat, idx) => (
+                              <li key={idx} className="flex items-start gap-2 text-xs text-muted-foreground">
+                                <Icon icon="solar:verified-check-line-duotone" className="text-emerald-500 text-sm shrink-0 mt-0.5" />
+                                <span>{feat.name}</span>
+                              </li>
+                            ))}
+                            {service.features && service.features.length > 5 && (
+                              <li className="text-[10px] text-muted-foreground/60 pl-5">
+                                +{service.features.length - 5} tính năng khác
+                              </li>
+                            )}
+                          </ul>
+                        </div>
+                      </div>
+
+                      <div className="border-t border-border px-5 py-4 flex items-center justify-between bg-muted/10">
+                        <div>
+                          <div className="text-sm font-bold text-foreground">
+                            {service.priceType === "contact"
+                              ? "Thỏa thuận"
+                              : service.priceType === "starting_at"
+                              ? `Từ ${formatPrice(service.basePrice)}`
+                              : formatPrice(service.basePrice)}
+                          </div>
+                          <span className="text-[10px] text-muted-foreground">
+                            {service.priceType === "contact" ? "/ dịch vụ" : "/ dự án"}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                          <Icon icon="solar:clock-circle-line-duotone" className="text-xs" />
+                          {service.deliveryTime ? `~${service.deliveryTime} ngày` : "Thỏa thuận"}
+                        </div>
+                      </div>
+                    </Link>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+
+          <Card className="relative rounded-2xl border border-vanixjnk/25 bg-vanixjnk/5 p-8 sm:p-12 overflow-hidden flex flex-col items-center text-center gap-6 mt-6">
+            <div className="absolute right-0 top-0 -z-10 size-40 rounded-full bg-vanixjnk/5 blur-3xl" />
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground z-10">
+              Có ý tưởng độc đáo cần thực thi?
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground max-w-xl leading-relaxed z-10">
+              Liên hệ trực tiếp với đội ngũ phát triển của chúng tôi để được tư vấn thiết kế, lập trình và đưa giải pháp của bạn ra thị trường một cách nhanh nhất.
+            </p>
+            <Link
+              id="services-cta-btn"
+              href="/contact"
+              className="flex items-center gap-2 h-10 px-8 rounded-xl border border-transparent border-vanixjnk/25 bg-vanixjnk/15 text-vanixjnk font-bold text-xs z-10"
+            >
+              <Icon icon="solar:unread-chat-line-duotone" className="text-base" />
+              Gửi yêu cầu thiết kế ngay
+            </Link>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
