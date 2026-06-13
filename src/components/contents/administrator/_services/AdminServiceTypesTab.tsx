@@ -302,7 +302,7 @@ export default function AdminServiceTypesTab() {
                 onClick={() => refetchTypes()}
                 disabled={typesLoading}
               >
-                <Icon icon="solar:restart-line-duotone" className={cn("mr-2 size-3.5", typesLoading && "animate-spin")} />
+                <Icon icon="solar:restart-line-duotone" className={cn("mr-2 size-3.5 text-sky-500", typesLoading && "animate-spin")} />
                 Làm mới
               </Button>
               <Button
@@ -310,7 +310,7 @@ export default function AdminServiceTypesTab() {
                 className="w-full justify-start text-xs h-8 px-2 cursor-pointer"
                 onClick={() => openEditor(null)}
               >
-                <Icon icon="solar:add-circle-line-duotone" className="mr-2 size-3.5" />
+                <Icon icon="solar:add-circle-line-duotone" className="mr-2 size-3.5 text-emerald-500" />
                 Thêm phân loại
               </Button>
               <Button
@@ -318,7 +318,7 @@ export default function AdminServiceTypesTab() {
                 className="w-full justify-start text-xs h-8 px-2 cursor-pointer"
                 onClick={() => openSortDialog()}
               >
-                <Icon icon="solar:sort-vertical-line-duotone" className="mr-2 size-3.5" />
+                <Icon icon="solar:sort-vertical-line-duotone" className="mr-2 size-3.5 text-indigo-500" />
                 Sắp xếp
               </Button>
               <Button
@@ -326,7 +326,7 @@ export default function AdminServiceTypesTab() {
                 className="w-full justify-start text-xs h-8 px-2 cursor-pointer text-amber-600 hover:text-amber-700 hover:bg-amber-500/10"
                 onClick={() => handleSeedData()}
               >
-                <Icon icon="solar:database-line-duotone" className="mr-2 size-3.5" />
+                <Icon icon="solar:database-line-duotone" className="mr-2 size-3.5 text-amber-500" />
                 Đổ dữ liệu mẫu
               </Button>
             </PopoverContent>

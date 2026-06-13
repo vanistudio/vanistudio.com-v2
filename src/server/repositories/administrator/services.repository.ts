@@ -69,12 +69,7 @@ export class ServicesRepository {
   }
 
   async getTypes(): Promise<ServiceType[]> {
-    const list = await db.select().from(serviceTypes).orderBy(serviceTypes.order);
-    if (list.length === 0) {
-      await this.seedDefaultTypes();
-      return await db.select().from(serviceTypes).orderBy(serviceTypes.order);
-    }
-    return list;
+    return await db.select().from(serviceTypes).orderBy(serviceTypes.order);
   }
 
   async seedDefaultTypes(customTypes?: any[]): Promise<void> {
