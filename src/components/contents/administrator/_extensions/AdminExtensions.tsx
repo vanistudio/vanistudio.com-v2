@@ -12,6 +12,7 @@ import OauthProviders from "./OauthProviders";
 import CaptchaProvider from "./CaptchaProvider";
 import AnalyticsMarketing from "./AnalyticsMarketing";
 import StorageConfig from "./StorageConfig";
+import SecuritySettings from "./SecuritySettings";
 
 const TABS = [
   {
@@ -49,6 +50,12 @@ const TABS = [
     title: "Lưu trữ & Tối ưu ảnh",
     icon: "solar:database-line-duotone",
     desc: "Cấu hình lưu trữ đám mây Cloudflare R2, Cloudinary, Tigris và tự động tối ưu hóa hình ảnh.",
+  },
+  {
+    id: "security_settings",
+    title: "Cấu hình Bảo mật",
+    icon: "solar:shield-keyhole-line-duotone",
+    desc: "Cấu hình giới hạn request, chống spam IP, chặn brute-force và tăng cường bảo mật phiên người dùng.",
   },
 ];
 
@@ -309,6 +316,15 @@ export default function AdminExtensions() {
 
                 {activeTab === "storage_config" && (
                   <StorageConfig
+                    isEnabled={activeExt.isEnabled}
+                    onEnabledChange={(val) => handleEnabledChange(activeExt.id, val)}
+                    config={activeExt.config as any}
+                    onConfigChange={(val) => handleConfigChange(activeExt.id, val)}
+                  />
+                )}
+
+                {activeTab === "security_settings" && (
+                  <SecuritySettings
                     isEnabled={activeExt.isEnabled}
                     onEnabledChange={(val) => handleEnabledChange(activeExt.id, val)}
                     config={activeExt.config as any}

@@ -135,6 +135,29 @@ export interface StorageConfig {
   };
 }
 
+export interface SecuritySettingsConfig {
+  rateLimit: {
+    enabled: boolean;
+    maxRequests: number;
+    windowMs: number;
+  };
+  ipSpamProtection: {
+    enabled: boolean;
+    apiSpamLimit: number;
+    banDurationMs: number;
+  };
+  bruteForceProtection: {
+    enabled: boolean;
+    maxPasswordAttempts: number;
+    lockoutDurationMs: number;
+  };
+  sessionSecurity: {
+    restrictMultipleSessions: boolean;
+    ipChangeDetection: boolean;
+    userAgentChangeDetection: boolean;
+  };
+}
+
 export interface DefaultExtension {
   id: string;
   name: string;
@@ -268,5 +291,33 @@ export const DEFAULT_EXTENSIONS: DefaultExtension[] = [
         preserveOriginal: false,
       },
     } as StorageConfig,
+  },
+  {
+    id: "security_settings",
+    name: "Cấu hình Bảo mật hệ thống",
+    description: "Cấu hình các cơ chế tự động phòng chống spam, brute force tài khoản, giới hạn request và bảo vệ phiên đăng nhập người dùng.",
+    isEnabled: true,
+    config: {
+      rateLimit: {
+        enabled: true,
+        maxRequests: 120,
+        windowMs: 60000,
+      },
+      ipSpamProtection: {
+        enabled: true,
+        apiSpamLimit: 5,
+        banDurationMs: 3600000,
+      },
+      bruteForceProtection: {
+        enabled: true,
+        maxPasswordAttempts: 5,
+        lockoutDurationMs: 900000,
+      },
+      sessionSecurity: {
+        restrictMultipleSessions: false,
+        ipChangeDetection: true,
+        userAgentChangeDetection: true,
+      },
+    } as SecuritySettingsConfig,
   },
 ];
