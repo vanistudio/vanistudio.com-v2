@@ -21,7 +21,7 @@ export default function NotFound() {
 
   return (
     <div className="flex flex-col min-h-screen w-full bg-background text-foreground font-sans select-none relative overflow-x-hidden">
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--primary)/0.03)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--primary)/0.03)_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none -z-20" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--primary)/0.03)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--primary)/0.03)_1px,transparent_1px)] bg-size-24px_24px pointer-events-none -z-20" />
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="border-l border-r border-dashed border-primary/20 pt-[88px] pb-6 px-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
