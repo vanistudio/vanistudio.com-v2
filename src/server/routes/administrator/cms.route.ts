@@ -3,6 +3,7 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { getServerSession } from "@/lib/auth";
 import { cmsService } from "@/server/services/administrator/cms.service";
+import { revalidatePath } from "next/cache";
 
 async function ensureAdmin() {
   const session = await getServerSession(true);
@@ -92,7 +93,11 @@ export const cmsRouter = router({
     .mutation(async ({ input }) => {
       await ensureAdmin();
       try {
-        return await cmsService.createPage(input);
+        const page = await cmsService.createPage(input);
+        if (page.isActive) {
+          revalidatePath("/" + page.slug);
+        }
+        return page;
       } catch (error: any) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -111,7 +116,19 @@ export const cmsRouter = router({
     .mutation(async ({ input }) => {
       await ensureAdmin();
       try {
-        return await cmsService.updatePage(input.id, input.data);
+        const oldPage = await cmsService.getPageById(input.id);
+        const oldSlug = oldPage?.slug;
+
+        const updated = await cmsService.updatePage(input.id, input.data);
+
+        if (oldSlug) {
+          revalidatePath("/" + oldSlug);
+        }
+        if (updated.slug !== oldSlug) {
+          revalidatePath("/" + updated.slug);
+        }
+
+        return updated;
       } catch (error: any) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -125,7 +142,15 @@ export const cmsRouter = router({
     .mutation(async ({ input }) => {
       await ensureAdmin();
       try {
+        const page = await cmsService.getPageById(input.id);
+        const slug = page?.slug;
+
         await cmsService.deletePage(input.id);
+
+        if (slug) {
+          revalidatePath("/" + slug);
+        }
+
         return { success: true };
       } catch (error: any) {
         throw new TRPCError({

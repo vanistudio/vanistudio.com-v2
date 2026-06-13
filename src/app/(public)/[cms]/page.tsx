@@ -4,6 +4,18 @@ import PubCmsPage from "@/components/contents/public/_cms/PubCmsPage";
 import AppLayout from "@/components/layouts/application/AppLayout";
 import type { Metadata } from "next";
 
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  const pages = await cmsService.getPages();
+  return pages
+    .filter((page) => page.isActive)
+    .map((page) => ({
+      cms: page.slug,
+    }));
+}
+
+
 interface Props {
   params: Promise<{ cms: string }> | { cms: string };
 }
