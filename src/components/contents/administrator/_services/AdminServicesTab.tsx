@@ -26,6 +26,7 @@ import { trpc } from "@/lib/trpc";
 import type { FormFieldConfig, Service, ServicePackage } from "@/server/db/schemas/service.schema";
 import { GalleryDialog } from "@/components/vanixjnk/gallery-dialog";
 import { DeviconPicker } from "./DeviconPicker";
+import { IconPicker } from "@/components/vanixjnk/icon-picker";
 
 function formatCurrencyInput(value: string | number): string {
   const strValue = String(value);
@@ -802,82 +803,117 @@ export default function AdminServicesTab() {
 
             {sheetActiveTab === "formConfig" && (
               <div className="py-4 space-y-4">
-                <div className="flex items-center justify-between border-b pb-2">
+                <div className="flex items-center justify-between border-b pb-3">
                   <div>
                     <h4 className="text-sm font-semibold text-foreground">Phiếu khảo sát nhu cầu tùy chỉnh</h4>
                     <p className="text-[11px] text-muted-foreground mt-0.5">Thêm các trường câu hỏi để thu thập thông tin khi khách hàng đặt đơn dịch vụ này.</p>
                   </div>
-                  <Button variant="outline" size="sm" type="button" onClick={addDynamicField} className="gap-1 h-8">
-                    <Icon icon="solar:add-circle-line-duotone" className="text-base" />
-                    <span>Thêm trường hỏi</span>
+                  <Button variant="outline" size="sm" type="button" onClick={addDynamicField} className="gap-1.5 h-8 font-semibold cursor-pointer">
+                    <Icon icon="solar:add-circle-line-duotone" className="text-base text-emerald-500" />
+                    <span>Thêm câu hỏi</span>
                   </Button>
                 </div>
 
                 {serviceForm.fieldsConfig.length === 0 ? (
-                  <div className="py-8 text-center border-2 border-dashed border-border/80 rounded-xl text-muted-foreground/60 text-xs">
-                    Chưa có trường khảo sát nào được cấu hình cho dịch vụ này.
+                  <div className="py-12 text-center border-2 border-dashed border-border/80 rounded-2xl text-muted-foreground/60 text-xs flex flex-col items-center justify-center gap-2">
+                    <Icon icon="solar:document-text-line-duotone" className="size-8 text-muted-foreground/40" />
+                    <span>Chưa có trường khảo sát nào được cấu hình cho dịch vụ này.</span>
                   </div>
                 ) : (
-                  <div className="space-y-3">
-                    {serviceForm.fieldsConfig.map((field, idx) => (
-                      <div key={field.key} className="p-3 border rounded-xl bg-background/50 flex flex-col gap-3 relative group">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="size-7 absolute top-2 right-2 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 shrink-0"
-                          onClick={() => removeDynamicField(idx)}
-                        >
-                          <Icon icon="solar:trash-bin-trash-line-duotone" className="size-4" />
-                        </Button>
+                  <div className="space-y-4">
+                    {serviceForm.fieldsConfig.map((field, idx) => {
+                      const fieldTypeDetails: Record<string, { label: string; icon: string; color: string }> = {
+                        text: { label: "Chữ ngắn (text)", icon: "solar:text-field-focus-line-duotone", color: "text-blue-500 bg-blue-500/10 border-blue-500/20" },
+                        textarea: { label: "Đoạn văn (textarea)", icon: "solar:document-text-line-duotone", color: "text-indigo-500 bg-indigo-500/10 border-indigo-500/20" },
+                        select: { label: "Hộp chọn (select)", icon: "solar:list-arrow-down-minimalistic-line-duotone", color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" },
+                        multiselect: { label: "Chọn nhiều (multiselect)", icon: "solar:checklist-minimalistic-line-duotone", color: "text-teal-500 bg-teal-500/10 border-teal-500/20" },
+                        checkbox: { label: "Hộp kiểm (checkbox)", icon: "solar:check-square-line-duotone", color: "text-amber-500 bg-amber-500/10 border-amber-500/20" },
+                        number: { label: "Số lượng (number)", icon: "solar:sort-from-top-to-bottom-line-duotone", color: "text-purple-500 bg-purple-500/10 border-purple-500/20" },
+                        file: { label: "Đính kèm tệp (file)", icon: "solar:folder-with-files-line-duotone", color: "text-rose-500 bg-rose-500/10 border-rose-500/20" },
+                      };
+                      const details = fieldTypeDetails[field.type] || { label: field.type, icon: "solar:question-circle-line-duotone", color: "text-muted-foreground bg-muted border-border" };
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pr-8">
-                          <div className="space-y-1">
-                            <span className="text-xs text-muted-foreground">Tiêu đề trường (Label)</span>
-                            <Input className="h-8 text-xs" placeholder="e.g. Phiên bản game" value={field.label} onChange={(e) => updateDynamicField(idx, "label", e.target.value)} />
-                          </div>
-                          <div className="space-y-1">
-                            <span className="text-xs text-muted-foreground">Loại trường</span>
-                            <Select value={field.type} onValueChange={(val) => updateDynamicField(idx, "type", val)}>
-                              <SelectTrigger className="h-8 text-xs w-full"><SelectValue /></SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="text">Chữ ngắn (text)</SelectItem>
-                                <SelectItem value="textarea">Đoạn văn (textarea)</SelectItem>
-                                <SelectItem value="select">Hộp chọn (select)</SelectItem>
-                                <SelectItem value="multiselect">Chọn nhiều (multiselect)</SelectItem>
-                                <SelectItem value="checkbox">Hộp kiểm (checkbox)</SelectItem>
-                                <SelectItem value="number">Số lượng (number)</SelectItem>
-                                <SelectItem value="file">Đính kèm tệp (file)</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
+                      return (
+                        <div key={field.key} className="p-4 border border-border/80 rounded-xl bg-muted/10 hover:bg-muted/20 transition-all flex flex-col gap-3.5 relative group">
+                          <Button
+                            variant="danger"
+                            size="icon-sm"
+                            className="absolute top-3 right-3"
+                            onClick={() => removeDynamicField(idx)}
+                            title="Xóa trường hỏi này"
+                          >
+                            <Icon icon="solar:trash-bin-trash-line-duotone" className="size-4" />
+                          </Button>
 
-                        <div className="flex flex-col gap-2">
-                          <div className="flex items-center gap-2">
-                            <Switch id={`req-${field.key}`} checked={field.required} onCheckedChange={(val) => updateDynamicField(idx, "required", val)} />
-                            <label htmlFor={`req-${field.key}`} className="text-[11px] font-medium text-foreground cursor-pointer">Bắt buộc phải điền</label>
-                          </div>
-
-                          {["select", "multiselect"].includes(field.type) && (
-                            <div className="space-y-1">
-                              <span className="text-xs text-muted-foreground">Các tùy chọn (phân tách bằng dấu phẩy)</span>
-                              <Input
-                                className="h-8 text-xs"
-                                placeholder="e.g. 1.20, 1.21, 1.19"
-                                value={field.options ? field.options.join(", ") : ""}
-                                onChange={(e) =>
-                                  updateDynamicField(
-                                    idx,
-                                    "options",
-                                    e.target.value.split(",").map((o) => o.trim())
-                                  )
-                                }
-                              />
+                          <div className="flex items-center gap-2 border-b border-border/40 pb-2.5">
+                            <div className={cn("size-6 rounded-lg flex items-center justify-center border", details.color)}>
+                              <Icon icon={details.icon} className="size-3.5" />
                             </div>
-                          )}
+                            <span className="text-[13px] font-bold text-foreground">
+                              Câu hỏi #{idx + 1}: <span className="font-semibold text-muted-foreground/80">{details.label}</span>
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                            <div className="space-y-1">
+                              <label className="text-[11px] font-bold text-foreground">Tiêu đề câu hỏi (Label)</label>
+                              <Input className="h-9 text-xs" placeholder="e.g. Phiên bản game" value={field.label} onChange={(e) => updateDynamicField(idx, "label", e.target.value)} />
+                            </div>
+                            <div className="space-y-1">
+                              <label className="text-[11px] font-bold text-foreground">Loại trường nhập</label>
+                              <Select value={field.type} onValueChange={(val) => updateDynamicField(idx, "type", val)}>
+                                <SelectTrigger className="h-9 text-xs w-full"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="text">Chữ ngắn (text)</SelectItem>
+                                  <SelectItem value="textarea">Đoạn văn (textarea)</SelectItem>
+                                  <SelectItem value="select">Hộp chọn (select)</SelectItem>
+                                  <SelectItem value="multiselect">Chọn nhiều (multiselect)</SelectItem>
+                                  <SelectItem value="checkbox">Hộp kiểm (checkbox)</SelectItem>
+                                  <SelectItem value="number">Số lượng (number)</SelectItem>
+                                  <SelectItem value="file">Đính kèm tệp (file)</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            {["text", "textarea", "number"].includes(field.type) && (
+                              <div className="space-y-1 md:col-span-2">
+                                <label className="text-[11px] font-bold text-foreground">Mẹo gợi ý (Placeholder - tùy chọn)</label>
+                                <Input
+                                  className="h-9 text-xs"
+                                  placeholder="e.g. Nhập phiên bản trò chơi bạn sử dụng..."
+                                  value={field.placeholder || ""}
+                                  onChange={(e) => updateDynamicField(idx, "placeholder", e.target.value)}
+                                />
+                              </div>
+                            )}
+
+                            {["select", "multiselect"].includes(field.type) && (
+                              <div className="space-y-1 md:col-span-2">
+                                <label className="text-[11px] font-bold text-foreground">Các tùy chọn (phân tách bằng dấu phẩy)</label>
+                                <Input
+                                  className="h-9 text-xs"
+                                  placeholder="e.g. 1.20, 1.21, 1.19"
+                                  value={field.options ? field.options.join(", ") : ""}
+                                  onChange={(e) =>
+                                    updateDynamicField(
+                                      idx,
+                                      "options",
+                                      e.target.value.split(",").map((o) => o.trim())
+                                    )
+                                  }
+                                />
+                                <p className="text-[10px] text-muted-foreground">Nhập các lựa chọn, phân tách bằng dấu phẩy.</p>
+                              </div>
+                            )}
+
+                            <div className="flex items-center gap-2 md:col-span-2 pt-1">
+                              <Switch id={`req-${field.key}`} checked={field.required} onCheckedChange={(val) => updateDynamicField(idx, "required", val)} />
+                              <label htmlFor={`req-${field.key}`} className="text-[11px] font-semibold text-foreground cursor-pointer select-none">Bắt buộc khách hàng điền</label>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -885,46 +921,74 @@ export default function AdminServicesTab() {
 
             {sheetActiveTab === "features" && (
               <div className="py-4 space-y-4">
-                <div className="flex items-center justify-between border-b pb-2">
+                <div className="flex items-center justify-between border-b pb-3">
                   <div>
                     <h4 className="text-sm font-semibold text-foreground">Đặc quyền và Tính năng mặc định</h4>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">Danh sách checklist các điểm nổi bật đi kèm của dịch vụ.</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">Danh sách các điểm nổi bật đi kèm của dịch vụ.</p>
                   </div>
-                  <Button variant="outline" size="sm" type="button" onClick={addFeature} className="gap-1 h-8">
-                    <Icon icon="solar:add-circle-line-duotone" className="text-base" />
+                  <Button variant="outline" size="sm" type="button" onClick={addFeature} className="gap-1.5 h-8 font-semibold cursor-pointer">
+                    <Icon icon="solar:add-circle-line-duotone" className="text-base text-emerald-500" />
                     <span>Thêm tính năng</span>
                   </Button>
                 </div>
 
                 {serviceForm.features.length === 0 ? (
-                  <div className="py-8 text-center border-2 border-dashed border-border/80 rounded-xl text-muted-foreground/60 text-xs">
-                    Chưa có tính năng đặc thù nào được thêm.
+                  <div className="py-12 text-center border-2 border-dashed border-border/80 rounded-2xl text-muted-foreground/60 text-xs flex flex-col items-center justify-center gap-2">
+                    <Icon icon="solar:star-line-duotone" className="size-8 text-muted-foreground/40" />
+                    <span>Chưa có tính năng đặc thù nào được thêm.</span>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {serviceForm.features.map((feature, idx) => (
-                      <div key={idx} className="p-3 border rounded-xl bg-background/50 flex flex-col gap-3 relative group">
+                      <div key={idx} className="p-4 border border-border/80 rounded-xl bg-muted/10 hover:bg-muted/20 transition-all flex flex-col gap-3.5 relative group">
                         <Button
-                          variant="ghost"
-                          size="icon"
-                          className="size-7 absolute top-2 right-2 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 shrink-0"
+                          variant="danger"
+                          size="icon-sm"
+                          className="absolute top-3 right-3"
                           onClick={() => removeFeature(idx)}
+                          title="Xóa tính năng này"
                         >
                           <Icon icon="solar:trash-bin-trash-line-duotone" className="size-4" />
                         </Button>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pr-8">
+                        <div className="flex items-center gap-2 border-b border-border/40 pb-2.5">
+                          <div className="size-6.5 rounded-lg flex items-center justify-center bg-vanixjnk/10 border border-vanixjnk/20 text-vanixjnk">
+                            <Icon icon={feature.icon || "solar:star-line-duotone"} className="size-3.5" />
+                          </div>
+                          <span className="text-[13px] font-bold text-foreground">
+                            Tính năng #{idx + 1}
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                           <div className="space-y-1">
-                            <span className="text-xs text-muted-foreground">Tên tính năng</span>
-                            <Input className="h-8 text-xs" placeholder="e.g. Tối ưu hiệu năng" value={feature.name} onChange={(e) => updateFeature(idx, "name", e.target.value)} />
+                            <label className="text-[11px] font-bold text-foreground">Tên tính năng</label>
+                            <Input className="h-9 text-xs" placeholder="e.g. Tối ưu hiệu năng" value={feature.name} onChange={(e) => updateFeature(idx, "name", e.target.value)} />
                           </div>
                           <div className="space-y-1">
-                            <span className="text-xs text-muted-foreground">Icon (Iconify code)</span>
-                            <Input className="h-8 text-xs font-mono" placeholder="e.g. solar:stars-line-duotone" value={feature.icon || ""} onChange={(e) => updateFeature(idx, "icon", e.target.value)} />
+                            <label className="text-[11px] font-bold text-foreground">Biểu tượng (Icon)</label>
+                            <div className="flex items-center gap-1.5">
+                              <Input className="h-9 text-xs font-mono flex-1" placeholder="e.g. solar:stars-line-duotone" value={feature.icon || ""} onChange={(e) => updateFeature(idx, "icon", e.target.value)} />
+                              <IconPicker
+                                value={feature.icon || "solar:stars-line-duotone"}
+                                onChange={(val) => updateFeature(idx, "icon", val)}
+                                trigger={
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    title="Chọn biểu tượng"
+                                    className="size-9 rounded-lg shrink-0 cursor-pointer"
+                                  >
+                                    <Icon icon={feature.icon || "solar:stars-line-duotone"} className="text-base" />
+                                  </Button>
+                                }
+                              />
+                            </div>
                           </div>
-                          <div className="space-y-1">
-                            <span className="text-xs text-muted-foreground">Mô tả ngắn gọn</span>
-                            <Input className="h-8 text-xs" placeholder="e.g. Đảm bảo chạy mượt trên VPS" value={feature.description || ""} onChange={(e) => updateFeature(idx, "description", e.target.value)} />
+                          <div className="space-y-1 md:col-span-2">
+                            <label className="text-[11px] font-bold text-foreground">Mô tả ngắn gọn</label>
+                            <Input className="h-9 text-xs" placeholder="e.g. Đảm bảo chạy mượt trên VPS" value={feature.description || ""} onChange={(e) => updateFeature(idx, "description", e.target.value)} />
                           </div>
                         </div>
                       </div>
