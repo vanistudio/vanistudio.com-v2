@@ -14,7 +14,6 @@ import { DataTable, DataTableColumnHeader } from "@/components/vanixjnk/data-tab
 import { ColumnDef, SortingState } from "@tanstack/react-table";
 import { toast } from "sonner";
 import { MdxRenderer } from "@/components/vanixjnk/mdx-builder";
-import { GalleryDialog } from "@/components/vanixjnk/gallery-dialog";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
 import { CmsPageMock } from "./types";
@@ -40,7 +39,6 @@ export default function CmsPageList() {
   });
 
   const pages = serverPages || [];
-  const isLoaded = !isLoading;
 
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -532,7 +530,7 @@ export default function CmsPageList() {
                 {previewPage.thumbnail && (
                   <div className="w-full h-48 bg-muted overflow-hidden relative">
                     <img src={previewPage.thumbnail} alt="Banner" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+                    <div className="absolute inset-0 bg-linear-to-t from-background via-background/40 to-transparent" />
                   </div>
                 )}
 
