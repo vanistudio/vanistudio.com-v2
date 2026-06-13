@@ -1,10 +1,32 @@
 import { db } from "@/server/db";
 import { cmsPages, type CmsPage, type NewCmsPage } from "@/server/db/schemas/cms-page.schema";
+import { DEFAULT_CMS_PAGES } from "@/defaults/cms-page.default";
 import { eq, desc } from "drizzle-orm";
 
 export class CmsRepository {
   async getPages(): Promise<CmsPage[]> {
-    return await db.select().from(cmsPages).orderBy(desc(cmsPages.createdAt));
+    const dbPages = await db.select().from(cmsPages).orderBy(desc(cmsPages.createdAt));
+    const dbSlugs = new Set(dbPages.map((p) => p.slug));
+
+    const missing = DEFAULT_CMS_PAGES.filter((def) => !dbSlugs.has(def.slug));
+    if (missing.length > 0) {
+      const toInsert = missing.map((m) => ({
+        title: m.title,
+        slug: m.slug,
+        description: m.description,
+        content: m.content,
+        thumbnail: m.thumbnail,
+        metaTitle: m.metaTitle,
+        metaDescription: m.metaDescription,
+        metaKeywords: m.metaKeywords,
+        isActive: m.isActive,
+        publishedAt: m.publishedAt,
+      }));
+      await db.insert(cmsPages).values(toInsert).onConflictDoNothing();
+      return await db.select().from(cmsPages).orderBy(desc(cmsPages.createdAt));
+    }
+
+    return dbPages;
   }
 
   async getPageById(id: string): Promise<CmsPage | null> {
@@ -14,6 +36,27 @@ export class CmsRepository {
 
   async getPageBySlug(slug: string): Promise<CmsPage | null> {
     const [page] = await db.select().from(cmsPages).where(eq(cmsPages.slug, slug)).limit(1);
+    if (!page) {
+      const defaultPage = DEFAULT_CMS_PAGES.find((p) => p.slug === slug);
+      if (defaultPage) {
+        const [inserted] = await db
+          .insert(cmsPages)
+          .values({
+            title: defaultPage.title,
+            slug: defaultPage.slug,
+            description: defaultPage.description,
+            content: defaultPage.content,
+            thumbnail: defaultPage.thumbnail,
+            metaTitle: defaultPage.metaTitle,
+            metaDescription: defaultPage.metaDescription,
+            metaKeywords: defaultPage.metaKeywords,
+            isActive: defaultPage.isActive,
+            publishedAt: defaultPage.publishedAt,
+          })
+          .returning();
+        return inserted || null;
+      }
+    }
     return page || null;
   }
 

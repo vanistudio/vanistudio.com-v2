@@ -20,7 +20,7 @@ Chào mừng bạn đến với Vani Studio. Khi sử dụng các dịch vụ v�
 - **"Khách hàng"** (hoặc **"bạn"**) — cá nhân hoặc tổ chức sử dụng dịch vụ, sản phẩm của Vani Studio.
 - **"Dịch vụ"** — toàn bộ sản phẩm phần mềm, công cụ, website, ứng dụng, bot, API và các dịch vụ kỹ thuật khác do Vani Studio cung cấp.
 
----
+<Separator className="my-6" />
 
 ## 2. Điều kiện sử dụng
 Khi sử dụng Dịch vụ, bạn cam kết rằng:
@@ -29,14 +29,14 @@ Khi sử dụng Dịch vụ, bạn cam kết rằng:
 - Bạn không sử dụng Dịch vụ cho bất kỳ mục đích bất hợp pháp hoặc vi phạm pháp luật Việt Nam;
 - Bạn không can thiệp, phá hoại hoặc gây ảnh hưởng đến hoạt động bình thường của hệ thống.
 
----
+<Separator className="my-6" />
 
 ## 3. Quyền sở hữu trí tuệ
 Toàn bộ nội dung, thiết kế, mã nguồn, thương hiệu và tài liệu liên quan đến Dịch vụ thuộc quyền sở hữu trí tuệ của Vani Studio, trừ khi có thỏa thuận khác bằng văn bản.
-- **Đối với các sản phẩm phát triển theo hợp đồng**: quyền sở hữu mã nguồn sẽ được chuyển giao cho khách hàng sau khi thanh toán đầy đủ, trừ các thành phần framework và thư viện lõi của Vani Studio;
-- **Đối với các sản phẩm cấp phép (license)**: khách hàng được cấp quyền sử dụng theo license key, không được sao chép, phân phối lại hoặc chỉnh sửa mã nguồn khi chưa có sự đồng ý.
+- **Sản phẩm phát triển theo hợp đồng**: Quyền sở hữu mã nguồn sẽ được chuyển giao cho khách hàng sau khi thanh toán đầy đủ, trừ các thành phần framework và thư viện lõi của Vani Studio.
+- **Sản phẩm cấp phép (license)**: Khách hàng được cấp quyền sử dụng theo license key, không được sao chép, phân phối lại hoặc chỉnh sửa mã nguồn khi chưa có sự đồng ý.
 
----
+<Separator className="my-6" />
 
 ## 4. License Key và Tài khoản
 - Mỗi license key chỉ được sử dụng theo số lượng kích hoạt đã quy định;
@@ -44,31 +44,31 @@ Toàn bộ nội dung, thiết kế, mã nguồn, thương hiệu và tài liệ
 - Vani Studio có quyền thu hồi license key nếu phát hiện hành vi vi phạm điều khoản;
 - Khách hàng chịu trách nhiệm bảo mật thông tin tài khoản và license key của mình.
 
----
+<Separator className="my-6" />
 
 ## 5. Giới hạn trách nhiệm
-Vani Studio nỗ lực đảm bảo Dịch vụ hoạt động ổn định và liên tục. Tuy nhiên, chúng tôi không chịu trách nhiệm trong các trường hợp:
-- Gián đoạn dịch vụ do sự cố ngoài tầm kiểm soát (thiên tai, tấn công mạng, lỗi hạ tầng bên thứ ba);
-- Thiệt hại phát sinh từ việc khách hàng sử dụng Dịch vụ sai mục đích hoặc vi phạm điều khoản;
-- Mất dữ liệu do khách hàng không thực hiện sao lưu theo khuyến nghị.
+<Alert className="border-amber-500/20 bg-amber-500/5 text-amber-600 dark:text-amber-400">
+  <Icon icon="solar:danger-line-duotone" className="size-4" />
+  <AlertTitle>Giới hạn trách nhiệm</AlertTitle>
+  <AlertDescription className="text-xs text-muted-foreground leading-relaxed mt-1">
+    Vani Studio nỗ lực đảm bảo Dịch vụ hoạt động ổn định. Tuy nhiên, chúng tôi không chịu trách nhiệm trong các trường hợp gián đoạn dịch vụ do sự cố ngoài tầm kiểm soát (thiên tai, tấn công mạng, lỗi hạ tầng bên thứ ba); thiệt hại do sử dụng sai mục đích hoặc mất dữ liệu do khách hàng không thực hiện sao lưu.
+  </AlertDescription>
+</Alert>
 
----
+<Separator className="my-6" />
 
 ## 6. Chấm dứt Dịch vụ
-Vani Studio có quyền tạm ngừng hoặc chấm dứt cung cấp Dịch vụ cho khách hàng nếu:
-- Khách hàng vi phạm bất kỳ điều khoản nào trong văn bản này;
-- Khách hàng sử dụng Dịch vụ cho mục đích bất hợp pháp;
-- Khách hàng gây ảnh hưởng tiêu cực đến hệ thống hoặc người dùng khác.
+Chúng tôi có quyền tạm ngừng hoặc chấm dứt cung cấp Dịch vụ nếu phát hiện khách hàng vi phạm bất kỳ điều khoản nào, sử dụng dịch vụ cho mục đích bất hợp pháp hoặc gây ảnh hưởng tiêu cực đến hệ thống.
 
----
+<Separator className="my-6" />
 
 ## 7. Thay đổi Điều khoản
-Vani Studio có quyền cập nhật Điều khoản Dịch vụ bất kỳ lúc nào. Các thay đổi quan trọng sẽ được thông báo qua website hoặc email. Việc tiếp tục sử dụng Dịch vụ sau khi điều khoản được cập nhật đồng nghĩa với việc bạn chấp nhận những thay đổi đó.
+Vani Studio có quyền cập nhật Điều khoản Dịch vụ bất kỳ lúc nào. Việc tiếp tục sử dụng Dịch vụ sau khi điều khoản được cập nhật đồng nghĩa với việc bạn chấp nhận những thay đổi đó.
 
----
+<Separator className="my-6" />
 
 ## 8. Liên hệ
-Mọi câu hỏi về Điều khoản Dịch vụ, vui lòng liên hệ:
+Mọi thắc mắc về Điều khoản Dịch vụ, vui lòng liên hệ:
 - **Email**: [vanixjnk@gmail.com](mailto:vanixjnk@gmail.com)
 - **Zalo**: [zalo.me/0935974907](https://zalo.me/0935974907)
 `,
@@ -88,51 +88,46 @@ Mọi câu hỏi về Điều khoản Dịch vụ, vui lòng liên hệ:
 Chào mừng bạn đến với Vani Studio. Chúng tôi cam kết bảo vệ thông tin cá nhân và quyền riêng tư của bạn. Vui lòng đọc kỹ Chính sách Bảo mật dưới đây.
 
 ## 1. Mục đích và phạm vi thu thập thông tin
-Khi khách hàng đăng ký tài khoản hoặc sử dụng các sản phẩm, dịch vụ (sau đây gọi chung là "Dịch vụ") của Vani Studio, chúng tôi có thể thu thập các thông tin cần thiết bao gồm: họ tên, địa chỉ email, tên đăng nhập và các thông tin liên quan khác.
-
-Thông tin được thu thập nhằm phục vụ các mục đích sau:
+Khi đăng ký tài khoản hoặc sử dụng Dịch vụ, chúng tôi có thể thu thập các thông tin cần thiết bao gồm: họ tên, địa chỉ email, tên đăng nhập và các thông tin liên quan khác nhằm phục vụ các mục đích sau:
 - Xác nhận đơn hàng, kích hoạt và quản lý license key;
 - Cung cấp thông tin về Dịch vụ, gửi thông báo cập nhật sản phẩm;
 - Phân tích xu hướng sử dụng nhằm cải tiến chất lượng Dịch vụ;
 - Hỗ trợ khách hàng khi có yêu cầu hoặc sự cố phát sinh.
 
-Khách hàng có trách nhiệm tự bảo mật thông tin tài khoản của mình. Trong trường hợp phát hiện hành vi sử dụng trái phép hoặc vi phạm bảo mật, vui lòng thông báo ngay cho Vani Studio để được hỗ trợ kịp thời.
-
----
+<Separator className="my-6" />
 
 ## 2. Phạm vi sử dụng thông tin
-Vani Studio cam kết chỉ sử dụng thông tin cá nhân của khách hàng đúng theo các mục đích đã nêu. Chúng tôi không bán, trao đổi hoặc chuyển giao thông tin cá nhân cho bên thứ ba khi chưa có sự đồng ý của khách hàng.
+Vani Studio cam kết chỉ sử dụng thông tin cá nhân của khách hàng đúng theo các mục đích đã nêu. Chúng tôi không bán, trao đổi hoặc chuyển giao thông tin cá nhân cho bên thứ ba khi chưa có sự đồng ý.
 
-Thông tin cá nhân chỉ được tiết lộ khi có yêu cầu hợp pháp từ cơ quan tư pháp có thẩm quyền, bao gồm Viện kiểm sát, Tòa án hoặc cơ quan Công an điều tra liên quan đến hành vi vi phạm pháp luật.
+<Alert className="border-blue-500/20 bg-blue-500/5 text-blue-600 dark:text-blue-400">
+  <Icon icon="solar:info-circle-line-duotone" className="size-4" />
+  <AlertTitle>Tiết lộ pháp lý</AlertTitle>
+  <AlertDescription className="text-xs text-muted-foreground leading-relaxed mt-1">
+    Thông tin cá nhân chỉ được tiết lộ khi có yêu cầu hợp pháp từ cơ quan tư pháp có thẩm quyền (Viện kiểm sát, Tòa án hoặc cơ quan Công an điều tra) liên quan đến hành vi vi phạm pháp luật.
+  </AlertDescription>
+</Alert>
 
----
+<Separator className="my-6" />
 
 ## 3. Thời gian lưu trữ thông tin
 Dữ liệu cá nhân sẽ được lưu trữ trên hệ thống máy chủ bảo mật của Vani Studio cho đến khi khách hàng yêu cầu hủy bỏ hoặc tự xóa tài khoản.
 
-If khách hàng muốn xóa toàn bộ dữ liệu cá nhân, vui lòng gửi yêu cầu đến email: [vanixjnk@gmail.com](mailto:vanixjnk@gmail.com)
+<Separator className="my-6" />
 
----
+## 4. Quyền của khách hàng
+Khách hàng có toàn quyền kiểm tra, cập nhật, điều chỉnh hoặc yêu cầu xóa bỏ thông tin cá nhân bằng cách liên hệ trực tiếp với Vani Studio. Chúng tôi cam kết bảo mật tuyệt đối mọi thông tin giao dịch trực tuyến, bao gồm thông tin thanh toán, license key và lịch sử sử dụng dịch vụ.
 
-## 4. Thông tin liên hệ
-Mọi câu hỏi, yêu cầu hoặc khiếu nại liên quan đến việc thu thập và xử lý thông tin cá nhân, vui lòng liên hệ:
-- **Đơn vị**: Vani Studio
-- **Email**: [vanixjnk@gmail.com](mailto:vanixjnk@gmail.com)
-- **Zalo**: [zalo.me/0935974907](https://zalo.me/0935974907)
+<Separator className="my-6" />
 
----
-
-## 5. Quyền của khách hàng
-Khách hàng có toàn quyền kiểm tra, cập nhật, điều chỉnh hoặc yêu cầu xóa bỏ thông tin cá nhân bằng cách liên hệ trực tiếp với Vani Studio. Chúng tôi cam kết xử lý mọi yêu cầu trong thời gian sớm nhất có thể.
-
-Vani Studio cam kết bảo mật tuyệt đối mọi thông tin giao dịch trực tuyến của khách hàng, bao gồm thông tin thanh toán, license key và lịch sử sử dụng dịch vụ.
-
----
-
-## 6. Cập nhật Chính sách
+## 5. Cập nhật Chính sách
 Vani Studio có quyền cập nhật Chính sách Bảo mật này bất kỳ lúc nào. Trong trường hợp có thay đổi quan trọng, chúng tôi sẽ thông báo cho khách hàng thông qua website hoặc email đã đăng ký.
 
-Việc tiếp tục sử dụng Dịch vụ sau khi Chính sách được cập nhật đồng nghĩa với việc khách hàng chấp nhận những thay đổi đó.
+<Separator className="my-6" />
+
+## 6. Thông tin liên hệ
+Mọi thắc mắc hoặc yêu cầu về bảo mật, vui lòng liên hệ:
+- **Email**: [vanixjnk@gmail.com](mailto:vanixjnk@gmail.com)
+- **Zalo**: [zalo.me/0935974907](https://zalo.me/0935974907)
 `,
   },
   {
@@ -155,7 +150,7 @@ Vani Studio sẽ xem xét hoàn tiền trong các trường hợp sau:
 - **Chất lượng không đạt yêu cầu**: Nếu sản phẩm cuối cùng không đạt tiêu chuẩn chất lượng như đã cam kết và Vani Studio không thể khắc phục sau khi đã được trao cơ hội sửa chữa hợp lý, khách hàng có thể yêu cầu hoàn tiền.
 - **Không hài lòng với sản phẩm**: Trong vòng 14 ngày kể từ khi nhận bàn giao sản phẩm, nếu khách hàng không hài lòng và gửi yêu cầu hoàn tiền, Vani Studio sẽ xem xét và xử lý theo từng trường hợp cụ thể.
 
----
+<Separator className="my-6" />
 
 ## 2. Quy trình hoàn tiền
 <table className="min-w-full border-collapse border border-border/60 text-[13px] my-4">
@@ -190,7 +185,7 @@ Vani Studio sẽ xem xét hoàn tiền trong các trường hợp sau:
   </tbody>
 </table>
 
----
+<Separator className="my-6" />
 
 ## 3. Trường hợp không hoàn tiền
 Vani Studio không chấp nhận yêu cầu hoàn tiền trong các trường hợp sau:
@@ -198,7 +193,7 @@ Vani Studio không chấp nhận yêu cầu hoàn tiền trong các trường h�
 - **Sử dụng sai mục đích**: Nếu sản phẩm bị hỏng hoặc không hoạt động đúng do khách hàng sử dụng sai mục đích, không tuân theo hướng dẫn hoặc tự ý chỉnh sửa, Vani Studio không chịu trách nhiệm hoàn tiền.
 - **Quá thời hạn yêu cầu**: Yêu cầu hoàn tiền gửi sau 14 ngày kể từ ngày bàn giao sản phẩm sẽ không được xem xét, trừ trường hợp đặc biệt do Vani Studio quyết định.
 
----
+<Separator className="my-6" />
 
 ## 4. Liên hệ hỗ trợ
 Mọi yêu cầu hoàn tiền hoặc thắc mắc về chính sách, vui lòng liên hệ:
@@ -221,11 +216,10 @@ Mọi yêu cầu hoàn tiền hoặc thắc mắc về chính sách, vui lòng l
 Chào mừng bạn đến với Vani Studio. Chúng tôi cam kết thực hiện quy trình bàn giao sản phẩm và dịch vụ một cách minh bạch, an toàn và chuyên nghiệp nhất.
 
 ## 1. Phương thức giao nhận
-Vani Studio cung cấp các phương thức giao nhận sau:
 - **Giao nhận trực tuyến**: Đối với các sản phẩm phần mềm, Vani Studio sử dụng các phương thức giao nhận trực tuyến thông qua Email, Google Drive, GitHub hoặc GitLab. Đây là phương thức chính được áp dụng cho hầu hết dự án.
 - **Giao nhận trực tiếp**: Trong một số trường hợp đặc biệt hoặc theo yêu cầu của khách hàng, Vani Studio có thể bàn giao trực tiếp tại địa điểm được thỏa thuận trước giữa hai bên.
 
----
+<Separator className="my-6" />
 
 ## 2. Thời gian giao nhận
 <table className="min-w-full border-collapse border border-border/60 text-[13px] my-4">
@@ -251,20 +245,25 @@ Vani Studio cung cấp các phương thức giao nhận sau:
   </tbody>
 </table>
 
----
+<Separator className="my-6" />
 
 ## 3. Quy trình giao nhận
 - **Kiểm tra sản phẩm**: Trước khi bàn giao, Vani Studio kiểm tra kỹ lưỡng sản phẩm để đảm bảo chất lượng, tính hoàn thiện và tuân thủ đầy đủ yêu cầu đã thỏa thuận.
 - **Bàn giao sản phẩm**: Khách hàng sẽ nhận được toàn bộ mã nguồn, tài liệu hướng dẫn sử dụng, tài liệu kỹ thuật và các tài liệu liên quan khác theo phương thức đã thỏa thuận.
 - **Xác nhận giao nhận**: Sau khi nhận sản phẩm, khách hàng kiểm tra và xác nhận việc bàn giao. Nếu có bất kỳ vấn đề nào phát sinh, khách hàng cần thông báo cho Vani Studio trong vòng 05 ngày làm việc.
 
----
+<Separator className="my-6" />
 
 ## 4. Hỗ trợ sau giao nhận
-- **Hỗ trợ kỹ thuật**: Sau khi bàn giao, Vani Studio cam kết cung cấp dịch vụ hỗ trợ kỹ thuật trong suốt thời gian bảo hành đã thỏa thuận. Khách hàng có thể liên hệ qua email hoặc Zalo.
-- **Hướng dẫn sử dụng**: Vani Studio cung cấp dịch vụ hướng dẫn và đào tạo sử dụng phần mềm, đảm bảo khách hàng có thể vận hành sản phẩm một cách hiệu quả nhất.
+<Alert className="border-green-500/20 bg-green-500/5 text-green-600 dark:text-green-400">
+  <Icon icon="solar:shield-check-line-duotone" className="size-4" />
+  <AlertTitle>Hỗ trợ sau giao nhận</AlertTitle>
+  <AlertDescription className="text-xs text-muted-foreground leading-relaxed mt-1">
+    Sau khi bàn giao, Vani Studio cam kết cung cấp dịch vụ hỗ trợ kỹ thuật trong suốt thời gian bảo hành đã thỏa thuận. Khách hàng có thể liên hệ qua email hoặc Zalo. Đồng thời, chúng tôi cung cấp dịch vụ hướng dẫn và đào tạo sử dụng phần mềm, đảm bảo khách hàng có thể vận hành sản phẩm một cách hiệu quả nhất.
+  </AlertDescription>
+</Alert>
 
----
+<Separator className="my-6" />
 
 ## 5. Liên hệ hỗ trợ
 Mọi thắc mắc về chính sách giao nhận, vui lòng liên hệ:
@@ -316,7 +315,7 @@ Mọi sản phẩm do Vani Studio thực hiện được bảo hành theo các g
   </tbody>
 </table>
 
----
+<Separator className="my-6" />
 
 ## 2. Nội dung bảo hành
 Vani Studio chịu trách nhiệm bảo hành các trường hợp sau:
@@ -326,24 +325,101 @@ Vani Studio chịu trách nhiệm bảo hành các trường hợp sau:
 
 Đối với các lỗi không thuộc phạm vi bảo hành, Vani Studio sẽ tư vấn và đề xuất hướng khắc phục phù hợp cho khách hàng. Chi tiết nội dung bảo hành sẽ được liệt kê đầy đủ trong hợp đồng.
 
----
+<Separator className="my-6" />
 
 ## 3. Thời gian xử lý bảo hành
-Thời gian thực hiện bảo hành chậm nhất là **24 giờ** kể từ khi tiếp nhận thông tin từ khách hàng, không tính ngày nghỉ lễ và Tết. Đối với các sự cố nghiêm trọng ảnh hưởng đến hoạt động kinh doanh, Vani Studio sẽ ưu tế xử lý ngay lập tức.
+Thời gian thực hiện bảo hành chậm nhất là **24 giờ** kể từ khi tiếp nhận thông tin từ khách hàng, không tính ngày nghỉ lễ và Tết. Đối với các sự cố nghiêm trọng ảnh hưởng đến hoạt động kinh doanh, Vani Studio sẽ ưu tiên xử lý ngay lập tức.
 
----
+<Separator className="my-6" />
 
 ## 4. Trường hợp không bảo hành
-Vani Studio không bảo hành trong các trường hợp sau:
-- Khách hàng tự ý chỉnh sửa mã nguồn hoặc cấu hình hệ thống mà không có sự đồng ý của Vani Studio;
-- Sản phẩm bị hỏng do tác động từ bên thứ ba (hosting, server, plugin không tương thích);
-- Các yêu cầu thay đổi, bổ sung tính năng mới nằm ngoài phạm vi dự án ban đầu;
-- Hết thời hạn bảo hành theo hợp đồng.
+<Alert className="border-red-500/20 bg-red-500/5 text-red-600 dark:text-red-400">
+  <Icon icon="solar:shield-warning-line-duotone" className="size-4" />
+  <AlertTitle>Trường hợp từ chối bảo hành</AlertTitle>
+  <AlertDescription className="text-xs text-muted-foreground leading-relaxed mt-1">
+    Vani Studio không bảo hành trong các trường hợp khách hàng tự ý chỉnh sửa mã nguồn hoặc cấu hình hệ thống; sản phẩm bị hỏng do tác động từ bên thứ ba (hosting, server, plugin không tương thích); các yêu cầu thay đổi, bổ sung tính năng mới nằm ngoài phạm vi ban đầu; hoặc sản phẩm hết thời hạn bảo hành.
+  </AlertDescription>
+</Alert>
 
----
+<Separator className="my-6" />
 
 ## 5. Liên hệ bảo hành
 Khi cần hỗ trợ bảo hành, khách hàng vui lòng liên hệ:
+- **Email**: [vanixjnk@gmail.com](mailto:vanixjnk@gmail.com)
+- **Zalo**: [zalo.me/0935974907](https://zalo.me/0935974907)
+`,
+  },
+  {
+    title: "Chính sách Thanh toán",
+    slug: "payment-policy",
+    description: "Chính sách thanh toán, các phương thức thanh toán và quy trình xác nhận tại Vani Studio.",
+    isActive: true,
+    publishedAt: new Date("2026-06-13T09:00:00.000Z"),
+    thumbnail: null,
+    metaTitle: "Chính sách Thanh toán | Vani Studio",
+    metaDescription: "Hướng dẫn quy định thanh toán hợp đồng, hình thức chuyển khoản ngân hàng, cổng thanh toán VNPAY và xác nhận giao dịch tại Vani Studio.",
+    metaKeywords: "thanh toan, phuong thuc thanh toan, chuyen khoan, payment policy, vani studio",
+    content: `# Chính sách Thanh toán
+
+Chào mừng bạn đến với Vani Studio. Dưới đây là các quy định và hướng dẫn thanh toán chi tiết cho các sản phẩm và dịch vụ của chúng tôi.
+
+## 1. Quy định thanh toán
+- **1.1. Đối với các Dịch vụ được đặt hàng trực tuyến thông qua Website**: Khách hàng cần thanh toán **100%** giá trị đơn hàng khi đặt hàng. Sau khi đặt hàng thành công, Vani Studio sẽ liên hệ xác nhận và tiến hành xử lý đơn hàng.
+- **1.2. Đối với các Dịch vụ có nhãn "Premium"**: Sau khi khách hàng đăng ký tư vấn, Vani Studio sẽ liên hệ và thống nhất hợp đồng cung cấp Dịch vụ. Quy trình thanh toán được thực hiện theo các giai đoạn sau:
+
+<table className="min-w-full border-collapse border border-border/60 text-[13px] my-4">
+  <thead>
+    <tr className="bg-muted/40">
+      <th className="border border-border/60 px-4 py-2 font-bold text-left text-foreground">Giai đoạn</th>
+      <th className="border border-border/60 px-4 py-2 font-bold text-left text-foreground">Tỷ lệ</th>
+      <th className="border border-border/60 px-4 py-2 font-bold text-left text-foreground">Thời điểm</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td className="border border-border/60 px-4 py-2 text-muted-foreground font-semibold">Đặt cọc</td>
+      <td className="border border-border/60 px-4 py-2 text-muted-foreground">50% giá trị hợp đồng</td>
+      <td className="border border-border/60 px-4 py-2 text-muted-foreground">Sau khi ký kết hợp đồng</td>
+    </tr>
+    <tr className="bg-muted/10">
+      <td className="border border-border/60 px-4 py-2 text-muted-foreground font-semibold">Thanh toán còn lại</td>
+      <td className="border border-border/60 px-4 py-2 text-muted-foreground">50% giá trị hợp đồng</td>
+      <td className="border border-border/60 px-4 py-2 text-muted-foreground">Sau khi hoàn thành và bàn giao dự án</td>
+    </tr>
+  </tbody>
+</table>
+
+- **1.3. Đối với các Dịch vụ bổ sung nằm ngoài hợp đồng**: Vani Studio sẽ trao đổi và thống nhất chi phí với khách hàng. Thanh toán được thực hiện 01 lần duy nhất sau khi dịch vụ bổ sung đã hoàn thành.
+
+<Separator className="my-6" />
+
+## 2. Hình thức thanh toán
+Khách hàng có thể thanh toán đơn hàng hoặc hợp đồng cung cấp Dịch vụ qua các hình thức sau:
+
+### 2.1. Chuyển khoản ngân hàng
+- **Ngân hàng**: MB BANK (Ngân hàng TMCP Quân Đội)
+- **Chủ tài khoản**: NGUYEN DINH BAO
+- **Số tài khoản**: 100000001
+- **Nội dung chuyển khoản**: Mã đơn hàng / Mã hợp đồng
+
+### 2.2. Cổng thanh toán VNPAY
+Khách hàng có thể thanh toán trực tuyến thông qua cổng thanh toán VNPAY — hỗ trợ quét mã QR, ví điện tử, thẻ ATM nội địa và thẻ quốc tế (Visa, MasterCard, JCB).
+
+<Separator className="my-6" />
+
+## 3. Xác nhận thanh toán
+<Alert className="border-sky-500/20 bg-sky-500/5 text-sky-600 dark:text-sky-400">
+  <Icon icon="solar:info-circle-line-duotone" className="size-4" />
+  <AlertTitle>Xác nhận thanh toán</AlertTitle>
+  <AlertDescription className="text-xs text-muted-foreground leading-relaxed mt-1">
+    Sau khi nhận được thanh toán, Vani Studio sẽ gửi xác nhận qua email trong vòng 24 giờ làm việc. Nếu sau 48 giờ khách hàng chưa nhận được xác nhận, vui lòng liên hệ với chúng tôi.
+  </AlertDescription>
+</Alert>
+
+<Separator className="my-6" />
+
+## 4. Liên hệ hỗ trợ
+Mọi thắc mắc về thanh toán, vui lòng liên hệ:
 - **Email**: [vanixjnk@gmail.com](mailto:vanixjnk@gmail.com)
 - **Zalo**: [zalo.me/0935974907](https://zalo.me/0935974907)
 `,

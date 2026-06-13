@@ -21,6 +21,13 @@ import { CmsPageMock } from "./types";
 
 export default function CmsPageList() {
   const router = useRouter();
+  const [origin, setOrigin] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setOrigin(window.location.origin);
+    }
+  }, []);
 
   const { data: serverPages, isLoading, refetch, isFetching } = trpc.administrator.cms.getAll.useQuery(undefined, {
     refetchOnWindowFocus: false,
@@ -474,16 +481,25 @@ export default function CmsPageList() {
       </Dialog>
 
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-        <DialogContent className="sm:max-w-[800px] max-h-[85vh] overflow-y-auto p-0 rounded-2xl border border-border bg-background">
+        <DialogContent 
+          showCloseButton={false}
+          className="sm:max-w-[800px] h-[85vh] max-h-[85vh] p-0 rounded-2xl border border-border bg-background flex flex-col overflow-hidden"
+        >
+          <DialogTitle className="sr-only">Xem trước trang</DialogTitle>
+          <DialogDescription className="sr-only">Hiển thị nội dung xem trước của trang CMS</DialogDescription>
           {previewPage && (
-            <div className="flex flex-col">
-              <div className="flex items-center justify-between border-b px-4 py-2.5 bg-muted/30 select-none">
+            <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div className="flex items-center justify-between border-b px-4 py-2.5 bg-muted/30 select-none shrink-0">
                 <div className="flex items-center gap-1.5">
-                  <div className="size-3 rounded-full bg-red-500/80" />
+                  <button
+                    onClick={() => setPreviewOpen(false)}
+                    className="size-3 rounded-full bg-red-500/80 hover:bg-red-500 cursor-pointer transition-colors focus:outline-none"
+                    title="Đóng"
+                  />
                   <div className="size-3 rounded-full bg-yellow-500/80" />
                   <div className="size-3 rounded-full bg-green-500/80" />
                   <span className="text-[10px] font-mono text-muted-foreground ml-3 bg-muted/60 px-3 py-0.5 rounded border border-border/80">
-                    https://vanistudio.com/{previewPage.slug}
+                    {origin || "https://vanistudio.com"}/{previewPage.slug}
                   </span>
                 </div>
                 <Badge variant={previewPage.isActive ? "success" : "destructive"} className="text-[9px] font-bold">
@@ -491,33 +507,35 @@ export default function CmsPageList() {
                 </Badge>
               </div>
 
-              {previewPage.thumbnail && (
-                <div className="w-full h-48 bg-muted overflow-hidden relative">
-                  <img src={previewPage.thumbnail} alt="Banner" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-                </div>
-              )}
-
-              <div className="p-6 sm:p-8 space-y-6">
-                <div>
-                  <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight leading-snug">
-                    {previewPage.title}
-                  </h1>
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground mt-3 font-medium">
-                    <span className="flex items-center gap-1"><Icon icon="solar:user-line-duotone" /> Admin</span>
-                    <span className="text-border/80">•</span>
-                    <span className="flex items-center gap-1">
-                      <Icon icon="solar:calendar-line-duotone" />
-                      {previewPage.publishedAt 
-                        ? new Date(previewPage.publishedAt).toLocaleDateString("vi-VN") 
-                        : "Bản nháp"
-                      }
-                    </span>
+              <div className="flex-1 overflow-y-auto min-h-0">
+                {previewPage.thumbnail && (
+                  <div className="w-full h-48 bg-muted overflow-hidden relative">
+                    <img src={previewPage.thumbnail} alt="Banner" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
                   </div>
-                </div>
+                )}
 
-                <div className="prose dark:prose-invert max-w-none border-t pt-5">
-                  {renderMarkdown(previewPage.content)}
+                <div className="p-6 sm:p-8 space-y-6">
+                  <div>
+                    <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight leading-snug">
+                      {previewPage.title}
+                    </h1>
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground mt-3 font-medium">
+                      <span className="flex items-center gap-1"><Icon icon="solar:user-line-duotone" /> Admin</span>
+                      <span className="text-border/80">•</span>
+                      <span className="flex items-center gap-1">
+                        <Icon icon="solar:calendar-line-duotone" />
+                        {previewPage.publishedAt 
+                          ? new Date(previewPage.publishedAt).toLocaleDateString("vi-VN") 
+                          : "Bản nháp"
+                        }
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="prose dark:prose-invert max-w-none border-t pt-5">
+                    {renderMarkdown(previewPage.content)}
+                  </div>
                 </div>
               </div>
             </div>

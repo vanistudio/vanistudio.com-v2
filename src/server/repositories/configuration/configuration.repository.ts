@@ -7,6 +7,9 @@ import { eq, sql } from "drizzle-orm";
 import { uuidv7 } from "@/lib/utils";
 import { menuGroups, menus } from "@/server/db/schemas/menu.schema";
 import { DEFAULT_MENU_GROUPS } from "@/defaults/menu.default";
+import { cmsPages } from "@/server/db/schemas/cms-page.schema";
+import { DEFAULT_CMS_PAGES } from "@/defaults/cms-page.default";
+
 
 export class ConfigurationRepository {
   async checkConfigurationStatus(): Promise<boolean> {
@@ -143,6 +146,26 @@ export class ConfigurationRepository {
               await seedMenuItems(group.items, insertedGroup.id);
             }
           }
+        }
+      }
+
+      if (DEFAULT_CMS_PAGES && DEFAULT_CMS_PAGES.length > 0) {
+        const existingPages = await tx.select().from(cmsPages).limit(1);
+        if (existingPages.length === 0) {
+          await tx.insert(cmsPages).values(
+            DEFAULT_CMS_PAGES.map((p) => ({
+              title: p.title,
+              slug: p.slug,
+              description: p.description,
+              content: p.content,
+              thumbnail: p.thumbnail,
+              metaTitle: p.metaTitle,
+              metaDescription: p.metaDescription,
+              metaKeywords: p.metaKeywords,
+              isActive: p.isActive,
+              publishedAt: p.publishedAt,
+            }))
+          );
         }
       }
     });
