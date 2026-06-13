@@ -1,6 +1,5 @@
 export interface DefaultServiceType {
   name: string;
-  slug: string;
   icon: string;
   description: string;
   color: string;
@@ -12,7 +11,6 @@ export interface DefaultServiceType {
 export const DEFAULT_SERVICE_TYPES: DefaultServiceType[] = [
   {
     name: "Website",
-    slug: "website",
     icon: "solar:window-frame-line-duotone",
     description: "Thiết kế và lập trình website chuẩn SEO, landing page, quản trị doanh nghiệp.",
     color: "text-blue-500",
@@ -22,7 +20,6 @@ export const DEFAULT_SERVICE_TYPES: DefaultServiceType[] = [
   },
   {
     name: "Ứng dụng (App)",
-    slug: "app",
     icon: "solar:smartphone-line-duotone",
     description: "Xây dựng ứng dụng di động đa nền tảng iOS và Android mượt mà.",
     color: "text-violet-500",
@@ -32,7 +29,6 @@ export const DEFAULT_SERVICE_TYPES: DefaultServiceType[] = [
   },
   {
     name: "Bot AI / Discord / Telegram",
-    slug: "bot",
     icon: "solar:cpu-line-duotone",
     description: "Tích hợp trợ lý AI thông minh và công cụ tự động hóa trên Discord & Telegram.",
     color: "text-amber-500",
@@ -42,7 +38,6 @@ export const DEFAULT_SERVICE_TYPES: DefaultServiceType[] = [
   },
   {
     name: "Minecraft Plugin",
-    slug: "minecraft_plugin",
     icon: "solar:gamepad-line-duotone",
     description: "Phát triển plugin và tính năng đặc thù cho các máy chủ Minecraft.",
     color: "text-green-500",
@@ -52,7 +47,6 @@ export const DEFAULT_SERVICE_TYPES: DefaultServiceType[] = [
   },
   {
     name: "Thiết kế đồ họa",
-    slug: "design",
     icon: "solar:palette-line-duotone",
     description: "Thiết kế giao diện UI/UX đẹp mắt, logo, ấn phẩm truyền thông thương hiệu.",
     color: "text-rose-500",
@@ -62,7 +56,6 @@ export const DEFAULT_SERVICE_TYPES: DefaultServiceType[] = [
   },
   {
     name: "Dịch thuật",
-    slug: "translation",
     icon: "solar:translation-line-duotone",
     description: "Dịch thuật và bản địa hóa nội dung đa ngôn ngữ chính xác, tự nhiên.",
     color: "text-cyan-500",
@@ -72,7 +65,6 @@ export const DEFAULT_SERVICE_TYPES: DefaultServiceType[] = [
   },
   {
     name: "Dịch vụ khác",
-    slug: "other",
     icon: "solar:menu-dots-square-line-duotone",
     description: "Các giải pháp kỹ thuật, tích hợp API và tối ưu hóa hệ thống đặc thù.",
     color: "text-zinc-500",

@@ -54,7 +54,6 @@ const updateServiceSchema = createServiceSchema.partial();
 
 const createTypeSchema = z.object({
   name: z.string().min(1, "Tên loại dịch vụ không được để trống"),
-  slug: z.string().min(1, "Slug định danh không được để trống"),
   icon: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
   color: z.string().optional().nullable(),

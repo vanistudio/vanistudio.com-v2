@@ -17,7 +17,6 @@ export interface FormFieldConfig {
 export const serviceTypes = pgTable("service_types", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: text("name").notNull(), // Tên loại dịch vụ (e.g. "Website", "Ứng dụng")
-  slug: text("slug").notNull().unique(), // Slug định danh (e.g. "website", "app")
   icon: text("icon"), // Icon biểu tượng
   description: text("description"), // Mô tả ngắn
   color: text("color"), // Mã màu text Tailwind

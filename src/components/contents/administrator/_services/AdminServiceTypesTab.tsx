@@ -65,7 +65,6 @@ export default function AdminServiceTypesTab() {
   const [editingType, setEditingType] = useState<ServiceType | null>(null);
   const [form, setForm] = useState({
     name: "",
-    slug: "",
     icon: "",
     description: "",
     color: "text-blue-500",
@@ -82,7 +81,6 @@ export default function AdminServiceTypesTab() {
       setEditingType(typeItem);
       setForm({
         name: typeItem.name,
-        slug: typeItem.slug,
         icon: typeItem.icon || "",
         description: typeItem.description || "",
         color: typeItem.color || "text-blue-500",
@@ -94,7 +92,6 @@ export default function AdminServiceTypesTab() {
       setEditingType(null);
       setForm({
         name: "",
-        slug: "",
         icon: "solar:widget-line-duotone",
         description: "",
         color: "text-blue-500",
@@ -107,35 +104,14 @@ export default function AdminServiceTypesTab() {
   };
 
   const handleNameChange = (val: string) => {
-    const slugified = val
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/đ/g, "d")
-      .replace(/[^a-z0-9\s-]/g, "")
-      .trim()
-      .replace(/\s+/g, "-")
-      .replace(/-+/g, "-");
-
-    setForm((prev) => ({ ...prev, name: val, slug: slugified }));
+    setForm((prev) => ({ ...prev, name: val }));
   };
 
   const saveType = async () => {
     if (!form.name.trim()) return toast.error("Tên phân loại không được để trống");
     
-    const finalSlug = form.slug.trim() || form.name
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/đ/g, "d")
-      .replace(/[^a-z0-9\s-]/g, "")
-      .trim()
-      .replace(/\s+/g, "-")
-      .replace(/-+/g, "-");
-
     const payload = {
       name: form.name.trim(),
-      slug: finalSlug,
       icon: form.icon.trim() || null,
       description: form.description.trim() || null,
       color: form.color || null,
@@ -161,13 +137,25 @@ export default function AdminServiceTypesTab() {
       result = result.filter(
         (t) =>
           t.name.toLowerCase().includes(q) ||
-          t.slug.toLowerCase().includes(q) ||
           (t.description && t.description.toLowerCase().includes(q))
       );
     }
-    result.sort((a, b) => a.order - b.order);
+    if (sorting.length > 0) {
+      const { id, desc } = sorting[0];
+      result.sort((a: any, b: any) => {
+        const valA = a[id];
+        const valB = b[id];
+        if (valA === undefined || valB === undefined) return 0;
+        if (typeof valA === "string" && typeof valB === "string") {
+          return desc ? valB.localeCompare(valA) : valA.localeCompare(valB);
+        }
+        return desc ? valB - valA : valA - valB;
+      });
+    } else {
+      result.sort((a, b) => a.order - b.order);
+    }
     return result;
-  }, [typesList, searchQuery]);
+  }, [typesList, searchQuery, sorting]);
 
   const paginatedTypes = useMemo(() => {
     const start = pagination.pageIndex * pagination.pageSize;
@@ -195,17 +183,12 @@ export default function AdminServiceTypesTab() {
             <div className={cn("size-8 rounded-lg flex items-center justify-center border shrink-0", typeItem.bg, typeItem.border)}>
               <Icon icon={typeItem.icon || "solar:widget-line-duotone"} className={cn("text-lg", typeItem.color)} />
             </div>
-            <div className="flex flex-col gap-0.5">
-              <span
-                className="text-[13px] font-semibold text-foreground hover:text-vanixjnk transition-colors cursor-pointer"
-                onClick={() => openEditor(typeItem)}
-              >
-                {typeItem.name}
-              </span>
-              <span className="text-[10px] font-mono text-muted-foreground">
-                /{typeItem.slug}
-              </span>
-            </div>
+            <span
+              className="text-[13px] font-semibold text-foreground hover:text-vanixjnk transition-colors cursor-pointer"
+              onClick={() => openEditor(typeItem)}
+            >
+              {typeItem.name}
+            </span>
           </div>
         );
       },
@@ -229,6 +212,7 @@ export default function AdminServiceTypesTab() {
     {
       accessorKey: "preview",
       meta: { title: "Giao diện Badge" },
+      header: ({ column }) => <DataTableColumnHeader column={column} />,
       cell: ({ row }) => {
         const typeItem = row.original;
         return (
@@ -275,7 +259,7 @@ export default function AdminServiceTypesTab() {
         );
       },
     },
-  ], [pagination]);
+  ], [pagination, sorting]);
 
   return (
     <div className="p-6 space-y-6">
@@ -309,14 +293,16 @@ export default function AdminServiceTypesTab() {
         sorting={sorting}
         onSortingChange={setSorting}
         toolbarInput={
-          <div className="relative flex-1 max-w-sm">
-            <Icon icon="solar:magnifer-line-duotone" className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm" />
-            <Input
-              placeholder="Tìm kiếm phân loại..."
-              className="pl-9 h-9 text-sm w-full bg-background"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+          <div className="flex items-center gap-2 w-full">
+            <div className="relative flex-1">
+              <Icon icon="solar:magnifer-line-duotone" className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm" />
+              <Input
+                placeholder="Tìm kiếm phân loại..."
+                className="pl-9 h-9 text-sm w-full bg-background"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
           </div>
         }
       />
@@ -333,7 +319,7 @@ export default function AdminServiceTypesTab() {
             <SheetDescription>Thiết lập thông tin hiển thị, biểu tượng và các thẻ thuộc tính cho danh mục dịch vụ.</SheetDescription>
           </SheetHeader>
 
-          <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-5 custom-scrollbar bg-background">
+          <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6 custom-scrollbar bg-background">
             <div className="space-y-1.5">
               <label className="text-[13px] font-bold text-foreground">Tên phân loại</label>
               <Input
@@ -374,17 +360,7 @@ export default function AdminServiceTypesTab() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-[13px] font-bold text-foreground">Thứ tự sắp xếp</label>
-                <Input
-                  type="number"
-                  placeholder="Ví dụ: 1"
-                  value={form.order || ""}
-                  onChange={(e) => setForm((prev) => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
-                />
-              </div>
-            </div>
+
 
             <div className="space-y-2 pt-2">
               <label className="text-[13px] font-bold text-foreground">Bộ chọn phong cách (Preset Styles)</label>
@@ -413,29 +389,29 @@ export default function AdminServiceTypesTab() {
               <div className="flex items-center justify-between">
                 <span className="text-[12px] font-semibold text-muted-foreground">Tùy biến CSS Classes</span>
               </div>
-              <div className="grid grid-cols-3 gap-2">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-semibold text-muted-foreground">Text Color</label>
+              <div className="flex flex-col gap-3">
+                <div className="space-y-1.5">
+                  <label className="text-[13px] font-bold text-foreground">Text Color (Màu chữ)</label>
                   <Input
                     value={form.color}
                     onChange={(e) => setForm((prev) => ({ ...prev, color: e.target.value }))}
-                    className="h-8 text-[11px] font-mono"
+                    className="h-9 text-[13px] font-mono"
                   />
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-semibold text-muted-foreground">Bg Color</label>
+                <div className="space-y-1.5">
+                  <label className="text-[13px] font-bold text-foreground">Bg Color (Màu nền)</label>
                   <Input
                     value={form.bg}
                     onChange={(e) => setForm((prev) => ({ ...prev, bg: e.target.value }))}
-                    className="h-8 text-[11px] font-mono"
+                    className="h-9 text-[13px] font-mono"
                   />
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-semibold text-muted-foreground">Border Color</label>
+                <div className="space-y-1.5">
+                  <label className="text-[13px] font-bold text-foreground">Border Color (Màu viền)</label>
                   <Input
                     value={form.border}
                     onChange={(e) => setForm((prev) => ({ ...prev, border: e.target.value }))}
-                    className="h-8 text-[11px] font-mono"
+                    className="h-9 text-[13px] font-mono"
                   />
                 </div>
               </div>

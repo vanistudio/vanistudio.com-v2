@@ -277,7 +277,7 @@ export default function AdminServicesTab() {
     }
 
     if (serviceTypeFilter !== "all") {
-      result = result.filter((s) => s.type === serviceTypeFilter);
+      result = result.filter((s) => s.typeId === serviceTypeFilter);
     }
 
     if (servicesSorting.length > 0) {
@@ -566,7 +566,7 @@ export default function AdminServicesTab() {
                         </div>
                       </SelectItem>
                       {serviceTypesList.map((type) => (
-                        <SelectItem key={type.id} value={type.slug}>
+                        <SelectItem key={type.id} value={type.id}>
                           <div className="flex items-center gap-2">
                             <Icon icon={type.icon || "solar:globus-line-duotone"} className={cn("size-4", type.color || "text-primary")} />
                             <span>{type.name}</span>

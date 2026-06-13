@@ -87,10 +87,6 @@ export class ServicesRepository {
     return item || null;
   }
 
-  async getTypeBySlug(slug: string): Promise<ServiceType | null> {
-    const [item] = await db.select().from(serviceTypes).where(eq(serviceTypes.slug, slug)).limit(1);
-    return item || null;
-  }
 
   async createType(data: NewServiceType): Promise<ServiceType> {
     const [inserted] = await db.insert(serviceTypes).values(data).returning();

@@ -119,14 +119,6 @@ export class ServicesService {
     if (!data.name?.trim()) {
       return { resultCode: -1, message: "Tên loại dịch vụ không được để trống" };
     }
-    if (!data.slug?.trim()) {
-      return { resultCode: -2, message: "Slug định danh không được để trống" };
-    }
-
-    const existing = await servicesRepository.getTypeBySlug(data.slug);
-    if (existing) {
-      return { resultCode: -3, message: `Slug "${data.slug}" đã tồn tại.` };
-    }
 
     const inserted = await servicesRepository.createType(data);
     return {
@@ -144,17 +136,6 @@ export class ServicesService {
 
     if (data.name !== undefined && !data.name?.trim()) {
       return { resultCode: -2, message: "Tên loại dịch vụ không được để trống" };
-    }
-
-    if (data.slug !== undefined) {
-      const slug = data.slug.trim();
-      if (!slug) {
-        return { resultCode: -3, message: "Slug định danh không được để trống" };
-      }
-      const duplicate = await servicesRepository.getTypeBySlug(slug);
-      if (duplicate && duplicate.id !== id) {
-        return { resultCode: -4, message: `Slug "${slug}" đã tồn tại.` };
-      }
     }
 
     const updated = await servicesRepository.updateType(id, data);

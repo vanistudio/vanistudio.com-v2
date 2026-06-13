@@ -48,7 +48,7 @@ export default function PubServicesList({
     return [
       { id: "all", name: "Tất cả", icon: "solar:widget-line-duotone" },
       ...categories.map((cat) => ({
-        id: cat.slug,
+        id: cat.id,
         name: cat.name,
         icon: cat.icon || "solar:widget-line-duotone",
       })),
@@ -59,7 +59,7 @@ export default function PubServicesList({
     return initialServices.filter((service) => {
       const matchesFilter =
         activeFilter === "all" ||
-        (service.serviceType && service.serviceType.slug === activeFilter);
+        (service.serviceType && service.serviceType.id === activeFilter);
       const matchesSearch =
         service.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (service.description && service.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
