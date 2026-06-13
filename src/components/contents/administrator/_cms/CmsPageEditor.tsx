@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { GalleryDialog } from "@/components/vanixjnk/gallery-dialog";
 import { toast } from "sonner";
 import { MdxEditor, UI_COMPONENTS_TEMPLATES, insertMdxAtCursor } from "@/components/vanixjnk/mdx-builder";
@@ -155,9 +156,150 @@ export default function CmsPageEditor({ mode, initialId }: CmsPageEditorProps) {
 
   if (mode === "edit" && isLoadingPage) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] w-full gap-3 text-muted-foreground pt-32">
-        <Icon icon="solar:restart-line-duotone" className="size-8 animate-spin text-vanixjnk" />
-        <span className="text-xs font-semibold">Đang tải thông tin bài viết...</span>
+      <div className="flex flex-col w-full flex-1">
+        <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="border-l border-r border-dashed border-primary/20 pt-[88px] pb-6 px-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center justify-center size-12 rounded-xl text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 shrink-0">
+                  <Icon icon="solar:bookmark-line-duotone" className="text-2xl" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold tracking-tight text-foreground">Trang CMS tĩnh</h1>
+                  <p className="text-sm text-muted-foreground mt-0.5">
+                    Quản lý nội dung, bài viết giới thiệu, điều khoản điều kiện và thông tin chính sách của cửa hàng.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          className="relative w-full border-t border-b border-dashed border-primary/20 overflow-hidden text-primary/20"
+          style={{ height: "36px" }}
+        >
+          <div
+            className="absolute inset-y-0 left-[-100vw] w-[300vw]"
+            style={{
+              backgroundImage: "repeating-linear-gradient(45deg, currentColor, currentColor 1px, transparent 1px, transparent 10px)"
+            }}
+          />
+        </div>
+
+        <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
+          <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col p-6 gap-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/60">
+              <div className="flex items-center gap-3">
+                <Skeleton className="size-8 rounded-lg" />
+                <div className="space-y-1.5">
+                  <Skeleton className="h-5 w-40 animate-pulse" />
+                  <Skeleton className="h-3 w-60 animate-pulse" />
+                </div>
+              </div>
+              <div className="flex items-center gap-2 self-end sm:self-auto">
+                <Skeleton className="h-8 w-14 animate-pulse" />
+                <Skeleton className="h-8 w-28 animate-pulse" />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-muted/20 border border-border/60 w-fit whitespace-nowrap">
+              <Skeleton className="h-8 w-32 rounded-lg animate-pulse" />
+              <Skeleton className="h-8 w-32 rounded-lg animate-pulse" />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              <div className="lg:col-span-8 space-y-5">
+                <div className="space-y-4">
+                  <div className="flex flex-col gap-2">
+                    <Skeleton className="h-4 w-24 animate-pulse" />
+                    <Skeleton className="h-9 w-full animate-pulse" />
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <Skeleton className="h-4 w-48 animate-pulse" />
+                    <div className="flex gap-2">
+                      <Skeleton className="h-9 w-10 animate-pulse" />
+                      <Skeleton className="h-9 flex-1 animate-pulse" />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <Skeleton className="h-4 w-20 animate-pulse" />
+                    <Skeleton className="h-16 w-full animate-pulse" />
+                  </div>
+
+                  <div className="border border-border/60 rounded-xl overflow-hidden bg-background space-y-2">
+                    <div className="flex items-center justify-between border-b border-border/80 bg-muted/10 p-2">
+                      <div className="flex items-center gap-1.5">
+                        <Skeleton className="h-6 w-6 rounded animate-pulse" />
+                        <Skeleton className="h-6 w-6 rounded animate-pulse" />
+                        <Skeleton className="h-6 w-6 rounded animate-pulse" />
+                        <div className="w-px h-4 bg-border/80 mx-1" />
+                        <Skeleton className="h-6 w-6 rounded animate-pulse" />
+                        <Skeleton className="h-6 w-6 rounded animate-pulse" />
+                        <Skeleton className="h-6 w-6 rounded animate-pulse" />
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Skeleton className="h-6 w-14 rounded animate-pulse" />
+                        <Skeleton className="h-6 w-14 rounded animate-pulse" />
+                      </div>
+                    </div>
+                    <div className="p-4 space-y-3">
+                      <Skeleton className="h-4 w-[90%] animate-pulse" />
+                      <Skeleton className="h-4 w-[80%] animate-pulse" />
+                      <Skeleton className="h-4 w-[85%] animate-pulse" />
+                      <Skeleton className="h-4 w-[50%] animate-pulse" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="lg:col-span-4 space-y-6">
+                <div className="border border-border/60 rounded-xl bg-muted/10 p-4 space-y-4">
+                  <div className="border-b pb-2 border-border/60 flex items-center justify-between">
+                    <Skeleton className="h-4 w-36 animate-pulse" />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <Skeleton className="h-4 w-28 animate-pulse" />
+                      <Skeleton className="h-3 w-40 animate-pulse" />
+                    </div>
+                    <Skeleton className="h-6 w-10 rounded-full animate-pulse" />
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="h-3 w-24 animate-pulse" />
+                    <Skeleton className="h-9 w-full animate-pulse" />
+                  </div>
+                </div>
+
+                <div className="border border-border/60 rounded-xl bg-muted/10 p-4 space-y-3">
+                  <div className="border-b pb-2 border-border/60">
+                    <Skeleton className="h-4 w-44 animate-pulse" />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-9 flex-1 animate-pulse" />
+                    <Skeleton className="h-9 w-9 rounded-md animate-pulse" />
+                  </div>
+                  <Skeleton className="h-28 w-full rounded-xl animate-pulse" />
+                </div>
+
+                <div className="border border-border/60 rounded-xl bg-muted/10 p-4 space-y-3">
+                  <div className="border-b pb-2 border-border/60 space-y-1">
+                    <Skeleton className="h-4 w-40 animate-pulse" />
+                    <Skeleton className="h-3 w-56 animate-pulse" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Skeleton className="h-14 w-full rounded-lg animate-pulse" />
+                    <Skeleton className="h-14 w-full rounded-lg animate-pulse" />
+                    <Skeleton className="h-14 w-full rounded-lg animate-pulse" />
+                    <Skeleton className="h-14 w-full rounded-lg animate-pulse" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
