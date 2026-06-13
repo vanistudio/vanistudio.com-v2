@@ -6,6 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
@@ -50,7 +57,6 @@ export default function AdminRequestsTab() {
     note: "",
   });
 
-  const [deleteRequestConfirmOpen, setDeleteRequestConfirmOpen] = useState(false);
   const [requestToDelete, setRequestToDelete] = useState<any | null>(null);
 
   const handleOpenRequestDetails = (req: any) => {
@@ -275,7 +281,6 @@ export default function AdminRequestsTab() {
               className="w-full justify-start text-xs h-8 px-2 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10"
               onClick={() => {
                 setRequestToDelete(row.original);
-                setDeleteRequestConfirmOpen(true);
               }}
             >
               <Icon icon="solar:trash-bin-trash-line-duotone" className="mr-2 size-3.5" />
@@ -527,42 +532,35 @@ export default function AdminRequestsTab() {
         </SheetContent>
       </Sheet>
 
-      <Sheet open={deleteRequestConfirmOpen} onOpenChange={setDeleteRequestConfirmOpen}>
-        <SheetContent className="sm:max-w-[400px] w-full p-0 flex flex-col">
-          <SheetHeader className="p-6">
-            <div className="size-10 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center shrink-0 mb-2">
-              <Icon icon="solar:danger-triangle-line-duotone" className="size-6" />
-            </div>
-            <SheetTitle className="text-xl font-bold text-rose-500">
-              Xác nhận xóa đơn yêu cầu
-            </SheetTitle>
-            <SheetDescription>
-              Hành động này không thể hoàn tác.
-            </SheetDescription>
-          </SheetHeader>
-
-          <div className="flex-1 p-6 text-sm text-muted-foreground bg-background">
-            Bạn có chắc chắn muốn xóa đơn yêu cầu từ khách hàng <strong className="text-foreground font-semibold">{requestToDelete?.customerName}</strong> không?
+      <Dialog open={!!requestToDelete} onOpenChange={(open) => !open && setRequestToDelete(null)}>
+        <DialogContent className="sm:max-w-[380px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-rose-500">
+              <Icon icon="solar:danger-triangle-line-duotone" className="text-xl" />
+              <span>Xác nhận xóa đơn yêu cầu</span>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-2 text-sm text-muted-foreground">
+            Hành động này sẽ xóa vĩnh viễn đơn yêu cầu từ khách hàng <strong className="text-foreground">"{requestToDelete?.customerName}"</strong> và không thể hoàn tác.
           </div>
-
-          <div className="p-6 flex items-center justify-end gap-2">
-            <Button variant="outline" size="sm" onClick={() => setDeleteRequestConfirmOpen(false)}>Hủy</Button>
+          <DialogFooter className="pt-2">
+            <Button variant="outline" size="sm" onClick={() => setRequestToDelete(null)}>Hủy</Button>
             <Button
               variant="danger"
               size="sm"
               onClick={() => {
                 if (requestToDelete) {
                   deleteRequestMutation.mutate({ id: requestToDelete.id });
-                  setDeleteRequestConfirmOpen(false);
+                  setRequestToDelete(null);
                 }
               }}
               disabled={deleteRequestMutation.isPending}
             >
               Xác nhận xóa
             </Button>
-          </div>
-        </SheetContent>
-      </Sheet>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

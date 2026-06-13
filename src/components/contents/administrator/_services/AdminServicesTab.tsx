@@ -7,6 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
@@ -126,7 +133,6 @@ export default function AdminServicesTab() {
     onError: (err) => toast.error(err.message || "Xóa thất bại"),
   });
 
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [serviceToDelete, setServiceToDelete] = useState<Service | null>(null);
 
   const openServiceEditor = (service: any | null) => {
@@ -480,7 +486,6 @@ export default function AdminServicesTab() {
               className="w-full justify-start text-xs h-8 px-2 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10"
               onClick={() => {
                 setServiceToDelete(row.original);
-                setDeleteConfirmOpen(true);
               }}
             >
               <Icon icon="solar:trash-bin-trash-line-duotone" className="mr-2 size-3.5" />
@@ -501,15 +506,37 @@ export default function AdminServicesTab() {
             Danh sách các gói dịch vụ, giá cả, thời gian bàn giao và cấu hình form khảo sát khách hàng.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => refetchServices()} disabled={servicesLoading || servicesFetching} className="gap-1.5 shrink-0">
-            <Icon icon="solar:restart-line-duotone" className={cn("text-base", (servicesLoading || servicesFetching) && "animate-spin")} />
-            <span>Làm mới</span>
-          </Button>
-          <Button variant="vanixjnk" size="sm" onClick={() => openServiceEditor(null)} className="gap-1.5 shrink-0">
-            <Icon icon="solar:add-circle-line-duotone" className="text-base" />
-            <span>Tạo dịch vụ mới</span>
-          </Button>
+        <div className="flex items-center gap-2 shrink-0">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="vanixjnk" size="sm" className="gap-1.5 shrink-0 cursor-pointer">
+                <Icon icon="solar:hamburger-menu-line-duotone" className="text-base" />
+                <span>Thao tác</span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-44 p-1 flex flex-col gap-0.5" align="end">
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-xs h-8 px-2 cursor-pointer"
+                onClick={() => refetchServices()}
+                disabled={servicesLoading || servicesFetching}
+              >
+                <Icon
+                  icon="solar:restart-line-duotone"
+                  className={cn("mr-2 size-3.5 text-sky-500", (servicesLoading || servicesFetching) && "animate-spin")}
+                />
+                Làm mới
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-xs h-8 px-2 cursor-pointer"
+                onClick={() => openServiceEditor(null)}
+              >
+                <Icon icon="solar:add-circle-line-duotone" className="mr-2 size-3.5 text-emerald-500" />
+                Tạo dịch vụ mới
+              </Button>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
@@ -1036,42 +1063,35 @@ export default function AdminServicesTab() {
         </SheetContent>
       </Sheet>
 
-      <Sheet open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-        <SheetContent className="sm:max-w-[400px] w-full p-0 flex flex-col">
-          <SheetHeader className="p-6">
-            <div className="size-10 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center shrink-0 mb-2">
-              <Icon icon="solar:danger-triangle-line-duotone" className="size-6" />
-            </div>
-            <SheetTitle className="text-xl font-bold text-rose-500">
-              Xác nhận xóa dịch vụ
-            </SheetTitle>
-            <SheetDescription>
-              Hành động này sẽ xóa vĩnh viễn dịch vụ và toàn bộ các gói giá con đi kèm.
-            </SheetDescription>
-          </SheetHeader>
-
-          <div className="flex-1 p-6 text-sm text-muted-foreground bg-background">
-            Bạn có chắc chắn muốn xóa dịch vụ <strong className="text-foreground font-semibold">{serviceToDelete?.name}</strong> không?
+      <Dialog open={!!serviceToDelete} onOpenChange={(open) => !open && setServiceToDelete(null)}>
+        <DialogContent className="sm:max-w-[380px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-rose-500">
+              <Icon icon="solar:danger-triangle-line-duotone" className="text-xl" />
+              <span>Xác nhận xóa dịch vụ</span>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-2 text-sm text-muted-foreground">
+            Hành động này sẽ xóa vĩnh viễn dịch vụ <strong className="text-foreground">"{serviceToDelete?.name}"</strong> và toàn bộ các gói giá con đi kèm.
           </div>
-
-          <div className="p-6 flex items-center justify-end gap-2">
-            <Button variant="outline" size="sm" onClick={() => setDeleteConfirmOpen(false)}>Hủy</Button>
+          <DialogFooter className="pt-2">
+            <Button variant="outline" size="sm" onClick={() => setServiceToDelete(null)}>Hủy</Button>
             <Button
               variant="danger"
               size="sm"
               onClick={() => {
                 if (serviceToDelete) {
                   deleteServiceMutation.mutate({ id: serviceToDelete.id });
-                  setDeleteConfirmOpen(false);
+                  setServiceToDelete(null);
                 }
               }}
               disabled={deleteServiceMutation.isPending}
             >
               Xác nhận xóa
             </Button>
-          </div>
-        </SheetContent>
-      </Sheet>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <GalleryDialog
         open={galleryOpen}

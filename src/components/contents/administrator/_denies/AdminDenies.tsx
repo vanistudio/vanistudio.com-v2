@@ -32,6 +32,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { DateTimePicker } from "@/components/vanixjnk/date-time-picker";
 
 function formatDateTime(dateStr: string | Date | null | undefined) {
@@ -435,29 +440,37 @@ export default function AdminDenies() {
                     Danh sách các địa chỉ IP bị cấm kết nối tới máy chủ.
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleRefresh}
-                    disabled={isLoading || isFetching}
-                    className="gap-1.5 shrink-0"
-                  >
-                    <Icon
-                      icon="solar:restart-line-duotone"
-                      className={cn("text-base", (isLoading || isFetching) && "animate-spin")}
-                    />
-                    <span>Làm mới</span>
-                  </Button>
-                  <Button
-                    variant="vanixjnk"
-                    size="sm"
-                    onClick={handleOpenAdd}
-                    className="gap-1.5 shrink-0"
-                  >
-                    <Icon icon="solar:shield-plus-line-duotone" className="text-base" />
-                    <span>Thêm IP Chặn</span>
-                  </Button>
+                <div className="flex items-center gap-2 shrink-0">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="vanixjnk" size="sm" className="gap-1.5 shrink-0 cursor-pointer">
+                        <Icon icon="solar:hamburger-menu-line-duotone" className="text-base" />
+                        <span>Thao tác</span>
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-44 p-1 flex flex-col gap-0.5" align="end">
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start text-xs h-8 px-2 cursor-pointer"
+                        onClick={handleRefresh}
+                        disabled={isLoading || isFetching}
+                      >
+                        <Icon
+                          icon="solar:restart-line-duotone"
+                          className={cn("mr-2 size-3.5 text-sky-500", (isLoading || isFetching) && "animate-spin")}
+                        />
+                        Làm mới
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start text-xs h-8 px-2 cursor-pointer"
+                        onClick={handleOpenAdd}
+                      >
+                        <Icon icon="solar:shield-plus-line-duotone" className="mr-2 size-3.5 text-emerald-500" />
+                        Thêm IP Chặn
+                      </Button>
+                    </PopoverContent>
+                  </Popover>
                 </div>
               </div>
 
