@@ -218,7 +218,7 @@ export default function AdminServiceTypesTab() {
       meta: { title: "Mô tả" },
       header: ({ column }) => <DataTableColumnHeader column={column} />,
       cell: ({ row }) => (
-        <span className="text-[12px] text-muted-foreground line-clamp-2 max-w-[320px]">
+        <span className="text-[12px] text-muted-foreground">
           {row.getValue("description") || "Chưa có mô tả"}
         </span>
       ),
@@ -280,7 +280,7 @@ export default function AdminServiceTypesTab() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-row items-center justify-between gap-4">
         <div>
           <h3 className="text-base font-bold text-foreground">Phân loại dịch vụ</h3>
           <p className="text-xs text-muted-foreground mt-0.5">
@@ -436,7 +436,7 @@ export default function AdminServiceTypesTab() {
                         isSelected ? "border-vanixjnk bg-vanixjnk/5 font-semibold" : "border-border/80 hover:bg-muted/30"
                       )}
                     >
-                      <span className="truncate">{preset.name}</span>
+                      <span>{preset.name}</span>
                       <Badge className={cn("size-2 p-0 rounded-full shrink-0 border border-current shadow-none", preset.color, preset.bg)} />
                     </button>
                   );
