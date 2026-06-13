@@ -18,10 +18,28 @@ export class ExtensionsRepository {
         config: m.config,
       }));
       await db.insert(extensions).values(toInsert).onConflictDoNothing();
-      return await db.select().from(extensions);
+      return this.getAllExtensions();
     }
 
-    return dbExtensions;
+    return dbExtensions.map((dbExt) => {
+      const defaultExt = DEFAULT_EXTENSIONS.find((def) => def.id === dbExt.id);
+      if (!defaultExt) return dbExt;
+
+      const defaultExtConfig = defaultExt.config as Record<string, any>;
+      const dbExtConfig = dbExt.config as Record<string, any>;
+      const mergedConfig = { ...defaultExtConfig, ...dbExtConfig };
+      if (defaultExtConfig?.fields && dbExtConfig?.fields) {
+        mergedConfig.fields = {
+          ...defaultExtConfig.fields,
+          ...dbExtConfig.fields,
+        };
+      }
+
+      return {
+        ...dbExt,
+        config: mergedConfig,
+      };
+    });
   }
 
   async getExtensionById(id: string): Promise<Extension | null> {
@@ -43,6 +61,25 @@ export class ExtensionsRepository {
         return inserted || defaultExt;
       }
     }
+
+    if (result) {
+      const defaultExt = DEFAULT_EXTENSIONS.find((e) => e.id === id);
+      if (defaultExt) {
+        const defaultExtConfig = defaultExt.config as Record<string, any>;
+        const resultConfig = result.config as Record<string, any>;
+        const mergedConfig = { ...defaultExtConfig, ...resultConfig };
+        if (defaultExtConfig?.fields && resultConfig?.fields) {
+          mergedConfig.fields = {
+            ...defaultExtConfig.fields,
+            ...resultConfig.fields,
+          };
+        }
+        return {
+          ...result,
+          config: mergedConfig,
+        };
+      }
+    }
     return result || null;
   }
 
@@ -50,6 +87,17 @@ export class ExtensionsRepository {
     id: string,
     data: { isEnabled?: boolean; config?: Record<string, any> }
   ): Promise<Extension> {
+    if (id === "user_registration_customizer" && data.config) {
+      const config = data.config as any;
+      const fields = config.fields || {};
+      const emailShow = fields.email?.show ?? true;
+      const phoneShow = fields.phone?.show ?? true;
+      const usernameShow = fields.username?.show ?? true;
+      if (!emailShow && !phoneShow && !usernameShow) {
+        throw new Error("Không thể tắt đồng thời cả 3 trường nhận diện chính: Email, Số điện thoại và Tên đăng nhập.");
+      }
+    }
+
     const updateData: any = { updatedAt: new Date() };
     if (data.isEnabled !== undefined) updateData.isEnabled = data.isEnabled;
     if (data.config !== undefined) updateData.config = data.config;

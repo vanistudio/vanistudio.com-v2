@@ -1,5 +1,8 @@
 export interface RegistrationFieldsConfig {
   fields: {
+    email: { show: boolean; required: boolean; label: string };
+    name: { show: boolean; required: boolean; label: string };
+    username: { show: boolean; required: boolean; label: string };
     identityCard: { show: boolean; required: boolean; label: string };
     taxId: { show: boolean; required: boolean; label: string };
     phone: { show: boolean; required: boolean; label: string };
@@ -13,6 +16,22 @@ export interface RegistrationFieldsConfig {
   };
   requireEmailVerification: boolean;
   allowSocialLogin: boolean;
+  passwordValidation?: {
+    minLength: number;
+    requireUppercase: boolean;
+    requireLowercase: boolean;
+    requireNumber: boolean;
+    requireSpecialChar: boolean;
+  };
+  usernameValidation?: {
+    minLength: number;
+    maxLength: number;
+    allowedCharacters: "lowercase_alphanumeric" | "alphanumeric" | "all";
+  };
+  emailValidation?: {
+    blockedDomains: string[];
+    allowedDomains: string[];
+  };
 }
 
 export interface MomoPaymentConfig {
@@ -108,6 +127,9 @@ export const DEFAULT_EXTENSIONS: DefaultExtension[] = [
     isEnabled: true,
     config: {
       fields: {
+        email: { show: true, required: true, label: "Địa chỉ Email" },
+        name: { show: true, required: true, label: "Họ và tên" },
+        username: { show: true, required: false, label: "Tên đăng nhập" },
         identityCard: { show: false, required: false, label: "Căn cước công dân" },
         taxId: { show: false, required: false, label: "Mã số thuế" },
         phone: { show: true, required: true, label: "Số điện thoại" },
@@ -121,6 +143,22 @@ export const DEFAULT_EXTENSIONS: DefaultExtension[] = [
       },
       requireEmailVerification: false,
       allowSocialLogin: true,
+      passwordValidation: {
+        minLength: 8,
+        requireUppercase: true,
+        requireLowercase: true,
+        requireNumber: true,
+        requireSpecialChar: true,
+      },
+      usernameValidation: {
+        minLength: 4,
+        maxLength: 20,
+        allowedCharacters: "lowercase_alphanumeric",
+      },
+      emailValidation: {
+        blockedDomains: ["yopmail.com", "mailinator.com", "tempmail.com", "guerrillamail.com"],
+        allowedDomains: [],
+      },
     } as RegistrationFieldsConfig,
   },
   {
