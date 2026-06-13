@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, jsonb } from "drizzle-orm/pg-core";
 
 export const settings = pgTable("settings", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -14,6 +14,12 @@ export const settings = pgTable("settings", {
   siteTimezone: text("site_timezone").default("Asia/Ho_Chi_Minh").notNull(),
   siteLanguage: text("site_language").default("vi").notNull(),
   siteCurrency: text("site_currency").default("VND").notNull(),
+  sitePrimaryFont: text("site_primary_font").default("Outfit").notNull(),
+  siteSecondaryFont: text("site_secondary_font").default("Outfit").notNull(),
+  maintenanceMode: jsonb("maintenance_mode").default({ enabled: false, message: "Hệ thống đang bảo trì. Vui lòng quay lại sau!" }).notNull(),
+  globalPopup: jsonb("global_popup").default({ enabled: false, htmlContent: "" }).notNull(),
+  customCodes: jsonb("custom_codes").default({ head: "", body: "", css: "", js: "" }).notNull(),
+
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
