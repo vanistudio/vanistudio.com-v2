@@ -556,60 +556,14 @@ export default function AdminServicesTab() {
         sorting={servicesSorting}
         onSortingChange={setServicesSorting}
         toolbarInput={
-          <div className="flex items-center gap-2 w-full">
-            <div className="relative flex-1">
-              <Icon icon="solar:magnifer-line-duotone" className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm" />
-              <Input
-                placeholder="Tìm kiếm dịch vụ..."
-                className="pl-9 h-9 text-sm w-full bg-background"
-                value={servicesSearch}
-                onChange={(e) => setServicesSearch(e.target.value)}
-              />
-            </div>
-            
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className={cn(
-                    "h-9 w-9 border-border bg-background hover:bg-muted/50 shrink-0",
-                    serviceTypeFilter !== "all" && "text-vanixjnk border-vanixjnk/30 bg-vanixjnk/5 hover:bg-vanixjnk/10"
-                  )}
-                  title="Lọc phân loại"
-                >
-                  <Icon icon="solar:filter-line-duotone" className="size-4 shrink-0" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-56 p-3 flex flex-col gap-2" align="end">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-                    Phân loại
-                  </label>
-                  <Select value={serviceTypeFilter} onValueChange={setServiceTypeFilter}>
-                    <SelectTrigger size="sm" className="w-full justify-between bg-background border-border">
-                      <SelectValue placeholder="Chọn phân loại" />
-                    </SelectTrigger>
-                    <SelectContent position="popper" align="start">
-                      <SelectItem value="all">
-                        <div className="flex items-center gap-2">
-                          <Icon icon="solar:globus-line-duotone" className="size-4 text-muted-foreground" />
-                          <span>Tất cả các loại</span>
-                        </div>
-                      </SelectItem>
-                      {serviceTypesList.map((type) => (
-                        <SelectItem key={type.id} value={type.id}>
-                          <div className="flex items-center gap-2">
-                            <Icon icon={type.icon || "solar:globus-line-duotone"} className={cn("size-4", type.color || "text-primary")} />
-                            <span>{type.name}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </PopoverContent>
-            </Popover>
+          <div className="relative flex-1">
+            <Icon icon="solar:magnifer-line-duotone" className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm" />
+            <Input
+              placeholder="Tìm kiếm dịch vụ..."
+              className="pl-9 h-9 text-sm w-full bg-background"
+              value={servicesSearch}
+              onChange={(e) => setServicesSearch(e.target.value)}
+            />
           </div>
         }
       />
