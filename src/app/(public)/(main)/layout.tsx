@@ -1,6 +1,6 @@
 import AppLayout from "@/components/layouts/application/AppLayout";
 
-export default function ToolsLayout({
+export default function MainLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
