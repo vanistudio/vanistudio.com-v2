@@ -56,6 +56,7 @@ const getStatusMeta = (status: string) => {
         label: "Hoàn thành",
         color: "text-emerald-500",
         bg: "bg-emerald-500/10",
+        border: "border-emerald-500/20",
         dot: "bg-emerald-500",
       };
     case "developing":
@@ -63,6 +64,7 @@ const getStatusMeta = (status: string) => {
         label: "Đang phát triển",
         color: "text-amber-500",
         bg: "bg-amber-500/10",
+        border: "border-amber-500/20",
         dot: "bg-amber-500",
       };
     default:
@@ -70,6 +72,7 @@ const getStatusMeta = (status: string) => {
         label: "Bản nháp",
         color: "text-zinc-500",
         bg: "bg-zinc-500/10",
+        border: "border-zinc-500/20",
         dot: "bg-zinc-500",
       };
   }
@@ -290,13 +293,13 @@ export default function PubProjectsList({
                 const statusMeta = getStatusMeta(project.status);
 
                 return (
-                  <Card key={project.id} className="group relative flex flex-col h-full bg-card/30 border-border p-0! hover:border-border/80 transition-all duration-300">
+                  <Card key={project.id} className="group relative flex flex-col h-full bg-card/30 border-border p-0!">
                     <div className="relative aspect-video w-full overflow-hidden rounded-t-xl bg-muted/20 border-b border-border/55 flex items-center justify-center select-none">
                       {project.thumbnail ? (
                         <img
                           src={project.thumbnail}
                           alt={project.name}
-                          className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
+                          className="object-cover w-full h-full"
                         />
                       ) : (
                         <div className="absolute inset-0 bg-linear-to-br from-vanixjnk/5 to-vanixjnk/15 flex items-center justify-center">
@@ -315,36 +318,28 @@ export default function PubProjectsList({
                         </span>
                         
                         <span className={cn(
-                          "px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase shadow-md border z-10 flex items-center gap-1 bg-background/80 backdrop-blur-md border-border/50",
-                          statusMeta.color
+                          "px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase shadow-md border z-10 flex items-center gap-1",
+                          statusMeta.color,
+                          statusMeta.bg,
+                          statusMeta.border
                         )}>
                           <span className={cn("size-1.5 rounded-full", statusMeta.dot)} />
                           {statusMeta.label}
                         </span>
                       </div>
 
-                      {project.difficulty !== undefined && (
-                        <div className="absolute top-2 right-2 bg-background/80 backdrop-blur-md px-1.5 py-0.5 rounded border border-border/50 flex items-center gap-0.5 shadow-md z-10">
-                          {Array.from({ length: 5 }).map((_, idx) => (
-                            <Icon
-                              key={idx}
-                              icon="solar:star-bold"
-                              className={cn(
-                                "size-2.5",
-                                idx < project.difficulty
-                                  ? "text-amber-500"
-                                  : "text-muted-foreground/30"
-                              )}
-                            />
-                          ))}
-                        </div>
+                      {project.difficulty !== undefined && project.difficulty > 0 && (
+                        <span className="absolute top-2 right-2 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase shadow-md border z-10 flex items-center gap-1 bg-amber-500/10 text-amber-500 border-amber-500/20">
+                          <Icon icon="solar:star-bold" className="size-3 shrink-0" />
+                          <span>Độ khó: {project.difficulty}/5</span>
+                        </span>
                       )}
                     </div>
 
                     <div className="flex flex-col flex-1 p-5 gap-3">
                       <div className="space-y-1">
-                        <Link href={`/projects/${project.slug}`} className="hover:text-vanixjnk transition-colors">
-                          <h3 className="text-base font-bold text-foreground line-clamp-1 group-hover:text-vanixjnk transition-colors">
+                        <Link href={`/projects/${project.slug}`} className="after:absolute after:inset-0 after:z-10">
+                          <h3 className="text-base font-bold text-foreground line-clamp-1">
                             {project.name}
                           </h3>
                         </Link>
@@ -385,9 +380,9 @@ export default function PubProjectsList({
                           <div className="flex -space-x-2 overflow-hidden select-none">
                             {project.team.slice(0, 4).map((member, idx) => (
                               <div
-                                key={idx}
                                 className="size-5.5 rounded-full ring-2 ring-card bg-muted flex items-center justify-center overflow-hidden border border-border/30"
                                 title={`${member.name} (${member.role})`}
+                                key={idx}
                               >
                                 {member.avatar ? (
                                   <img src={member.avatar} alt={member.name} className="size-full object-cover" />
@@ -411,14 +406,14 @@ export default function PubProjectsList({
                     <div className="border-t border-border px-5 py-4 flex items-center justify-between bg-muted/10 rounded-b-xl group-hover:bg-muted/15 transition-colors">
                       <Link
                         href={`/projects/${project.slug}`}
-                        className="text-xs font-bold text-vanixjnk hover:text-vanixjnk/80 transition-colors flex items-center gap-1"
+                        className="text-xs font-bold text-vanixjnk hover:text-vanixjnk/80 transition-colors flex items-center gap-1 relative z-20"
                       >
                         Chi tiết
                         <Icon icon="solar:arrow-right-linear" className="text-[10px]" />
                       </Link>
 
                       {project.links && project.links.length > 0 && (
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 relative z-20">
                           {project.links.slice(0, 4).map((lnk: ProjectLink, idx) => (
                             <a
                               key={idx}

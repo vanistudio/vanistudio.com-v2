@@ -59,6 +59,7 @@ const getStatusMeta = (status: string) => {
         label: "Hoàn thành",
         color: "text-emerald-500",
         bg: "bg-emerald-500/10",
+        border: "border-emerald-500/20",
         dot: "bg-emerald-500",
       };
     case "developing":
@@ -66,6 +67,7 @@ const getStatusMeta = (status: string) => {
         label: "Đang phát triển",
         color: "text-amber-500",
         bg: "bg-amber-500/10",
+        border: "border-amber-500/20",
         dot: "bg-amber-500",
       };
     default:
@@ -73,6 +75,7 @@ const getStatusMeta = (status: string) => {
         label: "Bản nháp",
         color: "text-zinc-500",
         bg: "bg-zinc-500/10",
+        border: "border-zinc-500/20",
         dot: "bg-zinc-500",
       };
   }
@@ -206,7 +209,7 @@ export default function PubProjectDetail({ project }: PubProjectDetailProps) {
                   <Icon icon={typeMeta.icon} className="mr-1 size-3 shrink-0" />
                   {typeMeta.label}
                 </Badge>
-                <Badge className={cn("px-2.5 py-0.5 text-[10px] font-bold border bg-background/80 backdrop-blur-md border-border/50", statusMeta.color)}>
+                <Badge className={cn("px-2.5 py-0.5 text-[10px] font-bold border", statusMeta.bg, statusMeta.color, statusMeta.border)}>
                   <span className={cn("size-1.5 rounded-full mr-1.5", statusMeta.dot)} />
                   {statusMeta.label}
                 </Badge>
@@ -255,40 +258,67 @@ export default function PubProjectDetail({ project }: PubProjectDetailProps) {
                     )}
                   </div>
                   
-                  {mediaGalleryList.length > 1 && (
+                   {mediaGalleryList.length > 1 && (
                     <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
-                      {mediaGalleryList.map((media, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => setActiveMediaIndex(idx)}
-                          className={cn(
-                            "aspect-video rounded-lg overflow-hidden border transition-all duration-200 cursor-pointer relative bg-muted/30",
-                            activeMediaIndex === idx
-                              ? "border-vanixjnk ring-2 ring-vanixjnk/25 scale-95"
-                              : "border-border hover:border-muted-foreground/60"
-                          )}
-                        >
-                          {media.type === "video" ? (
-                            <div className="size-full flex items-center justify-center relative">
-                              <Icon icon="solar:play-bold" className="absolute size-6 text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] z-10" />
-                              {media.url.includes("youtube.com") || media.url.includes("youtu.be") ? (
-                                <img src={`https://img.youtube.com/vi/${media.url.split("/").pop()?.split("?")[0]}/0.jpg`} alt="video thumb" className="size-full object-cover opacity-60" />
+                      {mediaGalleryList.map((media, idx) => {
+                        let ytId = null;
+                        if (media.type === "video") {
+                          const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+                          const match = media.url.match(regExp);
+                          if (match && match[2].length === 11) {
+                            ytId = match[2];
+                          }
+                        }
+                        const thumbUrl = ytId
+                          ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg`
+                          : media.url;
+                        const isActive = activeMediaIndex === idx;
+
+                        return (
+                          <button
+                            key={idx}
+                            onClick={() => setActiveMediaIndex(idx)}
+                            className={cn(
+                              "group aspect-video rounded-xl overflow-hidden border transition-all duration-300 cursor-pointer relative bg-muted/20 shadow-xs",
+                              isActive
+                                ? "border-vanixjnk opacity-100"
+                                : "border-border hover:border-muted-foreground/40 opacity-60 hover:opacity-100"
+                            )}
+                          >
+                            <div className="size-full overflow-hidden relative">
+                              {media.type === "video" ? (
+                                <div className="size-full flex items-center justify-center">
+                                  <div className="absolute size-7 rounded-full bg-background/80 backdrop-blur-xs flex items-center justify-center border border-border/50 text-vanixjnk shadow-md z-10 transition-transform duration-300 group-hover:scale-115">
+                                    <Icon icon="solar:play-bold" className="size-3 translate-x-px" />
+                                  </div>
+                                  {ytId ? (
+                                    <img
+                                      src={thumbUrl}
+                                      alt="video thumbnail"
+                                      className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                    />
+                                  ) : (
+                                    <div className="size-full bg-slate-950" />
+                                  )}
+                                </div>
                               ) : (
-                                <div className="size-full bg-slate-900" />
+                                <img
+                                  src={thumbUrl}
+                                  alt="gallery thumbnail"
+                                  className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                />
                               )}
                             </div>
-                          ) : (
-                            <img src={media.url} alt="gallery thumbnail" className="size-full object-cover" />
-                          )}
-                        </button>
-                      ))}
+                          </button>
+                        );
+                      })}
                     </div>
                   )}
                 </Card>
               )}
 
               <Card className="p-5 bg-card/30 border-border">
-                <div className="flex items-center gap-2 pb-3.5 border-b border-border/40 mb-4">
+                <div className="flex items-center gap-2">
                   <Icon icon="solar:document-text-line-duotone" className="text-base text-vanixjnk" />
                   <h3 className="font-bold text-xs text-foreground uppercase tracking-wider">Mô tả dự án</h3>
                 </div>
