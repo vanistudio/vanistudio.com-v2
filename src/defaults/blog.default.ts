@@ -243,4 +243,117 @@ Vercel đang làm việc chặt chẽ cùng đội ngũ **Expo** để biến s�
 **Next.js Across Platforms** chứng minh vị thế dẫn đầu của Next.js và Vercel trong việc định hình lại tiêu chuẩn lập trình ứng dụng hiện đại. Việc xóa nhòa ranh giới giữa phát triển Web và App bằng kiến trúc Server Components hợp nhất chắc chắn sẽ thúc đẩy năng suất làm việc của các lập trình viên lên một tầm cao mới.
 `,
   },
+  {
+    title: "Hành trình Rolldown: Khi Rust tái định nghĩa tốc độ đóng gói Web",
+    slug: "rolldown-rust-reinventing-bundling",
+    description: "Câu chuyện hậu trường đầy thú vị về việc phát triển Rolldown - trình đóng gói (bundler) viết bằng Rust được kỳ vọng sẽ thống nhất và tăng tốc 10x cho hệ sinh thái Vite.",
+    isActive: true,
+    publishedAt: new Date("2026-06-14T09:00:00.000Z"),
+    thumbnail: "https://storage.vanistudio.com/uploads/Gemini-Generated-Image-ftav6uftav6uftav-1781452349145.jpg",
+    metaTitle: "Hành Trình Rolldown: Trình Đóng Gói Rust Thế Hệ Mới | Vani Studio",
+    metaDescription: "Tìm hiểu nguồn gốc, sức mạnh kỹ thuật và tầm nhìn chiến lược của Rolldown trong việc thay đổi hoàn toàn hiệu năng biên dịch và đóng gói mã nguồn của Vite.",
+    metaKeywords: "rolldown, rust, bundler, vite, rollup, esbuild, voidzero, cloudflare",
+    content: `# Hành trình Rolldown: Khi Rust tái định nghĩa tốc độ đóng gói Web
+
+Hệ sinh thái frontend hiện đại đang trải qua một cuộc cách mạng hiệu năng chưa từng có. Trọng tâm của cuộc cách mạng này không gì khác ngoài **Rolldown** — trình đóng gói (bundler) thế hệ mới viết bằng Rust, được định hướng trở thành xương sống cho tương lai của Vite.
+
+Hãy cùng quay ngược thời gian để hiểu tại sao dự án này lại ra đời và cách nó hứa hẹn thay đổi hoàn toàn cuộc chơi phát triển web.
+
+<Separator className="my-6" />
+
+## 1. Nỗi đau của "Hai thế giới" trong Vite
+
+Để hiểu được sứ mệnh của Rolldown, chúng ta cần nhìn lại kiến trúc hiện tại của Vite. Vite cực kỳ nhanh trong môi trường phát triển (development) nhờ sử dụng **Esbuild** (viết bằng Go) để tiền đóng gói các thư viện phụ thuộc (dependency pre-bundling). Tuy nhiên, khi build ra sản phẩm cuối cùng cho môi trường sản xuất (production), Vite lại tin dùng **Rollup** (viết bằng JavaScript/TypeScript).
+
+Sự phân tách này tạo ra hai vấn đề lớn:
+
+<Card className="border-border/60 bg-card my-6">
+  <CardHeader>
+    <CardTitle className="text-lg">Hai thách thức lớn của Vite hiện tại</CardTitle>
+    <CardDescription>Sự bất đồng nhất giữa môi trường Dev và Production</CardDescription>
+  </CardHeader>
+  <CardContent className="space-y-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="p-4 rounded-xl bg-muted/20 border border-border/40">
+        <h4 className="font-bold text-foreground mb-1 text-sm">Bất đồng nhất hành vi</h4>
+        <span className="text-xs text-muted-foreground block">Esbuild và Rollup có cấu hình và thuật toán phân tích mã nguồn khác nhau. Một số lỗi lạ chỉ xuất hiện khi chạy build production mà không hề có cảnh báo khi dev.</span>
+      </div>
+      <div className="p-4 rounded-xl bg-muted/20 border border-border/40">
+        <h4 className="font-bold text-foreground mb-1 text-sm">Nút thắt cổ chai hiệu năng</h4>
+        <span className="text-xs text-muted-foreground block">Rollup rất mạnh mẽ và có hệ sinh thái plugin đồ sộ, nhưng vì viết bằng JavaScript nên tốc độ đóng gói bị giới hạn bởi đơn luồng của Node.js khi xử lý các dự án siêu lớn.</span>
+      </div>
+    </div>
+  </CardContent>
+</Card>
+
+<Separator className="my-6" />
+
+## 2. Rolldown bước ra ánh sáng
+
+Ý tưởng về Rolldown rất đơn giản nhưng cực kỳ tham vọng: **Xây dựng một bundler viết bằng Rust có tốc độ cực nhanh như Esbuild nhưng hoàn toàn tương thích với API và hệ sinh thái plugin của Rollup.**
+
+<Alert variant="default" className="border-vanixjnk/20 bg-vanixjnk/5 text-foreground my-6">
+  <Icon icon="solar:globus-bold-duotone" className="size-5 text-vanixjnk shrink-0" />
+  <div className="flex flex-col">
+    <AlertTitle className="text-vanixjnk font-bold">Mục tiêu thống nhất của Rolldown</AlertTitle>
+    <AlertDescription className="text-sm leading-relaxed mt-1 text-muted-foreground">
+      Khi hoàn thiện, Rolldown sẽ thay thế cả Esbuild lẫn Rollup trong Vite. Điều này đồng nghĩa với việc lập trình viên sẽ có trải nghiệm đồng nhất 100% từ lúc gõ dòng code đầu tiên ở local cho đến khi triển khai sản phẩm lên máy chủ.
+    </AlertDescription>
+  </div>
+</Alert>
+
+## 3. Sức mạnh vượt trội từ kiến trúc Rust
+
+Rolldown không tự viết lại mọi thứ từ đầu. Thay vào đó, nó đứng trên vai những người khổng lồ trong hệ sinh thái Rust:
+
+<Tabs defaultValue="oxc" className="w-full my-6">
+  <TabsList className="bg-muted/40 p-1">
+    <TabsTrigger value="oxc">Tích hợp Oxc</TabsTrigger>
+    <TabsTrigger value="plugins">Khả năng tương thích Plugin</TabsTrigger>
+    <TabsTrigger value="perf">Đa luồng cực hạn</TabsTrigger>
+  </TabsList>
+  <TabsContent value="oxc" className="p-4 border rounded-xl mt-2 space-y-2">
+    <h4 className="font-bold text-sm text-foreground">Sử dụng Oxc để phân tích cú pháp (AST)</h4>
+    <span className="text-xs text-muted-foreground leading-relaxed block">
+      Rolldown tích hợp sâu với **Oxc (Oxidizing Compiler)** để thực hiện các tác vụ lexing, parsing và scope analysis. Tốc độ vượt trội của Oxc giúp Rolldown đọc và hiểu mã nguồn JavaScript/TypeScript nhanh hơn gấp nhiều lần so với các parser truyền thống như SWC hay Babel.
+    </span>
+  </TabsContent>
+  <TabsContent value="plugins" className="p-4 border rounded-xl mt-2 space-y-2">
+    <h4 className="font-bold text-sm text-foreground">Tương thích ngược với Rollup Plugins</h4>
+    <span className="text-xs text-muted-foreground leading-relaxed block">
+      Một trong những thách thức kỹ thuật khó nhất là làm thế nào để các plugin viết bằng JavaScript hiện tại của Rollup có thể chạy được trên lõi Rust của Rolldown. Đội ngũ phát triển đã xây dựng một tầng giao tiếp hiệu năng cao (napi-rs) giúp chuyển đổi dữ liệu mượt mà giữa hai môi trường mà không làm giảm tốc độ.
+    </span>
+  </TabsContent>
+  <TabsContent value="perf" className="p-4 border rounded-xl mt-2 space-y-2">
+    <h4 className="font-bold text-sm text-foreground">Tận dụng tối đa đa luồng (Multi-threading)</h4>
+    <span className="text-xs text-muted-foreground leading-relaxed block">
+      Khác với Node.js bị giới hạn đơn luồng, Rolldown được thiết kế để phân chia công việc xử lý file, tối ưu hóa code và nén file ra mọi nhân CPU hiện có trên máy tính của bạn.
+    </span>
+  </TabsContent>
+</Tabs>
+
+<Separator className="my-6" />
+
+## 4. Hỏi đáp nhanh (FAQ) về Rolldown
+
+<Accordion type="single" collapsible className="w-full border border-border/60 rounded-xl px-4 py-2 bg-muted/10 my-6">
+  <AccordionItem value="faq-1">
+    <AccordionTrigger className="text-sm font-bold">Tôi có cần phải học Rust để sử dụng Rolldown không?</AccordionTrigger>
+    <AccordionContent className="text-xs text-muted-foreground leading-relaxed">
+      Hoàn toàn không. Rolldown cung cấp giao diện dòng lệnh (CLI) và cấu hình bằng JavaScript tương tự như Rollup. Khi tích hợp vào Vite, bạn thậm chí không nhận ra sự thay đổi ngoại trừ việc thời gian chờ đợi build giảm đi đáng kể.
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="faq-2">
+    <AccordionTrigger className="text-sm font-bold">Liệu Rolldown có làm cho Esbuild hay Rollup biến mất?</AccordionTrigger>
+    <AccordionContent className="text-xs text-muted-foreground leading-relaxed">
+      Không hẳn. Esbuild vẫn là một công cụ độc lập tuyệt vời cho các tác vụ nhanh gọn. Rollup vẫn sẽ tiếp tục tồn tại cho các dự án thuần JS truyền thống. Tuy nhiên đối với người dùng Vite, Rolldown sẽ là giải pháp tối ưu nhất được chọn mặc định.
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>
+
+## Kết luận
+
+Hành trình của Rolldown đại diện cho tương lai của phát triển phần mềm: sử dụng các ngôn ngữ hệ thống như Rust để gia cố và tăng tốc cho các lớp ứng dụng cấp cao hơn. Với sự hậu thuẫn vững chắc từ Cloudflare và đội ngũ tài năng của VoidZero, Rolldown chắc chắn sẽ sớm đưa tốc độ phát triển ứng dụng Web chạm tới giới hạn mới.
+`,
+  },
 ];
