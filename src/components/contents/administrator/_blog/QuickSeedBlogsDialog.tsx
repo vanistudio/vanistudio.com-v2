@@ -83,7 +83,7 @@ function SortableItem({
           <Icon icon="solar:document-text-line-duotone" className="size-4.5" />
         </div>
         <div className="flex flex-col min-w-0">
-          <span className="text-[13px] font-bold text-foreground truncate">{title}</span>
+          <span className="text-[13px] font-bold text-foreground line-clamp-2 leading-snug">{title}</span>
           <span className="text-[10px] text-muted-foreground truncate">/blog/{slug}</span>
         </div>
       </div>
