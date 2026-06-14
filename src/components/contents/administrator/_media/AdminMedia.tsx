@@ -204,7 +204,7 @@ export default function AdminMedia() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="flex items-center justify-center size-12 rounded-xl text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 shrink-0">
-                <Icon icon="solar:gallery-bold-duotone" className="text-2xl" />
+                <Icon icon="solar:gallery-line-duotone" className="text-2xl" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold tracking-tight text-foreground">Thư viện ảnh & Media</h1>
@@ -304,7 +304,7 @@ export default function AdminMedia() {
                     </h3>
                   </div>
                   <div className="size-10 rounded-lg text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 flex items-center justify-center shrink-0">
-                    <Icon icon="solar:folder-with-files-bold-duotone" className="text-xl" />
+                    <Icon icon="solar:folder-with-files-line-duotone" className="text-xl" />
                   </div>
                 </div>
                 <div className="p-4 rounded-lg border bg-background/60 flex items-center justify-between">
@@ -507,7 +507,7 @@ export default function AdminMedia() {
         <SheetContent className="sm:max-w-[550px] w-full p-0 flex flex-col">
           <SheetHeader className="p-6">
             <div className="size-10 rounded-xl bg-vanixjnk/10 text-vanixjnk flex items-center justify-center shrink-0 mb-2">
-              <Icon icon="solar:info-square-bold-duotone" className="size-6" />
+              <Icon icon="solar:info-square-line-duotone" className="size-6" />
             </div>
             <SheetTitle className="text-xl font-bold">
               Thông tin tập tin
@@ -572,9 +572,9 @@ export default function AdminMedia() {
                   </div>
                 </div>
               </div>
-              <div className="p-6 border-t border-border bg-background flex gap-2.5">
+              <div className="p-6 flex gap-2.5">
                 <Button
-                  className="flex-1 font-bold text-sm"
+                  className="flex-1 text-sm"
                   variant="outline"
                   onClick={() => window.open(selectedItem.url, "_blank")}
                 >
@@ -582,8 +582,8 @@ export default function AdminMedia() {
                   Mở tab mới
                 </Button>
                 <Button
-                  className="font-bold border-red-950/30 text-red-400 hover:bg-red-950/20 text-sm"
-                  variant="outline"
+                  className="text-sm"
+                  variant="danger"
                   onClick={() => {
                     setSelectedItem(null);
                     setItemToDelete(selectedItem);
@@ -601,7 +601,7 @@ export default function AdminMedia() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-red-500">
-              <Icon icon="solar:danger-bold-duotone" className="size-5" />
+              <Icon icon="solar:danger-line-duotone" className="size-5" />
               <span>Xác nhận xóa tập tin?</span>
             </DialogTitle>
             <DialogDescription className="text-xs text-muted-foreground mt-1">
