@@ -31,13 +31,14 @@ const projectMetricSchema = z.object({
 const projectLinkSchema = z.object({
   label: z.string().min(1, "Tên liên kết không được để trống"),
   url: z.string().url("URL không hợp lệ"),
+  type: z.enum(["live", "github", "figma", "youtube", "docs", "other"]).default("live"),
   icon: z.string().optional().nullable(),
 });
 
 const projectMemberSchema = z.object({
   name: z.string().min(1, "Tên thành viên không được để trống"),
   role: z.string().min(1, "Vai trò không được để trống"),
-  avatarUrl: z.string().optional().nullable(),
+  avatar: z.string().optional().nullable(),
   profileUrl: z.string().optional().nullable(),
 });
 
@@ -48,13 +49,19 @@ const projectTestimonialSchema = z.object({
   avatar: z.string().optional().nullable(),
 });
 
+const projectHighlightSchema = z.object({
+  title: z.string().min(1, "Tiêu đề không được để trống"),
+  description: z.string().min(1, "Mô tả không được để trống"),
+  image: z.string().optional().nullable(),
+});
+
 const createProjectSchema = z.object({
   name: z.string().min(1, "Tên dự án không được để trống"),
   slug: z.string().min(1, "Đường dẫn không được để trống"),
   description: z.string().optional().nullable(),
   content: z.string().min(1, "Nội dung chi tiết không được để trống"),
   thumbnail: z.string().optional().nullable(),
-  difficulty: z.string().optional().nullable(),
+  difficulty: z.number().int().default(3),
   projectType: z.string().optional().nullable(),
   role: z.string().optional().nullable(),
   status: z.string().optional().nullable(),
@@ -64,7 +71,7 @@ const createProjectSchema = z.object({
   mediaGallery: z.array(projectMediaSchema).default([]),
   metrics: z.array(projectMetricSchema).default([]),
   links: z.array(projectLinkSchema).default([]),
-  highlights: z.array(z.string()).default([]),
+  highlights: z.array(projectHighlightSchema).default([]),
   team: z.array(projectMemberSchema).default([]),
   testimonials: z.array(projectTestimonialSchema).default([]),
   order: z.number().int().default(0),

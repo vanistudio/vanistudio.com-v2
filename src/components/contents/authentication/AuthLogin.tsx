@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@bprogress/next/app";
 import { useTheme } from "next-themes";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";

@@ -5,7 +5,6 @@ import type { Metadata } from "next";
 
 export const dynamicParams = true;
 
-// Pre-render some active projects
 export async function generateStaticParams() {
   const allProjects = await projectsRepository.getProjects();
   return allProjects

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@bprogress/next/app";
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -146,16 +146,20 @@ export default function AdminProjectsTab() {
       meta: { title: "Độ khó" },
       header: ({ column }) => <DataTableColumnHeader column={column} />,
       cell: ({ row }) => {
-        const diff = row.getValue("difficulty") as string;
-        if (!diff) return <span className="text-xs text-muted-foreground">—</span>;
+        const diffValue = row.getValue("difficulty");
+        if (diffValue === undefined || diffValue === null) return <span className="text-xs text-muted-foreground">—</span>;
         
-        let colorClass = "text-muted-foreground";
-        if (diff.includes("Dễ")) colorClass = "text-emerald-500";
-        else if (diff.includes("Trung bình")) colorClass = "text-blue-500";
-        else if (diff.includes("Khó")) colorClass = "text-amber-500";
-        else if (diff.includes("Cực khó")) colorClass = "text-rose-500";
-
-        return <span className={cn("text-xs font-semibold", colorClass)}>{diff}</span>;
+        const diff = Number(diffValue);
+        const difficultyLabels: Record<number, { label: string; color: string }> = {
+          1: { label: "Cực dễ", color: "text-emerald-500" },
+          2: { label: "Dễ", color: "text-emerald-500" },
+          3: { label: "Trung bình", color: "text-blue-500" },
+          4: { label: "Khó", color: "text-amber-500" },
+          5: { label: "Cực khó", color: "text-rose-500" },
+        };
+        
+        const meta = difficultyLabels[diff] || { label: `Độ khó: ${diff}/5`, color: "text-muted-foreground" };
+        return <span className={cn("text-xs font-semibold", meta.color)}>{meta.label}</span>;
       },
     },
     {

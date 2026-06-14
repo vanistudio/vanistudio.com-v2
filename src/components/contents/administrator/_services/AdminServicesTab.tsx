@@ -1,22 +1,12 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@bprogress/next/app";
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DataTable, DataTableColumnHeader } from "@/components/vanixjnk/data-table";
 import { ColumnDef, SortingState } from "@tanstack/react-table";
 import { toast } from "sonner";
@@ -26,34 +16,11 @@ import type { Service, ServicePackage } from "@/server/db/schemas/service.schema
 import { QuickReorderServicesDialog } from "./QuickReorderServicesDialog";
 import { QuickSeedServicesDialog } from "./QuickSeedServicesDialog";
 
-function formatCurrencyInput(value: string | number): string {
-  const strValue = String(value);
-  const raw = strValue.replace(/\D/g, "");
-  if (!raw) return "";
-  return Number(raw).toLocaleString("vi-VN");
-}
-
-function parseCurrencyInput(value: string): number {
-  const raw = value.replace(/\D/g, "");
-  return raw ? Number(raw) : 0;
-}
-
 export default function AdminServicesTab() {
   const router = useRouter();
 
   const { data: servicesData, isLoading: servicesLoading, refetch: refetchServices, isFetching: servicesFetching } =
     trpc.administrator.services.getAll.useQuery(undefined, { refetchOnWindowFocus: false });
-
-  const { data: serviceTypesData } = trpc.administrator.services.getTypes.useQuery(undefined, { refetchOnWindowFocus: false });
-  const serviceTypesList = serviceTypesData?.data || [];
-
-  const deleteServiceMutation = trpc.administrator.services.delete.useMutation({
-    onSuccess: () => {
-      toast.success("Xóa dịch vụ thành công!");
-      refetchServices();
-    },
-    onError: (err) => toast.error(err.message || "Xóa thất bại"),
-  });
 
   const servicesList = servicesData || [];
   const [servicesSearch, setServicesSearch] = useState("");
