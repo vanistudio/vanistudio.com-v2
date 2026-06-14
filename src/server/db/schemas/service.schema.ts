@@ -44,6 +44,7 @@ export const services = pgTable("services", {
   priceType: text("price_type").default("starting_at").notNull(), // 'starting_at' (Giá từ) | 'fixed' (Cố định) | 'contact' (Liên hệ)
   deliveryTime: integer("delivery_time"), // Thời gian bàn giao trung bình (ngày)
   status: text("status").default("active").notNull(), // Trạng thái: 'active' (Hoạt động) | 'draft' (Nháp) | 'disabled' (Tắt)
+  order: integer("order").default(0).notNull(), // Thứ tự hiển thị
   
   // Lưu trữ cấu hình form khảo sát đặc thù khi khách hàng order dịch vụ này
   fieldsConfig: jsonb("fields_config").$type<FormFieldConfig[]>().default([]).notNull(),

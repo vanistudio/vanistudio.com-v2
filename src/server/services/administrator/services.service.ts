@@ -166,6 +166,12 @@ export class ServicesService {
     }
   }
 
+  async reorderServices(orders: { id: string; order: number }[]) {
+    for (const item of orders) {
+      await servicesRepository.updateService(item.id, { order: item.order });
+    }
+  }
+
   async seedTypes(customTypes?: any[]) {
     await servicesRepository.seedDefaultTypes(customTypes);
   }

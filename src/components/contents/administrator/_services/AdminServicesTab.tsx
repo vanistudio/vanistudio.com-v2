@@ -27,6 +27,7 @@ import type { FormFieldConfig, Service, ServicePackage } from "@/server/db/schem
 import { GalleryDialog } from "@/components/vanixjnk/gallery-dialog";
 import { DeviconPicker } from "./DeviconPicker";
 import { IconPicker } from "@/components/vanixjnk/icon-picker";
+import { QuickReorderServicesDialog } from "./QuickReorderServicesDialog";
 
 function formatCurrencyInput(value: string | number): string {
   const strValue = String(value);
@@ -80,6 +81,7 @@ export default function AdminServicesTab() {
   const [servicesSorting, setServicesSorting] = useState<SortingState>([]);
   const [servicesPagination, setServicesPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [serviceTypeFilter, setServiceTypeFilter] = useState("all");
+  const [sortDialogOpen, setSortDialogOpen] = useState(false);
 
   const [serviceEditorOpen, setServiceEditorOpen] = useState(false);
   const [editingService, setEditingService] = useState<any | null>(null);
@@ -461,6 +463,12 @@ export default function AdminServicesTab() {
       },
     },
     {
+      accessorKey: "order",
+      meta: { title: "Thứ tự" },
+      header: ({ column }) => <DataTableColumnHeader column={column} />,
+      cell: ({ row }) => <span className="font-mono text-xs text-muted-foreground">{row.original.order}</span>,
+    },
+    {
       id: "actions",
       header: "Thao tác",
       cell: ({ row }) => (
@@ -540,6 +548,14 @@ export default function AdminServicesTab() {
               >
                 <Icon icon="solar:add-circle-line-duotone" className="mr-2 size-3.5 text-emerald-500" />
                 Tạo dịch vụ mới
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-xs h-8 px-2 cursor-pointer"
+                onClick={() => setSortDialogOpen(true)}
+              >
+                <Icon icon="solar:sort-vertical-line-duotone" className="mr-2 size-3.5 text-indigo-500" />
+                Sắp xếp
               </Button>
             </PopoverContent>
           </Popover>
@@ -1186,6 +1202,12 @@ export default function AdminServicesTab() {
           }
         }}
         selectedIcons={serviceForm.technologies}
+      />
+
+      <QuickReorderServicesDialog
+        open={sortDialogOpen}
+        onOpenChange={setSortDialogOpen}
+        onSuccess={() => refetchServices()}
       />
     </div>
   );

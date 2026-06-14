@@ -13,12 +13,12 @@ import {
   type ServiceRequest,
   type NewServiceRequest,
 } from "@/server/db/schemas/service.schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, asc } from "drizzle-orm";
 
 export class ServicesRepository {
   async getServices(): Promise<(Service & { serviceType: ServiceType | null })[]> {
     return await db.query.services.findMany({
-      orderBy: [desc(services.createdAt)],
+      orderBy: [asc(services.order), desc(services.createdAt)],
       with: {
         serviceType: true,
       },
@@ -46,7 +46,13 @@ export class ServicesRepository {
   }
 
   async createService(data: NewService): Promise<Service & { serviceType: ServiceType | null }> {
-    const [inserted] = await db.insert(services).values(data).returning();
+    let orderToSet = data.order;
+    if (orderToSet === undefined || orderToSet === 0) {
+      const allServices = await db.select({ order: services.order }).from(services);
+      const maxOrder = allServices.reduce((max, s) => Math.max(max, s.order || 0), 0);
+      orderToSet = maxOrder + 1;
+    }
+    const [inserted] = await db.insert(services).values({ ...data, order: orderToSet }).returning();
     if (!inserted) throw new Error("Tạo dịch vụ thất bại");
     const service = await this.getServiceById(inserted.id);
     if (!service) throw new Error("Tải dịch vụ sau khi tạo thất bại");

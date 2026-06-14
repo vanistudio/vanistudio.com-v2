@@ -367,6 +367,24 @@ export const servicesRouter = router({
       }
     }),
 
+  reorderServices: publicProcedure
+    .input(z.array(z.object({ id: z.string().uuid(), order: z.number().int() })))
+    .mutation(async ({ input }) => {
+      await ensureAdmin();
+      try {
+        await servicesService.reorderServices(input);
+        try {
+          revalidatePath("/services");
+        } catch (_) {}
+        return { resultCode: 0, message: "Cập nhật thứ tự dịch vụ thành công" };
+      } catch (error: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message || "Cập nhật thứ tự dịch vụ thất bại",
+        });
+      }
+    }),
+
   seedTypes: publicProcedure
     .input(
       z.array(
