@@ -86,6 +86,68 @@ export class ServicesRepository {
     await db.insert(serviceTypes).values(typesToInsert);
   }
 
+  async seedDefaultServices(customServices?: any[]): Promise<void> {
+    const list = customServices && customServices.length > 0
+      ? customServices
+      : (await import("@/defaults/services.default")).DEFAULT_SERVICES;
+
+    const types = await this.getTypes();
+
+    for (const item of list) {
+      const type = types.find((t) => t.name.includes(item.typeName) || item.typeName.includes(t.name));
+      if (!type) continue;
+
+      const [existing] = await db.select().from(services).where(eq(services.slug, item.slug)).limit(1);
+
+      let serviceId: string;
+      const serviceData = {
+        name: item.name,
+        slug: item.slug,
+        typeId: type.id,
+        description: item.description,
+        content: item.content,
+        thumbnail: item.thumbnail,
+        gallery: [],
+        features: item.features,
+        technologies: item.technologies,
+        basePrice: item.basePrice,
+        priceType: item.priceType as any,
+        deliveryTime: item.deliveryTime,
+        status: "active" as const,
+        order: item.order || 0,
+        fieldsConfig: item.fieldsConfig || [],
+        metadata: {},
+        updatedAt: new Date(),
+      };
+
+      if (existing) {
+        serviceId = existing.id;
+        await db.update(services).set(serviceData).where(eq(services.id, serviceId));
+      } else {
+        const [inserted] = await db.insert(services).values({
+          ...serviceData,
+          createdAt: new Date(),
+        }).returning();
+        if (!inserted) throw new Error(`Đổ dữ liệu dịch vụ ${item.name} thất bại`);
+        serviceId = inserted.id;
+      }
+
+      if (item.packages && item.packages.length > 0) {
+        await db.delete(servicePackages).where(eq(servicePackages.serviceId, serviceId));
+        await db.insert(servicePackages).values(
+          item.packages.map((pkg: any) => ({
+            serviceId,
+            name: pkg.name,
+            description: pkg.description,
+            price: pkg.price,
+            deliveryTime: pkg.deliveryTime,
+            featuresIncluded: pkg.featuresIncluded,
+          }))
+        );
+      }
+    }
+  }
+
   async getTypeById(id: string): Promise<ServiceType | null> {
     const [item] = await db.select().from(serviceTypes).where(eq(serviceTypes.id, id)).limit(1);
     return item || null;

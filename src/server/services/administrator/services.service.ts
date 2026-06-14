@@ -176,6 +176,10 @@ export class ServicesService {
     await servicesRepository.seedDefaultTypes(customTypes);
   }
 
+  async seedServices(customServices?: any[]) {
+    await servicesRepository.seedDefaultServices(customServices);
+  }
+
   async getPackagesByServiceId(serviceId: string): Promise<ServicePackage[]> {
     return await servicesRepository.getPackagesByServiceId(serviceId);
   }

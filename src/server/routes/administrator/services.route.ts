@@ -412,6 +412,24 @@ export const servicesRouter = router({
       }
     }),
 
+  seedServices: publicProcedure
+    .input(z.array(z.any()).optional())
+    .mutation(async ({ input }) => {
+      await ensureAdmin();
+      try {
+        await servicesService.seedServices(input);
+        try {
+          revalidatePath("/services");
+        } catch (_) {}
+        return { resultCode: 0, message: "Đổ dữ liệu mẫu dịch vụ thành công" };
+      } catch (error: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message || "Đổ dữ liệu mẫu dịch vụ thất bại",
+        });
+      }
+    }),
+
   createRequest: publicProcedure
     .input(
       z.object({

@@ -24,6 +24,7 @@ import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
 import type { Service, ServicePackage } from "@/server/db/schemas/service.schema";
 import { QuickReorderServicesDialog } from "./QuickReorderServicesDialog";
+import { QuickSeedServicesDialog } from "./QuickSeedServicesDialog";
 
 function formatCurrencyInput(value: string | number): string {
   const strValue = String(value);
@@ -60,6 +61,7 @@ export default function AdminServicesTab() {
   const [servicesPagination, setServicesPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [serviceTypeFilter, setServiceTypeFilter] = useState("all");
   const [sortDialogOpen, setSortDialogOpen] = useState(false);
+  const [seedDialogOpen, setSeedDialogOpen] = useState(false);
 
   const [packageManagerOpen, setPackageManagerOpen] = useState(false);
   const [packageService, setPackageService] = useState<Service | null>(null);
@@ -380,6 +382,14 @@ export default function AdminServicesTab() {
                 <Icon icon="solar:sort-vertical-line-duotone" className="mr-2 size-3.5 text-indigo-500" />
                 Sắp xếp
               </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-xs h-8 px-2 cursor-pointer text-amber-600 hover:text-amber-700 hover:bg-amber-500/10"
+                onClick={() => setSeedDialogOpen(true)}
+              >
+                <Icon icon="solar:database-line-duotone" className="mr-2 size-3.5 text-amber-500" />
+                Đổ dữ liệu mẫu
+              </Button>
             </PopoverContent>
           </Popover>
         </div>
@@ -413,6 +423,12 @@ export default function AdminServicesTab() {
       <QuickReorderServicesDialog
         open={sortDialogOpen}
         onOpenChange={setSortDialogOpen}
+        onSuccess={() => refetchServices()}
+      />
+
+      <QuickSeedServicesDialog
+        open={seedDialogOpen}
+        onOpenChange={setSeedDialogOpen}
         onSuccess={() => refetchServices()}
       />
     </div>
