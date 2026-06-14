@@ -3,6 +3,7 @@ import { users, userSession, provider, userProfile } from "@/server/db/schemas/u
 import { menus, menuGroups } from "@/server/db/schemas/menu.schema";
 import { services, servicePackages, serviceRequests, serviceTypes } from "@/server/db/schemas/service.schema";
 import { projects } from "@/server/db/schemas/project.schema";
+import { blogs, blogComments } from "@/server/db/schemas/blog.schema";
 
 export const userRelations = relations(users, ({ one, many }) => ({
   profile: one(userProfile, {
@@ -12,6 +13,8 @@ export const userRelations = relations(users, ({ one, many }) => ({
   sessions: many(userSession),
   providers: many(provider),
   serviceRequests: many(serviceRequests),
+  blogComments: many(blogComments),
+  blogs: many(blogs),
 }));
 
 export const userSessionRelations = relations(userSession, ({ one }) => ({
@@ -94,6 +97,33 @@ export const projectsRelations = relations(projects, ({ one }) => ({
   service: one(services, {
     fields: [projects.serviceId],
     references: [services.id],
+  }),
+}));
+
+export const blogsRelations = relations(blogs, ({ one, many }) => ({
+  comments: many(blogComments),
+  author: one(users, {
+    fields: [blogs.authorId],
+    references: [users.id],
+  }),
+}));
+
+export const blogCommentsRelations = relations(blogComments, ({ one, many }) => ({
+  blog: one(blogs, {
+    fields: [blogComments.blogId],
+    references: [blogs.id],
+  }),
+  user: one(users, {
+    fields: [blogComments.userId],
+    references: [users.id],
+  }),
+  parent: one(blogComments, {
+    fields: [blogComments.parentId],
+    references: [blogComments.id],
+    relationName: "commentParent",
+  }),
+  replies: many(blogComments, {
+    relationName: "commentParent",
   }),
 }));
 

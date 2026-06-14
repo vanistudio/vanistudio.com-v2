@@ -356,4 +356,216 @@ Rolldown không tự viết lại mọi thứ từ đầu. Thay vào đó, nó �
 Hành trình của Rolldown đại diện cho tương lai của phát triển phần mềm: sử dụng các ngôn ngữ hệ thống như Rust để gia cố và tăng tốc cho các lớp ứng dụng cấp cao hơn. Với sự hậu thuẫn vững chắc từ Cloudflare và đội ngũ tài năng của VoidZero, Rolldown chắc chắn sẽ sớm đưa tốc độ phát triển ứng dụng Web chạm tới giới hạn mới.
 `,
   },
+  {
+    title: "Oxc: Dự án siêu compiler bằng Rust sẵn sàng thay thế Babel và ESLint",
+    slug: "oxc-compiler-rust-javascript-tooling",
+    description: "Khám phá Oxc - bộ công cụ biên dịch hiệu năng cực cao viết bằng Rust, giúp cải thiện tốc độ phân tích cú pháp (parsing), linter và formatter cho JavaScript/TypeScript lên gấp nhiều lần.",
+    isActive: true,
+    publishedAt: new Date("2026-06-14T11:00:00.000Z"),
+    thumbnail: "https://storage.vanistudio.com/uploads/Gemini-Generated-Image-bjxvitbjxvitbjxv-1781452829724.jpg",
+    metaTitle: "Oxc Compiler: Bộ Công Cụ Rust Tốc Độ Vượt Trội | Vani Studio",
+    metaDescription: "Tìm hiểu về Oxc (The Oxidation Compiler), dự án viết bằng Rust giúp tối ưu tốc độ phân tích cú pháp, linting và build mã nguồn JavaScript/TypeScript gấp 50-100 lần.",
+    metaKeywords: "oxc, rust, compiler, parser, linter, oxlint, javascript, typescript, web build",
+    content: `# Oxc: Dự án siêu compiler bằng Rust sẵn sàng thay thế Babel và ESLint
+
+Trong kỷ nguyên Web thế hệ mới, tốc độ của các công cụ phát triển phần mềm (tooling) đang được định nghĩa lại bằng ngôn ngữ Rust. Một trong những cái tên nổi bật nhất đứng sau cuộc cách mạng này chính là **Oxc (The Oxidation Compiler)**.
+
+Oxc không đơn thuần là một công cụ riêng lẻ; nó là một bộ công cụ (suite) biên dịch toàn diện được thiết kế từ gốc để mang lại hiệu năng tối đa cho các dự án JavaScript và TypeScript.
+
+<Separator className="my-6" />
+
+## 1. Oxc gồm những thành phần nào?
+
+Thay vì sử dụng các công cụ khác nhau như Babel để dịch mã, ESLint để kiểm tra lỗi, hay Prettier để định dạng, Oxc cung cấp toàn bộ các chức năng này trên cùng một lõi phân tích cú pháp (AST) siêu nhanh:
+
+<Card className="border-border/60 bg-card my-6">
+  <CardHeader>
+    <CardTitle className="text-lg">Hệ sinh thái công cụ Oxc</CardTitle>
+    <CardDescription>Các module cốt lõi được viết 100% bằng Rust</CardDescription>
+  </CardHeader>
+  <CardContent className="space-y-3">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="p-4 rounded-xl bg-muted/20 border border-border/40">
+        <h4 className="font-bold text-foreground mb-1 text-sm">oxc_parser</h4>
+        <span className="text-xs text-muted-foreground block">Parser JavaScript/TypeScript nhanh nhất hiện nay, vượt qua cả SWC và Esbuild về hiệu năng xử lý thô.</span>
+      </div>
+      <div className="p-4 rounded-xl bg-muted/20 border border-border/40">
+        <h4 className="font-bold text-foreground mb-1 text-sm">oxlint</h4>
+        <span className="text-xs text-muted-foreground block">Công cụ linter chạy trực tiếp trên dòng lệnh, nhanh gấp 50-100 lần so với ESLint truyền thống mà không cần cấu hình phức tạp.</span>
+      </div>
+      <div className="p-4 rounded-xl bg-muted/20 border border-border/40">
+        <h4 className="font-bold text-foreground mb-1 text-sm">oxc_minifier</h4>
+        <span className="text-xs text-muted-foreground block">Trình thu gọn dung lượng mã nguồn (minifier) đang được phát triển để thay thế cho Terser với tốc độ vượt trội.</span>
+      </div>
+    </div>
+  </CardContent>
+</Card>
+
+<Separator className="my-6" />
+
+## 2. Bí mật tốc độ của Oxc: Memory Arena Allocation
+
+Tại sao Oxc lại nhanh hơn phần lớn các công cụ khác? Một phần là do ngôn ngữ Rust, nhưng yếu tố kỹ thuật quyết định nằm ở cơ chế **Arena Allocation** (cấp phát bộ nhớ vùng).
+
+<Alert variant="default" className="border-vanixjnk/20 bg-vanixjnk/5 text-foreground my-6">
+  <Icon icon="solar:programming-bold-duotone" className="size-5 text-vanixjnk shrink-0" />
+  <div className="flex flex-col">
+    <AlertTitle className="text-vanixjnk font-bold">Cơ chế quản lý bộ nhớ thông minh</AlertTitle>
+    <AlertDescription className="text-sm leading-relaxed mt-1 text-muted-foreground">
+      Thay vì liên tục cấp phát và giải phóng các node nhỏ trong cây cú pháp (AST) lên bộ nhớ heap (gây tốn thời gian dọn rác), Oxc gom toàn bộ AST vào một vùng nhớ lớn (Arena) được phân bổ một lần duy nhất. Khi trình biên dịch hoàn thành tác vụ, toàn bộ vùng nhớ này được giải phóng ngay lập tức.
+    </AlertDescription>
+  </div>
+</Alert>
+
+## 3. So sánh hiệu năng thực tế
+
+Oxc mang lại sự cải thiện hiệu năng rõ rệt ở mọi quy mô dự án:
+
+<Tabs defaultValue="linting" className="w-full my-6">
+  <TabsList className="bg-muted/40 p-1">
+    <TabsTrigger value="linting">Tốc độ Linting</TabsTrigger>
+    <TabsTrigger value="parsing">Tốc độ Parsing</TabsTrigger>
+  </TabsList>
+  <TabsContent value="linting" className="p-4 border rounded-xl mt-2 space-y-2">
+    <h4 className="font-bold text-sm text-foreground">Oxlint so với ESLint</h4>
+    <span className="text-xs text-muted-foreground leading-relaxed block">
+      Trong các kiểm thử trên mã nguồn của những dự án lớn như VS Code, oxlint hoàn thành việc kiểm tra lỗi chỉ trong vòng chưa đầy **0.1 giây**, trong khi ESLint mất từ **10 đến 30 giây**. Việc tích hợp oxlint giúp tiết kiệm hàng ngàn giờ chờ đợi trên các hệ thống CI/CD.
+    </span>
+  </TabsContent>
+  <TabsContent value="parsing" className="p-4 border rounded-xl mt-2 space-y-2">
+    <h4 className="font-bold text-sm text-foreground">Parser Performance</h4>
+    <span className="text-xs text-muted-foreground leading-relaxed block">
+      Nhờ tối ưu cấu trúc dữ liệu AST phẳng (Flat AST) và không sử dụng các con trỏ thông minh phức tạp trong Rust, parser của Oxc có thể xử lý hàng triệu dòng code mỗi giây trên mỗi nhân CPU.
+    </span>
+  </TabsContent>
+</Tabs>
+
+<Separator className="my-6" />
+
+## 4. Hỏi đáp nhanh (FAQ)
+
+<Accordion type="single" collapsible className="w-full border border-border/60 rounded-xl px-4 py-2 bg-muted/10 my-6">
+  <AccordionItem value="faq-1">
+    <AccordionTrigger className="text-sm font-bold">Oxlint đã có thể thay thế hoàn toàn ESLint chưa?</AccordionTrigger>
+    <AccordionContent className="text-xs text-muted-foreground leading-relaxed">
+      Hiện tại oxlint tập trung vào việc tìm kiếm các lỗi logic và hiệu năng nghiêm trọng chứ chưa hỗ trợ đầy đủ hệ thống plugin tùy biến khổng lồ của ESLint. Bạn có thể dùng oxlint chạy trước để bắt nhanh 95% lỗi thường gặp, và giữ ESLint ở bước cuối cùng.
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="faq-2">
+    <AccordionTrigger className="text-sm font-bold">Làm thế nào để cài đặt thử nghiệm Oxc?</AccordionTrigger>
+    <AccordionContent className="text-xs text-muted-foreground leading-relaxed">
+      Bạn chỉ cần chạy lệnh \`npx oxlint\` trong thư mục dự án của mình để tận hưởng tốc độ phân tích lỗi trong chớp mắt mà không cần cấu hình bất kỳ tệp tin nào.
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>
+
+## Kết luận
+
+Oxc đang mở ra chương tiếp theo cho tương lai biên dịch web. Bằng việc tối ưu hóa hiệu năng tới từng byte bộ nhớ, dự án này chứng minh rằng chúng ta hoàn toàn có thể làm cho trải nghiệm phát triển phần mềm trở nên tức thời và thú vị hơn rất nhiều.
+`,
+  },
+  {
+    title: "Mỹ yêu cầu Anthropic ngăn chặn người nước ngoài tiếp cận mô hình AI tối tân",
+    slug: "us-restrictions-anthropic-foreign-access",
+    description: "Chính quyền Mỹ chính thức đưa ra các yêu cầu kiểm soát an ninh quốc gia đối với Anthropic, buộc startup này phải thắt chặt quyền truy cập của công dân nước ngoài đối với các mô hình AI tiên tiến nhất.",
+    isActive: true,
+    publishedAt: new Date("2026-06-14T12:00:00.000Z"),
+    thumbnail: "https://storage.vanistudio.com/uploads/Gemini-Generated-Image-6km9nw6km9nw6km9-1781453460814.jpg",
+    metaTitle: "Mỹ Yêu Cầu Anthropic Kiểm Soát Quyền Truy Cập AI | Vani Studio",
+    metaDescription: "Tìm hiểu chi tiết tin tức chính phủ Mỹ yêu cầu Anthropic ngăn chặn công dân từ các quốc gia không đồng minh tiếp cận các mô hình AI Claude tiên tiến.",
+    metaKeywords: "anthropic, ai restrictions, claude, us government, ai security, national security, export controls",
+    content: `# Mỹ yêu cầu Anthropic ngăn chặn người nước ngoài tiếp cận mô hình AI tối tân
+
+Cuộc đua phát triển Trí tuệ nhân tạo (AI) giờ đây không chỉ còn là cuộc chiến thương mại giữa các tập đoàn công nghệ lớn, mà đã trở thành một phần cốt lõi trong chiến lược an ninh quốc gia của các siêu cường. Tin tức nóng hổi mới đây cho biết chính quyền Mỹ đã yêu cầu **Anthropic** — một trong những startup AI hàng đầu hiện nay — thiết lập các biện pháp nghiêm ngặt nhằm ngăn chặn công dân nước ngoài từ các quốc gia đối địch tiếp cận các mô hình AI tối tân của họ.
+
+Động thái này đánh dấu một bước ngoặt quan trọng trong việc quản lý và xuất khẩu công nghệ phần mềm nhạy cảm.
+
+<Separator className="my-6" />
+
+## 1. Lý do đằng sau các yêu cầu siết chặt kiểm soát
+
+Chính phủ Mỹ coi các mô hình AI có khả năng suy luận vượt trội (như dòng Claude 3.5 và các mô hình Opus tương lai) là công nghệ lưỡng dụng (dual-use technology), có thể ứng dụng trong cả dân sự lẫn quân sự.
+
+<Card className="border-border/60 bg-card my-6">
+  <CardHeader>
+    <CardTitle className="text-lg">Các mối lo ngại an ninh hàng đầu</CardTitle>
+    <CardDescription>Tại sao chính quyền Mỹ lại hành động quyết liệt vào thời điểm này?</CardDescription>
+  </CardHeader>
+  <CardContent className="space-y-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="p-4 rounded-xl bg-muted/20 border border-border/40">
+        <h4 className="font-bold text-foreground mb-1 text-sm">Chiến tranh mạng nâng cao</h4>
+        <span className="text-xs text-muted-foreground block">Lo ngại các thế lực nước ngoài sử dụng AI để tự động hóa việc tìm kiếm lỗ hổng bảo mật và viết mã độc tấn công hạ tầng quốc gia.</span>
+      </div>
+      <div className="p-4 rounded-xl bg-muted/20 border border-border/40">
+        <h4 className="font-bold text-foreground mb-1 text-sm">Vũ khí sinh học & Hóa học</h4>
+        <span className="text-xs text-muted-foreground block">Các mô hình ngôn ngữ lớn có khả năng phân tích chuỗi gen hoặc tổng hợp chất hóa học có thể bị lợi dụng để thiết kế tác nhân sinh học nguy hiểm.</span>
+      </div>
+      <div className="p-4 rounded-xl bg-muted/20 border border-border/40">
+        <h4 className="font-bold text-foreground mb-1 text-sm">Rò rỉ kiến thức lõi</h4>
+        <span className="text-xs text-muted-foreground block">Việc huấn luyện các mô hình này tiêu tốn hàng tỷ USD; việc để các quốc gia khác khai thác miễn phí các tri thức này được xem là làm suy yếu lợi thế công nghệ của Mỹ.</span>
+      </div>
+    </div>
+  </CardContent>
+</Card>
+
+<Separator className="my-6" />
+
+## 2. Các biện pháp ngăn chặn được đề xuất
+
+Để tuân thủ yêu cầu từ chính phủ, Anthropic dự kiến sẽ phải triển khai hàng loạt biện pháp kỹ thuật và thủ tục xác thực phức tạp:
+
+<Tabs defaultValue="kyc" className="w-full my-6">
+  <TabsList className="bg-muted/40 p-1">
+    <TabsTrigger value="kyc">Xác thực danh tính (KYC)</TabsTrigger>
+    <TabsTrigger value="geofence">Định vị & Chặn IP</TabsTrigger>
+  </TabsList>
+  <TabsContent value="kyc" className="p-4 border rounded-xl mt-2 space-y-2">
+    <h4 className="font-bold text-sm text-foreground">Quy trình KYC nghiêm ngặt cho doanh nghiệp</h4>
+    <span className="text-xs text-muted-foreground leading-relaxed block">
+      Các tổ chức đăng ký sử dụng API của Anthropic sẽ phải trải qua quy trình xác minh thông tin doanh nghiệp kỹ lưỡng, cung cấp danh sách thành viên cốt lõi để đảm bảo không có sự can thiệp từ các cá nhân thuộc quốc gia nằm trong danh sách hạn chế xuất khẩu.
+    </span>
+  </TabsContent>
+  <TabsContent value="geofence" className="p-4 border rounded-xl mt-2 space-y-2">
+    <h4 className="font-bold text-sm text-foreground">Hệ thống phát hiện VPN và Proxy nâng cao</h4>
+    <span className="text-xs text-muted-foreground leading-relaxed block">
+      Thay vì chỉ chặn IP theo cách thông thường, hệ sinh thái của Anthropic sẽ áp dụng các thuật toán phát hiện gian lận vị trí để ngăn chặn các nỗ lực vượt rào bằng VPN từ các khu vực bị cấm.
+    </span>
+  </TabsContent>
+</Tabs>
+
+<Alert variant="default" className="border-vanixjnk/20 bg-vanixjnk/5 text-foreground my-6">
+  <Icon icon="solar:shield-warning-bold-duotone" className="size-5 text-vanixjnk shrink-0" />
+  <div className="flex flex-col">
+    <AlertTitle className="text-vanixjnk font-bold">Thách thức lớn đối với Open Source</AlertTitle>
+    <AlertDescription className="text-sm leading-relaxed mt-1 text-muted-foreground">
+      Xu hướng siết chặt quản lý này có thể tạo ra tiền lệ khiến các tập đoàn công nghệ khác hạn chế chia sẻ mã nguồn mở và trọng số (weights) của các mô hình AI. Điều này có nguy cơ làm chậm lại tiến trình hợp tác nghiên cứu AI toàn cầu.
+    </AlertDescription>
+  </div>
+</Alert>
+
+<Separator className="my-6" />
+
+## 3. Câu hỏi liên quan (FAQ)
+
+<Accordion type="single" collapsible className="w-full border border-border/60 rounded-xl px-4 py-2 bg-muted/10 my-6">
+  <AccordionItem value="faq-1">
+    <AccordionTrigger className="text-sm font-bold">Việt Nam có nằm trong danh sách bị hạn chế tiếp cận không?</AccordionTrigger>
+    <AccordionContent className="text-xs text-muted-foreground leading-relaxed">
+      Hiện tại các văn bản kiểm soát xuất khẩu của Mỹ tập trung chủ yếu vào các quốc gia đối địch trực tiếp. Việt Nam vẫn duy trì mối quan hệ đối tác chiến lược toàn diện và chưa chịu ảnh hưởng từ các lệnh cấm ngặt nghèo này đối với các tác vụ dân sự thông thường.
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="faq-2">
+    <AccordionTrigger className="text-sm font-bold">Người dùng cá nhân có bị ảnh hưởng khi sử dụng Claude.ai không?</AccordionTrigger>
+    <AccordionContent className="text-xs text-muted-foreground leading-relaxed">
+      Các hạn chế này ban đầu nhắm vào việc truy cập API cấp cao và các mô hình chưa công bố rộng rãi. Tuy nhiên, người dùng cá nhân cũng có thể gặp phải các quy trình đăng ký tài khoản chặt chẽ hơn về số điện thoại hoặc phương thức thanh toán.
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>
+
+## Lời kết
+
+Việc Mỹ yêu cầu Anthropic ngăn công dân nước ngoài dùng mô hình AI tối tân cho thấy trí tuệ nhân tạo không còn là một sân chơi công nghệ thuần túy. Nó đã trở thành một tài sản chiến lược quốc gia được bảo vệ nghiêm ngặt, báo hiệu kỷ nguyên phân cực sâu sắc của công nghệ toàn cầu trong tương lai gần.
+`,
+  },
 ];
