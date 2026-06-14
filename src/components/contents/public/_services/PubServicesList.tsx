@@ -131,7 +131,7 @@ export default function PubServicesList({
         />
       </div>
 
-      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col mb-12">
+      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col p-6 gap-6">
           
           <div className="flex flex-col items-center justify-center gap-4 w-full">
