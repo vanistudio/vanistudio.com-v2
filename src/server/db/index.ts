@@ -7,6 +7,7 @@ import * as menuSchema from "@/server/db/schemas/menu.schema";
 import * as relationsSchema from "@/server/db/r";
 import * as denySchema from "@/server/db/schemas/deny.schema";
 import * as cmsPageSchema from "@/server/db/schemas/cms-page.schema";
+import * as blogSchema from "@/server/db/schemas/blog.schema";
 import * as gallerySchema from "@/server/db/schemas/gallery.schema";
 import * as serviceSchema from "@/server/db/schemas/service.schema";
 import * as projectSchema from "@/server/db/schemas/project.schema";
@@ -35,6 +36,7 @@ export const db = drizzle(pgClient, {
     ...menuSchema,
     ...denySchema,
     ...cmsPageSchema,
+    ...blogSchema,
     ...gallerySchema,
     ...serviceSchema,
     ...projectSchema,

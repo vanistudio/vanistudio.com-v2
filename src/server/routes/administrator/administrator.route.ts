@@ -6,6 +6,7 @@ import { extensionsRouter } from "./extensions.route";
 import { deniesRouter } from "./denies.route";
 import { galleryRouter } from "./gallery.route";
 import { cmsRouter } from "./cms.route";
+import { blogRouter } from "./blog.route";
 import { servicesRouter } from "./services.route";
 import { projectsRouter } from "./projects.route";
 
@@ -17,6 +18,7 @@ export const administratorRouter = router({
   denies: deniesRouter,
   gallery: galleryRouter,
   cms: cmsRouter,
+  blog: blogRouter,
   services: servicesRouter,
   projects: projectsRouter,
 });
