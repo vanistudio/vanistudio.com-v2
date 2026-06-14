@@ -1428,7 +1428,7 @@ export const MdxEditor = React.forwardRef<HTMLTextAreaElement, MdxEditorProps>((
       </div>
 
       {contentTab === "write" ? (
-        <div className="relative w-full h-[300px] border-0 rounded-none overflow-hidden bg-background">
+        <div className="relative w-full h-[300px] md:h-[600px] border-0 rounded-none overflow-hidden bg-background">
           <pre
             ref={smallOverlayRef}
             className="absolute inset-0 pointer-events-none select-none text-foreground bg-transparent"
@@ -1448,7 +1448,7 @@ export const MdxEditor = React.forwardRef<HTMLTextAreaElement, MdxEditorProps>((
           />
         </div>
       ) : (
-        <div className="h-[300px] overflow-y-auto p-4 bg-muted/5 font-sans prose dark:prose-invert max-w-none">
+        <div className="h-[300px] md:h-[600px] overflow-y-auto p-4 bg-muted/5 font-sans prose dark:prose-invert max-w-none">
           <MdxRenderer content={value} scope={scope} />
         </div>
       )}
