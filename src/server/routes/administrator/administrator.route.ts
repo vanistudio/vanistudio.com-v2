@@ -7,6 +7,7 @@ import { deniesRouter } from "./denies.route";
 import { galleryRouter } from "./gallery.route";
 import { cmsRouter } from "./cms.route";
 import { servicesRouter } from "./services.route";
+import { projectsRouter } from "./projects.route";
 
 export const administratorRouter = router({
   menu: menuRouter,
@@ -17,5 +18,6 @@ export const administratorRouter = router({
   gallery: galleryRouter,
   cms: cmsRouter,
   services: servicesRouter,
+  projects: projectsRouter,
 });
 
