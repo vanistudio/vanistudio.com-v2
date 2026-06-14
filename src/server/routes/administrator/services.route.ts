@@ -393,4 +393,34 @@ export const servicesRouter = router({
         });
       }
     }),
+
+  createRequest: publicProcedure
+    .input(
+      z.object({
+        serviceId: z.string().uuid("ID dịch vụ không hợp lệ"),
+        packageId: z.string().uuid("ID gói dịch vụ không hợp lệ").optional().nullable(),
+        customerName: z.string().min(1, "Họ và tên không được để trống"),
+        customerEmail: z.string().email("Email không hợp lệ"),
+        customerPhone: z.string().min(1, "Số điện thoại không được để trống"),
+        customerSocial: z.string().min(1, "Kênh liên hệ không được để trống"),
+        requirements: z.string().optional().nullable(),
+        specifications: z.record(z.string(), z.any()).default({}),
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const session = await getServerSession();
+        const userId = session?.user?.id || null;
+
+        return await servicesService.createRequest({
+          ...input,
+          userId,
+        });
+      } catch (error: any) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: error.message || "Gửi yêu cầu dịch vụ thất bại",
+        });
+      }
+    }),
 });

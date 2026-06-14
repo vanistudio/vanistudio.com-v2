@@ -11,6 +11,7 @@ import {
   type ServicePackage,
   type NewServicePackage,
   type ServiceRequest,
+  type NewServiceRequest,
 } from "@/server/db/schemas/service.schema";
 import { eq, desc } from "drizzle-orm";
 
@@ -159,6 +160,12 @@ export class ServicesRepository {
       .returning();
     if (!updated) throw new Error("Cập nhật yêu cầu dịch vụ thất bại");
     return updated;
+  }
+
+  async createRequest(data: NewServiceRequest): Promise<ServiceRequest> {
+    const [inserted] = await db.insert(serviceRequests).values(data).returning();
+    if (!inserted) throw new Error("Gửi yêu cầu dịch vụ thất bại");
+    return inserted;
   }
 
   async deleteRequest(id: string): Promise<void> {

@@ -263,7 +263,7 @@ export default function PubServicesList({
               {filteredServices.map((service) => {
                 const meta = getServiceTypeMeta(service.serviceType);
                 return (
-                  <Card key={service.id} className="relative flex flex-col h-full rounded-xl border border-border bg-card overflow-hidden p-0!">
+                  <Card key={service.id} className="relative flex flex-col h-full bg-card/30 border-border overflow-hidden p-0!">
                     <Link
                       href={`/services/${service.slug}`}
                       className="flex flex-col h-full"
@@ -331,24 +331,6 @@ export default function PubServicesList({
               })}
             </div>
           )}
-
-          <Card className="relative rounded-2xl border border-vanixjnk/25 bg-vanixjnk/5 p-8 sm:p-12 overflow-hidden flex flex-col items-center text-center gap-6 mt-6">
-            <div className="absolute right-0 top-0 -z-10 size-40 rounded-full bg-vanixjnk/5 blur-3xl" />
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground z-10">
-              Có ý tưởng độc đáo cần thực thi?
-            </h2>
-            <p className="text-xs sm:text-sm text-muted-foreground max-w-xl leading-relaxed z-10">
-              Liên hệ trực tiếp với đội ngũ phát triển của chúng tôi để được tư vấn thiết kế, lập trình và đưa giải pháp của bạn ra thị trường một cách nhanh nhất.
-            </p>
-            <Link
-              id="services-cta-btn"
-              href="/contact"
-              className="flex items-center gap-2 h-10 px-8 rounded-xl border border-transparent border-vanixjnk/25 bg-vanixjnk/15 text-vanixjnk font-bold text-xs z-10"
-            >
-              <Icon icon="solar:unread-chat-line-duotone" className="text-base" />
-              Gửi yêu cầu thiết kế ngay
-            </Link>
-          </Card>
         </div>
       </div>
     </div>

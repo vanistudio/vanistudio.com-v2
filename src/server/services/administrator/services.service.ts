@@ -7,6 +7,7 @@ import {
   type ServicePackage,
   type NewServicePackage,
   type ServiceRequest,
+  type NewServiceRequest,
 } from "@/server/db/schemas/service.schema";
 
 export class ServicesService {
@@ -210,6 +211,16 @@ export class ServicesService {
     if (!request) throw new Error("Không tìm thấy yêu cầu dịch vụ");
 
     return await servicesRepository.updateRequest(id, data);
+  }
+
+  async createRequest(data: Omit<NewServiceRequest, "id" | "createdAt" | "updatedAt">): Promise<ServiceRequest> {
+    if (!data.customerName?.trim()) throw new Error("Họ tên không được để trống");
+    if (!data.customerEmail?.trim()) throw new Error("Email không được để trống");
+    if (!data.customerPhone?.trim()) throw new Error("Số điện thoại không được để trống");
+    if (!data.customerSocial?.trim()) throw new Error("Kênh liên hệ không được để trống");
+    if (!data.serviceId) throw new Error("Dịch vụ không hợp lệ");
+
+    return await servicesRepository.createRequest(data as NewServiceRequest);
   }
 
   async deleteRequest(id: string): Promise<void> {
