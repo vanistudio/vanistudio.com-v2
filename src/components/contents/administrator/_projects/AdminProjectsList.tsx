@@ -1,20 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Icon } from "@iconify/react";
 import AdminProjectsTab from "./AdminProjectsTab";
 
-const TABS = [
-  {
-    id: "projects" as const,
-    title: "Danh mục Dự án",
-    icon: "solar:case-round-line-duotone",
-  },
-];
-
 export default function AdminProjectsList() {
-  const [activeTab, setActiveTab] = useState<"projects">("projects");
-
   return (
     <div className="flex flex-col w-full flex-1">
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -50,32 +40,7 @@ export default function AdminProjectsList() {
 
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col">
-          <div className="px-6 py-4 border-b border-border/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex flex-wrap items-center gap-2">
-              {TABS.map((tab) => {
-                const isActive = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-sm font-semibold transition-all duration-200 ${
-                      isActive
-                        ? "bg-vanixjnk/15 border-vanixjnk/25 text-vanixjnk shadow-sm"
-                        : "border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
-                    }`}
-                  >
-                    <Icon
-                      icon={tab.icon}
-                      className={`size-4 ${isActive ? "text-vanixjnk" : "text-muted-foreground"}`}
-                    />
-                    <span>{tab.title}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {activeTab === "projects" && <AdminProjectsTab />}
+          <AdminProjectsTab />
         </div>
       </div>
     </div>
