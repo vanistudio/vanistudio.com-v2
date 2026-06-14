@@ -281,7 +281,7 @@ export default function AdminMedia() {
           }}
         />
       </div>
-      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col mb-10">
+      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col">
           <div className="grid grid-cols-1 lg:grid-cols-12 border-t border-b border-border/60 flex-1">
             <div className="lg:col-span-4 p-6 border-b lg:border-b-0 lg:border-r border-border/60 flex flex-col gap-4">
