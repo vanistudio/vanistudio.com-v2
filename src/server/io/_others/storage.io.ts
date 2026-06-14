@@ -1,6 +1,6 @@
 import { db } from "@/server/db";
 import { gallery, type GalleryItem } from "@/server/db/schemas/gallery.schema";
-import { extensionsRepository } from "@/server/repositories/administrator/extensions.repository";
+import { extensionsRepository } from "@/server/repositories/extensions.repository";
 import fs from "fs/promises";
 import path from "path";
 import { v2 as cloudinary } from "cloudinary";

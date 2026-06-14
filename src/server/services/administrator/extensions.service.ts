@@ -1,4 +1,4 @@
-import { extensionsRepository } from "@/server/repositories/administrator/extensions.repository";
+import { extensionsRepository } from "@/server/repositories/extensions.repository";
 
 export class ExtensionsService {
   async getAllExtensions() {

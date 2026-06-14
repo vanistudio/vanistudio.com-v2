@@ -1,9 +1,9 @@
-import { authenticationRepository } from "@/server/repositories/authentication/authentication.repository";
+import { authenticationRepository } from "@/server/repositories/authentication.repository";
 import { auth } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { db } from "@/server/db";
 import { userProfile } from "@/server/db/schemas/user.schema";
-import { extensionsRepository } from "@/server/repositories/administrator/extensions.repository";
+import { extensionsRepository } from "@/server/repositories/extensions.repository";
 
 export class AuthenticationService {
   async register(input: any) {

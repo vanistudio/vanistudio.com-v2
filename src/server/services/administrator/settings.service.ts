@@ -1,4 +1,4 @@
-import { settingsRepository } from "@/server/repositories/administrator/settings.repository";
+import { settingsRepository } from "@/server/repositories/settings.repository";
 import { type Setting } from "@/server/db/schemas/setting.schema";
 
 export class SettingsService {

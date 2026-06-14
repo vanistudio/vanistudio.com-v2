@@ -1,4 +1,4 @@
-import { projectsRepository } from "@/server/repositories/administrator/projects.repository";
+import { projectsRepository } from "@/server/repositories/projects.repository";
 import {
   type Project,
   type NewProject,

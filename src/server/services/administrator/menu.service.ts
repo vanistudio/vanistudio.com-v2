@@ -1,4 +1,4 @@
-import { menuRepository } from "@/server/repositories/administrator/menu.repository";
+import { menuRepository } from "@/server/repositories/menu.repository";
 import { type MenuGroup, type NewMenuGroup, type Menu, type NewMenu } from "@/server/db/schemas/menu.schema";
 
 export class MenuService {

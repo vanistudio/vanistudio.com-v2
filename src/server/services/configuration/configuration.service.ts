@@ -1,4 +1,4 @@
-import { configurationRepository } from "@/server/repositories/configuration/configuration.repository";
+import { configurationRepository } from "@/server/repositories/configuration.repository";
 import bcrypt from "bcryptjs";
 import { uuidv7 } from "@/lib/utils";
 import { exec } from "child_process";

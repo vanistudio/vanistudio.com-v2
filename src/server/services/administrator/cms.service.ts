@@ -1,4 +1,4 @@
-import { cmsRepository } from "@/server/repositories/administrator/cms.repository";
+import { cmsRepository } from "@/server/repositories/cms.repository";
 import { type CmsPage, type NewCmsPage } from "@/server/db/schemas/cms-page.schema";
 
 export class CmsService {

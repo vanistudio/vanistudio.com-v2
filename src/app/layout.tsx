@@ -16,7 +16,7 @@ import { settings } from "@/server/db/schemas/setting.schema";
 import { SettingProvider } from "@/contexts/SettingContext";
 import { UserProvider } from "@/contexts/UserContext";
 import { MenuProvider } from "@/contexts/MenuContext";
-import { menuRepository } from "@/server/repositories/administrator/menu.repository";
+import { menuRepository } from "@/server/repositories/menu.repository";
 import { getServerSession } from "@/lib/auth";
 
 const signika = Signika({

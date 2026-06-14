@@ -3,7 +3,7 @@ import { services } from "@/server/db/schemas/service.schema";
 import { eq, desc } from "drizzle-orm";
 import PubServicesList from "@/components/contents/public/_services/PubServicesList";
 import type { Metadata } from "next";
-import { servicesRepository } from "@/server/repositories/administrator/services.repository";
+import { servicesRepository } from "@/server/repositories/services.repository";
 
 export const metadata: Metadata = {
   title: "Dịch Vụ Thiết Kế & Lập Trình Chuyên Nghiệp | Vani Studio",

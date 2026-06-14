@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import AuthLogin from "@/components/contents/authentication/AuthLogin";
-import { extensionsRepository } from "@/server/repositories/administrator/extensions.repository";
+import { extensionsRepository } from "@/server/repositories/extensions.repository";
 
 export const metadata: Metadata = {
   title: "Đăng nhập",

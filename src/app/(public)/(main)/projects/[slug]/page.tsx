@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { projectsRepository } from "@/server/repositories/administrator/projects.repository";
+import { projectsRepository } from "@/server/repositories/projects.repository";
 import PubProjectDetail from "@/components/contents/public/_projects/PubProjectDetail";
 import type { Metadata } from "next";
 

@@ -2,7 +2,7 @@ import { router, publicProcedure } from "../t";
 import { z } from "zod";
 import { authenticationService } from "@/server/services/authentication/authentication.service";
 import { TRPCError } from "@trpc/server";
-import { extensionsRepository } from "@/server/repositories/administrator/extensions.repository";
+import { extensionsRepository } from "@/server/repositories/extensions.repository";
 
 export const authenticationRouter = router({
   getRegistrationConfig: publicProcedure.query(async () => {

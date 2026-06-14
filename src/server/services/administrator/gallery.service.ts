@@ -1,4 +1,4 @@
-import { galleryRepository } from "@/server/repositories/administrator/gallery.repository";
+import { galleryRepository } from "@/server/repositories/gallery.repository";
 import { type GalleryItem, type NewGalleryItem } from "@/server/db/schemas/gallery.schema";
 import { StorageService } from "@/server/io/_others/storage.io";
 

@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { servicesRepository } from "@/server/repositories/administrator/services.repository";
+import { servicesRepository } from "@/server/repositories/services.repository";
 import PubServiceDetail from "@/components/contents/public/_services/PubServiceDetail";
 import type { Metadata } from "next";
 

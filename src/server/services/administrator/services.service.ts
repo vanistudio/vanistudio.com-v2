@@ -1,4 +1,4 @@
-import { servicesRepository } from "@/server/repositories/administrator/services.repository";
+import { servicesRepository } from "@/server/repositories/services.repository";
 import {
   type Service,
   type NewService,

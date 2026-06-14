@@ -1,4 +1,4 @@
-import { databaseRepository, GetStatsParams } from "@/server/repositories/administrator/database.repository";
+import { databaseRepository, GetStatsParams } from "@/server/repositories/database.repository";
 
 export class DatabaseService {
   async getStats(params: GetStatsParams) {
