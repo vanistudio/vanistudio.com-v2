@@ -267,7 +267,7 @@ export default function PubServiceDetail({ service, packages }: PubServiceDetail
               )}
 
               <Card className="p-5 bg-card/30 border-border">
-                <div className="flex items-center gap-2 pb-2.5 border-b border-border/50 mb-5">
+                <div className="flex items-center gap-2">
                   <Icon icon="solar:document-text-line-duotone" className="text-base text-vanixjnk" />
                   <h3 className="font-bold text-xs text-foreground uppercase tracking-wider">Mô tả chi tiết</h3>
                 </div>
@@ -502,24 +502,22 @@ export default function PubServiceDetail({ service, packages }: PubServiceDetail
       </div>
 
       <Dialog open={isOrderDialogOpen} onOpenChange={setIsOrderDialogOpen}>
-        <DialogContent className="max-w-xl w-full max-h-[85vh] overflow-y-auto custom-scrollbar p-6">
-          <DialogHeader className="border-b pb-3 mb-4">
-            <div className="flex items-center gap-3">
-              <div className="size-10 rounded-xl text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/20 flex items-center justify-center shrink-0">
-                <Icon icon="solar:mailbox-line-duotone" className="text-xl" />
+        <DialogContent className="sm:max-w-[550px] w-[95vw] max-h-[85vh] overflow-y-auto custom-scrollbar flex flex-col p-6">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl">
+              <div className="size-8 rounded-full bg-vanixjnk/10 text-vanixjnk flex items-center justify-center shrink-0">
+                <Icon icon="solar:mailbox-line-duotone" className="size-5" />
               </div>
-              <div className="text-left">
-                <DialogTitle className="text-base font-bold text-foreground">Gửi yêu cầu đặt dịch vụ</DialogTitle>
-                <DialogDescription className="text-xs mt-0.5">
-                  Vui lòng cung cấp thông tin liên hệ và điền bản khảo sát nhanh dưới đây.
-                </DialogDescription>
-              </div>
-            </div>
+              Gửi yêu cầu đặt dịch vụ
+            </DialogTitle>
+            <DialogDescription className="text-left mt-1 text-[13px]">
+              Vui lòng cung cấp thông tin liên hệ và điền bản khảo sát nhanh dưới đây.
+            </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-6 py-4 px-1">
             
-            <div className="p-3 bg-muted/40 rounded-lg border flex items-center justify-between text-xs">
+            <div className="flex items-center justify-between p-3.5 rounded-xl border bg-card text-card-foreground shadow-sm gap-3 text-xs">
               <div>
                 <span className="text-muted-foreground block uppercase text-[9px] font-bold tracking-wider">Dịch vụ đã chọn</span>
                 <span className="font-bold text-foreground">{service.name}</span>
@@ -530,8 +528,8 @@ export default function PubServiceDetail({ service, packages }: PubServiceDetail
               </div>
             </div>
 
-            <div className="space-y-3 pt-1">
-              <h4 className="text-xs font-bold text-foreground flex items-center gap-1">
+            <div className="space-y-4 pt-1">
+              <h4 className="text-xs font-bold text-foreground flex items-center gap-1 select-none">
                 <span className="size-1.5 rounded-full bg-vanixjnk shrink-0" />
                 Thông tin người đặt dịch vụ
               </h4>
@@ -599,12 +597,12 @@ export default function PubServiceDetail({ service, packages }: PubServiceDetail
             </div>
 
             {service.fieldsConfig && service.fieldsConfig.length > 0 && (
-              <div className="space-y-3 pt-3 border-t">
+              <div className="space-y-4 pt-3 border-t">
                 <h4 className="text-xs font-bold text-foreground flex items-center gap-1 select-none">
                   <span className="size-1.5 rounded-full bg-indigo-500 shrink-0" />
                   Khảo sát nhu cầu đặc thù
                 </h4>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {service.fieldsConfig.map((field) => {
                     const fieldVal = specifications[field.key];
                     const hasErr = !!formErrors[field.key];
@@ -734,21 +732,31 @@ export default function PubServiceDetail({ service, packages }: PubServiceDetail
                 className="text-xs min-h-[80px]"
               />
             </div>
-            <div className="pt-2">
+            
+            <div className="flex items-center gap-2 w-full mt-2">
               <Button
+                variant="outline"
+                className="flex-1 text-xs cursor-pointer"
+                type="button"
+                onClick={() => setIsOrderDialogOpen(false)}
+                disabled={mutation.isPending}
+              >
+                Hủy bỏ
+              </Button>
+              <Button
+                variant="vanixjnk"
+                className="flex-1 text-xs cursor-pointer"
                 type="submit"
                 disabled={mutation.isPending}
-                variant="vanixjnk"
-                className="w-full font-bold gap-2"
               >
                 {mutation.isPending ? (
                   <>
-                    <Icon icon="solar:restart-line-duotone" className="animate-spin text-sm" />
-                    <span>Đang gửi yêu cầu...</span>
+                    <Icon icon="solar:restart-line-duotone" className="size-4 animate-spin mr-1.5" />
+                    <span>Đang gửi...</span>
                   </>
                 ) : (
                   <>
-                    <Icon icon="solar:paper-plane-line-duotone" className="text-sm" />
+                    <Icon icon="solar:paper-plane-line-duotone" className="size-4 mr-1.5" />
                     <span>Gửi yêu cầu dịch vụ</span>
                   </>
                 )}
