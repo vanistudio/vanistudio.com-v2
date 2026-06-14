@@ -1132,7 +1132,7 @@ export default function ProjectEditor({ mode, initialId }: ProjectEditorProps) {
                         {formData.team.map((mem, idx) => (
                           <div
                             key={idx}
-                            className="flex gap-4 p-3 border border-border/60 rounded-2xl bg-muted/5 hover:bg-muted/10 hover:border-border transition-all duration-300 relative group shadow-sm animate-in fade-in-50 duration-200"
+                            className="flex gap-4 p-3 border border-border/60 rounded-2xl bg-muted/5 hover:bg-muted/10 hover:border-border transition-all duration-300 relative group shadow-sm animate-in fade-in-50"
                           >
                             <div className="w-20 flex flex-col items-center gap-1.5 shrink-0 self-center">
                               <span className="text-[9px] text-muted-foreground/60 font-semibold text-center block">Ảnh đại diện</span>

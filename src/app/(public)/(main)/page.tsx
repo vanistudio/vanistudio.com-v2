@@ -32,7 +32,7 @@ export default function Home() {
             <Link
               id="hero-btn-quote"
               href="/contact"
-              className="flex items-center justify-center gap-2 h-11 px-6 w-full sm:w-auto rounded-xl border border-transparent border-primary/25 bg-primary/15 text-primary font-bold text-sm hover:bg-primary/25 transition-all"
+              className="flex items-center justify-center gap-2 h-11 px-6 w-full sm:w-auto rounded-xl border border-primary/25 bg-primary/15 text-primary font-bold text-sm hover:bg-primary/25 transition-all"
             >
               <Icon icon="solar:chat-round-money-line-duotone" className="text-lg" />
               Nhận báo giá ngay
@@ -194,7 +194,7 @@ export default function Home() {
             <Link
               id="cta-contact-btn"
               href="/contact"
-              className="flex items-center gap-2 h-11 px-8 rounded-xl border border-transparent border-primary/25 bg-primary/15 text-primary font-bold text-sm hover:bg-primary/25 transition-all z-10"
+              className="flex items-center gap-2 h-11 px-8 rounded-xl border border-primary/25 bg-primary/15 text-primary font-bold text-sm hover:bg-primary/25 transition-all z-10"
             >
               <Icon icon="solar:unread-chat-line-duotone" className="text-lg animate-bounce" />
               Gửi yêu cầu ngay

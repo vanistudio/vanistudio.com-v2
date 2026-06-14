@@ -279,7 +279,7 @@ export default function AdminProjectsTab() {
             <Icon icon="solar:magnifer-line-duotone" className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm" />
             <Input
               placeholder="Tìm kiếm dự án..."
-              className="pl-9 h-9 text-sm w-full bg-background"
+              className="pl-9 h-9 w-full"
               value={projectsSearch}
               onChange={(e) => setProjectsSearch(e.target.value)}
             />

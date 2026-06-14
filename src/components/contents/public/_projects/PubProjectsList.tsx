@@ -109,11 +109,6 @@ const getLinkColor = (type: string) => {
   }
 };
 
-const formatDate = (dateString: string | Date | null | undefined) => {
-  if (!dateString) return "";
-  const d = new Date(dateString);
-  return d.toLocaleDateString("vi-VN", { month: "2-digit", year: "numeric" });
-};
 
 export default function PubProjectsList({
   initialProjects,
@@ -207,7 +202,7 @@ export default function PubProjectsList({
                   placeholder="Tìm kiếm dự án..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-10 pl-9 pr-10 text-xs"
+                  className="w-full h-10 pl-9 pr-10"
                 />
                 {searchQuery && (
                   <button
@@ -220,7 +215,6 @@ export default function PubProjectsList({
                   </button>
                 )}
               </div>
-
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -392,7 +386,7 @@ export default function PubProjectsList({
                             {project.team.slice(0, 4).map((member, idx) => (
                               <div
                                 key={idx}
-                                className="inline-block size-5.5 rounded-full ring-2 ring-card bg-muted flex items-center justify-center overflow-hidden border border-border/30"
+                                className="size-5.5 rounded-full ring-2 ring-card bg-muted flex items-center justify-center overflow-hidden border border-border/30"
                                 title={`${member.name} (${member.role})`}
                               >
                                 {member.avatar ? (
@@ -405,7 +399,7 @@ export default function PubProjectsList({
                               </div>
                             ))}
                             {project.team.length > 4 && (
-                              <div className="inline-block size-5.5 rounded-full ring-2 ring-card bg-muted border border-border/30 flex items-center justify-center text-[8px] font-bold text-muted-foreground">
+                              <div className="size-5.5 rounded-full ring-2 ring-card bg-muted border border-border/30 flex items-center justify-center text-[8px] font-bold text-muted-foreground">
                                 +{project.team.length - 4}
                               </div>
                             )}

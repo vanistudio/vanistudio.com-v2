@@ -124,7 +124,6 @@ export default function PubProjectDetail({ project }: PubProjectDetailProps) {
 
   const [activeMediaIndex, setActiveMediaIndex] = useState(0);
 
-  // Combine thumbnail and mediaGallery to construct a complete list of display assets
   const mediaGalleryList: ProjectMedia[] = React.useMemo(() => {
     const list: ProjectMedia[] = [];
     if (project.thumbnail) {
@@ -141,7 +140,7 @@ export default function PubProjectDetail({ project }: PubProjectDetailProps) {
       const url = media.url;
       if (url.includes("youtube.com") || url.includes("youtu.be")) {
         let embedUrl = url;
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
         const match = url.match(regExp);
         if (match && match[2].length === 11) {
           embedUrl = `https://www.youtube.com/embed/${match[2]}`;
@@ -248,7 +247,7 @@ export default function PubProjectDetail({ project }: PubProjectDetailProps) {
                     {renderMediaContent(mediaGalleryList[activeMediaIndex])}
                     
                     {mediaGalleryList[activeMediaIndex].caption && (
-                      <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex items-end p-4 pointer-events-none">
+                      <div className="absolute bottom-0 inset-x-0 bg-linear-to-t from-black/80 via-black/40 to-transparent flex items-end p-4 pointer-events-none">
                         <span className="text-xs font-semibold text-white/95">
                           {mediaGalleryList[activeMediaIndex].caption}
                         </span>
