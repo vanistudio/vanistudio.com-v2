@@ -2,6 +2,7 @@ import { relations } from "drizzle-orm";
 import { users, userSession, provider, userProfile } from "@/server/db/schemas/user.schema";
 import { menus, menuGroups } from "@/server/db/schemas/menu.schema";
 import { services, servicePackages, serviceRequests, serviceTypes } from "@/server/db/schemas/service.schema";
+import { projects } from "@/server/db/schemas/project.schema";
 
 export const userRelations = relations(users, ({ one, many }) => ({
   profile: one(userProfile, {
@@ -64,6 +65,7 @@ export const servicesRelations = relations(services, ({ one, many }) => ({
   }),
   packages: many(servicePackages),
   requests: many(serviceRequests),
+  projects: many(projects),
 }));
 
 export const servicePackagesRelations = relations(servicePackages, ({ one }) => ({
@@ -85,6 +87,13 @@ export const serviceRequestsRelations = relations(serviceRequests, ({ one }) => 
   package: one(servicePackages, {
     fields: [serviceRequests.packageId],
     references: [servicePackages.id],
+  }),
+}));
+
+export const projectsRelations = relations(projects, ({ one }) => ({
+  service: one(services, {
+    fields: [projects.serviceId],
+    references: [services.id],
   }),
 }));
 
