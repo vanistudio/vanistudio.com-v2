@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -215,7 +216,6 @@ interface MdxASTNode {
   children?: MdxASTNode[];
   content?: string;
 }
-
 function highlightInlineMarkup(text: string): React.ReactNode {
   let tokens: { text: string; type?: string }[] = [{ text }];
   
@@ -243,15 +243,10 @@ function highlightInlineMarkup(text: string): React.ReactNode {
     tokens = newTokens;
   };
 
-  // MDX Tags: <Tag ...> or </Tag>
   applyRule(/(<\/?[a-zA-Z0-9_-]+(?:\s+[a-zA-Z0-9_-]+(?:=(?:"[^"]*"|'[^']*'|\{[^}]+\}))?)*\s*\/?>)/g, "tag");
-  // Links/images
   applyRule(/(!?\[[^\]]*\]\([^)]+\))/g, "link");
-  // Inline code
   applyRule(/(`[^`]+`)/g, "inline-code");
-  // Bold
   applyRule(/(\*\*[^*]+\*\*|__[^_]+__)/g, "bold");
-  // Italic
   applyRule(/(\*[^*]+\*|_[^_]+_)/g, "italic");
 
   return (
@@ -353,170 +348,86 @@ function highlightMarkdownMdx(text: string): React.ReactNode {
     </>
   );
 }
-function highlightCode(code: string, lang: string): React.ReactNode {
-  if (!code) return "";
-  if (!lang) return code;
-  const l = lang.toLowerCase();
 
-  if (l === "markdown" || l === "md" || l === "mdx") {
-    return highlightMarkdownMdx(code);
-  }
-  
-  if (l === "javascript" || l === "typescript" || l === "js" || l === "ts" || l === "json") {
-    let tokens: { text: string; type?: string }[] = [{ text: code }];
-    
-    const applyRule = (regex: RegExp, type: string) => {
-      const newTokens: { text: string; type?: string }[] = [];
-      for (const t of tokens) {
-        if (t.type) {
-          newTokens.push(t);
-          continue;
-        }
-        let lastIdx = 0;
-        t.text.replace(regex, (match, ...args) => {
-          const offset = args[args.length - 2] as number;
-          if (offset > lastIdx) {
-            newTokens.push({ text: t.text.slice(lastIdx, offset) });
-          }
-          newTokens.push({ text: match, type });
-          lastIdx = offset + match.length;
-          return match;
-        });
-        if (lastIdx < t.text.length) {
-          newTokens.push({ text: t.text.slice(lastIdx) });
-        }
-      }
-      tokens = newTokens;
-    };
+let highlighterPromise: Promise<any> | null = null;
 
-    applyRule(/(\/\/.*|\/\*[\s\S]*?\*\/)/g, "comment");
-    applyRule(/("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`)/g, "string");
-    applyRule(/\b(const|let|var|function|return|import|export|from|default|class|extends|if|else|for|while|do|switch|case|break|continue|new|try|catch|finally|throw|async|await|type|interface|as|enum|public|private|protected|static|readonly|keyof|typeof|any|string|number|boolean|void|never|unknown)\b/g, "keyword");
-    applyRule(/\b(console|window|document|process|Object|Array|String|Number|Boolean|Function|Promise|Map|Set|Error|React|useState|useEffect|useRef|useMemo|useCallback)\b/g, "builtin");
-    applyRule(/\b(\d+(?:\.\d+)?)\b/g, "number");
-    applyRule(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)(?=\s*\()/g, "fn");
-
-    return (
-      <>
-        {tokens.map((t, idx) => {
-          if (!t.type) return t.text;
-          let colorClass = "";
-          if (t.type === "comment") colorClass = "text-muted-foreground italic opacity-75";
-          else if (t.type === "string") colorClass = "text-emerald-500 font-medium dark:text-emerald-400";
-          else if (t.type === "keyword") colorClass = "text-vanixjnk font-semibold dark:text-vanixjnk/90";
-          else if (t.type === "builtin") colorClass = "text-sky-500 font-medium dark:text-sky-400";
-          else if (t.type === "number") colorClass = "text-amber-500 dark:text-amber-400";
-          else if (t.type === "fn") colorClass = "text-violet-500 dark:text-violet-400";
-          return <span key={idx} className={colorClass}>{t.text}</span>;
-        })}
-      </>
+function getHighlighterInstance() {
+  if (!highlighterPromise) {
+    highlighterPromise = import("shiki").then((shiki) =>
+      shiki.createHighlighter({
+        themes: ["github-dark", "github-light"],
+        langs: [
+          "javascript", "typescript", "jsx", "tsx",
+          "rust", "go", "python", "html", "css",
+          "bash", "sh", "json", "yaml", "yml", "sql",
+          "markdown", "md", "mdx", "c", "cpp", "csharp",
+          "java", "php", "ruby", "swift", "kotlin", "toml"
+        ],
+      })
     );
   }
-
-  if (l === "html" || l === "xml" || l === "svg") {
-    let tokens: { text: string; type?: string }[] = [{ text: code }];
-    
-    const applyRule = (regex: RegExp, type: string) => {
-      const newTokens: { text: string; type?: string }[] = [];
-      for (const t of tokens) {
-        if (t.type) {
-          newTokens.push(t);
-          continue;
-        }
-        let lastIdx = 0;
-        t.text.replace(regex, (match, ...args) => {
-          const offset = args[args.length - 2] as number;
-          if (offset > lastIdx) {
-            newTokens.push({ text: t.text.slice(lastIdx, offset) });
-          }
-          newTokens.push({ text: match, type });
-          lastIdx = offset + match.length;
-          return match;
-        });
-        if (lastIdx < t.text.length) {
-          newTokens.push({ text: t.text.slice(lastIdx) });
-        }
-      }
-      tokens = newTokens;
-    };
-
-    applyRule(/(<!--[\s\S]*?-->)/g, "comment");
-    applyRule(/(<\/?[a-zA-Z0-9_:-]+)/g, "tag");
-    applyRule(/("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')/g, "string");
-    applyRule(/([a-zA-Z0-9_-]+)(?=\s*=)/g, "attr");
-
-    return (
-      <>
-        {tokens.map((t, idx) => {
-          if (!t.type) return t.text;
-          let colorClass = "";
-          if (t.type === "comment") colorClass = "text-muted-foreground opacity-75";
-          else if (t.type === "tag") colorClass = "text-vanixjnk dark:text-vanixjnk/90";
-          else if (t.type === "string") colorClass = "text-emerald-500 dark:text-emerald-400";
-          else if (t.type === "attr") colorClass = "text-sky-500 dark:text-sky-400";
-          return <span key={idx} className={colorClass}>{t.text}</span>;
-        })}
-      </>
-    );
-  }
-
-  if (l === "css") {
-    let tokens: { text: string; type?: string }[] = [{ text: code }];
-    
-    const applyRule = (regex: RegExp, type: string) => {
-      const newTokens: { text: string; type?: string }[] = [];
-      for (const t of tokens) {
-        if (t.type) {
-          newTokens.push(t);
-          continue;
-        }
-        let lastIdx = 0;
-        t.text.replace(regex, (match, ...args) => {
-          const offset = args[args.length - 2] as number;
-          if (offset > lastIdx) {
-            newTokens.push({ text: t.text.slice(lastIdx, offset) });
-          }
-          newTokens.push({ text: match, type });
-          lastIdx = offset + match.length;
-          return match;
-        });
-        if (lastIdx < t.text.length) {
-          newTokens.push({ text: t.text.slice(lastIdx) });
-        }
-      }
-      tokens = newTokens;
-    };
-
-    applyRule(/(\/\*[\s\S]*?\*\/)/g, "comment");
-    applyRule(/([.#]?[a-zA-Z0-9_*-]+)(?=\s*\{)/g, "selector");
-    applyRule(/([a-zA-Z0-9_-]+)(?=\s*:)/g, "property");
-    applyRule(/(:\s*[^;\n]+)/g, "value");
-
-    return (
-      <>
-        {tokens.map((t, idx) => {
-          if (!t.type) return t.text;
-          let colorClass = "";
-          if (t.type === "comment") colorClass = "text-muted-foreground opacity-75";
-          else if (t.type === "selector") colorClass = "text-vanixjnk dark:text-vanixjnk/90";
-          else if (t.type === "property") colorClass = "text-sky-500 dark:text-sky-400";
-          else if (t.type === "value") {
-            const valueStr = t.text;
-            return (
-              <span key={idx}>
-                <span className="text-foreground">:</span>
-                <span className="text-emerald-500 dark:text-emerald-400">{valueStr.slice(1)}</span>
-              </span>
-            );
-          }
-          return <span key={idx} className={colorClass}>{t.text}</span>;
-        })}
-      </>
-    );
-  }
-
-  return code;
+  return highlighterPromise;
 }
+
+const ShikiCodeBlock = ({ code, lang }: { code: string; lang: string }) => {
+  const { resolvedTheme } = useTheme();
+  const [highlightedHtml, setHighlightedHtml] = useState<string>("");
+  const activeTheme = resolvedTheme === "light" ? "github-light" : "github-dark";
+
+  useEffect(() => {
+    let isMounted = true;
+    
+    getHighlighterInstance().then(async (highlighter) => {
+      if (!isMounted) return;
+      try {
+        const cleanLang = lang.toLowerCase().trim();
+        const supportedLangs = highlighter.getLoadedLanguages();
+        
+        if (cleanLang && cleanLang !== "text" && !supportedLangs.includes(cleanLang)) {
+          try {
+            await highlighter.loadLanguage(cleanLang as any);
+          } catch {
+            console.warn(`Shiki failed to load language: ${cleanLang}, falling back to text.`);
+          }
+        }
+
+        const currentLangs = highlighter.getLoadedLanguages();
+        const finalLang = currentLangs.includes(cleanLang) ? cleanLang : "text";
+        
+        const html = highlighter.codeToHtml(code, {
+          lang: finalLang,
+          theme: activeTheme,
+        });
+        if (isMounted) {
+          setHighlightedHtml(html);
+        }
+      } catch (err) {
+        console.error("Shiki highlighting error:", err);
+      }
+    }).catch(err => {
+      console.error("Failed to load Shiki:", err);
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [code, lang, activeTheme]);
+
+  if (highlightedHtml) {
+    return (
+      <div 
+        className="shiki-code-block-wrapper my-4 overflow-x-auto rounded-xl border border-border/80 [&>pre]:p-4! [&>pre]:m-0! [&>pre]:font-mono [&>pre]:text-xs [&>pre]:leading-relaxed"
+        dangerouslySetInnerHTML={{ __html: highlightedHtml }} 
+      />
+    );
+  }
+
+  return (
+    <pre className="not-prose p-4 rounded-xl bg-muted/30 border border-border/80 font-mono text-xs overflow-x-auto my-4 text-foreground leading-relaxed">
+      <code className={lang ? `language-${lang}` : ""}>{code}</code>
+    </pre>
+  );
+};
 
 interface MdxRendererProps {
   content: string;
@@ -790,11 +701,11 @@ export function MdxRenderer({ content, scope = {}, className }: MdxRendererProps
       if (trimmed.startsWith("```")) {
         if (inCodeBlock) {
           elements.push(
-            <pre key={`code-${keyIdx++}`} className="not-prose p-4 rounded-xl bg-muted/30 border border-border/80 font-mono text-xs overflow-x-auto my-4 text-foreground leading-relaxed">
-              <code className={codeLang ? `language-${codeLang}` : ""}>
-                {highlightCode(codeContent.trim(), codeLang)}
-              </code>
-            </pre>
+            <ShikiCodeBlock 
+              key={`code-${keyIdx++}`} 
+              code={codeContent.trim()} 
+              lang={codeLang} 
+            />
           );
           inCodeBlock = false;
           codeContent = "";
