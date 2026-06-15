@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import AdminDocs from "@/components/contents/administrator/_docs/AdminDocs";
+import AdminDocsList from "@/components/contents/administrator/_docs/AdminDocsList";
 
 export const metadata: Metadata = {
   title: "Tài liệu API & Playground | Trang quản trị",
@@ -7,5 +7,6 @@ export const metadata: Metadata = {
 };
 
 export default function AdminDocsPage() {
-  return <AdminDocs />;
+  return <AdminDocsList />;
 }
+

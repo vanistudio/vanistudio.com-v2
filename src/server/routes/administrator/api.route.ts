@@ -33,24 +33,40 @@ const responseSampleSchema = z.object({
 
 export const apiDocsRouter = router({
   // --- Overviews ---
-  getOverviews: publicProcedure.query(async () => {
-    await ensureAdmin();
-    try {
-      return await apiService.getOverviews();
-    } catch (error: any) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: error.message || "Không thể tải danh sách tài liệu tổng quan",
-      });
-    }
-  }),
-
-  getOverviewBySlug: publicProcedure
-    .input(z.object({ slug: z.string() }))
+  getOverviews: publicProcedure
+    .input(z.object({ apiType: z.string().optional() }).optional())
     .query(async ({ input }) => {
       await ensureAdmin();
       try {
-        return await apiService.getOverviewBySlug(input.slug);
+        return await apiService.getOverviews(input?.apiType);
+      } catch (error: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message || "Không thể tải danh sách tài liệu tổng quan",
+        });
+      }
+    }),
+
+  getOverviewBySlug: publicProcedure
+    .input(z.object({ slug: z.string(), apiType: z.string() }))
+    .query(async ({ input }) => {
+      await ensureAdmin();
+      try {
+        return await apiService.getOverviewBySlug(input.slug, input.apiType);
+      } catch (error: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message || "Không thể tải chi tiết tài liệu",
+        });
+      }
+    }),
+
+  getOverviewById: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input }) => {
+      await ensureAdmin();
+      try {
+        return await apiService.getOverviewById(input.id);
       } catch (error: any) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
@@ -63,6 +79,7 @@ export const apiDocsRouter = router({
     .input(
       z.object({
         id: z.string().optional(),
+        apiType: z.string().min(1, "Loại API không được để trống"),
         title: z.string().min(1, "Tiêu đề không được để trống"),
         slug: z.string().min(1, "Slug không được để trống"),
         description: z.string().optional().nullable(),
@@ -101,22 +118,25 @@ export const apiDocsRouter = router({
     }),
 
   // --- Groups ---
-  getGroupsWithEndpoints: publicProcedure.query(async () => {
-    await ensureAdmin();
-    try {
-      return await apiService.getGroupsWithEndpoints();
-    } catch (error: any) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: error.message || "Không thể tải danh sách API",
-      });
-    }
-  }),
+  getGroupsWithEndpoints: publicProcedure
+    .input(z.object({ apiType: z.string().optional() }).optional())
+    .query(async ({ input }) => {
+      await ensureAdmin();
+      try {
+        return await apiService.getGroupsWithEndpoints(input?.apiType);
+      } catch (error: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message || "Không thể tải danh sách API",
+        });
+      }
+    }),
 
   upsertGroup: publicProcedure
     .input(
       z.object({
         id: z.string().optional(),
+        apiType: z.string().min(1, "Loại API không được để trống"),
         name: z.string().min(1, "Tên nhóm API không được để trống"),
         slug: z.string().min(1, "Slug nhóm API không được để trống"),
         description: z.string().optional().nullable(),
@@ -163,7 +183,6 @@ export const apiDocsRouter = router({
         queryParams: z.array(parameterSchema).optional().nullable(),
         requestBody: z.array(parameterSchema).optional().nullable(),
         responses: z.array(responseSampleSchema).optional().nullable(),
-        editionRequired: z.array(z.string()).optional(),
         isActive: z.boolean().optional(),
       })
     )
@@ -179,6 +198,20 @@ export const apiDocsRouter = router({
       }
     }),
 
+  getEndpointById: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input }) => {
+      await ensureAdmin();
+      try {
+        return await apiService.getEndpointById(input.id);
+      } catch (error: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message || "Không thể tải chi tiết API Endpoint",
+        });
+      }
+    }),
+
   deleteEndpoint: publicProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input }) => {
@@ -189,6 +222,84 @@ export const apiDocsRouter = router({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: error.message || "Không thể xóa API Endpoint",
+        });
+      }
+    }),
+
+  // --- API Products ---
+  getApiProducts: publicProcedure
+    .query(async () => {
+      await ensureAdmin();
+      try {
+        return await apiService.getApiProducts();
+      } catch (error: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message || "Không thể tải danh sách sản phẩm/API",
+        });
+      }
+    }),
+
+  upsertApiProduct: publicProcedure
+    .input(
+      z.object({
+        id: z.string().optional(),
+        name: z.string().min(1, "Tên sản phẩm/API không được để trống"),
+        slug: z.string().min(1, "Slug không được để trống"),
+        description: z.string().optional().nullable(),
+        order: z.number().optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      await ensureAdmin();
+      try {
+        return await apiService.upsertApiProduct(input);
+      } catch (error: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message || "Không thể lưu sản phẩm/API",
+        });
+      }
+    }),
+
+  deleteApiProduct: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input }) => {
+      await ensureAdmin();
+      try {
+        return await apiService.deleteApiProduct(input.id);
+      } catch (error: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message || "Không thể xóa sản phẩm/API",
+        });
+      }
+    }),
+
+  reorderGroups: publicProcedure
+    .input(z.array(z.object({ id: z.string(), order: z.number() })))
+    .mutation(async ({ input }) => {
+      await ensureAdmin();
+      try {
+        return await apiService.reorderGroups(input);
+      } catch (error: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message || "Không thể cập nhật thứ tự nhóm API",
+        });
+      }
+    }),
+
+  reorderApiProducts: publicProcedure
+    .input(z.array(z.object({ id: z.string(), order: z.number() })))
+    .mutation(async ({ input }) => {
+      await ensureAdmin();
+      try {
+        return await apiService.reorderApiProducts(input);
+      } catch (error: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message || "Không thể cập nhật thứ tự sản phẩm/API",
         });
       }
     }),
