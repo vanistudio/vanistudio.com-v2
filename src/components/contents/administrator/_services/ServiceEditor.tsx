@@ -500,7 +500,7 @@ export default function ServiceEditor({ mode, initialId }: ServiceEditorProps) {
                       value={formData.name}
                       onChange={(e) => handleNameChange(e.target.value)}
                       placeholder="Ví dụ: Lập trình Bot Discord"
-                      className="h-9 text-xs"
+                      className="h-9 text-[13px]"
                     />
                   </div>
 
@@ -509,14 +509,14 @@ export default function ServiceEditor({ mode, initialId }: ServiceEditorProps) {
                       Đường dẫn URL thân thiện (Slug) <span className="text-red-500">*</span>
                     </label>
                     <div className="flex gap-2">
-                      <div className="flex items-center bg-muted/40 border border-border/80 px-2.5 rounded-md text-[11px] text-muted-foreground select-none font-mono">
+                      <div className="flex items-center bg-muted/40 border border-border/80 px-2.5 rounded-md text-[11px] text-muted-foreground select-none">
                         /
                       </div>
                       <Input
                         value={formData.slug}
                         onChange={(e) => setFormData((prev) => ({ ...prev, slug: e.target.value }))}
                         placeholder="lap-trinh-bot-discord"
-                        className="h-9 text-xs font-mono"
+                        className="h-9 text-[13px]"
                       />
                     </div>
                   </div>
@@ -527,12 +527,12 @@ export default function ServiceEditor({ mode, initialId }: ServiceEditorProps) {
                       value={formData.typeId}
                       onValueChange={(val) => setFormData((prev) => ({ ...prev, typeId: val }))}
                     >
-                      <SelectTrigger className="h-9 text-xs w-full">
+                      <SelectTrigger className="h-9 text-[13px] w-full">
                         <SelectValue placeholder="Chọn loại dịch vụ..." />
                       </SelectTrigger>
                       <SelectContent>
                         {serviceTypesList.map((type) => (
-                          <SelectItem key={type.id} value={type.id}>
+                          <SelectItem key={type.id} value={type.id} className="text-[13px]">
                             <div className="flex items-center gap-2">
                               <Icon
                                 icon={type.icon || "solar:globus-line-duotone"}
@@ -552,7 +552,7 @@ export default function ServiceEditor({ mode, initialId }: ServiceEditorProps) {
                       value={formData.description || ""}
                       onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
                       placeholder="Tóm tắt ngắn gọn dịch vụ..."
-                      className="h-16 text-xs resize-none"
+                      className="h-16 text-[13px] resize-none"
                     />
                   </div>
 
@@ -578,23 +578,23 @@ export default function ServiceEditor({ mode, initialId }: ServiceEditorProps) {
                         value={formData.priceType}
                         onValueChange={(val: any) => setFormData((prev) => ({ ...prev, priceType: val }))}
                       >
-                        <SelectTrigger className="h-9 text-xs w-full">
+                        <SelectTrigger className="h-9 text-[13px] w-full">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="starting_at">
+                          <SelectItem value="starting_at" className="text-[13px]">
                             <div className="flex items-center gap-2">
                               <Icon icon="solar:tag-price-line-duotone" className="size-4 text-blue-500" />
                               <span>Giá khởi điểm (Từ...)</span>
                             </div>
                           </SelectItem>
-                          <SelectItem value="fixed">
+                          <SelectItem value="fixed" className="text-[13px]">
                             <div className="flex items-center gap-2">
                               <Icon icon="solar:lock-line-duotone" className="size-4 text-green-500" />
                               <span>Giá cố định</span>
                             </div>
                           </SelectItem>
-                          <SelectItem value="contact">
+                          <SelectItem value="contact" className="text-[13px]">
                             <div className="flex items-center gap-2">
                               <Icon icon="solar:chat-round-line-duotone" className="size-4 text-amber-500" />
                               <span>Giá liên hệ thỏa thuận</span>
@@ -613,7 +613,7 @@ export default function ServiceEditor({ mode, initialId }: ServiceEditorProps) {
                           const parsed = parseCurrencyInput(e.target.value);
                           setFormData((prev) => ({ ...prev, basePrice: parsed }));
                         }}
-                        className="h-9 text-xs"
+                        className="h-9 text-[13px]"
                       />
                     </div>
                   </div>
@@ -631,7 +631,7 @@ export default function ServiceEditor({ mode, initialId }: ServiceEditorProps) {
                             deliveryTime: parseInt(e.target.value) || null,
                           }))
                         }
-                        className="h-9 text-xs"
+                        className="h-9 text-[13px]"
                       />
                     </div>
 
@@ -733,7 +733,7 @@ export default function ServiceEditor({ mode, initialId }: ServiceEditorProps) {
                             <div className="space-y-1">
                               <label className="text-[11px] font-bold text-foreground">Tên tính năng</label>
                               <Input
-                                className="h-9 text-xs"
+                                className="h-9 text-[13px]"
                                 placeholder="e.g. Tối ưu hiệu năng"
                                 value={feature.name}
                                 onChange={(e) => updateFeature(idx, "name", e.target.value)}
@@ -743,7 +743,7 @@ export default function ServiceEditor({ mode, initialId }: ServiceEditorProps) {
                               <label className="text-[11px] font-bold text-foreground">Biểu tượng (Icon)</label>
                               <div className="flex items-center gap-1.5">
                                 <Input
-                                  className="h-9 text-xs font-mono flex-1"
+                                  className="h-9 text-[13px] flex-1"
                                   placeholder="e.g. solar:stars-line-duotone"
                                   value={feature.icon || ""}
                                   onChange={(e) => updateFeature(idx, "icon", e.target.value)}
@@ -768,7 +768,7 @@ export default function ServiceEditor({ mode, initialId }: ServiceEditorProps) {
                             <div className="space-y-1 md:col-span-2">
                               <label className="text-[11px] font-bold text-foreground">Mô tả ngắn gọn</label>
                               <Input
-                                className="h-9 text-xs"
+                                className="h-9 text-[13px]"
                                 placeholder="e.g. Đảm bảo chạy mượt trên VPS"
                                 value={feature.description || ""}
                                 onChange={(e) => updateFeature(idx, "description", e.target.value)}
@@ -884,7 +884,7 @@ export default function ServiceEditor({ mode, initialId }: ServiceEditorProps) {
                               <div className="space-y-1">
                                 <label className="text-[11px] font-bold text-foreground">Tiêu đề câu hỏi (Label)</label>
                                 <Input
-                                  className="h-9 text-xs"
+                                  className="h-9 text-[13px]"
                                   placeholder="e.g. Phiên bản game"
                                   value={field.label}
                                   onChange={(e) => updateDynamicField(idx, "label", e.target.value)}
@@ -893,17 +893,52 @@ export default function ServiceEditor({ mode, initialId }: ServiceEditorProps) {
                               <div className="space-y-1">
                                 <label className="text-[11px] font-bold text-foreground">Loại trường nhập</label>
                                 <Select value={field.type} onValueChange={(val) => updateDynamicField(idx, "type", val)}>
-                                  <SelectTrigger className="h-9 text-xs w-full">
+                                  <SelectTrigger className="h-9 text-[13px] w-full">
                                     <SelectValue />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem value="text">Chữ ngắn (text)</SelectItem>
-                                    <SelectItem value="textarea">Đoạn văn (textarea)</SelectItem>
-                                    <SelectItem value="select">Hộp chọn (select)</SelectItem>
-                                    <SelectItem value="multiselect">Chọn nhiều (multiselect)</SelectItem>
-                                    <SelectItem value="checkbox">Hộp kiểm (checkbox)</SelectItem>
-                                    <SelectItem value="number">Số lượng (number)</SelectItem>
-                                    <SelectItem value="file">Đính kèm tệp (file)</SelectItem>
+                                    <SelectItem value="text" className="text-[13px]">
+                                      <span className="flex items-center gap-2">
+                                        <Icon icon="solar:text-field-focus-line-duotone" className="size-3.5 shrink-0 text-blue-500" />
+                                        <span>Chữ ngắn (text)</span>
+                                      </span>
+                                    </SelectItem>
+                                    <SelectItem value="textarea" className="text-[13px]">
+                                      <span className="flex items-center gap-2">
+                                        <Icon icon="solar:document-text-line-duotone" className="size-3.5 shrink-0 text-indigo-500" />
+                                        <span>Đoạn văn (textarea)</span>
+                                      </span>
+                                    </SelectItem>
+                                    <SelectItem value="select" className="text-[13px]">
+                                      <span className="flex items-center gap-2">
+                                        <Icon icon="solar:list-arrow-down-minimalistic-line-duotone" className="size-3.5 shrink-0 text-emerald-500" />
+                                        <span>Hộp chọn (select)</span>
+                                      </span>
+                                    </SelectItem>
+                                    <SelectItem value="multiselect" className="text-[13px]">
+                                      <span className="flex items-center gap-2">
+                                        <Icon icon="solar:checklist-minimalistic-line-duotone" className="size-3.5 shrink-0 text-teal-500" />
+                                        <span>Chọn nhiều (multiselect)</span>
+                                      </span>
+                                    </SelectItem>
+                                    <SelectItem value="checkbox" className="text-[13px]">
+                                      <span className="flex items-center gap-2">
+                                        <Icon icon="solar:check-square-line-duotone" className="size-3.5 shrink-0 text-amber-500" />
+                                        <span>Hộp kiểm (checkbox)</span>
+                                      </span>
+                                    </SelectItem>
+                                    <SelectItem value="number" className="text-[13px]">
+                                      <span className="flex items-center gap-2">
+                                        <Icon icon="solar:sort-from-top-to-bottom-line-duotone" className="size-3.5 shrink-0 text-purple-500" />
+                                        <span>Số lượng (number)</span>
+                                      </span>
+                                    </SelectItem>
+                                    <SelectItem value="file" className="text-[13px]">
+                                      <span className="flex items-center gap-2">
+                                        <Icon icon="solar:folder-with-files-line-duotone" className="size-3.5 shrink-0 text-rose-500" />
+                                        <span>Đính kèm tệp (file)</span>
+                                      </span>
+                                    </SelectItem>
                                   </SelectContent>
                                 </Select>
                               </div>
@@ -912,7 +947,7 @@ export default function ServiceEditor({ mode, initialId }: ServiceEditorProps) {
                                 <div className="space-y-1 md:col-span-2">
                                   <label className="text-[11px] font-bold text-foreground">Mẹo gợi ý (Placeholder - tùy chọn)</label>
                                   <Input
-                                    className="h-9 text-xs"
+                                    className="h-9 text-[13px]"
                                     placeholder="e.g. Nhập phiên bản trò chơi bạn sử dụng..."
                                     value={field.placeholder || ""}
                                     onChange={(e) => updateDynamicField(idx, "placeholder", e.target.value)}
@@ -926,7 +961,7 @@ export default function ServiceEditor({ mode, initialId }: ServiceEditorProps) {
                                     Các tùy chọn (phân tách bằng dấu phẩy)
                                   </label>
                                   <Input
-                                    className="h-9 text-xs"
+                                    className="h-9 text-[13px]"
                                     placeholder="e.g. 1.20, 1.21, 1.19"
                                     value={field.options ? field.options.join(", ") : ""}
                                     onChange={(e) =>
@@ -980,13 +1015,28 @@ export default function ServiceEditor({ mode, initialId }: ServiceEditorProps) {
                     value={formData.status}
                     onValueChange={(val: any) => setFormData((prev) => ({ ...prev, status: val }))}
                   >
-                    <SelectTrigger className="h-8 text-xs w-32">
+                    <SelectTrigger className="h-9 text-[13px] w-32">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="active">Hoạt động</SelectItem>
-                      <SelectItem value="draft">Bản nháp</SelectItem>
-                      <SelectItem value="disabled">Tạm ngưng</SelectItem>
+                      <SelectItem value="active" className="text-[13px]">
+                        <span className="flex items-center gap-2">
+                          <Icon icon="solar:check-circle-line-duotone" className="size-3.5 shrink-0 text-emerald-500" />
+                          <span>Hoạt động</span>
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="draft" className="text-[13px]">
+                        <span className="flex items-center gap-2">
+                          <Icon icon="solar:file-text-line-duotone" className="size-3.5 shrink-0 text-amber-500" />
+                          <span>Bản nháp</span>
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="disabled" className="text-[13px]">
+                        <span className="flex items-center gap-2">
+                          <Icon icon="solar:slash-circle-line-duotone" className="size-3.5 shrink-0 text-rose-500" />
+                          <span>Tạm ngưng</span>
+                        </span>
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -1003,7 +1053,7 @@ export default function ServiceEditor({ mode, initialId }: ServiceEditorProps) {
                     value={formData.thumbnail || ""}
                     onChange={(e) => setFormData((prev) => ({ ...prev, thumbnail: e.target.value }))}
                     placeholder="Đường dẫn ảnh bìa..."
-                    className="h-9 text-xs flex-1 font-mono"
+                    className="h-9 text-[13px] flex-1"
                   />
                   <button
                     type="button"

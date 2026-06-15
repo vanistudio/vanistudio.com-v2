@@ -792,6 +792,7 @@ export default function AdminMenu() {
                 placeholder="Ví dụ: Header Main Menu"
                 value={groupForm.name}
                 onChange={(e) => setGroupForm({ ...groupForm, name: e.target.value })}
+                className="h-9 text-[13px]"
               />
             </div>
             <div className="space-y-1.5">
@@ -802,7 +803,7 @@ export default function AdminMenu() {
                 placeholder="Ví dụ: intro, services, explore, contact"
                 value={groupForm.key}
                 onChange={(e) => setGroupForm({ ...groupForm, key: e.target.value })}
-                className="font-mono text-xs"
+                className="h-9 text-[13px]"
               />
               <span className="text-[10px] text-muted-foreground block mt-0.5">
                 Các key tương ứng với Footer: <code className="font-semibold text-primary">intro</code>, <code className="font-semibold text-primary">services</code>, <code className="font-semibold text-primary">explore</code>, <code className="font-semibold text-primary">contact</code>
@@ -817,6 +818,7 @@ export default function AdminMenu() {
                 value={groupForm.description}
                 onChange={(e) => setGroupForm({ ...groupForm, description: e.target.value })}
                 rows={3}
+                className="text-[13px]"
               />
             </div>
             <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-muted/30">
@@ -860,6 +862,7 @@ export default function AdminMenu() {
                 placeholder="Ví dụ: Giới thiệu"
                 value={menuForm.name}
                 onChange={(e) => setMenuForm({ ...menuForm, name: e.target.value })}
+                className="h-9 text-[13px]"
               />
             </div>
             <div className="space-y-1.5">
@@ -869,6 +872,7 @@ export default function AdminMenu() {
                 placeholder="Ví dụ: /about hoặc https://..."
                 value={menuForm.url}
                 onChange={(e) => setMenuForm({ ...menuForm, url: e.target.value })}
+                className="h-9 text-[13px]"
               />
             </div>
             <div className="space-y-1.5">
@@ -879,7 +883,7 @@ export default function AdminMenu() {
                   placeholder="Ví dụ: solar:home-2-line-duotone"
                   value={menuForm.icon || ""}
                   onChange={(e) => setMenuForm({ ...menuForm, icon: e.target.value })}
-                  className="font-mono text-xs w-full"
+                  className="h-9 text-[13px] w-full"
                 />
                 <IconPicker
                   value={menuForm.icon || ""}
@@ -905,17 +909,23 @@ export default function AdminMenu() {
                 value={menuForm.parentId}
                 onValueChange={(val) => setMenuForm({ ...menuForm, parentId: val })}
               >
-                <SelectTrigger id="menu-parent" className="w-full">
+                <SelectTrigger id="menu-parent" className="h-9 text-[13px] w-full">
                   <SelectValue placeholder="Chọn liên kết cha..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none" className="font-semibold text-primary">
-                    Không có (Mục gốc)
+                  <SelectItem value="none" className="text-[13px] font-semibold text-primary">
+                    <span className="flex items-center gap-2">
+                      <Icon icon="solar:folder-open-line-duotone" className="size-3.5 shrink-0 text-blue-500" />
+                      <span>Không có (Mục gốc)</span>
+                    </span>
                   </SelectItem>
                   {getParentOptions(flatTree, editingMenu?.id).map((item) => (
-                    <SelectItem key={item.id} value={item.id}>
-                      {"— ".repeat(item.depth)}
-                      {item.name}
+                    <SelectItem key={item.id} value={item.id} className="text-[13px]">
+                      <span className="flex items-center gap-2">
+                        <span>{"— ".repeat(item.depth)}</span>
+                        <Icon icon={item.icon || "solar:link-round-angle-line-duotone"} className="size-3.5 shrink-0 text-indigo-500" />
+                        <span>{item.name}</span>
+                      </span>
                     </SelectItem>
                   ))}
                 </SelectContent>

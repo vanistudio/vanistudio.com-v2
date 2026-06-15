@@ -466,13 +466,28 @@ export default function CmsPageList() {
                             Trạng thái
                           </label>
                           <Select value={filterActive} onValueChange={(val: any) => setFilterActive(val)}>
-                            <SelectTrigger size="sm" className="w-full justify-between bg-background border-border">
+                            <SelectTrigger className="w-full h-9 text-[13px] justify-between">
                               <SelectValue placeholder="Chọn trạng thái" />
                             </SelectTrigger>
                             <SelectContent position="popper" align="start">
-                              <SelectItem value="all">Tất cả</SelectItem>
-                              <SelectItem value="active">Hoạt động</SelectItem>
-                              <SelectItem value="inactive">Tạm ẩn</SelectItem>
+                              <SelectItem value="all" className="text-[13px]">
+                                <span className="flex items-center gap-2">
+                                  <Icon icon="solar:widget-3-line-duotone" className="size-3.5 shrink-0 text-blue-500" />
+                                  <span>Tất cả</span>
+                                </span>
+                              </SelectItem>
+                              <SelectItem value="active" className="text-[13px]">
+                                <span className="flex items-center gap-2">
+                                  <Icon icon="solar:check-circle-line-duotone" className="size-3.5 shrink-0 text-emerald-500" />
+                                  <span>Hoạt động</span>
+                                </span>
+                              </SelectItem>
+                              <SelectItem value="inactive" className="text-[13px]">
+                                <span className="flex items-center gap-2">
+                                  <Icon icon="solar:slash-circle-line-duotone" className="size-3.5 shrink-0 text-rose-500" />
+                                  <span>Tạm ẩn</span>
+                                </span>
+                              </SelectItem>
                             </SelectContent>
                           </Select>
                         </div>

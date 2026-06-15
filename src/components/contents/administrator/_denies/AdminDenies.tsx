@@ -530,6 +530,7 @@ export default function AdminDenies() {
                 value={ip}
                 onChange={(e) => setIp(e.target.value)}
                 placeholder="Nhập IPv4 (vd: 1.2.3.4) hoặc IPv6..."
+                className="h-9 text-[13px]"
               />
             </div>
 
@@ -539,7 +540,7 @@ export default function AdminDenies() {
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 placeholder="Lý do chi tiết vi phạm chính sách..."
-                className="min-h-[100px] resize-none"
+                className="min-h-[100px] text-[13px] resize-none"
               />
             </div>
 
@@ -549,15 +550,40 @@ export default function AdminDenies() {
                 value={expireType}
                 onValueChange={(val: any) => setExpireType(val)}
               >
-                <SelectTrigger className="w-full shadow-sm text-[13px]">
+                <SelectTrigger className="h-9 w-full shadow-sm text-[13px]">
                   <SelectValue placeholder="Chọn thời hạn..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="permanent">Vĩnh viễn</SelectItem>
-                  <SelectItem value="1day">1 Ngày</SelectItem>
-                  <SelectItem value="7days">7 Ngày</SelectItem>
-                  <SelectItem value="30days">30 Ngày</SelectItem>
-                  <SelectItem value="custom">Tự chọn thời gian</SelectItem>
+                  <SelectItem value="permanent" className="text-[13px]">
+                    <span className="flex items-center gap-2">
+                      <Icon icon="solar:infinity-line-duotone" className="size-3.5 shrink-0 text-rose-500" />
+                      <span>Vĩnh viễn</span>
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="1day" className="text-[13px]">
+                    <span className="flex items-center gap-2">
+                      <Icon icon="solar:calendar-date-line-duotone" className="size-3.5 shrink-0 text-blue-500" />
+                      <span>1 Ngày</span>
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="7days" className="text-[13px]">
+                    <span className="flex items-center gap-2">
+                      <Icon icon="solar:calendar-mark-line-duotone" className="size-3.5 shrink-0 text-indigo-500" />
+                      <span>7 Ngày</span>
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="30days" className="text-[13px]">
+                    <span className="flex items-center gap-2">
+                      <Icon icon="solar:calendar-minimalistic-line-duotone" className="size-3.5 shrink-0 text-purple-500" />
+                      <span>30 Ngày</span>
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="custom" className="text-[13px]">
+                    <span className="flex items-center gap-2">
+                      <Icon icon="solar:clock-circle-line-duotone" className="size-3.5 shrink-0 text-emerald-500" />
+                      <span>Tự chọn thời gian</span>
+                    </span>
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>

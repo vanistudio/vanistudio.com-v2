@@ -331,7 +331,7 @@ export default function UserRegistrationCustomizer({
                         minLength: parseInt(e.target.value) || 4
                       }
                     })}
-                    className="h-9"
+                    className="h-9 text-[13px]"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
@@ -347,7 +347,7 @@ export default function UserRegistrationCustomizer({
                         maxLength: parseInt(e.target.value) || 20
                       }
                     })}
-                    className="h-9"
+                    className="h-9 text-[13px]"
                   />
                 </div>
               </div>
@@ -362,13 +362,28 @@ export default function UserRegistrationCustomizer({
                     }
                   })}
                 >
-                  <SelectTrigger className="w-full h-9">
+                  <SelectTrigger className="h-9 text-[13px] w-full">
                     <SelectValue placeholder="Chọn ký tự được chấp nhận" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="lowercase_alphanumeric">Chữ thường, số và dấu gạch dưới (a-z, 0-9, _)</SelectItem>
-                    <SelectItem value="alphanumeric">Chữ cái, số và dấu gạch dưới (a-z, A-Z, 0-9, _)</SelectItem>
-                    <SelectItem value="all">Tất cả ký tự được hệ thống hỗ trợ</SelectItem>
+                    <SelectItem value="lowercase_alphanumeric" className="text-[13px]">
+                      <span className="flex items-center gap-2">
+                        <Icon icon="solar:text-italic-line-duotone" className="size-3.5 shrink-0 text-blue-500" />
+                        <span>Chữ thường, số và dấu gạch dưới (a-z, 0-9, _)</span>
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="alphanumeric" className="text-[13px]">
+                      <span className="flex items-center gap-2">
+                        <Icon icon="solar:text-bold-line-duotone" className="size-3.5 shrink-0 text-indigo-500" />
+                        <span>Chữ cái, số và dấu gạch dưới (a-z, A-Z, 0-9, _)</span>
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="all" className="text-[13px]">
+                      <span className="flex items-center gap-2">
+                        <Icon icon="solar:globus-line-duotone" className="size-3.5 shrink-0 text-emerald-500" />
+                        <span>Tất cả ký tự được hệ thống hỗ trợ</span>
+                      </span>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -388,7 +403,7 @@ export default function UserRegistrationCustomizer({
                       minLength: parseInt(e.target.value) || 8
                     }
                   })}
-                  className="h-9"
+                  className="h-9 text-[13px]"
                 />
               </div>
 

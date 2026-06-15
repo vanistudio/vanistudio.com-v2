@@ -8,13 +8,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card } from "@/components/ui/card";
 import { GalleryDialog } from "@/components/vanixjnk/gallery-dialog";
 import { DateTimePicker } from "@/components/vanixjnk/date-time-picker";
 import { toast } from "sonner";
-import { MdxEditor, insertMdxAtCursor } from "@/components/vanixjnk/mdx-builder";
+import { MdxEditor, UI_COMPONENTS_TEMPLATES, insertMdxAtCursor } from "@/components/vanixjnk/mdx-builder";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
 import { IconPicker } from "@/components/vanixjnk/icon-picker";
@@ -187,7 +188,6 @@ export default function ProductEditor({ mode, initialId }: ProductEditorProps) {
     router.push("/adminPanel/products");
   };
 
-  // Helper actions for compatibility
   const addCompatibility = () => {
     if (!newCompatibility.trim()) return;
     if (formData.compatibility.includes(newCompatibility.trim())) {
@@ -208,7 +208,6 @@ export default function ProductEditor({ mode, initialId }: ProductEditorProps) {
     }));
   };
 
-  // Helper actions for features
   const addFeature = () => {
     setFormData((prev) => ({
       ...prev,
@@ -231,7 +230,6 @@ export default function ProductEditor({ mode, initialId }: ProductEditorProps) {
     });
   };
 
-  // Helper actions for changelog
   const addChangelog = () => {
     setFormData((prev) => ({
       ...prev,
@@ -259,38 +257,51 @@ export default function ProductEditor({ mode, initialId }: ProductEditorProps) {
 
   const addChangelogLine = (changelogIndex: number) => {
     setFormData((prev) => {
-      const updated = [...prev.changelog];
-      const log = updated[changelogIndex];
-      if (log) {
-        log.changes = [...log.changes, ""];
-      }
+      const updated = prev.changelog.map((log, idx) => {
+        if (idx === changelogIndex) {
+          return {
+            ...log,
+            changes: [...log.changes, ""],
+          };
+        }
+        return log;
+      });
       return { ...prev, changelog: updated };
     });
   };
 
   const removeChangelogLine = (changelogIndex: number, lineIndex: number) => {
     setFormData((prev) => {
-      const updated = [...prev.changelog];
-      const log = updated[changelogIndex];
-      if (log) {
-        log.changes = log.changes.filter((_, i) => i !== lineIndex);
-      }
+      const updated = prev.changelog.map((log, idx) => {
+        if (idx === changelogIndex) {
+          return {
+            ...log,
+            changes: log.changes.filter((_, i) => i !== lineIndex),
+          };
+        }
+        return log;
+      });
       return { ...prev, changelog: updated };
     });
   };
 
   const updateChangelogLine = (changelogIndex: number, lineIndex: number, value: string) => {
     setFormData((prev) => {
-      const updated = [...prev.changelog];
-      const log = updated[changelogIndex];
-      if (log) {
-        log.changes[lineIndex] = value;
-      }
+      const updated = prev.changelog.map((log, idx) => {
+        if (idx === changelogIndex) {
+          const newChanges = [...log.changes];
+          newChanges[lineIndex] = value;
+          return {
+            ...log,
+            changes: newChanges,
+          };
+        }
+        return log;
+      });
       return { ...prev, changelog: updated };
     });
   };
 
-  // Media gallery actions
   const addGalleryImage = (url: string) => {
     setFormData((prev) => ({
       ...prev,
@@ -368,22 +379,41 @@ export default function ProductEditor({ mode, initialId }: ProductEditorProps) {
               <Skeleton className="h-9 w-32 rounded-lg animate-pulse" />
             </div>
 
-            <div className="grid grid-cols-2 gap-x-4 gap-y-3.5">
-              <div className="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
-                <Skeleton className="h-4 w-24 animate-pulse" />
-                <Skeleton className="h-9 w-full animate-pulse rounded-lg" />
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              <div className="lg:col-span-8 space-y-5">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-3.5">
+                  <div className="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
+                    <Skeleton className="h-4 w-24 animate-pulse" />
+                    <Skeleton className="h-9 w-full animate-pulse rounded-lg" />
+                  </div>
+                  <div className="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
+                    <Skeleton className="h-4 w-48 animate-pulse" />
+                    <Skeleton className="h-9 w-full animate-pulse rounded-lg" />
+                  </div>
+                  <div className="col-span-2 flex flex-col gap-1.5">
+                    <Skeleton className="h-4 w-20 animate-pulse" />
+                    <Skeleton className="h-16 w-full animate-pulse rounded-lg" />
+                  </div>
+                  <div className="col-span-2 flex flex-col gap-1.5">
+                    <Skeleton className="h-4 w-32 animate-pulse" />
+                    <Skeleton className="h-40 w-full animate-pulse rounded-lg" />
+                  </div>
+                </div>
               </div>
-              <div className="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
-                <Skeleton className="h-4 w-48 animate-pulse" />
-                <Skeleton className="h-9 w-full animate-pulse rounded-lg" />
-              </div>
-              <div className="col-span-2 flex flex-col gap-1.5">
-                <Skeleton className="h-4 w-20 animate-pulse" />
-                <Skeleton className="h-16 w-full animate-pulse rounded-lg" />
-              </div>
-              <div className="col-span-2 flex flex-col gap-1.5">
-                <Skeleton className="h-4 w-32 animate-pulse" />
-                <Skeleton className="h-40 w-full animate-pulse rounded-lg" />
+
+              <div className="lg:col-span-4 space-y-6">
+                <div className="border border-border/60 rounded-xl bg-muted/10 p-4 space-y-4">
+                  <Skeleton className="h-4 w-32 animate-pulse" />
+                  <Skeleton className="h-9 w-full animate-pulse rounded-lg" />
+                </div>
+                <div className="border border-border/60 rounded-xl bg-muted/10 p-4 space-y-4">
+                  <Skeleton className="h-4 w-40 animate-pulse" />
+                  <Skeleton className="h-9 w-full animate-pulse rounded-lg" />
+                  <Skeleton className="h-9 w-full animate-pulse rounded-lg" />
+                </div>
+                <div className="border border-border/60 rounded-xl bg-muted/10 p-4 space-y-4">
+                  <Skeleton className="h-28 w-full animate-pulse rounded-lg" />
+                </div>
               </div>
             </div>
           </div>
@@ -469,7 +499,6 @@ export default function ProductEditor({ mode, initialId }: ProductEditorProps) {
             </div>
           </div>
 
-          {/* Tabs */}
           <div className="grid grid-cols-2 sm:flex items-center gap-1.5 p-1 rounded-xl bg-muted/20 border border-border/60 w-full sm:w-auto sm:self-start whitespace-nowrap">
             {[
               { id: "content", label: "Thông tin & Nội dung", icon: "solar:document-text-line-duotone" },
@@ -496,7 +525,7 @@ export default function ProductEditor({ mode, initialId }: ProductEditorProps) {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            <div className="lg:col-span-12 space-y-5">
+            <div className="lg:col-span-8 space-y-5">
 
               {editorTab === "content" && (
                 <div className="space-y-4">
@@ -528,42 +557,6 @@ export default function ProductEditor({ mode, initialId }: ProductEditorProps) {
                           className="h-9 text-[13px] flex-1"
                         />
                       </div>
-                    </div>
-
-                    <div className="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-foreground">Loại sản phẩm</label>
-                      <Select
-                        value={formData.type}
-                        onValueChange={(val) => setFormData((prev) => ({ ...prev, type: val }))}
-                      >
-                        <SelectTrigger className="h-9 text-[13px] w-full">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="source_code">Mã nguồn</SelectItem>
-                          <SelectItem value="tool">Công cụ / Tool</SelectItem>
-                          <SelectItem value="app">Ứng dụng / App</SelectItem>
-                          <SelectItem value="bot">Robot / Bot</SelectItem>
-                          <SelectItem value="extension">Tiện ích mở rộng</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-foreground">Trạng thái phát hành</label>
-                      <Select
-                        value={formData.status}
-                        onValueChange={(val) => setFormData((prev) => ({ ...prev, status: val }))}
-                      >
-                        <SelectTrigger className="h-9 text-[13px] w-full">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="active">Hoạt động (Active)</SelectItem>
-                          <SelectItem value="draft">Bản nháp (Draft)</SelectItem>
-                          <SelectItem value="archived">Lưu trữ (Archived)</SelectItem>
-                        </SelectContent>
-                      </Select>
                     </div>
 
                     <div className="col-span-2 flex flex-col gap-1.5">
@@ -630,37 +623,24 @@ export default function ProductEditor({ mode, initialId }: ProductEditorProps) {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="USD">USD ($)</SelectItem>
-                          <SelectItem value="VND">VND (đ)</SelectItem>
-                          <SelectItem value="EUR">EUR (€)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-foreground">Nhãn huy hiệu nổi bật (Badge)</label>
-                      <Input
-                        value={formData.badge}
-                        onChange={(e) => setFormData((prev) => ({ ...prev, badge: e.target.value }))}
-                        className="h-9 text-[13px]"
-                        placeholder="Ví dụ: HOT, NEW, SALE, BETA"
-                      />
-                    </div>
-
-                    <div className="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-foreground">Bản quyền giấy phép (License)</label>
-                      <Select
-                        value={formData.licenseType}
-                        onValueChange={(val) => setFormData((prev) => ({ ...prev, licenseType: val }))}
-                      >
-                        <SelectTrigger className="h-9 text-[13px] w-full">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="single">Single License (Sử dụng đơn)</SelectItem>
-                          <SelectItem value="extended">Extended License (Sử dụng mở rộng)</SelectItem>
-                          <SelectItem value="subscription">Subscription License (Định kỳ)</SelectItem>
-                          <SelectItem value="free">Free / Open-Source (Miễn phí)</SelectItem>
+                          <SelectItem value="USD" className="text-[13px]">
+                            <span className="flex items-center gap-2">
+                              <Icon icon="solar:dollar-line-duotone" className="size-3.5 shrink-0 text-emerald-500" />
+                              <span>USD ($)</span>
+                            </span>
+                          </SelectItem>
+                          <SelectItem value="VND" className="text-[13px]">
+                            <span className="flex items-center gap-2">
+                              <Icon icon="solar:wallet-money-line-duotone" className="size-3.5 shrink-0 text-blue-500" />
+                              <span>VND (đ)</span>
+                            </span>
+                          </SelectItem>
+                          <SelectItem value="EUR" className="text-[13px]">
+                            <span className="flex items-center gap-2">
+                              <Icon icon="solar:euro-line-duotone" className="size-3.5 shrink-0 text-purple-500" />
+                              <span>EUR (€)</span>
+                            </span>
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -674,17 +654,6 @@ export default function ProductEditor({ mode, initialId }: ProductEditorProps) {
                         className="h-9 text-[13px]"
                         placeholder="Ví dụ: 6 hoặc 12"
                       />
-                    </div>
-
-                    <div className="col-span-2 sm:col-span-1 flex items-center gap-3 h-9 mt-1">
-                      <Checkbox
-                        id="isFeatured"
-                        checked={formData.isFeatured}
-                        onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, isFeatured: !!checked }))}
-                      />
-                      <label htmlFor="isFeatured" className="text-xs font-bold text-foreground cursor-pointer select-none">
-                        Sản phẩm nổi bật / Tiêu điểm (Featured Product)
-                      </label>
                     </div>
                   </div>
                 </div>
@@ -820,23 +789,34 @@ export default function ProductEditor({ mode, initialId }: ProductEditorProps) {
                       <span className="font-medium">Chưa thiết lập tính năng nào cho sản phẩm này.</span>
                     </div>
                   ) : (
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       {formData.features.map((feat, idx) => (
-                        <Card
+                        <div
                           key={idx}
-                          className="flex items-start gap-4 p-4 border border-border/60 rounded-xl bg-card shadow-xs relative group"
+                          className="p-4 border border-border/80 rounded-xl bg-muted/10 hover:bg-muted/20 transition-all flex flex-col gap-3.5 relative group"
                         >
-                          <div className="shrink-0 flex flex-col items-center gap-2">
-                            <label className="text-[10px] font-bold text-muted-foreground uppercase">Icon</label>
-                            <IconPicker
-                              value={feat.icon || "solar:check-circle-line-duotone"}
-                              onChange={(val) => updateFeature(idx, "icon", val)}
-                            />
+                          <div className="flex items-center justify-between border-b border-border/40 pb-2">
+                            <div className="flex items-center gap-2">
+                              <div className="size-6 rounded-lg flex items-center justify-center bg-vanixjnk/10 border border-vanixjnk/20 text-vanixjnk">
+                                <Icon icon={feat.icon || "solar:star-line-duotone"} className="size-3.5" />
+                              </div>
+                              <span className="text-xs font-bold text-foreground">Tính năng #{idx + 1}</span>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="danger"
+                              size="icon-sm"
+                              className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                              onClick={() => removeFeature(idx)}
+                              title="Xóa tính năng"
+                            >
+                              <Icon icon="solar:trash-bin-trash-line-duotone" className="size-4" />
+                            </Button>
                           </div>
 
-                          <div className="flex-1 grid grid-cols-2 gap-4">
-                            <div className="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
-                              <label className="text-[10px] font-bold text-muted-foreground uppercase">Tên tính năng</label>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                            <div className="space-y-1">
+                              <label className="text-[11px] font-bold text-foreground">Tên tính năng</label>
                               <Input
                                 value={feat.name}
                                 onChange={(e) => updateFeature(idx, "name", e.target.value)}
@@ -845,8 +825,35 @@ export default function ProductEditor({ mode, initialId }: ProductEditorProps) {
                               />
                             </div>
 
-                            <div className="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
-                              <label className="text-[10px] font-bold text-muted-foreground uppercase">Mô tả chi tiết</label>
+                            <div className="space-y-1">
+                              <label className="text-[11px] font-bold text-foreground">Biểu tượng (Icon)</label>
+                              <div className="flex items-center gap-1.5">
+                                <Input
+                                  value={feat.icon || ""}
+                                  onChange={(e) => updateFeature(idx, "icon", e.target.value)}
+                                  placeholder="Ví dụ: solar:star-line-duotone"
+                                  className="h-9 text-[13px] flex-1"
+                                />
+                                <IconPicker
+                                  value={feat.icon || "solar:star-line-duotone"}
+                                  onChange={(val) => updateFeature(idx, "icon", val)}
+                                  trigger={
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="icon"
+                                      title="Chọn biểu tượng"
+                                      className="size-9 rounded-lg shrink-0 cursor-pointer"
+                                    >
+                                      <Icon icon="solar:star-line-duotone" className="size-4 text-vanixjnk" />
+                                    </Button>
+                                  }
+                                />
+                              </div>
+                            </div>
+
+                            <div className="col-span-1 md:col-span-2 space-y-1">
+                              <label className="text-[11px] font-bold text-foreground">Mô tả chi tiết</label>
                               <Input
                                 value={feat.description || ""}
                                 onChange={(e) => updateFeature(idx, "description", e.target.value)}
@@ -855,18 +862,7 @@ export default function ProductEditor({ mode, initialId }: ProductEditorProps) {
                               />
                             </div>
                           </div>
-
-                          <Button
-                            type="button"
-                            variant="danger"
-                            size="icon-sm"
-                            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                            onClick={() => removeFeature(idx)}
-                            title="Xóa tính năng"
-                          >
-                            <Icon icon="solar:trash-bin-trash-line-duotone" className="size-4" />
-                          </Button>
-                        </Card>
+                        </div>
                       ))}
                     </div>
                   )}
@@ -891,7 +887,6 @@ export default function ProductEditor({ mode, initialId }: ProductEditorProps) {
                       <span>Thêm phiên bản</span>
                     </Button>
                   </div>
-
                   {formData.changelog.length === 0 ? (
                     <div className="py-12 text-center border border-dashed border-border rounded-xl text-muted-foreground text-xs flex flex-col items-center justify-center gap-2 bg-card/10">
                       <Icon icon="solar:history-line-duotone" className="size-8 text-muted-foreground/50" />
@@ -900,22 +895,43 @@ export default function ProductEditor({ mode, initialId }: ProductEditorProps) {
                   ) : (
                     <div className="space-y-4">
                       {formData.changelog.map((log, logIdx) => (
-                        <Card
+                        <div
                           key={logIdx}
-                          className="p-5 border border-border rounded-xl bg-card/60 shadow-xs space-y-4 relative group"
+                          className="p-4 border border-border/88 rounded-xl bg-muted/10 hover:bg-muted/20 transition-all flex flex-col gap-3.5 relative group"
                         >
-                          <div className="grid grid-cols-3 gap-4">
-                            <div className="flex flex-col gap-1.5">
-                              <label className="text-[10px] font-bold text-muted-foreground uppercase">Phiên bản</label>
+                          <div className="flex items-center justify-between border-b border-border/40 pb-2">
+                            <div className="flex items-center gap-2">
+                              <div className="size-6 rounded-lg flex items-center justify-center bg-vanixjnk/10 border border-vanixjnk/20 text-vanixjnk">
+                                <Icon icon="solar:history-line-duotone" className="size-3.5" />
+                              </div>
+                              <span className="text-xs font-bold text-foreground">
+                                Phiên bản {log.version || `#${logIdx + 1}`}
+                              </span>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="danger"
+                              size="icon-sm"
+                              className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                              onClick={() => removeChangelog(logIdx)}
+                              title="Xóa phiên bản changelog"
+                            >
+                              <Icon icon="solar:trash-bin-trash-line-duotone" className="size-4" />
+                            </Button>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                            <div className="space-y-1">
+                              <label className="text-[11px] font-bold text-foreground">Phiên bản</label>
                               <Input
                                 value={log.version}
                                 onChange={(e) => updateChangelogHeader(logIdx, "version", e.target.value)}
-                                placeholder="v1.0.1"
+                                placeholder="Ví dụ: v1.0.1"
                                 className="h-9 text-[13px]"
                               />
                             </div>
-                            <div className="flex flex-col gap-1.5">
-                              <label className="text-[10px] font-bold text-muted-foreground uppercase">Ngày cập nhật</label>
+                            <div className="space-y-1">
+                              <label className="text-[11px] font-bold text-foreground">Ngày cập nhật</label>
                               <DateTimePicker
                                 value={log.date ? new Date(log.date) : null}
                                 onChange={(date) => {
@@ -926,8 +942,8 @@ export default function ProductEditor({ mode, initialId }: ProductEditorProps) {
                                 placeholder="Chọn ngày cập nhật..."
                               />
                             </div>
-                            <div className="flex flex-col gap-1.5">
-                              <label className="text-[10px] font-bold text-muted-foreground uppercase">Tiêu đề phụ</label>
+                            <div className="space-y-1">
+                              <label className="text-[11px] font-bold text-foreground">Tiêu đề phụ</label>
                               <Input
                                 value={log.title || ""}
                                 onChange={(e) => updateChangelogHeader(logIdx, "title", e.target.value)}
@@ -937,55 +953,49 @@ export default function ProductEditor({ mode, initialId }: ProductEditorProps) {
                             </div>
                           </div>
 
-                          <div className="space-y-2">
-                            <div className="flex items-center justify-between border-t border-border/40 pt-3">
-                               <label className="text-xs font-bold text-foreground">Các dòng thay đổi (Changes)</label>
+                          <div className="space-y-2.5 border-t border-border/40 pt-3.5">
+                            <div className="flex items-center justify-between">
+                              <label className="text-[11px] font-bold text-foreground">Các dòng thay đổi (Changes)</label>
                               <Button
                                 variant="outline"
                                 size="sm"
                                 type="button"
                                 onClick={() => addChangelogLine(logIdx)}
-                                className="h-8 px-3 text-[10px] cursor-pointer"
+                                className="gap-1 h-8 px-2.5 text-[11px] cursor-pointer"
                               >
-                                Thêm dòng
+                                <Icon icon="solar:add-circle-line-duotone" className="text-sm text-emerald-500" />
+                                <span>Thêm dòng</span>
                               </Button>
                             </div>
 
                             <div className="space-y-2">
-                              {log.changes.map((line, lineIdx) => (
-                                <div key={lineIdx} className="flex gap-2 items-center">
-                                  <span className="text-xs text-muted-foreground font-mono">#{lineIdx + 1}</span>
-                                  <Input
-                                    value={line}
-                                    onChange={(e) => updateChangelogLine(logIdx, lineIdx, e.target.value)}
-                                    placeholder="Nêu chi tiết những gì thay đổi hoặc được tối ưu..."
-                                    className="h-9 flex-1 text-[13px]"
-                                  />
-                                  <Button
-                                    type="button"
-                                    variant="danger"
-                                    size="icon-sm"
-                                    onClick={() => removeChangelogLine(logIdx, lineIdx)}
-                                    className="size-7 shrink-0 cursor-pointer animate-none"
-                                  >
-                                    <Icon icon="solar:close-circle-line-duotone" className="size-3.5" />
-                                  </Button>
-                                </div>
-                              ))}
+                              {log.changes.length === 0 ? (
+                                <span className="text-[11px] text-muted-foreground italic">Chưa có mô tả thay đổi nào.</span>
+                              ) : (
+                                log.changes.map((line, lineIdx) => (
+                                  <div key={lineIdx} className="flex gap-2 items-center">
+                                    <span className="text-xs text-muted-foreground font-mono w-4 shrink-0">#{lineIdx + 1}</span>
+                                    <Input
+                                      value={line}
+                                      onChange={(e) => updateChangelogLine(logIdx, lineIdx, e.target.value)}
+                                      placeholder="Nêu chi tiết những gì thay đổi hoặc được tối ưu..."
+                                      className="h-9 flex-1 text-[13px]"
+                                    />
+                                    <Button
+                                      type="button"
+                                      variant="danger"
+                                      size="icon-sm"
+                                      onClick={() => removeChangelogLine(logIdx, lineIdx)}
+                                      className="size-9 shrink-0 cursor-pointer animate-none border border-border/40 hover:bg-red-500/10 hover:border-red-500/30"
+                                    >
+                                      <Icon icon="solar:close-circle-line-duotone" className="size-4 text-red-500" />
+                                    </Button>
+                                  </div>
+                                ))
+                              )}
                             </div>
                           </div>
-
-                          <Button
-                            type="button"
-                            variant="danger"
-                            size="icon-sm"
-                            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                            onClick={() => removeChangelog(logIdx)}
-                            title="Xóa phiên bản changelog"
-                          >
-                            <Icon icon="solar:trash-bin-trash-line-duotone" className="size-4" />
-                          </Button>
-                        </Card>
+                        </div>
                       ))}
                     </div>
                   )}
@@ -994,42 +1004,6 @@ export default function ProductEditor({ mode, initialId }: ProductEditorProps) {
 
               {editorTab === "media" && (
                 <div className="space-y-6">
-                  <div className="space-y-4">
-                    <h3 className="text-sm font-bold text-foreground pb-2 border-b">Ảnh Thumbnail đại diện</h3>
-                    <div className="flex items-start gap-4">
-                      <div
-                        className="size-24 rounded-lg overflow-hidden border border-border bg-muted/40 cursor-pointer flex items-center justify-center relative group shrink-0 shadow-sm"
-                        onClick={() => {
-                          setGalleryTarget({ type: "thumbnail" });
-                          setGalleryOpen(true);
-                        }}
-                      >
-                        {formData.thumbnail ? (
-                          <img src={formData.thumbnail} alt="Thumbnail preview" className="size-full object-cover" />
-                        ) : (
-                          <div className="flex flex-col items-center justify-center text-muted-foreground/50 hover:text-vanixjnk transition-colors">
-                            <Icon icon="solar:camera-line-duotone" className="size-8" />
-                            <span className="text-[10px] mt-1 font-semibold">Chọn ảnh</span>
-                          </div>
-                        )}
-                        <div className="absolute inset-0 bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
-                          <Icon icon="solar:gallery-send-line-duotone" className="text-white text-base" />
-                        </div>
-                      </div>
-
-                      <div className="flex-1 flex flex-col gap-2">
-                        <label className="text-xs font-bold text-foreground">Đường dẫn ảnh Thumbnail</label>
-                        <Input
-                          value={formData.thumbnail}
-                          onChange={(e) => setFormData((prev) => ({ ...prev, thumbnail: e.target.value }))}
-                          placeholder="Nhập liên kết ảnh hoặc nhấp ô bên để chọn..."
-                          className="h-9 text-[13px]"
-                        />
-                        <span className="text-[10px] text-muted-foreground">Tỷ lệ khuyến nghị 16:9 hoặc 4:3. Có thể tải lên từ Thư viện.</span>
-                      </div>
-                    </div>
-                  </div>
-
                   <div className="space-y-4">
                     <div className="flex items-center justify-between border-b pb-2">
                       <h3 className="text-sm font-bold text-foreground">Bộ ảnh Screenshots minh họa sản phẩm (Gallery)</h3>
@@ -1081,6 +1055,227 @@ export default function ProductEditor({ mode, initialId }: ProductEditorProps) {
                 </div>
               )}
 
+            </div>
+
+            <div className="lg:col-span-4 space-y-6">
+              <div className="border border-border/60 rounded-xl bg-muted/10 p-4 space-y-4">
+                <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5 border-b pb-2 border-border/60">
+                  <Icon icon="solar:settings-line-duotone" className="size-4 text-vanixjnk" />
+                  Trạng thái & Xuất bản
+                </h4>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-foreground">Trạng thái phát hành</label>
+                  <Select
+                    value={formData.status}
+                    onValueChange={(val) => setFormData((prev) => ({ ...prev, status: val }))}
+                  >
+                    <SelectTrigger className="h-9 text-[13px] w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active" className="text-[13px]">
+                        <span className="flex items-center gap-2">
+                          <Icon icon="solar:check-circle-line-duotone" className="size-3.5 shrink-0 text-emerald-500" />
+                          <span>Hoạt động (Active)</span>
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="draft" className="text-[13px]">
+                        <span className="flex items-center gap-2">
+                          <Icon icon="solar:file-text-line-duotone" className="size-3.5 shrink-0 text-amber-500" />
+                          <span>Bản nháp (Draft)</span>
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="archived" className="text-[13px]">
+                        <span className="flex items-center gap-2">
+                          <Icon icon="solar:archive-line-duotone" className="size-3.5 shrink-0 text-indigo-500" />
+                          <span>Lưu trữ (Archived)</span>
+                        </span>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="border border-border/60 rounded-xl bg-muted/10 p-4 space-y-4">
+                <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5 border-b pb-2 border-border/60">
+                  <Icon icon="solar:folder-with-files-line-duotone" className="size-4 text-vanixjnk" />
+                  Cấu hình mở rộng
+                </h4>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[12px] font-bold text-foreground">Sản phẩm nổi bật</span>
+                    <span className="text-[10px] text-muted-foreground">Ghim lên tiêu điểm trang chủ.</span>
+                  </div>
+                  <Switch
+                    checked={formData.isFeatured || false}
+                    onCheckedChange={(val) => setFormData((prev) => ({ ...prev, isFeatured: val }))}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-foreground">Loại sản phẩm</label>
+                  <Select
+                    value={formData.type}
+                    onValueChange={(val) => setFormData((prev) => ({ ...prev, type: val }))}
+                  >
+                    <SelectTrigger className="h-9 text-[13px] w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="source_code" className="text-[13px]">
+                        <span className="flex items-center gap-2">
+                          <Icon icon="solar:code-line-duotone" className="size-3.5 shrink-0 text-blue-500" />
+                          <span>Mã nguồn</span>
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="tool" className="text-[13px]">
+                        <span className="flex items-center gap-2">
+                          <Icon icon="solar:tuning-line-duotone" className="size-3.5 shrink-0 text-indigo-500" />
+                          <span>Công cụ / Tool</span>
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="app" className="text-[13px]">
+                        <span className="flex items-center gap-2">
+                          <Icon icon="solar:smartphone-line-duotone" className="size-3.5 shrink-0 text-emerald-500" />
+                          <span>Ứng dụng / App</span>
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="bot" className="text-[13px]">
+                        <span className="flex items-center gap-2">
+                          <Icon icon="solar:cpu-line-duotone" className="size-3.5 shrink-0 text-purple-500" />
+                          <span>Robot / Bot</span>
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="extension" className="text-[13px]">
+                        <span className="flex items-center gap-2">
+                          <Icon icon="solar:widget-2-line-duotone" className="size-3.5 shrink-0 text-amber-500" />
+                          <span>Tiện ích mở rộng</span>
+                        </span>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-foreground">Nhãn huy hiệu nổi bật (Badge)</label>
+                  <Input
+                    value={formData.badge}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, badge: e.target.value }))}
+                    className="h-9 text-[13px]"
+                    placeholder="Ví dụ: HOT, NEW, SALE, BETA"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-foreground">Bản quyền giấy phép (License)</label>
+                  <Select
+                    value={formData.licenseType}
+                    onValueChange={(val) => setFormData((prev) => ({ ...prev, licenseType: val }))}
+                  >
+                    <SelectTrigger className="h-9 text-[13px] w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="single" className="text-[13px]">
+                        <span className="flex items-center gap-2">
+                          <Icon icon="solar:user-rounded-line-duotone" className="size-3.5 shrink-0 text-blue-500" />
+                          <span>Single License (Sử dụng đơn)</span>
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="extended" className="text-[13px]">
+                        <span className="flex items-center gap-2">
+                          <Icon icon="solar:users-group-two-rounded-line-duotone" className="size-3.5 shrink-0 text-indigo-500" />
+                          <span>Extended License (Sử dụng mở rộng)</span>
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="subscription" className="text-[13px]">
+                        <span className="flex items-center gap-2">
+                          <Icon icon="solar:calendar-mark-line-duotone" className="size-3.5 shrink-0 text-purple-500" />
+                          <span>Subscription License (Định kỳ)</span>
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="free" className="text-[13px]">
+                        <span className="flex items-center gap-2">
+                          <Icon icon="solar:gift-line-duotone" className="size-3.5 shrink-0 text-emerald-500" />
+                          <span>Free / Open-Source (Miễn phí)</span>
+                        </span>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="border border-border/60 rounded-xl bg-muted/10 p-4 space-y-3">
+                <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5 border-b pb-2 border-border/60">
+                  <Icon icon="solar:gallery-line-duotone" className="size-4 text-vanixjnk" />
+                  Ảnh đại diện sản phẩm (Thumbnail)
+                </h4>
+
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={formData.thumbnail || ""}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, thumbnail: e.target.value }))}
+                    placeholder="Đường dẫn ảnh bìa..."
+                    className="h-9 text-[13px] flex-1"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setGalleryTarget({ type: "thumbnail" });
+                      setGalleryOpen(true);
+                    }}
+                    className="size-9 flex items-center justify-center bg-vanixjnk/10 text-vanixjnk border border-vanixjnk/20 rounded-md hover:bg-vanixjnk/20 transition-colors shrink-0 cursor-pointer"
+                    title="Chọn ảnh"
+                  >
+                    <Icon icon="solar:gallery-line-duotone" className="size-5" />
+                  </button>
+                </div>
+
+                <div className="flex flex-col justify-center border border-border/50 rounded-xl bg-muted/20 min-h-[120px] p-2 items-center text-center overflow-hidden">
+                  {formData.thumbnail ? (
+                    <img src={formData.thumbnail} alt="Thumbnail preview" className="max-h-24 w-auto object-contain rounded-lg shadow-sm" />
+                  ) : (
+                    <span className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+                      <Icon icon="solar:gallery-remove-line-duotone" /> Chưa có ảnh bìa
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="border border-border/60 rounded-xl bg-muted/10 p-4 space-y-3">
+                <div className="flex flex-col gap-0.5 border-b pb-2 border-border/60">
+                  <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                    <Icon icon="solar:widget-add-line-duotone" className="size-4 text-vanixjnk" />
+                    Thành phần UI (MDX & Shadcn)
+                  </h4>
+                  <span className="text-[10px] text-muted-foreground">Click để chèn nhanh component tại con trỏ</span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  {UI_COMPONENTS_TEMPLATES.map((comp) => (
+                    <button
+                      key={`side-${comp.name}`}
+                      type="button"
+                      onClick={() => insertAtCursor(comp.template)}
+                      className="flex flex-col items-start gap-1 p-2 rounded-lg bg-background border border-border/60 hover:border-vanixjnk/40 hover:bg-vanixjnk/5 transition-all duration-200 group text-left w-full shadow-2xs cursor-pointer"
+                    >
+                      <div className="flex items-center gap-1.5 w-full">
+                        <div className="size-6 rounded-md bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-vanixjnk/10 group-hover:text-vanixjnk transition-colors shrink-0">
+                          <Icon icon={comp.icon} className="size-4" />
+                        </div>
+                        <span className="text-[11px] font-bold text-foreground group-hover:text-vanixjnk transition-colors truncate">
+                          {comp.name}
+                        </span>
+                      </div>
+                      <span className="text-[9px] text-muted-foreground line-clamp-1">
+                        {comp.description}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
