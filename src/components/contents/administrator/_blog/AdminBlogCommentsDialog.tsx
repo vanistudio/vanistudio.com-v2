@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Icon } from "@iconify/react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,16 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 import { useSetting } from "@/contexts/SettingContext";
 import { formatWithSiteTimezone } from "@/helpers/administrator/timezone.helper";
 
@@ -32,6 +42,7 @@ export function AdminBlogCommentsDialog({
 }: AdminBlogCommentsDialogProps) {
   const setting = useSetting();
   const siteTimezone = setting?.siteTimezone || "Asia/Ho_Chi_Minh";
+  const [commentToDelete, setCommentToDelete] = useState<string | null>(null);
 
   const { data: comments, isLoading, refetch } = trpc.blog.getComments.useQuery(
     { blogId: blog?.id || "" },
@@ -101,12 +112,8 @@ export function AdminBlogCommentsDialog({
 
   if (!blog) return null;
 
-  const handleDelete = async (commentId: string) => {
-    if (confirm("Bạn có chắc chắn muốn xóa bình luận này không? (Thao tác này sẽ xóa toàn bộ phản hồi liên quan)")) {
-      try {
-        await deleteMutation.mutateAsync({ commentId });
-      } catch {}
-    }
+  const handleDelete = (commentId: string) => {
+    setCommentToDelete(commentId);
   };
 
   const renderCommentItem = (comment: any, isReply = false) => {
@@ -225,6 +232,37 @@ export function AdminBlogCommentsDialog({
           )}
         </div>
       </DialogContent>
+
+      <AlertDialog open={!!commentToDelete} onOpenChange={(open) => !open && setCommentToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-rose-500 flex items-center gap-2">
+              <Icon icon="solar:danger-line-duotone" className="size-5" />
+              Xác nhận xóa bình luận
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Bạn có chắc chắn muốn xóa bình luận này không? Thao tác này sẽ xóa toàn bộ các phản hồi liên quan và không thể hoàn tác.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel size="sm">Hủy</AlertDialogCancel>
+            <AlertDialogAction
+              variant="danger"
+              size="sm"
+              onClick={async () => {
+                if (commentToDelete) {
+                  try {
+                    await deleteMutation.mutateAsync({ commentId: commentToDelete });
+                  } catch {}
+                  setCommentToDelete(null);
+                }
+              }}
+            >
+              Xác nhận xóa
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }

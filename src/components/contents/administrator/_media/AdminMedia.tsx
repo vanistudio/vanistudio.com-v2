@@ -9,6 +9,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { type GalleryItem } from "@/server/db/schemas/gallery.schema";
 import Link from "next/link";
@@ -597,39 +607,36 @@ export default function AdminMedia() {
           )}
         </SheetContent>
       </Sheet>
-      <Dialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-red-500">
+      <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-rose-500 flex items-center gap-2">
               <Icon icon="solar:danger-line-duotone" className="size-5" />
               <span>Xác nhận xóa tập tin?</span>
-            </DialogTitle>
-            <DialogDescription className="text-xs text-muted-foreground mt-1">
+            </AlertDialogTitle>
+            <AlertDialogDescription>
               Bạn có chắc chắn muốn xóa tập tin <span className="font-bold text-foreground break-all">"{itemToDelete?.fileName}"</span>? Hành động này không thể hoàn tác và các liên kết trỏ tới tệp tin này sẽ bị lỗi.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="gap-2 sm:gap-0 mt-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setItemToDelete(null)}
-              disabled={deleteMutation.isPending}
-            >
-              Hủy
-            </Button>
-            <Button
-              variant="destructive"
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel size="sm" disabled={deleteMutation.isPending}>Hủy</AlertDialogCancel>
+            <AlertDialogAction
+              variant="danger"
               size="sm"
               onClick={handleDeleteItem}
               disabled={deleteMutation.isPending}
               className="gap-1.5 font-bold"
             >
-              {deleteMutation.isPending && <Icon icon="solar:restart-line-duotone" className="animate-spin" />}
+              {deleteMutation.isPending ? (
+                <Icon icon="solar:restart-line-duotone" className="animate-spin" />
+              ) : (
+                <Icon icon="solar:trash-bin-trash-line-duotone" className="size-4" />
+              )}
               <span>Đồng ý xóa</span>
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
