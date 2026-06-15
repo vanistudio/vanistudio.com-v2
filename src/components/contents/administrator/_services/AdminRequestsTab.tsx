@@ -21,6 +21,9 @@ import { ColumnDef, SortingState } from "@tanstack/react-table";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
+import { useSetting } from "@/contexts/SettingContext";
+import { formatWithSiteTimezone } from "@/helpers/administrator/timezone.helper";
+
 function formatCurrencyInput(value: string | number): string {
   const strValue = String(value);
   const raw = strValue.replace(/\D/g, "");
@@ -34,6 +37,8 @@ function parseCurrencyInput(value: string): number {
 }
 
 export default function AdminRequestsTab() {
+  const setting = useSetting();
+  const siteTimezone = setting?.siteTimezone || "Asia/Ho_Chi_Minh";
   const { data: requestsData, isLoading: requestsLoading, refetch: refetchRequests, isFetching: requestsFetching } =
     trpc.administrator.services.getRequests.useQuery(undefined, { refetchOnWindowFocus: false });
 
@@ -264,7 +269,7 @@ export default function AdminRequestsTab() {
       header: ({ column }) => <DataTableColumnHeader column={column} />,
       cell: ({ row }) => (
         <span className="text-xs font-mono text-muted-foreground">
-          {new Date(row.original.createdAt).toLocaleDateString("vi-VN")}
+          {formatWithSiteTimezone(row.original.createdAt, siteTimezone, "DD/MM/YYYY")}
         </span>
       ),
     },
@@ -301,7 +306,7 @@ export default function AdminRequestsTab() {
         </Popover>
       ),
     },
-  ], [requestsPagination]);
+  ], [requestsPagination, siteTimezone]);
 
   return (
     <div className="p-6 space-y-6">

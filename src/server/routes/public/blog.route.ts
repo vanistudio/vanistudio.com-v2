@@ -42,6 +42,8 @@ export const publicBlogRouter = router({
           createdAt: blogComments.createdAt,
           user: {
             name: users.name,
+            email: users.email,
+            username: users.username,
             image: users.image,
           },
         })

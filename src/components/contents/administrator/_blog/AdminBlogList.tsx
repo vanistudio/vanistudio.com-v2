@@ -18,8 +18,14 @@ import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
 import { BlogMock } from "./types";
 import { QuickSeedBlogsDialog } from "./QuickSeedBlogsDialog";
+import { AdminBlogCommentsDialog } from "./AdminBlogCommentsDialog";
+import { useSetting } from "@/contexts/SettingContext";
+import { formatWithSiteTimezone } from "@/helpers/administrator/timezone.helper";
 
 export default function BlogList() {
+  const setting = useSetting();
+  const siteTimezone = setting?.siteTimezone || "Asia/Ho_Chi_Minh";
+
   const router = useRouter();
   const [origin, setOrigin] = useState("");
 
@@ -52,6 +58,8 @@ export default function BlogList() {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewBlog, setPreviewBlog] = useState<any | null>(null);
   const [seedDialogOpen, setSeedDialogOpen] = useState(false);
+  const [commentsDialogOpen, setCommentsDialogOpen] = useState(false);
+  const [commentsBlog, setCommentsBlog] = useState<any | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -279,13 +287,7 @@ export default function BlogList() {
         const dateStr = row.getValue("createdAt") as string;
         return (
           <span className="text-xs font-mono text-muted-foreground">
-            {new Date(dateStr).toLocaleDateString("vi-VN", {
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
+            {formatWithSiteTimezone(dateStr, siteTimezone, "DD/MM/YYYY HH:mm")}
           </span>
         );
       },
@@ -328,6 +330,17 @@ export default function BlogList() {
             </Button>
             <Button
               variant="ghost"
+              className="w-full justify-start text-xs h-8 px-2 text-foreground hover:bg-muted/50"
+              onClick={() => {
+                setCommentsBlog(row.original);
+                setCommentsDialogOpen(true);
+              }}
+            >
+              <Icon icon="solar:chat-line-line-duotone" className="mr-2 size-3.5 text-vanixjnk" />
+              Bình luận
+            </Button>
+            <Button
+              variant="ghost"
               className="w-full justify-start text-xs h-8 px-2 text-vanixjnk hover:text-vanixjnk hover:bg-vanixjnk/10"
               onClick={() => handleEdit(row.original)}
             >
@@ -346,7 +359,7 @@ export default function BlogList() {
         </Popover>
       ),
     },
-  ], [pagination]);
+  ], [pagination, siteTimezone]);
 
   const renderMarkdown = (text: string) => {
     return <MdxRenderer content={text} scope={{ formData: previewBlog }} />;
@@ -617,7 +630,7 @@ export default function BlogList() {
                       <span className="flex items-center gap-1">
                         <Icon icon="solar:calendar-line-duotone" />
                         {previewBlog.publishedAt 
-                          ? new Date(previewBlog.publishedAt).toLocaleDateString("vi-VN") 
+                          ? formatWithSiteTimezone(previewBlog.publishedAt, siteTimezone, "DD/MM/YYYY") 
                           : "Bản nháp"
                         }
                       </span>
@@ -638,6 +651,12 @@ export default function BlogList() {
         open={seedDialogOpen}
         onOpenChange={setSeedDialogOpen}
         onSuccess={() => refetch()}
+      />
+
+      <AdminBlogCommentsDialog
+        open={commentsDialogOpen}
+        onOpenChange={setCommentsDialogOpen}
+        blog={commentsBlog}
       />
     </div>
   );

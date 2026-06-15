@@ -18,8 +18,13 @@ import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
 import { CmsPageMock } from "./types";
 import { QuickSeedCmsPagesDialog } from "./QuickSeedCmsPagesDialog";
+import { useSetting } from "@/contexts/SettingContext";
+import { formatWithSiteTimezone } from "@/helpers/administrator/timezone.helper";
 
 export default function CmsPageList() {
+  const setting = useSetting();
+  const siteTimezone = setting?.siteTimezone || "Asia/Ho_Chi_Minh";
+
   const router = useRouter();
   const [origin, setOrigin] = useState("");
 
@@ -225,13 +230,7 @@ export default function CmsPageList() {
         const dateStr = row.getValue("createdAt") as string;
         return (
           <span className="text-xs font-mono text-muted-foreground">
-            {new Date(dateStr).toLocaleDateString("vi-VN", {
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
+            {formatWithSiteTimezone(dateStr, siteTimezone, "DD/MM/YYYY HH:mm")}
           </span>
         );
       },
@@ -292,7 +291,7 @@ export default function CmsPageList() {
         </Popover>
       ),
     },
-  ], [pagination]);
+  ], [pagination, siteTimezone]);
 
   const renderMarkdown = (text: string) => {
     return <MdxRenderer content={text} scope={{ formData: previewPage }} />;
@@ -563,7 +562,7 @@ export default function CmsPageList() {
                       <span className="flex items-center gap-1">
                         <Icon icon="solar:calendar-line-duotone" />
                         {previewPage.publishedAt 
-                          ? new Date(previewPage.publishedAt).toLocaleDateString("vi-VN") 
+                          ? formatWithSiteTimezone(previewPage.publishedAt, siteTimezone, "DD/MM/YYYY") 
                           : "Bản nháp"
                         }
                       </span>
