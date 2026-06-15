@@ -56,6 +56,7 @@ export default function BlogEditor({ mode, initialId }: BlogEditorProps) {
     }
   );
 
+  const utils = trpc.useUtils();
   const createMutation = trpc.administrator.blog.create.useMutation();
   const updateMutation = trpc.administrator.blog.update.useMutation();
 
@@ -164,6 +165,7 @@ export default function BlogEditor({ mode, initialId }: BlogEditorProps) {
         });
         toast.success("Thêm mới bài viết Blog thành công!");
       }
+      utils.administrator.blog.getStats.invalidate();
       router.push("/adminPanel/blog");
       router.refresh();
     } catch (err: any) {

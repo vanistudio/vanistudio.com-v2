@@ -2,11 +2,115 @@ import { db } from "@/server/db";
 import { blogs, type Blog, type NewBlog } from "@/server/db/schemas/blog.schema";
 import { users } from "@/server/db/schemas/user.schema";
 import { DEFAULT_BLOGS } from "@/defaults/blog.default";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, asc, or, and, like, sql, count } from "drizzle-orm";
+
+export interface GetBlogsParams {
+  search?: string;
+  page?: number;
+  limit?: number;
+  sortField?: string;
+  sortOrder?: "asc" | "desc";
+  isActive?: boolean;
+}
 
 export class BlogRepository {
   async getBlogs(): Promise<Blog[]> {
     return await db.select().from(blogs).orderBy(desc(blogs.createdAt));
+  }
+
+  async getBlogsList(params: GetBlogsParams) {
+    const page = params.page || 1;
+    const limit = params.limit || 10;
+    const offset = (page - 1) * limit;
+
+    let whereClause: any = undefined;
+    if (params.search && params.search.trim()) {
+      const searchPattern = `%${params.search.trim()}%`;
+      whereClause = or(
+        like(blogs.title, searchPattern),
+        like(blogs.slug, searchPattern),
+        like(blogs.description, searchPattern)
+      );
+    }
+
+    if (params.isActive !== undefined) {
+      whereClause = whereClause
+        ? and(whereClause, eq(blogs.isActive, params.isActive))
+        : eq(blogs.isActive, params.isActive);
+    }
+
+    const sortField = params.sortField || "createdAt";
+    const sortOrder = params.sortOrder || "desc";
+
+    let orderBySpec;
+    if (sortField === "title") {
+      orderBySpec = sortOrder === "desc" ? desc(blogs.title) : asc(blogs.title);
+    } else if (sortField === "views") {
+      orderBySpec = sortOrder === "desc" ? desc(blogs.views) : asc(blogs.views);
+    } else if (sortField === "likes") {
+      orderBySpec = sortOrder === "desc" ? desc(blogs.likes) : asc(blogs.likes);
+    } else {
+      orderBySpec = sortOrder === "desc" ? desc(blogs.createdAt) : asc(blogs.createdAt);
+    }
+
+    const [countResult] = await db
+      .select({ count: count() })
+      .from(blogs)
+      .where(whereClause);
+    const total = Number(countResult?.count || 0);
+
+    const rawItems = await db
+      .select({
+        id: blogs.id,
+        title: blogs.title,
+        slug: blogs.slug,
+        description: blogs.description,
+        thumbnail: blogs.thumbnail,
+        isActive: blogs.isActive,
+        isFeatured: blogs.isFeatured,
+        views: blogs.views,
+        likes: blogs.likes,
+        readingTime: blogs.readingTime,
+        publishedAt: blogs.publishedAt,
+        createdAt: blogs.createdAt,
+        updatedAt: blogs.updatedAt,
+        author: {
+          name: users.name,
+        },
+      })
+      .from(blogs)
+      .leftJoin(users, eq(blogs.authorId, users.id))
+      .where(whereClause)
+      .orderBy(orderBySpec)
+      .limit(limit)
+      .offset(offset);
+
+    const items = rawItems.map(item => ({
+      ...item,
+      content: "",
+      author: item.author,
+    }));
+
+    const [statsResult] = await db
+      .select({
+        totalBlogs: sql<number>`count(*)`,
+        activeBlogs: sql<number>`count(case when is_active = true then 1 end)`,
+        featuredBlogs: sql<number>`count(case when is_featured = true then 1 end)`,
+      })
+      .from(blogs);
+
+    return {
+      items,
+      total,
+      totalPages: Math.ceil(total / limit),
+      page,
+      limit,
+      stats: {
+        totalBlogs: Number(statsResult?.totalBlogs || 0),
+        activeBlogs: Number(statsResult?.activeBlogs || 0),
+        featuredBlogs: Number(statsResult?.featuredBlogs || 0),
+      },
+    };
   }
 
   async getBlogById(id: string): Promise<Blog | null> {

@@ -9,6 +9,7 @@ import { cmsRouter } from "./cms.route";
 import { blogRouter } from "./blog.route";
 import { servicesRouter } from "./services.route";
 import { projectsRouter } from "./projects.route";
+import { productsRouter } from "./products.route";
 
 export const administratorRouter = router({
   menu: menuRouter,
@@ -21,5 +22,6 @@ export const administratorRouter = router({
   blog: blogRouter,
   services: servicesRouter,
   projects: projectsRouter,
+  products: productsRouter,
 });
 

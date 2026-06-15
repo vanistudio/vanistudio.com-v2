@@ -6,6 +6,24 @@ export class BlogService {
     return await blogRepository.getBlogs();
   }
 
+  async getBlogsList(params: any) {
+    const result = await blogRepository.getBlogsList(params);
+    return {
+      resultCode: 0,
+      message: "Success",
+      data: {
+        items: result.items,
+        stats: result.stats,
+        pagination: {
+          page: result.page,
+          limit: result.limit,
+          total: result.total,
+          totalPages: result.totalPages,
+        },
+      },
+    };
+  }
+
   async getBlogById(id: string): Promise<Blog | null> {
     return await blogRepository.getBlogById(id);
   }

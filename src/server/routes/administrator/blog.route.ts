@@ -106,6 +106,29 @@ export const blogRouter = router({
     }
   }),
 
+  getStats: publicProcedure
+    .input(
+      z.object({
+        search: z.string().optional(),
+        page: z.number().int().default(1),
+        limit: z.number().int().default(10),
+        sortField: z.string().optional(),
+        sortOrder: z.enum(["asc", "desc"]).default("desc"),
+        isActive: z.boolean().optional(),
+      })
+    )
+    .query(async ({ input }) => {
+      await ensureAdmin();
+      try {
+        return await blogService.getBlogsList(input);
+      } catch (error: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message || "Không thể tải danh sách bài viết Blog",
+        });
+      }
+    }),
+
   getById: publicProcedure
     .input(z.object({ id: z.string().uuid("ID không hợp lệ") }))
     .query(async ({ input }) => {

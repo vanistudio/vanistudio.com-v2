@@ -35,18 +35,6 @@ export default function BlogList() {
     }
   }, []);
 
-  const { data: serverBlogs, isLoading, refetch, isFetching } = trpc.administrator.blog.getAll.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-  });
-
-  const deleteMutation = trpc.administrator.blog.delete.useMutation({
-    onSuccess: () => {
-      refetch();
-    },
-  });
-
-  const blogs = serverBlogs || [];
-
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
@@ -68,6 +56,34 @@ export default function BlogList() {
     }, 300);
     return () => clearTimeout(timer);
   }, [searchTerm]);
+
+  useEffect(() => {
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+  }, [filterActive]);
+
+  const sortField = sorting[0]?.id || "createdAt";
+  const sortOrder = sorting[0]?.desc ? ("desc" as const) : ("asc" as const);
+  const isActiveParam = filterActive === "all" ? undefined : filterActive === "active";
+
+  const { data: statsData, isLoading, refetch, isFetching } = trpc.administrator.blog.getStats.useQuery(
+    {
+      search: debouncedSearch,
+      page: pagination.pageIndex + 1,
+      limit: pagination.pageSize,
+      sortField,
+      sortOrder,
+      isActive: isActiveParam,
+    },
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  const deleteMutation = trpc.administrator.blog.delete.useMutation({
+    onSuccess: () => {
+      refetch();
+    },
+  });
 
   const handleCreateNew = () => {
     router.push("/adminPanel/blog/create");
@@ -95,52 +111,7 @@ export default function BlogList() {
     }
   };
 
-  const filteredBlogs = useMemo(() => {
-    let result = [...blogs];
-
-    if (debouncedSearch) {
-      result = result.filter(
-        (blog) =>
-          blog.title.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-          blog.slug.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-          (blog.description && blog.description.toLowerCase().includes(debouncedSearch.toLowerCase()))
-      );
-    }
-
-    if (filterActive !== "all") {
-      result = result.filter((blog) =>
-        filterActive === "active" ? blog.isActive : !blog.isActive
-      );
-    }
-
-    if (sorting.length > 0) {
-      const { id, desc } = sorting[0];
-      result.sort((a: any, b: any) => {
-        const valA = a[id];
-        const valB = b[id];
-        if (valA === undefined || valB === undefined) return 0;
-        if (typeof valA === "string" && typeof valB === "string") {
-          return desc ? valB.localeCompare(valA) : valA.localeCompare(valB);
-        }
-        if (typeof valA === "boolean" && typeof valB === "boolean") {
-          return desc ? (valA === valB ? 0 : valA ? -1 : 1) : (valA === valB ? 0 : valA ? 1 : -1);
-        }
-        return desc
-          ? new Date(valB).getTime() - new Date(valA).getTime()
-          : new Date(valA).getTime() - new Date(valB).getTime();
-      });
-    }
-
-    return result;
-  }, [blogs, debouncedSearch, filterActive, sorting]);
-
-  const paginatedBlogs = useMemo(() => {
-    const start = pagination.pageIndex * pagination.pageSize;
-    const end = start + pagination.pageSize;
-    return filteredBlogs.slice(start, end);
-  }, [filteredBlogs, pagination]);
-
-  const columns = React.useMemo<ColumnDef<BlogMock>[]>(() => [
+  const columns = React.useMemo<ColumnDef<any>[]>(() => [
     {
       id: "index",
       header: "#",
@@ -212,7 +183,7 @@ export default function BlogList() {
         }
         return (
           <div className="flex flex-wrap gap-1 max-w-[150px]">
-            {tags.map((tag) => (
+            {tags.map((tag: string) => (
               <Badge key={tag} variant="secondary" className="px-1.5 py-0 text-[10px] font-normal font-sans bg-muted/65 text-muted-foreground hover:bg-muted/65 border-none">
                 {tag}
               </Badge>
@@ -405,7 +376,7 @@ export default function BlogList() {
                 <div className="space-y-1">
                   <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Tổng số bài viết</p>
                   <h3 className="text-2xl font-extrabold text-foreground tracking-tight">
-                    {isLoading ? <Skeleton className="h-8 w-16" /> : blogs.length}
+                    {isLoading ? <Skeleton className="h-8 w-16" /> : statsData?.data.stats.totalBlogs}
                   </h3>
                 </div>
                 <div className="size-10 rounded-lg text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 flex items-center justify-center shrink-0">
@@ -417,7 +388,7 @@ export default function BlogList() {
                 <div className="space-y-1">
                   <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Đã xuất bản</p>
                   <h3 className="text-2xl font-extrabold text-foreground tracking-tight">
-                    {isLoading ? <Skeleton className="h-8 w-16" /> : blogs.filter((b) => b.isActive).length}
+                    {isLoading ? <Skeleton className="h-8 w-16" /> : statsData?.data.stats.activeBlogs}
                   </h3>
                 </div>
                 <div className="size-10 rounded-lg text-green-500 bg-green-500/10 border border-green-500/25 flex items-center justify-center shrink-0">
@@ -429,7 +400,7 @@ export default function BlogList() {
                 <div className="space-y-1">
                   <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Bản nháp</p>
                   <h3 className="text-2xl font-extrabold text-foreground tracking-tight">
-                    {isLoading ? <Skeleton className="h-8 w-16" /> : blogs.filter((b) => !b.isActive).length}
+                    {isLoading ? <Skeleton className="h-8 w-16" /> : ((statsData?.data.stats.totalBlogs || 0) - (statsData?.data.stats.activeBlogs || 0))}
                   </h3>
                 </div>
                 <div className="size-10 rounded-lg text-amber-500 bg-amber-500/10 border border-amber-500/25 flex items-center justify-center shrink-0">
@@ -490,11 +461,11 @@ export default function BlogList() {
 
               <DataTable
                 columns={columns}
-                data={paginatedBlogs}
+                data={statsData?.data.items || []}
                 isLoading={isLoading}
                 searchPlaceholder="Tìm kiếm theo tiêu đề hoặc slug..."
-                pageCount={Math.ceil(filteredBlogs.length / pagination.pageSize)}
-                totalRecords={filteredBlogs.length}
+                pageCount={statsData?.data.pagination.totalPages || 0}
+                totalRecords={statsData?.data.pagination.total || 0}
                 pagination={pagination}
                 onPaginationChange={setPagination}
                 sorting={sorting}

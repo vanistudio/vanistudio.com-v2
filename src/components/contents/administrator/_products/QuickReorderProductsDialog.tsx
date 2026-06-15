@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -8,8 +6,7 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { DEFAULT_BLOGS } from "@/defaults/blog.default";
-import { type NewBlog } from "@/server/db/schemas/blog.schema";
+import type { Product } from "@/server/db/schemas/product.schema";
 
 import {
   DndContext,
@@ -29,31 +26,29 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-interface QuickSeedBlogsDialogProps {
+interface QuickReorderProductsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
 }
 
-type BlogTemplate = Omit<NewBlog, "id" | "createdAt" | "updatedAt">;
-
 function SortableItem({
-  tempId,
-  title,
-  slug,
-  description,
+  id,
+  name,
+  sortOrder,
   indexNo,
-  isActive,
+  thumbnail,
+  type,
 }: {
-  tempId: string;
-  title: string;
-  slug: string;
-  description?: string | null;
+  id: string;
+  name: string;
+  sortOrder: number;
   indexNo: number;
-  isActive: boolean;
+  thumbnail?: string | null;
+  type?: string | null;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: tempId,
+    id: `item-${id}`,
   });
 
   const style = {
@@ -79,73 +74,78 @@ function SortableItem({
         <Badge variant="outline" className="bg-muted text-muted-foreground font-mono font-bold shrink-0">
           #{indexNo + 1}
         </Badge>
-        <div className="size-8 rounded bg-vanixjnk/10 text-vanixjnk flex items-center justify-center shrink-0 border border-vanixjnk/20">
-          <Icon icon="solar:document-text-line-duotone" className="size-4.5" />
+        <div className="size-8 rounded-lg border border-border bg-muted/40 overflow-hidden flex items-center justify-center shrink-0">
+          {thumbnail ? (
+            <img src={thumbnail} alt={name} className="size-full object-cover" />
+          ) : (
+            <Icon icon="solar:box-line-duotone" className="size-4 text-muted-foreground" />
+          )}
         </div>
-        <div className="flex flex-col min-w-0">
-          <span className="text-[13px] font-bold text-foreground line-clamp-2 leading-snug">{title}</span>
-          <span className="text-[10px] text-muted-foreground truncate">/blog/{slug}</span>
+        <div className="flex flex-col min-w-0 text-left">
+          <span className="text-[13px] font-bold text-foreground truncate">{name}</span>
+          {type && (
+            <div className="mt-0.5">
+              <Badge variant="secondary" className="font-semibold text-[9px] py-0.5 capitalize shadow-none">
+                {type}
+              </Badge>
+            </div>
+          )}
         </div>
       </div>
-      <Badge variant={isActive ? "success" : "destructive"} className="text-[9px] font-bold shrink-0">
-        {isActive ? "Hiển thị" : "Nháp"}
+      <Badge variant="secondary" className="text-[10px] opacity-75 shrink-0">
+        STT: {sortOrder}
       </Badge>
     </div>
   );
 }
 
-export function QuickSeedBlogsDialog({
+export function QuickReorderProductsDialog({
   open,
   onOpenChange,
   onSuccess,
-}: QuickSeedBlogsDialogProps) {
-  const [items, setItems] = useState<(BlogTemplate & { tempId: string })[]>([]);
+}: QuickReorderProductsDialogProps) {
+  const [items, setItems] = useState<Product[]>([]);
   const utils = trpc.useUtils();
+  const productsQuery = trpc.administrator.products.getAll.useQuery(
+    undefined,
+    { enabled: open }
+  );
+
+  const isLoading = productsQuery.isLoading;
 
   useEffect(() => {
     if (!open) {
       setItems([]);
       return;
     }
-    const initial = DEFAULT_BLOGS.map((blog, index) => ({
-      ...blog,
-      tempId: `default-${index}`,
-    }));
-    setItems(initial);
-  }, [open]);
+    if (productsQuery.data) {
+      setItems(
+        productsQuery.data
+          .slice()
+          .sort((a: any, b: any) => Number(a.order || 0) - Number(b.order || 0))
+      );
+    } else {
+      setItems([]);
+    }
+  }, [open, productsQuery.data]);
 
-  const seedMutation = trpc.administrator.blog.seedBlogs.useMutation();
+  const reorderMutation = trpc.administrator.products.reorderProducts.useMutation();
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
     setIsSaving(true);
-    const payload = items.map((item) => ({
-      title: item.title,
-      slug: item.slug,
-      description: item.description,
-      content: item.content,
-      thumbnail: item.thumbnail,
-      metaTitle: item.metaTitle,
-      metaDescription: item.metaDescription,
-      metaKeywords: item.metaKeywords,
-      isActive: item.isActive,
-      isFeatured: item.isFeatured,
-      views: item.views,
-      likes: item.likes,
-      readingTime: item.readingTime,
-      tags: item.tags,
-      authorId: item.authorId,
-      publishedAt: item.publishedAt ? new Date(item.publishedAt) : new Date(),
+    const payload = items.map((item, idx) => ({
+      id: item.id,
+      order: idx + 1,
     }));
     try {
-      const res = await seedMutation.mutateAsync({ customBlogs: payload });
-      toast.success(res.message || "Đổ dữ liệu mẫu thành công!");
-      utils.administrator.blog.getAll.invalidate();
-      utils.administrator.blog.getStats.invalidate();
+      await reorderMutation.mutateAsync(payload);
+      toast.success("Đã cập nhật thứ tự hiển thị sản phẩm!");
+      utils.administrator.products.getAll.invalidate();
       if (onSuccess) onSuccess();
       onOpenChange(false);
     } catch (err: any) {
-      toast.error("Lỗi khi đổ dữ liệu mẫu: " + err.message);
+      toast.error("Lỗi khi lưu thứ tự: " + err.message);
     } finally {
       setIsSaving(false);
     }
@@ -165,15 +165,15 @@ export function QuickSeedBlogsDialog({
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    const oldIndex = items.findIndex((item) => item.tempId === active.id);
-    const newIndex = items.findIndex((item) => item.tempId === over.id);
+    const oldIndex = items.findIndex((item) => `item-${item.id}` === active.id);
+    const newIndex = items.findIndex((item) => `item-${item.id}` === over.id);
 
     if (oldIndex !== -1 && newIndex !== -1) {
       setItems(arrayMove(items, oldIndex, newIndex));
     }
   };
 
-  const tempIds = useMemo(() => items.map((item) => item.tempId), [items]);
+  const itemIds = useMemo(() => items.map((item) => `item-${item.id}`), [items]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -181,35 +181,40 @@ export function QuickSeedBlogsDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
             <div className="size-8 rounded-full bg-vanixjnk/10 text-vanixjnk flex items-center justify-center">
-              <Icon icon="solar:database-line-duotone" className="size-5" />
+              <Icon icon="solar:sort-by-time-line-duotone" className="size-5" />
             </div>
-            Đổ dữ liệu mẫu bài viết Blog
+            Sắp xếp thứ tự sản phẩm
           </DialogTitle>
           <DialogDescription className="text-left mt-1 text-[13px]">
-            Sắp xếp thứ tự của các bài viết Blog mẫu trước khi gieo vào hệ thống.
+            Kéo thả để sắp xếp thứ tự hiển thị của các Sản phẩm trên trang công khai.
           </DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col gap-6 py-4 px-1">
           <div className="overflow-y-auto min-h-[150px] max-h-[45vh] custom-scrollbar pr-1 flex flex-col gap-2">
-            {items.length === 0 ? (
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center py-10 gap-3 text-muted-foreground">
+                <Icon icon="solar:restart-line-duotone" className="size-8 animate-spin text-vanixjnk" />
+                <span className="text-[13px] font-medium">Đang tải dữ liệu...</span>
+              </div>
+            ) : items.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-10 text-center text-muted-foreground">
-                <Icon icon="solar:gallery-minimalistic-line-duotone" className="size-10 opacity-30 mb-2" />
-                <span className="text-[13px]">Không tìm thấy dữ liệu mẫu.</span>
+                <Icon icon="solar:box-line-duotone" className="size-10 opacity-30 mb-2" />
+                <span className="text-[13px]">Chưa có sản phẩm nào.</span>
               </div>
             ) : (
               <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                <SortableContext items={tempIds} strategy={verticalListSortingStrategy}>
+                <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
                   <div className="flex flex-col gap-2">
                     {items.map((item, idx) => (
                       <SortableItem
-                        key={item.tempId}
-                        tempId={item.tempId}
-                        title={item.title}
-                        slug={item.slug}
-                        description={item.description}
+                        key={item.id}
+                        id={item.id}
+                        name={item.name}
+                        sortOrder={item.order}
                         indexNo={idx}
-                        isActive={!!item.isActive}
+                        thumbnail={item.thumbnail}
+                        type={item.type}
                       />
                     ))}
                   </div>
@@ -225,18 +230,18 @@ export function QuickSeedBlogsDialog({
             <Button
               variant="vanixjnk"
               className="flex-1"
-              disabled={items.length === 0 || isSaving}
+              disabled={isLoading || items.length === 0 || isSaving}
               onClick={handleSave}
             >
               {isSaving ? (
                 <>
                   <Icon icon="solar:restart-line-duotone" className="size-4 animate-spin mr-2" />
-                  Đang xử lý...
+                  Đang lưu...
                 </>
               ) : (
                 <>
                   <Icon icon="solar:check-circle-line-duotone" className="size-4 mr-2" />
-                  Xác nhận đổ dữ liệu
+                  Lưu thứ tự mới
                 </>
               )}
             </Button>
