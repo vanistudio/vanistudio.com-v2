@@ -10,7 +10,7 @@ export class BlogService {
     return await blogRepository.getBlogById(id);
   }
 
-  async getBlogBySlug(slug: string): Promise<Blog | null> {
+  async getBlogBySlug(slug: string): Promise<(Blog & { author?: { name: string | null } | null }) | null> {
     return await blogRepository.getBlogBySlug(slug);
   }
 

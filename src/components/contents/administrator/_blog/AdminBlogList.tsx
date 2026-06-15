@@ -171,12 +171,18 @@ export default function BlogList() {
       cell: ({ row }) => {
         const title = row.getValue("title") as string;
         const slug = row.original.slug;
+        const isFeatured = row.original.isFeatured;
         return (
-          <div className="flex flex-col gap-0.5">
+          <div className="flex flex-col gap-1">
             <span
-              className="text-[13px] font-bold text-foreground hover:text-vanixjnk transition-colors cursor-pointer"
+              className="text-[13px] font-bold text-foreground hover:text-vanixjnk transition-colors cursor-pointer flex items-center gap-1.5 flex-wrap"
               onClick={() => handleEdit(row.original)}
             >
+              {isFeatured && (
+                <Badge variant="secondary" className="px-1.5 py-0 text-[9px] uppercase tracking-wider bg-amber-500/10 text-amber-500 hover:bg-amber-500/10 border border-amber-500/25 shrink-0">
+                  Nổi bật
+                </Badge>
+              )}
               {title}
             </span>
             <span className="text-[10px] font-mono text-muted-foreground flex items-center gap-1">
@@ -188,13 +194,61 @@ export default function BlogList() {
       },
     },
     {
+      accessorKey: "tags",
+      meta: { title: "Thẻ" },
+      header: "Thẻ",
+      cell: ({ row }) => {
+        const tags = row.original.tags || [];
+        if (tags.length === 0) {
+          return <span className="text-[11px] italic text-muted-foreground/60">(Không có thẻ)</span>;
+        }
+        return (
+          <div className="flex flex-wrap gap-1 max-w-[150px]">
+            {tags.map((tag) => (
+              <Badge key={tag} variant="secondary" className="px-1.5 py-0 text-[10px] font-normal font-sans bg-muted/65 text-muted-foreground hover:bg-muted/65 border-none">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        );
+      },
+    },
+    {
+      id: "stats",
+      meta: { title: "Chỉ số" },
+      header: "Chỉ số",
+      cell: ({ row }) => {
+        const views = row.original.views ?? 0;
+        const likes = row.original.likes ?? 0;
+        const readingTime = row.original.readingTime ?? 0;
+        return (
+          <div className="flex flex-col gap-1 text-[11px] text-muted-foreground font-medium">
+            <div className="flex items-center gap-1">
+              <Icon icon="solar:eye-line-duotone" className="size-3.5 text-muted-foreground/80" />
+              <span>{views} lượt xem</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Icon icon="solar:heart-line-duotone" className="size-3.5 text-red-500/80" />
+              <span>{likes} lượt thích</span>
+            </div>
+            {readingTime > 0 && (
+              <div className="flex items-center gap-1 text-vanixjnk">
+                <Icon icon="solar:clock-circle-line-duotone" className="size-3.5" />
+                <span>{readingTime} phút đọc</span>
+              </div>
+            )}
+          </div>
+        );
+      },
+    },
+    {
       accessorKey: "description",
       meta: { title: "Mô tả ngắn" },
       header: ({ column }) => <DataTableColumnHeader column={column} />,
       cell: ({ row }) => {
         const desc = row.getValue("description") as string;
         return (
-          <span className="text-xs text-muted-foreground max-w-[280px] block truncate font-medium">
+          <span className="text-xs text-muted-foreground max-w-[200px] block truncate font-medium">
             {desc || <span className="italic text-muted-foreground/60">(Không có mô tả)</span>}
           </span>
         );

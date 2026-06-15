@@ -1,5 +1,6 @@
 import { db } from "@/server/db";
 import { blogs, type Blog, type NewBlog } from "@/server/db/schemas/blog.schema";
+import { users } from "@/server/db/schemas/user.schema";
 import { DEFAULT_BLOGS } from "@/defaults/blog.default";
 import { eq, desc } from "drizzle-orm";
 
@@ -13,9 +14,25 @@ export class BlogRepository {
     return blog || null;
   }
 
-  async getBlogBySlug(slug: string): Promise<Blog | null> {
-    const [blog] = await db.select().from(blogs).where(eq(blogs.slug, slug)).limit(1);
-    return blog || null;
+  async getBlogBySlug(slug: string): Promise<(Blog & { author?: { name: string | null } | null }) | null> {
+    const results = await db
+      .select({
+        blog: blogs,
+        author: {
+          name: users.name,
+        },
+      })
+      .from(blogs)
+      .leftJoin(users, eq(blogs.authorId, users.id))
+      .where(eq(blogs.slug, slug))
+      .limit(1);
+
+    if (results.length === 0) return null;
+    const { blog, author } = results[0];
+    return {
+      ...blog,
+      author,
+    };
   }
 
   async seedDefaultBlogs(customBlogs?: Omit<NewBlog, "id" | "createdAt" | "updatedAt">[]): Promise<void> {
@@ -31,6 +48,12 @@ export class BlogRepository {
         metaDescription: m.metaDescription,
         metaKeywords: m.metaKeywords,
         isActive: m.isActive,
+        isFeatured: m.isFeatured,
+        views: m.views,
+        likes: m.likes,
+        readingTime: m.readingTime,
+        tags: m.tags,
+        authorId: m.authorId,
         publishedAt: m.publishedAt ? new Date(m.publishedAt) : null,
       }));
       await db.insert(blogs).values(toInsert).onConflictDoNothing();

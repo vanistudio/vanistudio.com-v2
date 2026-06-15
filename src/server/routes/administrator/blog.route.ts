@@ -25,6 +25,12 @@ const createSchema = z.object({
   metaDescription: z.string().optional().nullable(),
   metaKeywords: z.string().optional().nullable(),
   isActive: z.boolean().default(true),
+  isFeatured: z.boolean().default(false),
+  views: z.number().default(0),
+  likes: z.number().default(0),
+  readingTime: z.number().default(0),
+  tags: z.array(z.string()).default([]),
+  authorId: z.string().optional().nullable(),
 });
 
 const updateSchema = z.object({
@@ -37,6 +43,12 @@ const updateSchema = z.object({
   metaDescription: z.string().optional().nullable(),
   metaKeywords: z.string().optional().nullable(),
   isActive: z.boolean().optional(),
+  isFeatured: z.boolean().optional(),
+  views: z.number().optional(),
+  likes: z.number().optional(),
+  readingTime: z.number().optional(),
+  tags: z.array(z.string()).optional(),
+  authorId: z.string().optional().nullable(),
 });
 
 const seedSchema = z.object({
@@ -49,6 +61,12 @@ const seedSchema = z.object({
   metaDescription: z.string().optional().nullable(),
   metaKeywords: z.string().optional().nullable(),
   isActive: z.boolean().default(true),
+  isFeatured: z.boolean().default(false).optional(),
+  views: z.number().default(0).optional(),
+  likes: z.number().default(0).optional(),
+  readingTime: z.number().default(0).optional(),
+  tags: z.array(z.string()).default([]).optional(),
+  authorId: z.string().optional().nullable(),
   publishedAt: z.preprocess((arg) => {
     if (typeof arg === "string" || arg instanceof Date) return new Date(arg);
     return arg;

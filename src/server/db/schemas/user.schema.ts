@@ -6,6 +6,7 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   username: text("username").unique(),
   emailVerified: boolean("email_verified").notNull(),
+  image: text("image"),
   role: text("role").default("user").notNull(),
   banned: boolean("banned").default(false).notNull(),
   banReason: text("ban_reason"),

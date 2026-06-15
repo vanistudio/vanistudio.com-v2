@@ -157,17 +157,49 @@ export default function PubBlogList({
                           <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase shadow-md border z-10 bg-background/80 text-foreground border-border/50 backdrop-blur-md">
                             Blog
                           </span>
+                          {blog.isFeatured && (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase shadow-md border z-10 bg-amber-500/85 text-white border-amber-500/50 backdrop-blur-md flex items-center gap-1">
+                              <Icon icon="solar:star-bold" className="size-3" />
+                              Nổi bật
+                            </span>
+                          )}
                         </div>
                       </div>
 
                       <div className="flex flex-col flex-1 p-5 gap-3">
-                        <div className="space-y-1.5">
+                        <div className="space-y-2">
+                          {blog.tags && blog.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1">
+                              {blog.tags.slice(0, 3).map((tag) => (
+                                <span key={tag} className="text-[10px] bg-muted/60 text-muted-foreground px-1.5 py-0.5 rounded-sm font-medium">
+                                  #{tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
                           <h3 className="text-base font-bold text-foreground line-clamp-2">
                             {blog.title}
                           </h3>
                           <p className="text-xs text-muted-foreground line-clamp-3">
                             {blog.description || "Nhấp chuột để xem chi tiết nội dung của bài viết này."}
                           </p>
+
+                          <div className="flex items-center gap-3 text-[11px] text-muted-foreground/80 pt-1.5 select-none font-medium border-t border-border/30">
+                            <span className="flex items-center gap-1">
+                              <Icon icon="solar:eye-line-duotone" className="size-3.5" />
+                              {blog.views ?? 0}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Icon icon="solar:heart-line-duotone" className="size-3.5 text-rose-500" />
+                              {blog.likes ?? 0}
+                            </span>
+                            {blog.readingTime && blog.readingTime > 0 ? (
+                              <span className="flex items-center gap-1 ml-auto text-vanixjnk">
+                                <Icon icon="solar:clock-circle-line-duotone" className="size-3.5" />
+                                {blog.readingTime} phút đọc
+                              </span>
+                            ) : null}
+                          </div>
                         </div>
                       </div>
 

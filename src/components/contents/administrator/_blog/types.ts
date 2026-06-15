@@ -9,6 +9,12 @@ export interface BlogMock {
   metaDescription: string | null;
   metaKeywords: string | null;
   isActive: boolean;
+  isFeatured?: boolean;
+  views?: number;
+  likes?: number;
+  readingTime?: number;
+  tags?: string[];
+  authorId?: string | null;
   publishedAt: Date | string | null;
   createdAt: Date | string;
   updatedAt?: Date | string;

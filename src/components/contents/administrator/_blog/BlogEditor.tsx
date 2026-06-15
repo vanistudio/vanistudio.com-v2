@@ -32,6 +32,12 @@ export default function BlogEditor({ mode, initialId }: BlogEditorProps) {
     metaDescription: "",
     metaKeywords: "",
     isActive: true,
+    isFeatured: false,
+    views: 0,
+    likes: 0,
+    readingTime: 0,
+    tags: [],
+    authorId: null,
   });
 
   const [editorTab, setEditorTab] = useState<"content" | "seo">("content");
@@ -65,6 +71,12 @@ export default function BlogEditor({ mode, initialId }: BlogEditorProps) {
         metaDescription: serverBlog.metaDescription || "",
         metaKeywords: serverBlog.metaKeywords || "",
         isActive: serverBlog.isActive,
+        isFeatured: serverBlog.isFeatured,
+        views: serverBlog.views,
+        likes: serverBlog.likes,
+        readingTime: serverBlog.readingTime,
+        tags: serverBlog.tags || [],
+        authorId: serverBlog.authorId || null,
       });
     }
   }, [serverBlog]);
@@ -123,6 +135,12 @@ export default function BlogEditor({ mode, initialId }: BlogEditorProps) {
             metaDescription: formData.metaDescription || null,
             metaKeywords: formData.metaKeywords || null,
             isActive: formData.isActive ?? true,
+            isFeatured: formData.isFeatured ?? false,
+            views: formData.views ?? 0,
+            likes: formData.likes ?? 0,
+            readingTime: formData.readingTime ?? 0,
+            tags: formData.tags || [],
+            authorId: formData.authorId || null,
           },
         });
         toast.success("Cập nhật bài viết Blog thành công!");
@@ -137,6 +155,12 @@ export default function BlogEditor({ mode, initialId }: BlogEditorProps) {
           metaDescription: formData.metaDescription || null,
           metaKeywords: formData.metaKeywords || null,
           isActive: formData.isActive ?? true,
+          isFeatured: formData.isFeatured ?? false,
+          views: formData.views ?? 0,
+          likes: formData.likes ?? 0,
+          readingTime: formData.readingTime ?? 0,
+          tags: formData.tags || [],
+          authorId: formData.authorId || null,
         });
         toast.success("Thêm mới bài viết Blog thành công!");
       }
@@ -539,6 +563,69 @@ export default function BlogEditor({ mode, initialId }: BlogEditorProps) {
                     )}
                   </div>
                 </div>
+              </div>
+
+              <div className="border border-border/60 rounded-xl bg-muted/10 p-4 space-y-4">
+                <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5 border-b pb-2 border-border/60">
+                  <Icon icon="solar:folder-with-files-line-duotone" className="size-4 text-vanixjnk" />
+                  Cấu hình mở rộng
+                </h4>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[12px] font-bold text-foreground">Bài viết nổi bật</span>
+                    <span className="text-[10px] text-muted-foreground">Ghim lên đầu trang tin tức.</span>
+                  </div>
+                  <Switch
+                    checked={formData.isFeatured || false}
+                    onCheckedChange={(val) => setFormData((prev) => ({ ...prev, isFeatured: val }))}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-foreground">
+                    Thời gian đọc (phút)
+                  </label>
+                  <Input
+                    type="number"
+                    min={0}
+                    value={formData.readingTime ?? 0}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, readingTime: parseInt(e.target.value) || 0 }))}
+                    placeholder="Ví dụ: 5"
+                    className="h-9 text-xs"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-foreground">
+                    Thẻ bài viết (Tags)
+                  </label>
+                  <Input
+                    value={formData.tags?.join(", ") || ""}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, tags: e.target.value.split(",").map(t => t.trim()) }))}
+                    placeholder="Ví dụ: Rust, AI, NextJS"
+                    className="h-9 text-xs"
+                  />
+                </div>
+
+                {mode === "edit" && (
+                  <div className="pt-2 border-t border-border/40 grid grid-cols-2 gap-2 text-center">
+                    <div className="p-2 bg-background border border-border/60 rounded-lg flex flex-col items-center justify-center">
+                      <span className="text-[10px] text-muted-foreground font-medium flex items-center gap-1">
+                        <Icon icon="solar:eye-line-duotone" className="size-3 text-muted-foreground" />
+                        Lượt xem
+                      </span>
+                      <span className="text-sm font-bold text-foreground mt-0.5">{formData.views ?? 0}</span>
+                    </div>
+                    <div className="p-2 bg-background border border-border/60 rounded-lg flex flex-col items-center justify-center">
+                      <span className="text-[10px] text-muted-foreground font-medium flex items-center gap-1">
+                        <Icon icon="solar:heart-line-duotone" className="size-3 text-red-500" />
+                        Lượt thích
+                      </span>
+                      <span className="text-sm font-bold text-foreground mt-0.5">{formData.likes ?? 0}</span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="border border-border/60 rounded-xl bg-muted/10 p-4 space-y-3">

@@ -129,6 +129,12 @@ export function QuickSeedBlogsDialog({
       metaDescription: item.metaDescription,
       metaKeywords: item.metaKeywords,
       isActive: item.isActive,
+      isFeatured: item.isFeatured,
+      views: item.views,
+      likes: item.likes,
+      readingTime: item.readingTime,
+      tags: item.tags,
+      authorId: item.authorId,
       publishedAt: item.publishedAt ? new Date(item.publishedAt) : new Date(),
     }));
     try {
