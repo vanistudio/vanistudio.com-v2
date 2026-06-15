@@ -169,7 +169,6 @@ export default function ProjectEditor({ mode, initialId }: ProjectEditorProps) {
     router.push("/adminPanel/projects");
   };
 
-  // Helper actions
   const addMedia = () => {
     setFormData((prev) => ({
       ...prev,
@@ -413,8 +412,6 @@ export default function ProjectEditor({ mode, initialId }: ProjectEditorProps) {
               </Button>
             </div>
           </div>
-
-          {/* Tab buttons */}
           <div className="grid grid-cols-2 sm:flex items-center gap-1.5 p-1 rounded-xl bg-muted/20 border border-border/60 w-full sm:w-auto sm:self-start whitespace-nowrap">
             {[
               { id: "content", label: "Nội dung & Thông tin", icon: "solar:document-text-line-duotone" },

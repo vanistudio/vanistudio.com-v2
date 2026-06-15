@@ -391,8 +391,6 @@ export default function AdminDenies() {
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col">
           <div className="p-6 border-b border-border/60 flex flex-col gap-6">
-            
-            {/* Hộp Thống kê ở trên */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="p-4 rounded-xl border bg-background/60 flex items-center justify-between">
                 <div className="space-y-1">
@@ -430,8 +428,6 @@ export default function AdminDenies() {
                 </div>
               </div>
             </div>
-
-            {/* Khối danh sách chính */}
             <div className="flex flex-col gap-4 pt-4 border-t border-border/50">
               <div className="flex flex-row items-center justify-between gap-4">
                 <div>
@@ -505,8 +501,6 @@ export default function AdminDenies() {
           </div>
         </div>
       </div>
-
-      {/* Sheet Thêm / Sửa IP Chặn */}
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetContent className="sm:max-w-[550px] w-full p-0 flex flex-col">
           <SheetHeader className="p-6">

@@ -298,8 +298,6 @@ export function ConfPage() {
               <p className="text-muted-foreground text-sm text-center leading-relaxed max-w-md mx-auto">
                 Hệ thống đang sẵn sàng khởi chạy. Chúng tôi sẽ đi qua 4 bước đơn giản để chuẩn bị môi trường chạy tốt nhất cho website của bạn.
               </p>
-
-              {/* Database status check */}
               <div className="border border-border rounded-xl p-4 space-y-3 bg-muted/30">
                 <h4 className="font-semibold text-sm text-foreground flex items-center justify-between">
                   <span className="flex items-center gap-2">
@@ -959,8 +957,6 @@ export function ConfPage() {
                 )}
               </span>
             </div>
-
-            {/* Terminal-like Logs box */}
             <div className="bg-zinc-950 dark:bg-zinc-900 rounded-lg p-3 font-mono text-xs text-zinc-200 overflow-y-auto flex-1 min-h-[180px] max-h-[300px] whitespace-pre-wrap selection:bg-zinc-700 selection:text-white border border-zinc-800">
               {pushLogs}
             </div>

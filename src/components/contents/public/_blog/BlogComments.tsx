@@ -207,7 +207,6 @@ export function BlogComments({ blogId }: BlogCommentsProps) {
     return (
       <div key={comment.id} className="flex flex-col gap-2">
         <div className="flex items-start gap-2 text-left">
-          {/* Avatar */}
           <span className={cn("group/avatar relative flex shrink-0 rounded-full select-none border border-border overflow-hidden", isReply ? "size-7" : "size-8")}>
             {comment.user.image ? (
               <img className="aspect-square size-full rounded-full object-cover" src={comment.user.image} alt={comment.user.name} />

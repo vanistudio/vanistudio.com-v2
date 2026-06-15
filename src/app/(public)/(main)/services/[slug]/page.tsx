@@ -5,7 +5,6 @@ import type { Metadata } from "next";
 
 export const dynamicParams = true;
 
-// Pre-render some active services
 export async function generateStaticParams() {
   const allServices = await servicesRepository.getServices();
   return allServices

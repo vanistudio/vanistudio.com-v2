@@ -261,7 +261,6 @@ export default function AdminProductsTab() {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Khối Thống kê */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="p-4 rounded-xl border bg-background/60 flex items-center justify-between">
           <div className="space-y-1">

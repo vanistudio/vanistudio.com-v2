@@ -7,7 +7,6 @@ import { extensionsRepository } from "@/server/repositories/extensions.repositor
 
 export class AuthenticationService {
   async register(input: any) {
-    // 1. Get the registration configuration
     const ext = await extensionsRepository.getExtensionById("user_registration_customizer");
     const isRegisterEnabled = ext?.isEnabled ?? true;
     if (!isRegisterEnabled) {
@@ -17,7 +16,6 @@ export class AuthenticationService {
     const config = (ext?.config as any) || { fields: {} };
     const fields = config.fields || {};
 
-    // 2. Validate required fields
     const keys = [
       "email",
       "name",
@@ -48,7 +46,6 @@ export class AuthenticationService {
       }
     }
 
-    // 3. Make sure at least one identifier is present
     const emailVal = input.email?.trim();
     const usernameVal = input.username?.trim();
     const phoneVal = input.phone?.trim();
@@ -61,7 +58,6 @@ export class AuthenticationService {
       throw new Error("Vui lòng điền ít nhất một thông tin định danh (Email, Số điện thoại hoặc Tên đăng nhập).");
     }
 
-    // 3.1 Deep username validation
     if (usernameVal) {
       const uVal = config.usernameValidation || { minLength: 4, maxLength: 20, allowedCharacters: "lowercase_alphanumeric" };
       const minL = uVal.minLength ?? 4;
@@ -84,7 +80,6 @@ export class AuthenticationService {
       }
     }
 
-    // 3.2 Deep email domain validation
     if (emailVal) {
       const eVal = config.emailValidation || { allowedDomains: [] };
       const domain = emailVal.split("@")[1]?.toLowerCase();
@@ -97,7 +92,6 @@ export class AuthenticationService {
       }
     }
 
-    // 3.3 Deep password validation
     if (input.password) {
       const pVal = config.passwordValidation || { minLength: 8, requireUppercase: true, requireLowercase: true, requireNumber: true, requireSpecialChar: true };
       const minL = pVal.minLength ?? 8;
@@ -118,11 +112,9 @@ export class AuthenticationService {
       }
     }
 
-    // 4. Resolve username and email
     const name = input.name || "Thành viên";
     const username = (fields.username?.show ?? true) ? usernameVal : undefined;
     
-    // If email is hidden or empty, generate a unique placeholder email
     let email = emailVal;
     if (!(fields.email?.show ?? true) || !emailVal) {
       const uniqueSuffix = Math.random().toString(36).substring(2, 8);
@@ -130,7 +122,6 @@ export class AuthenticationService {
       email = `${identifier.toLowerCase().replace(/[^a-z0-9]/g, "")}_${uniqueSuffix}@local.vanistudio.com`;
     }
 
-    // 5. Call better-auth signUpEmail
     let result;
     let responseHeaders: Headers | undefined;
     try {
@@ -153,7 +144,6 @@ export class AuthenticationService {
       throw new Error("Không thể tạo tài khoản mới");
     }
 
-    // 6. Save additional profile fields into userProfile table
     try {
       await db.insert(userProfile).values({
         userId: result.user.id,
@@ -172,7 +162,6 @@ export class AuthenticationService {
       console.error("Error creating user profile:", err);
     }
 
-    // 7. Set the cookies
     if (responseHeaders) {
       const cookieJar = await cookies();
       const setCookies = (responseHeaders as any).getSetCookie

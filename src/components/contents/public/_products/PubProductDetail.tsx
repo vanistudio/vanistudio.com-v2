@@ -98,7 +98,6 @@ export default function PubProductDetail({ product }: PubProductDetailProps) {
     if (product.gallery && product.gallery.length > 0) {
       list.push(...product.gallery);
     }
-    // De-duplicate if thumbnail is also in gallery
     return Array.from(new Set(list));
   }, [product.thumbnail, product.gallery]);
 
@@ -172,11 +171,7 @@ export default function PubProductDetail({ product }: PubProductDetailProps) {
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col p-6 gap-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full">
-            
-            {/* Left Column */}
             <div className="lg:col-span-8 flex flex-col gap-6 order-2 lg:order-1">
-              
-              {/* Media Gallery */}
               {mediaGalleryList.length > 0 && (
                 <Card className="p-5 bg-card/30 border-border flex flex-col gap-4">
                   <div className="aspect-video w-full rounded-xl border border-border bg-background overflow-hidden relative group">
@@ -214,8 +209,6 @@ export default function PubProductDetail({ product }: PubProductDetailProps) {
                   )}
                 </Card>
               )}
-
-              {/* MDX Documentation / Overview */}
               <Card className="p-5 bg-card/30 border-border">
                 <div className="flex items-center gap-2 pb-3 border-b border-border/50 mb-4">
                   <Icon icon="solar:document-text-line-duotone" className="text-base text-vanixjnk" />
@@ -225,8 +218,6 @@ export default function PubProductDetail({ product }: PubProductDetailProps) {
                   <MdxRenderer content={product.content} scope={{ product }} />
                 </div>
               </Card>
-
-              {/* Detailed Features */}
               {product.features && product.features.length > 0 && (
                 <Card className="p-5 bg-card/30 border-border flex flex-col gap-4">
                   <div className="flex items-center gap-2 pb-2.5 border-b border-border/50">
@@ -252,8 +243,6 @@ export default function PubProductDetail({ product }: PubProductDetailProps) {
                   </div>
                 </Card>
               )}
-
-              {/* Changelog timeline */}
               {product.changelog && product.changelog.length > 0 && (
                 <Card className="p-5 bg-card/30 border-border flex flex-col gap-4">
                   <div className="flex items-center gap-2 pb-2.5 border-b border-border/50">
@@ -296,11 +285,7 @@ export default function PubProductDetail({ product }: PubProductDetailProps) {
                 </Card>
               )}
             </div>
-
-            {/* Right Column */}
             <div className="lg:col-span-4 flex flex-col gap-6 order-1 lg:order-2">
-              
-              {/* Purchase & Action panel */}
               <Card className="p-5 bg-card/30 border-border flex flex-col gap-4">
                 <div className="flex flex-col gap-1 border-b border-border/40 pb-3">
                   <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Đơn giá sản phẩm</span>
@@ -407,8 +392,6 @@ export default function PubProductDetail({ product }: PubProductDetailProps) {
                   )}
                 </div>
               </Card>
-
-              {/* Specifications checklist */}
               <Card className="p-5 bg-card/30 border-border flex flex-col gap-4">
                 <div className="flex items-center gap-2 pb-2 border-b border-border/40">
                   <Icon icon="solar:info-circle-line-duotone" className="text-base text-vanixjnk" />
@@ -455,8 +438,6 @@ export default function PubProductDetail({ product }: PubProductDetailProps) {
                   )}
                 </div>
               </Card>
-
-              {/* Stats card */}
               <Card className="p-5 bg-card/30 border-border flex flex-col gap-4">
                 <div className="flex items-center gap-2 pb-2 border-b border-border/40">
                   <Icon icon="solar:ranking-line-duotone" className="text-base text-vanixjnk" />
@@ -495,9 +476,7 @@ export default function PubProductDetail({ product }: PubProductDetailProps) {
                   </div>
                 </div>
               </Card>
-
             </div>
-
           </div>
         </div>
       </div>

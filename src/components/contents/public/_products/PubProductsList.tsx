@@ -129,7 +129,6 @@ export default function PubProductsList({
       return matchesType && matchesPrice && matchesSearch;
     });
 
-    // Sort mapping
     return result.sort((a, b) => {
       if (sortBy === "price_asc") {
         const pA = a.salePrice !== null ? a.salePrice : a.price;
@@ -147,7 +146,6 @@ export default function PubProductsList({
       if (sortBy === "popular") {
         return (b.salesCount + b.downloadCount) - (a.salesCount + a.downloadCount);
       }
-      // order / default
       return a.order - b.order;
     });
   }, [initialProducts, typeFilter, priceFilter, searchQuery, sortBy]);
@@ -306,8 +304,6 @@ export default function PubProductsList({
 
                 return (
                   <Card key={product.id} className="group relative flex flex-col h-full bg-card/30 border-border p-0!">
-                    
-                    {/* Premium Type Ribbon */}
                     <div className="absolute top-[-6px] right-3 z-20 w-8 h-12 pointer-events-none">
                       <div 
                         className={cn("absolute top-[6px] left-[-4px] w-1 h-[6px]", meta.solidBg)}
@@ -353,8 +349,6 @@ export default function PubProductsList({
                           <Icon icon={meta.icon} className={`text-5xl ${meta.color} opacity-40`} />
                         </div>
                       )}
-
-                      {/* Visual Badge */}
                       {product.badge && (
                         <span className={cn(
                           "absolute top-2 left-2 px-2 py-0.5 rounded text-xs font-extrabold tracking-wider uppercase shadow-md border z-10 select-none",
@@ -380,8 +374,6 @@ export default function PubProductsList({
                           {product.description || "Chưa có mô tả chi tiết cho sản phẩm này."}
                         </p>
                       </div>
-
-                      {/* Specs Row */}
                       <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
                         <span className="px-1.5 py-0.5 rounded bg-muted/30 border border-border/55 font-mono">
                           v{product.version}
@@ -395,8 +387,6 @@ export default function PubProductsList({
                           {product.licenseType === "single" ? "Single License" : product.licenseType === "free" ? "Free" : "Extended"}
                         </span>
                       </div>
-
-                      {/* Features Preview */}
                       {product.features && product.features.length > 0 && (
                         <div className="space-y-1.5 border-t border-border/40 pt-3 my-0.5 flex-1">
                           {product.features.slice(0, 2).map((feat, idx) => (
@@ -408,8 +398,6 @@ export default function PubProductsList({
                         </div>
                       )}
                     </div>
-
-                    {/* Pricing Footer */}
                     <div className="border-t border-border px-5 py-4 flex items-center justify-between bg-muted/10 rounded-b-xl group-hover:bg-muted/15 transition-colors">
                       <div>
                         {isFree ? (

@@ -177,7 +177,6 @@ export default function ServiceEditor({ mode, initialId }: ServiceEditorProps) {
     router.push("/adminPanel/services");
   };
 
-  // Helpers for dynamic arrays
   const addDynamicField = () => {
     const newField: FormFieldConfig = {
       key: `field_${Date.now()}`,

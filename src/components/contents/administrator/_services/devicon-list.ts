@@ -1,4 +1,3 @@
-// Static list of Devicon icons extracted from Iconify API
 export const DEVICON_ICONS = [
   "devicon:aarch64",
   "devicon:adonisjs",

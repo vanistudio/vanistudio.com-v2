@@ -106,8 +106,6 @@ export default function AppFooter() {
       <div className="w-full">
         <div className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-4 border-l border-r border-dashed border-primary/20">
-
-            {/* Column 1: Intro */}
             <div className="relative p-6 md:p-8 md:pr-10 flex flex-col gap-5 border-b md:border-b-0 md:border-r border-dashed border-primary/20">
               <Link href="/" className="flex items-center gap-2 group self-start">
                 <img
@@ -138,8 +136,6 @@ export default function AppFooter() {
                 </>
               )}
             </div>
-
-            {/* Column 2: Services */}
             <div className="relative p-6 md:p-8 flex flex-col border-b md:border-b-0 md:border-r border-dashed border-primary/20">
               {services && (
                 <>
@@ -194,8 +190,6 @@ export default function AppFooter() {
                 </>
               )}
             </div>
-
-            {/* Column 4: Contact */}
             <div className="relative p-6 md:p-8 flex flex-col gap-4">
               {contact && (
                 <>

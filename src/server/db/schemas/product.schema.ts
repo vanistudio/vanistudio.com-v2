@@ -18,42 +18,37 @@ export const products = pgTable("products", {
   name: text("name").notNull(),
   slug: text("slug").notNull().unique(),
   description: text("description"),
-  content: text("content").notNull(), // Detailed documentation/description in MDX/Markdown
-  type: text("type").default("source_code").notNull(), // 'source_code' | 'tool' | 'app' | 'bot' | 'extension'
-  status: text("status").default("active").notNull(), // 'active' | 'draft' | 'archived'
+  content: text("content").notNull(),
+  type: text("type").default("source_code").notNull(),
+  status: text("status").default("active").notNull(),
   thumbnail: text("thumbnail"),
-  gallery: jsonb("gallery").$type<string[]>().default([]).notNull(), // Array of image/screenshot URLs
+  gallery: jsonb("gallery").$type<string[]>().default([]).notNull(),
   
-  // Pricing & Currency
-  price: integer("price").default(0).notNull(), // Regular price (stored as minor units, e.g., cents or full VND depending on currency)
-  salePrice: integer("sale_price"), // Discounted/sale price (null if no discount active)
-  currency: text("currency").default("USD").notNull(), // 'USD' | 'VND' | 'EUR' etc.
-  badge: text("badge"), // Visual badge: 'HOT' | 'NEW' | 'SALE' | 'BETA' etc.
-  isFeatured: boolean("is_featured").default(false).notNull(), // Highlighted product
+  price: integer("price").default(0).notNull(),
+  salePrice: integer("sale_price"),
+  currency: text("currency").default("USD").notNull(),
+  badge: text("badge"),
+  isFeatured: boolean("is_featured").default(false).notNull(),
   
-  // Software Specifications & Licensing
-  version: text("version").default("1.0.0").notNull(), // Current release version (e.g., '1.0.0')
-  licenseType: text("license_type").default("single").notNull(), // 'single' | 'extended' | 'subscription' | 'free'
-  supportMonths: integer("support_months").default(6).notNull(), // Standard support duration included in months
-  fileSize: text("file_size"), // Optional size indicator: e.g., "15.4 MB" or "102 KB"
-  compatibility: jsonb("compatibility").$type<string[]>().default([]).notNull(), // Supported frameworks/runtimes: e.g., ["Node.js 20+", "Next.js 16"]
+  version: text("version").default("1.0.0").notNull(),
+  licenseType: text("license_type").default("single").notNull(),
+  supportMonths: integer("support_months").default(6).notNull(),
+  fileSize: text("file_size"),
+  compatibility: jsonb("compatibility").$type<string[]>().default([]).notNull(),
   
-  // URLs & Resources
-  demoUrl: text("demo_url"), // Live preview / demonstration URL
-  githubUrl: text("github_url"), // Showcase repository link
-  downloadUrl: text("download_url"), // Direct link to download package or zip file
+  demoUrl: text("demo_url"),
+  githubUrl: text("github_url"),
+  downloadUrl: text("download_url"),
   
-  // Statistics & Metrics
-  salesCount: integer("sales_count").default(0).notNull(), // Total number of successful purchases
-  viewsCount: integer("views_count").default(0).notNull(), // Page view counter for analytical sorting
-  downloadCount: integer("download_count").default(0).notNull(), // Total download hits
+  salesCount: integer("sales_count").default(0).notNull(),
+  viewsCount: integer("views_count").default(0).notNull(),
+  downloadCount: integer("download_count").default(0).notNull(),
 
-  // Rich JSON Configurations
-  features: jsonb("features").$type<ProductFeature[]>().default([]).notNull(), // Major features checklist
-  changelog: jsonb("changelog").$type<ChangelogItem[]>().default([]).notNull(), // Array of version updates
-  metadata: jsonb("metadata").$type<Record<string, any>>().default({}).notNull(), // Dynamic gateway or custom configurations
+  features: jsonb("features").$type<ProductFeature[]>().default([]).notNull(),
+  changelog: jsonb("changelog").$type<ChangelogItem[]>().default([]).notNull(),
+  metadata: jsonb("metadata").$type<Record<string, any>>().default({}).notNull(),
   
-  order: integer("order").default(0).notNull(), // Ordering index for displays
+  order: integer("order").default(0).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });

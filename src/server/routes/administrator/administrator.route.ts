@@ -10,6 +10,7 @@ import { blogRouter } from "./blog.route";
 import { servicesRouter } from "./services.route";
 import { projectsRouter } from "./projects.route";
 import { productsRouter } from "./products.route";
+import { apiDocsRouter } from "./api.route";
 
 export const administratorRouter = router({
   menu: menuRouter,
@@ -23,5 +24,7 @@ export const administratorRouter = router({
   services: servicesRouter,
   projects: projectsRouter,
   products: productsRouter,
+  apiDocs: apiDocsRouter,
 });
+
 
