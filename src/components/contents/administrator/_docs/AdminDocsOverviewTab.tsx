@@ -32,7 +32,6 @@ export default function AdminDocsOverviewTab({ apiType }: AdminDocsOverviewTabPr
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [overviewToDelete, setOverviewToDelete] = useState<ApiOverview | null>(null);
 
-  // Debounce search
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchTerm);
@@ -41,7 +40,6 @@ export default function AdminDocsOverviewTab({ apiType }: AdminDocsOverviewTabPr
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Query overviews
   const { data: overviews = [], isLoading, refetch, isFetching } =
     trpc.administrator.apiDocs.getOverviews.useQuery(
       { apiType },
@@ -76,7 +74,6 @@ export default function AdminDocsOverviewTab({ apiType }: AdminDocsOverviewTabPr
     }
   };
 
-  // Filter & Sort overviews
   const filteredOverviews = useMemo(() => {
     let result = [...overviews];
     if (debouncedSearch.trim()) {
@@ -300,7 +297,6 @@ export default function AdminDocsOverviewTab({ apiType }: AdminDocsOverviewTabPr
         }
       />
 
-      {/* Custom Delete Dialog */}
       <Dialog open={!!overviewToDelete} onOpenChange={(open) => !open && setOverviewToDelete(null)}>
         <DialogContent className="sm:max-w-[380px]">
           <DialogHeader>

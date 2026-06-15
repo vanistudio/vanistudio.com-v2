@@ -31,10 +31,8 @@ export default function PlaygroundSheet({ endpoint, isOpen, onClose }: Playgroun
   } | null>(null);
   const [playgroundLoading, setPlaygroundLoading] = useState(false);
 
-  // Reset/Prepopulate states when endpoint changes
   useEffect(() => {
     if (endpoint) {
-      // Default headers
       const defaultHeaders = [
         { name: "Content-Type", value: "application/json" },
         ...(endpoint.headers || []).map(h => ({
@@ -43,15 +41,11 @@ export default function PlaygroundSheet({ endpoint, isOpen, onClose }: Playgroun
         }))
       ];
       setPlaygroundHeaders(defaultHeaders);
-
-      // Default query params
       const defaultQueryParams: Record<string, string> = {};
       (endpoint.queryParams || []).forEach(q => {
         defaultQueryParams[q.name] = q.defaultValue ? String(q.defaultValue) : "";
       });
       setPlaygroundQueryParams(defaultQueryParams);
-
-      // Default body template
       if (endpoint.requestBody && endpoint.requestBody.length > 0) {
         const bodyObj: Record<string, any> = {};
         endpoint.requestBody.forEach(p => {
@@ -69,26 +63,20 @@ export default function PlaygroundSheet({ endpoint, isOpen, onClose }: Playgroun
     if (!endpoint) return;
     setPlaygroundLoading(true);
     setPlaygroundResponse(null);
-
     const protocol = targetDomain.startsWith("http://") || targetDomain.startsWith("https://") ? "" : "https://";
     const cleanDomain = targetDomain.replace(/\/$/, "");
     const cleanPath = endpoint.path.startsWith("/") ? endpoint.path : `/${endpoint.path}`;
-
-    // Query String Builder
     const queryPairs = Object.entries(playgroundQueryParams)
       .filter(([_, v]) => v.trim() !== "")
       .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
       .join("&");
     const url = `${protocol}${cleanDomain}${cleanPath}${queryPairs ? `?${queryPairs}` : ""}`;
-
-    // Headers Builder
     const headersObj: Record<string, string> = {};
     playgroundHeaders
       .filter(h => h.name.trim() !== "")
       .forEach(h => {
         headersObj[h.name] = h.value;
       });
-
     const startTime = performance.now();
     try {
       const response = await fetch(url, {
@@ -99,10 +87,8 @@ export default function PlaygroundSheet({ endpoint, isOpen, onClose }: Playgroun
           : undefined,
         mode: "cors",
       });
-
       const endTime = performance.now();
       const timeElapsed = Math.round(endTime - startTime);
-
       let responseBody: any = "";
       const contentType = response.headers.get("content-type");
       if (contentType && contentType.includes("application/json")) {
@@ -110,7 +96,6 @@ export default function PlaygroundSheet({ endpoint, isOpen, onClose }: Playgroun
       } else {
         responseBody = await response.text();
       }
-
       const resHeaders: Record<string, string> = {};
       response.headers.forEach((val, key) => {
         resHeaders[key] = val;
@@ -158,7 +143,6 @@ export default function PlaygroundSheet({ endpoint, isOpen, onClose }: Playgroun
       <SheetContent className="w-full sm:max-w-2xl overflow-y-auto bg-card border-l border-border/60 p-0 flex flex-col h-full">
         {endpoint && (
           <>
-            {/* Header info */}
             <div className="p-6 border-b border-border/40 shrink-0">
               <SheetHeader className="space-y-1">
                 <div className="flex items-center gap-2">
@@ -173,19 +157,13 @@ export default function PlaygroundSheet({ endpoint, isOpen, onClose }: Playgroun
                 </SheetDescription>
               </SheetHeader>
             </div>
-
-            {/* Content areas - split into documentation and playground */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
               <div className="grid grid-cols-1 gap-6">
-                
-                {/* 1. CONFIGURATION & PLAYGROUND INPUTS */}
                 <div className="space-y-5 border border-border/60 rounded-2xl p-5 bg-muted/5">
                   <h3 className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5 border-b pb-2 border-border/40">
                     <Icon icon="solar:play-line-duotone" className="text-vanixjnk text-base" />
                     Cấu hình gửi yêu cầu (Playground)
                   </h3>
-
-                  {/* Target Domain Input */}
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-bold text-foreground">Target Domain</label>
                     <div className="flex gap-2">
@@ -200,8 +178,6 @@ export default function PlaygroundSheet({ endpoint, isOpen, onClose }: Playgroun
                       />
                     </div>
                   </div>
-
-                  {/* Headers Input */}
                   {playgroundHeaders.length > 0 && (
                     <div className="space-y-2">
                       <label className="text-xs font-bold text-foreground flex items-center justify-between">
@@ -247,8 +223,6 @@ export default function PlaygroundSheet({ endpoint, isOpen, onClose }: Playgroun
                       </div>
                     </div>
                   )}
-
-                  {/* Query Params Input */}
                   {endpoint.queryParams && endpoint.queryParams.length > 0 && (
                     <div className="space-y-2">
                       <label className="text-xs font-bold text-foreground font-semibold">Query Parameters</label>
@@ -271,8 +245,6 @@ export default function PlaygroundSheet({ endpoint, isOpen, onClose }: Playgroun
                       </div>
                     </div>
                   )}
-
-                  {/* Request Body Payload */}
                   {["POST", "PUT", "PATCH", "DELETE"].includes(endpoint.method) && (
                     <div className="flex flex-col gap-1.5">
                       <label className="text-xs font-bold text-foreground">JSON Request Body Payload</label>
@@ -284,8 +256,6 @@ export default function PlaygroundSheet({ endpoint, isOpen, onClose }: Playgroun
                       />
                     </div>
                   )}
-
-                  {/* Submit Button */}
                   <Button
                     variant="vanixjnk"
                     onClick={handleSendRequest}
@@ -300,8 +270,6 @@ export default function PlaygroundSheet({ endpoint, isOpen, onClose }: Playgroun
                     <span>Gửi yêu cầu API (Playground)</span>
                   </Button>
                 </div>
-
-                {/* 2. RESPONSE CONSOLE */}
                 {playgroundResponse && (
                   <div className="border border-border/60 rounded-2xl overflow-hidden bg-card">
                     <div className="flex items-center justify-between border-b border-border/60 bg-muted/20 px-4 py-2.5 text-xs">
@@ -318,15 +286,11 @@ export default function PlaygroundSheet({ endpoint, isOpen, onClose }: Playgroun
                     </pre>
                   </div>
                 )}
-
-                {/* 3. ENDPOINT SPEC DETAILS (DOCS ONLY) */}
                 <div className="space-y-4 border border-border/40 rounded-2xl p-5 bg-card/40">
                   <h3 className="text-xs font-bold text-foreground uppercase tracking-wider border-b pb-2 border-border/40 flex items-center gap-1.5">
                     <Icon icon="solar:document-text-line-duotone" className="text-muted-foreground text-base" />
                     Đặc tả tham số (Specification)
                   </h3>
-                  
-                  {/* Headers spec */}
                   {endpoint.headers && endpoint.headers.length > 0 && (
                     <div className="space-y-2">
                       <h4 className="text-[11px] font-bold text-foreground/80 font-mono">Headers Yêu Cầu:</h4>
@@ -340,8 +304,6 @@ export default function PlaygroundSheet({ endpoint, isOpen, onClose }: Playgroun
                       </div>
                     </div>
                   )}
-
-                  {/* Body params spec */}
                   {endpoint.requestBody && endpoint.requestBody.length > 0 && (
                     <div className="space-y-2 pt-2">
                       <h4 className="text-[11px] font-bold text-foreground/80 font-mono">Tham số Body JSON:</h4>
@@ -358,8 +320,6 @@ export default function PlaygroundSheet({ endpoint, isOpen, onClose }: Playgroun
                       </div>
                     </div>
                   )}
-
-                  {/* Response samples spec */}
                   {endpoint.responses && endpoint.responses.length > 0 && (
                     <div className="space-y-3 pt-2">
                       <h4 className="text-[11px] font-bold text-foreground/80 font-mono">Mẫu phản hồi kết quả (Responses):</h4>

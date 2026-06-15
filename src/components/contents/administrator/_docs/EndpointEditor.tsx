@@ -31,7 +31,6 @@ export default function EndpointEditor({ mode, initialId }: EndpointEditorProps)
   const [activeSubTab, setActiveSubTab] = useState<"general" | "params" | "responses">("general");
   const [galleryOpen, setGalleryOpen] = useState(false);
 
-  // Form states grouped under formData
   const [formData, setFormData] = useState({
     groupId: "",
     name: "",
@@ -51,14 +50,12 @@ export default function EndpointEditor({ mode, initialId }: EndpointEditorProps)
     setMounted(true);
   }, []);
 
-  // Fetch API groups (to select which group this endpoint belongs to)
   const { data: groups = [], isLoading: isLoadingGroups } =
     trpc.administrator.apiDocs.getGroupsWithEndpoints.useQuery(
       apiTypeFromUrl ? { apiType: apiTypeFromUrl } : undefined,
       { refetchOnWindowFocus: false }
     );
 
-  // Fetch endpoint if editing
   const { data: endpoint, isLoading: isLoadingEndpoint } =
     trpc.administrator.apiDocs.getEndpointById.useQuery(
       { id: initialId! },
@@ -68,7 +65,6 @@ export default function EndpointEditor({ mode, initialId }: EndpointEditorProps)
       }
     );
 
-  // Populate data in edit mode
   useEffect(() => {
     if (mode === "edit" && endpoint) {
       setFormData({
@@ -86,14 +82,12 @@ export default function EndpointEditor({ mode, initialId }: EndpointEditorProps)
     }
   }, [endpoint, mode]);
 
-  // Set default group if creating and groups load
   useEffect(() => {
     if (mode === "create" && groups.length > 0 && !formData.groupId) {
       setFormData((prev) => ({ ...prev, groupId: groups[0].id }));
     }
   }, [groups, mode, formData.groupId]);
 
-  // Mutation
   const upsertEndpointMutation = trpc.administrator.apiDocs.upsertEndpoint.useMutation();
 
   const insertAtCursor = (textToInsert: string) => {
@@ -143,7 +137,6 @@ export default function EndpointEditor({ mode, initialId }: EndpointEditorProps)
     }
   };
 
-  // Full detailed premium skeleton loading
   if (!mounted || (mode === "edit" && isLoadingEndpoint) || isLoadingGroups) {
     return (
       <div className="flex flex-col w-full flex-1">
@@ -386,10 +379,7 @@ export default function EndpointEditor({ mode, initialId }: EndpointEditorProps)
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* Left main workspace */}
             <div className="lg:col-span-9 space-y-6">
-              
-              {/* TAB 1: GENERAL INFO */}
               {activeSubTab === "general" && (
                 <div className="space-y-5">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -451,8 +441,6 @@ export default function EndpointEditor({ mode, initialId }: EndpointEditorProps)
                       />
                     </div>
                   </div>
-
-                  {/* MDX description builder */}
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-bold text-foreground">Mô tả đặc tả API (Markdown / MDX)</label>
                     <MdxEditor
@@ -467,8 +455,6 @@ export default function EndpointEditor({ mode, initialId }: EndpointEditorProps)
                   </div>
                 </div>
               )}
-
-              {/* TAB 2: INPUT PARAMS BUILDER */}
               {activeSubTab === "params" && (
                 <div className="space-y-6">
                   <ParameterTableBuilder
@@ -492,8 +478,6 @@ export default function EndpointEditor({ mode, initialId }: EndpointEditorProps)
                   )}
                 </div>
               )}
-
-              {/* TAB 3: RESPONSES BUILDER */}
               {activeSubTab === "responses" && (
                 <div className="space-y-4">
                   <ResponseSampleBuilder
@@ -503,8 +487,6 @@ export default function EndpointEditor({ mode, initialId }: EndpointEditorProps)
                 </div>
               )}
             </div>
-
-            {/* Right Settings Panel */}
             <div className="lg:col-span-3 space-y-6">
               <div className="border border-border/60 rounded-xl bg-muted/10 p-4 space-y-4">
                 <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5 border-b pb-2 border-border/60">
@@ -523,9 +505,6 @@ export default function EndpointEditor({ mode, initialId }: EndpointEditorProps)
                   />
                 </div>
               </div>
-
-
-              {/* MDX components side panel (only when on General info tab) */}
               {activeSubTab === "general" && (
                 <div className="border border-border/60 rounded-xl bg-muted/10 p-4 space-y-3">
                   <div className="flex flex-col gap-0.5 border-b pb-2 border-border/60">
@@ -564,7 +543,6 @@ export default function EndpointEditor({ mode, initialId }: EndpointEditorProps)
           </div>
         </div>
       </div>
-
       <GalleryDialog
         open={galleryOpen}
         onOpenChange={setGalleryOpen}
@@ -577,8 +555,6 @@ export default function EndpointEditor({ mode, initialId }: EndpointEditorProps)
     </div>
   );
 }
-
-// --- ParameterTableBuilder ---
 function ParameterTableBuilder({
   title,
   parameters,
@@ -707,7 +683,6 @@ function ParameterTableBuilder({
   );
 }
 
-// --- ResponseSampleBuilder ---
 function ResponseSampleBuilder({
   responses,
   onChange,

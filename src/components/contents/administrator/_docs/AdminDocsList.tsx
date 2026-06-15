@@ -44,13 +44,11 @@ export default function AdminDocsList() {
     setMounted(true);
   }, []);
 
-  // API Products query (shared for the header selector and stats)
   const { data: apiProducts = [], isLoading: isLoadingProducts, refetch: refetchProducts } =
     trpc.administrator.apiDocs.getApiProducts.useQuery(undefined, {
       refetchOnWindowFocus: false,
     });
 
-  // Sync / Auto-select first active product once products are fetched
   useEffect(() => {
     if (mounted && apiProducts.length > 0) {
       const savedType = localStorage.getItem("vanistudio_admin_api_type");
@@ -72,7 +70,6 @@ export default function AdminDocsList() {
     }
   };
 
-  // Safe callback when products tab updates list
   const handleProductsChanged = () => {
     refetchProducts();
   };
@@ -97,7 +94,6 @@ export default function AdminDocsList() {
 
   return (
     <div className="flex flex-col w-full flex-1">
-      {/* Page Header */}
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="border-l border-r border-dashed border-primary/20 pt-[88px] pb-6 px-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -117,8 +113,6 @@ export default function AdminDocsList() {
           </div>
         </div>
       </div>
-
-      {/* Decorative dashed boundary line */}
       <div
         className="relative w-full border-t border-b border-dashed border-primary/20 overflow-hidden text-primary/20"
         style={{ height: "36px" }}
@@ -131,13 +125,9 @@ export default function AdminDocsList() {
           }}
         />
       </div>
-
-      {/* Main Body */}
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col">
-          {/* Navigation and Filtering Bar */}
           <div className="px-6 py-4 border-b border-border/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            {/* Tab Navigation (styled exactly as AdminServicesList tab pills) */}
             <div className="flex flex-wrap items-center gap-2">
               {TABS.map((tab) => {
                 const isActive = activeTab === tab.id;
@@ -160,8 +150,6 @@ export default function AdminDocsList() {
                 );
               })}
             </div>
-
-            {/* API Product Type Selector (hidden on product/API types management tab) */}
             {activeTab !== "product" && (
               <div className="flex items-center gap-2 shrink-0">
                 <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
@@ -186,8 +174,6 @@ export default function AdminDocsList() {
               </div>
             )}
           </div>
-
-          {/* Active Tab Component */}
           {activeTab === "overview" && (
             <AdminDocsOverviewTab apiType={apiType} />
           )}

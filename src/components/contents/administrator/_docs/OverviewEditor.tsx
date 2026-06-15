@@ -30,7 +30,6 @@ export default function OverviewEditor({ mode, initialId }: OverviewEditorProps)
   const [galleryTarget, setGalleryTarget] = useState<"thumbnail" | "editor">("thumbnail");
   const [isSaving, setIsSaving] = useState(false);
 
-  // Form states grouped under formData to match CMS & Blog Editor
   const [formData, setFormData] = useState({
     title: "",
     slug: "",
@@ -50,7 +49,6 @@ export default function OverviewEditor({ mode, initialId }: OverviewEditorProps)
     setMounted(true);
   }, []);
 
-  // Fetch overview if editing
   const { data: overview, isLoading } = trpc.administrator.apiDocs.getOverviewById.useQuery(
     { id: initialId! },
     {
@@ -59,7 +57,6 @@ export default function OverviewEditor({ mode, initialId }: OverviewEditorProps)
     }
   );
 
-  // Populate data when loaded
   useEffect(() => {
     if (mode === "edit" && overview) {
       setFormData({
@@ -83,7 +80,6 @@ export default function OverviewEditor({ mode, initialId }: OverviewEditorProps)
     }
   }, [apiTypeFromUrl, mode]);
 
-  // Mutation
   const upsertOverviewMutation = trpc.administrator.apiDocs.upsertOverview.useMutation();
 
   const slugify = (text: string) => {
@@ -151,8 +147,6 @@ export default function OverviewEditor({ mode, initialId }: OverviewEditorProps)
       setIsSaving(false);
     }
   };
-
-  // Full detailed premium skeleton loading
   if (!mounted || (mode === "edit" && isLoading)) {
     return (
       <div className="flex flex-col w-full flex-1">
@@ -436,8 +430,6 @@ export default function OverviewEditor({ mode, initialId }: OverviewEditorProps)
                       className="h-16 text-[13px] resize-none"
                     />
                   </div>
-
-                  {/* MDX Markdown Editor */}
                   <MdxEditor
                     ref={textareaRef}
                     value={formData.content}
@@ -483,8 +475,6 @@ export default function OverviewEditor({ mode, initialId }: OverviewEditorProps)
                 </div>
               )}
             </div>
-
-            {/* Right Settings Panel */}
             <div className="lg:col-span-4 space-y-6">
               <div className="border border-border/60 rounded-xl bg-muted/10 p-4 space-y-4">
                 <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5 border-b pb-2 border-border/60">
@@ -561,8 +551,6 @@ export default function OverviewEditor({ mode, initialId }: OverviewEditorProps)
                   )}
                 </div>
               </div>
-
-              {/* MDX quick elements side panel */}
               {activeSubTab === "content" && (
                 <div className="border border-border/60 rounded-xl bg-muted/10 p-4 space-y-3">
                   <div className="flex flex-col gap-0.5 border-b pb-2 border-border/60">

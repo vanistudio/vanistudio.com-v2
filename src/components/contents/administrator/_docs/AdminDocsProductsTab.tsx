@@ -48,7 +48,6 @@ export default function AdminDocsProductsTab({ onProductsChanged }: AdminDocsPro
   const [productToDelete, setProductToDelete] = useState<any | null>(null);
   const [isSortDialogOpen, setIsSortDialogOpen] = useState(false);
 
-  // Debounce search
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchTerm);
@@ -57,7 +56,6 @@ export default function AdminDocsProductsTab({ onProductsChanged }: AdminDocsPro
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Query products
   const { data: products = [], isLoading, refetch, isFetching } =
     trpc.administrator.apiDocs.getApiProducts.useQuery(undefined, {
       refetchOnWindowFocus: false,
@@ -128,7 +126,6 @@ export default function AdminDocsProductsTab({ onProductsChanged }: AdminDocsPro
     }
   };
 
-  // Filter & Sort products
   const filteredProducts = useMemo(() => {
     let result = [...products];
 
@@ -358,7 +355,6 @@ export default function AdminDocsProductsTab({ onProductsChanged }: AdminDocsPro
         }
       />
 
-      {/* Add/Edit Product Dialog */}
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
         <DialogContent className="sm:max-w-[420px]">
           <DialogHeader>
@@ -429,7 +425,6 @@ export default function AdminDocsProductsTab({ onProductsChanged }: AdminDocsPro
         </DialogContent>
       </Dialog>
 
-      {/* Custom Delete Dialog */}
       <Dialog open={!!productToDelete} onOpenChange={(open) => !open && setProductToDelete(null)}>
         <DialogContent className="sm:max-w-[380px]">
           <DialogHeader>

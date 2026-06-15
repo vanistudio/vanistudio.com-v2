@@ -47,7 +47,6 @@ export default function AdminDocsGroupsTab({ apiType }: AdminDocsGroupsTabProps)
   const [groupToDelete, setGroupToDelete] = useState<any | null>(null);
   const [isSortDialogOpen, setIsSortDialogOpen] = useState(false);
 
-  // Debounce search
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchTerm);
@@ -56,7 +55,6 @@ export default function AdminDocsGroupsTab({ apiType }: AdminDocsGroupsTabProps)
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Query groups
   const { data: groups = [], isLoading, refetch, isFetching } =
     trpc.administrator.apiDocs.getGroupsWithEndpoints.useQuery(
       { apiType },
@@ -130,7 +128,6 @@ export default function AdminDocsGroupsTab({ apiType }: AdminDocsGroupsTabProps)
     }
   };
 
-  // Filter & Sort groups
   const filteredGroups = useMemo(() => {
     let result = [...groups];
 
@@ -156,7 +153,6 @@ export default function AdminDocsGroupsTab({ apiType }: AdminDocsGroupsTabProps)
         return desc ? valB - valA : valA - valB;
       });
     } else {
-      // Default sorting by order
       result.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
     }
 
@@ -360,7 +356,6 @@ export default function AdminDocsGroupsTab({ apiType }: AdminDocsGroupsTabProps)
         }
       />
 
-      {/* Add/Edit Group Dialog */}
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
         <DialogContent className="sm:max-w-[420px]">
           <DialogHeader>
@@ -431,7 +426,6 @@ export default function AdminDocsGroupsTab({ apiType }: AdminDocsGroupsTabProps)
         </DialogContent>
       </Dialog>
 
-      {/* Custom Delete Dialog */}
       <Dialog open={!!groupToDelete} onOpenChange={(open) => !open && setGroupToDelete(null)}>
         <DialogContent className="sm:max-w-[380px]">
           <DialogHeader>

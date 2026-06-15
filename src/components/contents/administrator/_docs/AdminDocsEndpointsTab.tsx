@@ -37,7 +37,6 @@ export default function AdminDocsEndpointsTab({ apiType }: AdminDocsEndpointsTab
   const [endpointToDelete, setEndpointToDelete] = useState<ApiEndpoint | null>(null);
   const [playgroundEndpoint, setPlaygroundEndpoint] = useState<ApiEndpoint | null>(null);
 
-  // Debounce search
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchTerm);
@@ -46,7 +45,6 @@ export default function AdminDocsEndpointsTab({ apiType }: AdminDocsEndpointsTab
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Query groups with endpoints
   const { data: groups = [], isLoading, refetch, isFetching } =
     trpc.administrator.apiDocs.getGroupsWithEndpoints.useQuery(
       { apiType },
@@ -100,7 +98,6 @@ export default function AdminDocsEndpointsTab({ apiType }: AdminDocsEndpointsTab
     return "bg-zinc-500/10 text-zinc-500 border-zinc-500/20";
   };
 
-  // Filter & Sort endpoints
   const filteredEndpoints = useMemo(() => {
     let result = [...endpoints];
 
@@ -124,7 +121,6 @@ export default function AdminDocsEndpointsTab({ apiType }: AdminDocsEndpointsTab
         let valA = a[id];
         let valB = b[id];
 
-        // Handle nested group name sorting
         if (id === "groupName") {
           valA = a.groupName || "";
           valB = b.groupName || "";
@@ -372,7 +368,6 @@ export default function AdminDocsEndpointsTab({ apiType }: AdminDocsEndpointsTab
         }
       />
 
-      {/* Custom Delete Dialog */}
       <Dialog open={!!endpointToDelete} onOpenChange={(open) => !open && setEndpointToDelete(null)}>
         <DialogContent className="sm:max-w-[380px]">
           <DialogHeader>
