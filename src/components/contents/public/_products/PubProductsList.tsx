@@ -43,7 +43,7 @@ const getProductTypeMeta = (type: string) => {
     case "bot":
       return {
         label: "Bot tự động",
-        icon: "solar:ghost-line-duotone",
+        icon: "solar:cpu-line-duotone",
         color: "text-amber-500",
         bg: "bg-amber-500/10",
         border: "border border-amber-500/25",
@@ -52,7 +52,7 @@ const getProductTypeMeta = (type: string) => {
     case "extension":
       return {
         label: "Tiện ích",
-        icon: "solar:plug-line-duotone",
+        icon: "solar:widget-2-line-duotone",
         color: "text-pink-500",
         bg: "bg-pink-500/10",
         border: "border border-pink-500/25",
@@ -105,8 +105,8 @@ export default function PubProductsList({
     { id: "source_code", name: "Mã nguồn", icon: "solar:code-line-duotone" },
     { id: "tool", name: "Công cụ", icon: "solar:tuning-line-duotone" },
     { id: "app", name: "Ứng dụng", icon: "solar:smartphone-line-duotone" },
-    { id: "bot", name: "Bot tự động", icon: "solar:ghost-line-duotone" },
-    { id: "extension", name: "Tiện ích mở rộng", icon: "solar:plug-line-duotone" },
+    { id: "bot", name: "Bot tự động", icon: "solar:cpu-line-duotone" },
+    { id: "extension", name: "Tiện ích mở rộng", icon: "solar:widget-2-line-duotone" },
   ];
 
   const filteredAndSortedProducts = useMemo(() => {
@@ -155,7 +155,7 @@ export default function PubProductsList({
   return (
     <div className="flex flex-col w-full flex-1">
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="border-l border-r border-dashed border-primary/20 pt-[88px] pb-6 px-6">
+        <div className="border-l border-r border-dashed border-primary/20 pt-[60px] pb-6 px-6">
           <div className="flex flex-col items-center text-center gap-4">
             <div className="flex items-center justify-center rounded-xl text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 shrink-0 p-3">
               <Icon icon="solar:box-line-duotone" className="text-3xl" />
@@ -186,7 +186,7 @@ export default function PubProductsList({
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col p-6 gap-6">
           
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 w-full border-b border-border/40 pb-5">
+          <div className="flex flex-col items-center justify-center gap-4 w-full">
             <div className="flex items-center gap-2 w-full max-w-md">
               <div className="relative flex-1">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground z-10">
@@ -197,14 +197,14 @@ export default function PubProductsList({
                   placeholder="Tìm kiếm sản phẩm, công nghệ..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-9 pl-9 pr-10 text-[13px] bg-background/50"
+                  className="w-full h-10 pl-9 pr-10"
                 />
                 {searchQuery && (
                   <button
                     type="button"
                     onClick={() => setSearchQuery("")}
                     className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted/60 z-10"
-                    title="Xóa tìm kiếm"
+                    title="Xóa nhập liệu"
                   >
                     <Icon icon="solar:close-circle-line-duotone" className="size-4" />
                   </button>
@@ -217,8 +217,8 @@ export default function PubProductsList({
                     variant="outline"
                     size="icon"
                     className={cn(
-                      "h-9 w-9 border-border bg-background hover:bg-muted/50 shrink-0",
-                      (typeFilter !== "all" || priceFilter !== "all") && "text-vanixjnk border-vanixjnk/30 bg-vanixjnk/5 hover:bg-vanixjnk/10"
+                      "h-10 w-10 border-border bg-background hover:bg-muted/50 shrink-0",
+                      (typeFilter !== "all" || priceFilter !== "all" || sortBy !== "order") && "text-vanixjnk border-vanixjnk/30 bg-vanixjnk/5 hover:bg-vanixjnk/10"
                     )}
                     title="Lọc sản phẩm"
                   >
@@ -231,12 +231,12 @@ export default function PubProductsList({
                       Danh mục sản phẩm
                     </label>
                     <Select value={typeFilter} onValueChange={setTypeFilter}>
-                      <SelectTrigger className="w-full h-9 justify-between bg-background border-border text-[13px]">
+                      <SelectTrigger className="w-full h-9 justify-between bg-background border-border text-xs">
                         <SelectValue placeholder="Chọn danh mục" />
                       </SelectTrigger>
                       <SelectContent position="popper" align="start">
                         {productTypesList.map((type) => (
-                          <SelectItem key={type.id} value={type.id} className="text-[13px]">
+                          <SelectItem key={type.id} value={type.id} className="text-xs">
                             <span className="flex items-center gap-2">
                               <Icon icon={type.icon} className="size-3.5 shrink-0" />
                               <span>{type.name}</span>
@@ -252,39 +252,41 @@ export default function PubProductsList({
                       Mức giá
                     </label>
                     <Select value={priceFilter} onValueChange={setPriceFilter}>
-                      <SelectTrigger className="w-full h-9 justify-between bg-background border-border text-[13px]">
+                      <SelectTrigger className="w-full h-9 justify-between bg-background border-border text-xs">
                         <SelectValue placeholder="Chọn mức giá" />
                       </SelectTrigger>
                       <SelectContent position="popper" align="start">
-                        <SelectItem value="all" className="text-[13px]">Tất cả sản phẩm</SelectItem>
-                        <SelectItem value="free" className="text-[13px]">Miễn phí</SelectItem>
-                        <SelectItem value="paid" className="text-[13px]">Có phí (Premium)</SelectItem>
+                        <SelectItem value="all" className="text-xs">Tất cả sản phẩm</SelectItem>
+                        <SelectItem value="free" className="text-xs">Miễn phí</SelectItem>
+                        <SelectItem value="paid" className="text-xs">Có phí (Premium)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider select-none">
+                      Sắp xếp theo
+                    </label>
+                    <Select value={sortBy} onValueChange={setSortBy}>
+                      <SelectTrigger className="w-full h-9 justify-between bg-background border-border text-xs">
+                        <SelectValue placeholder="Chọn sắp xếp" />
+                      </SelectTrigger>
+                      <SelectContent position="popper" align="start">
+                        <SelectItem value="order" className="text-xs">Mặc định</SelectItem>
+                        <SelectItem value="price_asc" className="text-xs">Giá: Thấp đến Cao</SelectItem>
+                        <SelectItem value="price_desc" className="text-xs">Giá: Cao đến Thấp</SelectItem>
+                        <SelectItem value="newest" className="text-xs">Mới nhất</SelectItem>
+                        <SelectItem value="popular" className="text-xs">Bán chạy & Lượt tải</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </PopoverContent>
               </Popover>
             </div>
-
-            <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
-              <span className="text-xs text-muted-foreground hidden md:inline">Sắp xếp:</span>
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-full sm:w-48 h-9 bg-background border-border text-[13px]">
-                  <SelectValue placeholder="Chọn sắp xếp" />
-                </SelectTrigger>
-                <SelectContent position="popper" align="end">
-                  <SelectItem value="order" className="text-[13px]">Mặc định</SelectItem>
-                  <SelectItem value="price_asc" className="text-[13px]">Giá: Thấp đến Cao</SelectItem>
-                  <SelectItem value="price_desc" className="text-[13px]">Giá: Cao đến Thấp</SelectItem>
-                  <SelectItem value="newest" className="text-[13px]">Mới nhất</SelectItem>
-                  <SelectItem value="popular" className="text-[13px]">Bán chạy & Lượt tải</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </div>
 
           {filteredAndSortedProducts.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
+            <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
               <div className="size-16 rounded-2xl bg-muted/40 border border-border flex items-center justify-center">
                 <Icon icon="solar:box-minimalistic-line-duotone" className="text-3xl text-muted-foreground" />
               </div>
@@ -303,7 +305,7 @@ export default function PubProductsList({
                 const finalPrice = hasSale ? product.salePrice! : product.price;
 
                 return (
-                  <Card key={product.id} className="group relative flex flex-col h-full bg-card/30 border-border p-0 hover:border-vanixjnk/40 transition-all duration-300">
+                  <Card key={product.id} className="group relative flex flex-col h-full bg-card/30 border-border p-0!">
                     
                     {/* Premium Type Ribbon */}
                     <div className="absolute top-[-6px] right-3 z-20 w-8 h-12 pointer-events-none">
@@ -324,7 +326,7 @@ export default function PubProductsList({
                         }}
                       />
                       <div 
-                        className={cn("relative w-8 h-11 shadow-md flex flex-col justify-between rounded-t-sm", meta.solidBg)}
+                        className={cn("relative w-8 h-11 shadow-[0_4px_8px_rgba(0,0,0,0.35)] flex flex-col justify-between rounded-t-[1px]", meta.solidBg)}
                         style={{
                           backgroundColor: solidColor,
                           clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 50% 82%, 0% 100%)",
@@ -339,12 +341,12 @@ export default function PubProductsList({
                       </div>
                     </div>
 
-                    <div className="relative aspect-video w-full overflow-hidden rounded-t-xl bg-muted/20 border-b border-border/50 flex items-center justify-center select-none">
+                    <div className="relative aspect-video w-full overflow-hidden rounded-t-xl bg-muted/20 border-b border-border/55 flex items-center justify-center select-none">
                       {product.thumbnail ? (
                         <img
                           src={product.thumbnail}
                           alt={product.name}
-                          className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
+                          className="object-cover w-full h-full"
                         />
                       ) : (
                         <div className="absolute inset-0 bg-linear-to-br from-vanixjnk/5 to-vanixjnk/15 flex items-center justify-center">
@@ -369,7 +371,7 @@ export default function PubProductsList({
                     <div className="flex flex-col flex-1 p-5 gap-3">
                       <div className="space-y-1">
                         <Link href={`/products/${product.slug}`} className="after:absolute after:inset-0 after:z-10">
-                          <h3 className="text-base font-bold text-foreground line-clamp-1 group-hover:text-vanixjnk transition-colors">
+                          <h3 className="text-base font-bold text-foreground line-clamp-1">
                             {product.name}
                           </h3>
                         </Link>
@@ -381,22 +383,22 @@ export default function PubProductsList({
 
                       {/* Specs Row */}
                       <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
-                        <span className="px-1.5 py-0.5 rounded bg-muted/30 border border-border/50 font-mono">
+                        <span className="px-1.5 py-0.5 rounded bg-muted/30 border border-border/55 font-mono">
                           v{product.version}
                         </span>
                         {product.fileSize && (
-                          <span className="px-1.5 py-0.5 rounded bg-muted/30 border border-border/50">
+                          <span className="px-1.5 py-0.5 rounded bg-muted/30 border border-border/55">
                             {product.fileSize}
                           </span>
                         )}
-                        <span className="px-1.5 py-0.5 rounded bg-muted/30 border border-border/50">
+                        <span className="px-1.5 py-0.5 rounded bg-muted/30 border border-border/55">
                           {product.licenseType === "single" ? "Single License" : product.licenseType === "free" ? "Free" : "Extended"}
                         </span>
                       </div>
 
                       {/* Features Preview */}
                       {product.features && product.features.length > 0 && (
-                        <div className="space-y-1.5 border-t border-border/50 pt-3 my-0.5 flex-1">
+                        <div className="space-y-1.5 border-t border-border/40 pt-3 my-0.5 flex-1">
                           {product.features.slice(0, 2).map((feat, idx) => (
                             <div key={idx} className="flex items-start gap-2 text-xs text-muted-foreground">
                               <Icon icon="solar:verified-check-line-duotone" className="text-emerald-500 text-sm shrink-0 mt-0.5" />
@@ -408,7 +410,7 @@ export default function PubProductsList({
                     </div>
 
                     {/* Pricing Footer */}
-                    <div className="border-t border-border px-5 py-4 flex items-center justify-between bg-muted/10 rounded-b-xl group-hover:bg-muted/15 transition-all duration-300">
+                    <div className="border-t border-border px-5 py-4 flex items-center justify-between bg-muted/10 rounded-b-xl group-hover:bg-muted/15 transition-colors">
                       <div>
                         {isFree ? (
                           <div className="text-sm font-extrabold text-emerald-500 uppercase tracking-wide">Miễn phí</div>
@@ -426,17 +428,17 @@ export default function PubProductsList({
                             </div>
                           </div>
                         )}
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-[10px] text-muted-foreground">
                           {isFree ? "/ tải miễn phí" : "/ bản quyền lifetime"}
                         </span>
                       </div>
 
-                      <div className="relative flex items-center justify-end h-8 w-24 overflow-hidden select-none">
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground group-hover:-translate-y-8 group-hover:opacity-0 transition-all duration-300">
+                      <div className="relative flex items-center justify-end h-8 min-w-[85px] overflow-hidden select-none">
+                        <div className="flex items-center gap-1 text-[10px] text-muted-foreground group-hover:-translate-y-8 group-hover:opacity-0 transition-all duration-300">
                           <Icon icon="solar:cloud-download-line-duotone" className="text-xs text-vanixjnk" />
                           <span>{product.downloadCount + product.salesCount} lượt tải</span>
                         </div>
-                        <div className="absolute flex items-center gap-1 text-xs font-bold text-vanixjnk translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                        <div className="absolute flex items-center gap-1 text-[13px] font-bold text-vanixjnk translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
                           <span>Xem chi tiết</span>
                           <Icon icon="solar:arrow-right-linear" className="text-xs" />
                         </div>

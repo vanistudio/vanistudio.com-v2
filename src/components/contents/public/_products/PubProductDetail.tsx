@@ -9,8 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MdxRenderer } from "@/components/vanixjnk/mdx-builder";
 import { cn } from "@/lib/utils";
-import { useSetting } from "@/contexts/SettingContext";
-import { formatWithSiteTimezone } from "@/helpers/administrator/timezone.helper";
 
 interface PubProductDetailProps {
   product: Product;
@@ -45,7 +43,7 @@ const getProductTypeMeta = (type: string) => {
     case "bot":
       return {
         label: "Bot tự động",
-        icon: "solar:ghost-line-duotone",
+        icon: "solar:cpu-line-duotone",
         color: "text-amber-500",
         bg: "bg-amber-500/10",
         border: "border-amber-500/25",
@@ -53,7 +51,7 @@ const getProductTypeMeta = (type: string) => {
     case "extension":
       return {
         label: "Tiện ích",
-        icon: "solar:plug-line-duotone",
+        icon: "solar:widget-2-line-duotone",
         color: "text-pink-500",
         bg: "bg-pink-500/10",
         border: "border-pink-500/25",
@@ -89,8 +87,6 @@ const formatPrice = (price: number, currency: string) => {
 };
 
 export default function PubProductDetail({ product }: PubProductDetailProps) {
-  const setting = useSetting();
-  const siteTimezone = setting?.siteTimezone || "Asia/Ho_Chi_Minh";
   const typeMeta = getProductTypeMeta(product.type);
   const [activeMediaIndex, setActiveMediaIndex] = useState(0);
 
@@ -278,7 +274,7 @@ export default function PubProductDetail({ product }: PubProductDetailProps) {
                             </span>
                             <span className="text-xs text-muted-foreground flex items-center gap-1">
                               <Icon icon="solar:calendar-line-duotone" className="size-3.5" />
-                              {formatWithSiteTimezone(log.date, siteTimezone, "DD/MM/YYYY")}
+                              {log.date}
                             </span>
                           </div>
 
@@ -396,7 +392,7 @@ export default function PubProductDetail({ product }: PubProductDetailProps) {
                     </Button>
                   )}
 
-                  {product.githubUrl && (
+                  {product.githubUrl && product.price === 0 && (
                     <Button
                       variant="outline"
                       size="sm"

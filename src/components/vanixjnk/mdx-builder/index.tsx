@@ -588,6 +588,24 @@ export function MdxRenderer({ content, scope = {}, className }: MdxRendererProps
     
     while (idx < input.length) {
       const nextTagStart = input.indexOf("<", idx);
+      const nextCodeBlockStart = input.indexOf("```", idx);
+      
+      if (nextCodeBlockStart !== -1 && (nextTagStart === -1 || nextCodeBlockStart < nextTagStart)) {
+        if (nextCodeBlockStart > idx) {
+          tokens.push({ type: "text", content: input.slice(idx, nextCodeBlockStart) });
+        }
+        const nextCodeBlockEnd = input.indexOf("```", nextCodeBlockStart + 3);
+        if (nextCodeBlockEnd === -1) {
+          const remaining = input.slice(nextCodeBlockStart);
+          if (remaining) tokens.push({ type: "text", content: remaining });
+          break;
+        }
+        const codeBlockContent = input.slice(nextCodeBlockStart, nextCodeBlockEnd + 3);
+        tokens.push({ type: "text", content: codeBlockContent });
+        idx = nextCodeBlockEnd + 3;
+        continue;
+      }
+      
       if (nextTagStart === -1) {
         const remaining = input.slice(idx);
         if (remaining) tokens.push({ type: "text", content: remaining });
@@ -849,7 +867,7 @@ export function MdxRenderer({ content, scope = {}, className }: MdxRendererProps
   };
 
   const renderMdxComponent = (tagName: string, props: any, children: any, key: string | number): React.ReactNode => {
-    const { className: itemClassName, ...otherProps } = props;
+    const { className: itemClassName, key: _, ...otherProps } = props;
     
     switch (tagName) {
       case "Button":
@@ -948,7 +966,12 @@ export function MdxRenderer({ content, scope = {}, className }: MdxRendererProps
         const HtmlTag = tagName.toLowerCase() as any;
         const validHtmlTags = ["div", "span", "p", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "br", "hr", "img", "a", "strong", "em", "code", "pre", "blockquote", "table", "thead", "tbody", "tr", "th", "td"];
         if (validHtmlTags.includes(HtmlTag)) {
-          return React.createElement(HtmlTag, { ...props, key }, children);
+          const { key: _, ...cleanProps } = props;
+          const voidTags = ["br", "hr", "img"];
+          if (voidTags.includes(HtmlTag)) {
+            return React.createElement(HtmlTag, { ...cleanProps, key });
+          }
+          return React.createElement(HtmlTag, { ...cleanProps, key }, children);
         }
         return <div key={key} className={itemClassName} {...otherProps}>{children}</div>;
     }
