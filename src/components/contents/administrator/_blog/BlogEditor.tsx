@@ -457,7 +457,7 @@ export default function BlogEditor({ mode, initialId }: BlogEditorProps) {
                         }));
                       }}
                       placeholder="Ví dụ: Hướng dẫn tối ưu SEO cho Website Next.js 16"
-                      className="h-9 text-xs"
+                      className="h-9 text-[13px]"
                     />
                   </div>
 
@@ -473,7 +473,7 @@ export default function BlogEditor({ mode, initialId }: BlogEditorProps) {
                         value={formData.slug || ""}
                         onChange={(e) => setFormData((prev) => ({ ...prev, slug: e.target.value }))}
                         placeholder="nextjs-16-seo-guide"
-                        className="h-9 text-xs font-mono"
+                        className="h-9 text-[13px]"
                       />
                     </div>
                   </div>
@@ -484,7 +484,7 @@ export default function BlogEditor({ mode, initialId }: BlogEditorProps) {
                       value={formData.description || ""}
                       onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
                       placeholder="Tóm tắt ngắn gọn nội dung bài viết blog này dùng để hiển thị..."
-                      className="h-16 text-xs resize-none"
+                      className="h-16 text-[13px] resize-none"
                     />
                   </div>
 
@@ -509,7 +509,7 @@ export default function BlogEditor({ mode, initialId }: BlogEditorProps) {
                       value={formData.metaTitle || ""}
                       onChange={(e) => setFormData((prev) => ({ ...prev, metaTitle: e.target.value }))}
                       placeholder="Tiêu đề hiển thị trên thẻ trình duyệt Google..."
-                      className="h-9 text-xs"
+                      className="h-9 text-[13px]"
                     />
                   </div>
 
@@ -519,7 +519,7 @@ export default function BlogEditor({ mode, initialId }: BlogEditorProps) {
                       value={formData.metaDescription || ""}
                       onChange={(e) => setFormData((prev) => ({ ...prev, metaDescription: e.target.value }))}
                       placeholder="Nhập mô tả tóm tắt để tối ưu kết quả tìm kiếm..."
-                      className="h-24 text-xs resize-none"
+                      className="h-24 text-[13px] resize-none"
                     />
                   </div>
 
@@ -529,7 +529,7 @@ export default function BlogEditor({ mode, initialId }: BlogEditorProps) {
                       value={formData.metaKeywords || ""}
                       onChange={(e) => setFormData((prev) => ({ ...prev, metaKeywords: e.target.value }))}
                       placeholder="Từ khóa SEO ngăn cách bởi dấu phẩy..."
-                      className="h-9 text-xs"
+                      className="h-9 text-[13px]"
                     />
                   </div>
                 </div>
@@ -594,7 +594,7 @@ export default function BlogEditor({ mode, initialId }: BlogEditorProps) {
                     value={formData.readingTime ?? 0}
                     onChange={(e) => setFormData((prev) => ({ ...prev, readingTime: parseInt(e.target.value) || 0 }))}
                     placeholder="Ví dụ: 5"
-                    className="h-9 text-xs"
+                    className="h-9 text-[13px]"
                   />
                 </div>
 
@@ -606,7 +606,7 @@ export default function BlogEditor({ mode, initialId }: BlogEditorProps) {
                     value={formData.tags?.join(", ") || ""}
                     onChange={(e) => setFormData((prev) => ({ ...prev, tags: e.target.value.split(",").map(t => t.trim()) }))}
                     placeholder="Ví dụ: Rust, AI, NextJS"
-                    className="h-9 text-xs"
+                    className="h-9 text-[13px]"
                   />
                 </div>
 
@@ -641,7 +641,7 @@ export default function BlogEditor({ mode, initialId }: BlogEditorProps) {
                     value={formData.thumbnail || ""}
                     onChange={(e) => setFormData((prev) => ({ ...prev, thumbnail: e.target.value }))}
                     placeholder="Đường dẫn ảnh bìa..."
-                    className="h-9 text-xs flex-1 font-mono"
+                    className="h-9 text-[13px] flex-1"
                   />
                   <button
                     type="button"

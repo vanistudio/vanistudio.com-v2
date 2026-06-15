@@ -238,7 +238,10 @@ Tất cả các lập trình viên và tác nhân AI tham gia phát triển dự
 - **Bảng dữ liệu nâng cao (Advanced Data Tables)**: Bắt buộc dùng `<DataTable>` và `<DataTableColumnHeader>` từ `@/components/vanixjnk/data-table` để xây dựng tất cả các bảng hiển thị thông tin ở Admin.
 
 ### 7.7. Quy Chuẩn Đồng Nhất Input Form & Kích Thước Thành Phần
-- Tất cả các control của form nhập liệu (`Input`, `SelectTrigger`, `Button` hoạt động, v.v.) bắt buộc phải có chiều cao thống nhất là `h-10` và độ bo góc là `rounded-xl`.
+- Tất cả các control của form nhập liệu (`Input`, `SelectTrigger`, `Textarea`, v.v.) bắt buộc phải có chiều cao thống nhất là `h-9` (hoặc chiều cao tự động đối với `Textarea`) và cỡ chữ `text-[13px]`.
+- Tuyệt đối không sử dụng `text-xs` hoặc `text-sm` cho các thẻ input, select, textarea thông thường.
+- Tuyệt đối không sử dụng `font-mono` cho các trường nhập liệu (như slug, version, liên kết...).
+- Cấu trúc bo góc tuân thủ theo cấu hình mặc định của hệ thống (`rounded-md` hoặc `rounded-lg`), tuyệt đối không tự chế độ bo góc ad-hoc lớn như `rounded-xl` cho các nút bấm và ô nhập liệu thông thường.
 - Cấu trúc lưới (Grid) hiển thị form nhập liệu ở cả trang Login, Register lẫn các trang Editor nghiệp vụ phải tuân thủ nghiêm ngặt hệ thống grid Tailwind:
   - Lưới cơ bản: `grid grid-cols-2 gap-x-4 gap-y-3.5` hoặc `grid grid-cols-1 md:grid-cols-2 gap-4`.
   - Phân bổ cột: Sử dụng `col-span-2` cho các trường nhập dài (email, địa chỉ, ảnh, editor) và `col-span-2 sm:col-span-1` cho các trường nhập ngắn đặt cạnh nhau (mật khẩu, xác nhận mật khẩu, tên/họ, tỉnh/thành phố).
