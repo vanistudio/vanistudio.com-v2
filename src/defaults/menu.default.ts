@@ -24,11 +24,12 @@ export const DEFAULT_MENU_GROUPS: DefaultMenuGroup[] = [
       { name: "Dự án", url: "/projects", icon: "solar:folder-open-line-duotone", order: 3 },
       { name: "Dịch vụ", url: "/services", icon: "solar:server-square-line-duotone", order: 4 },
       { name: "Blog", url: "/blog", icon: "solar:document-text-line-duotone", order: 5 },
-      { name: "Liên hệ", url: "/contact", icon: "solar:letter-line-duotone", order: 6 },
+      { name: "Tài liệu API", url: "/docs", icon: "solar:document-text-line-duotone", order: 6 },
+      { name: "Liên hệ", url: "/contact", icon: "solar:letter-line-duotone", order: 7 },
       {
         name: "Công cụ",
         icon: "solar:widget-3-line-duotone",
-        order: 7,
+        order: 8,
         children: [
           { name: "Lấy mã 2fa", url: "/tools/2fa", icon: "solar:key-minimalistic-line-duotone", order: 1 },
           { name: "Check Cookie", url: "/tools/check-cookie-facebook", icon: "solar:donut-bitten-line-duotone", order: 2 },
@@ -41,7 +42,7 @@ export const DEFAULT_MENU_GROUPS: DefaultMenuGroup[] = [
       {
         name: "Chính sách",
         icon: "solar:shield-keyhole-line-duotone",
-        order: 8,
+        order: 9,
         children: [
           { name: "Điều khoản", url: "/terms-of-service", icon: "solar:document-text-line-duotone", order: 1 },
           { name: "Bảo mật", url: "/privacy-policy", icon: "solar:lock-keyhole-line-duotone", order: 2 },
@@ -68,10 +69,10 @@ export const DEFAULT_MENU_GROUPS: DefaultMenuGroup[] = [
     key: "services",
     description: "Các dịch vụ công nghệ chính",
     items: [
-      { name: "Thiết kế Website", url: "/services/website", icon: "solar:monitor-line-duotone", order: 1 },
-      { name: "Ứng dụng di động", url: "/services/mobile", icon: "solar:smartphone-line-duotone", order: 2 },
-      { name: "Trợ lý ảo AI Chatbot", url: "/services/chatbot", icon: "solar:magic-stick-3-line-duotone", order: 3 },
-      { name: "Thiết kế UI/UX", url: "/services/ui-ux", icon: "solar:palette-line-duotone", order: 4 },
+      { name: "Thiết kế Website", url: "/services/website", icon: "solar:round-double-alt-arrow-right-line-duotone", order: 1 },
+      { name: "Ứng dụng di động", url: "/services/mobile", icon: "solar:round-double-alt-arrow-right-line-duotone", order: 2 },
+      { name: "Trợ lý ảo AI Chatbot", url: "/services/chatbot", icon: "solar:round-double-alt-arrow-right-line-duotone", order: 3 },
+      { name: "Thiết kế UI/UX", url: "/services/ui-ux", icon: "solar:round-double-alt-arrow-right-line-duotone", order: 4 },
     ],
   },
   {
@@ -79,10 +80,10 @@ export const DEFAULT_MENU_GROUPS: DefaultMenuGroup[] = [
     key: "explore",
     description: "Khám phá dự án và tin tức",
     items: [
-      { name: "Dự án đã thực hiện", url: "/projects", icon: "solar:folder-open-line-duotone", order: 1 },
-      { name: "Sản phẩm phần mềm", url: "/products", icon: "solar:box-line-duotone", order: 2 },
-      { name: "Blog & Tin công nghệ", url: "/blog", icon: "solar:document-text-line-duotone", order: 3 },
-      { name: "Liên hệ báo giá", url: "/contact", icon: "solar:letter-line-duotone", order: 4 },
+      { name: "Dự án đã thực hiện", url: "/projects", icon: "solar:round-double-alt-arrow-right-line-duotone", order: 1 },
+      { name: "Sản phẩm phần mềm", url: "/products", icon: "solar:round-double-alt-arrow-right-line-duotone", order: 2 },
+      { name: "Blog & Tin công nghệ", url: "/blog", icon: "solar:round-double-alt-arrow-right-line-duotone", order: 3 },
+      { name: "Liên hệ báo giá", url: "/contact", icon: "solar:round-double-alt-arrow-right-line-duotone", order: 4 },
     ],
   },
   {

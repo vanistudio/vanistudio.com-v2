@@ -116,6 +116,7 @@ export class ApiService {
     name: string;
     slug: string;
     description?: string | null;
+    thumbnail?: string | null;
     order?: number;
   }): Promise<ApiProduct> {
     if (!data.name.trim()) throw new Error("Tên sản phẩm/API không được để trống");

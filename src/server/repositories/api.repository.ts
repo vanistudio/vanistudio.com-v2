@@ -179,6 +179,7 @@ export class ApiRepository {
     name: string;
     slug: string;
     description?: string | null;
+    thumbnail?: string | null;
     order?: number;
   }): Promise<ApiProduct> {
     const { id, ...insertData } = data;

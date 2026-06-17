@@ -15,6 +15,7 @@ import { QuickReorderApiProductsDialog } from "./QuickReorderApiProductsDialog";
 import { Badge } from "@/components/ui/badge";
 import { useSetting } from "@/contexts/SettingContext";
 import { formatWithSiteTimezone } from "@/helpers/administrator/timezone.helper";
+import { GalleryDialog } from "@/components/vanixjnk/gallery-dialog";
 
 interface AdminDocsProductsTabProps {
   onProductsChanged?: () => void;
@@ -25,6 +26,7 @@ interface ProductFormState {
   name: string;
   slug: string;
   description: string;
+  thumbnail: string;
   order: number;
 }
 
@@ -37,11 +39,13 @@ export default function AdminDocsProductsTab({ onProductsChanged }: AdminDocsPro
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
 
+  const [galleryOpen, setGalleryOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [formState, setFormState] = useState<ProductFormState>({
     name: "",
     slug: "",
     description: "",
+    thumbnail: "",
     order: 0,
   });
 
@@ -90,6 +94,7 @@ export default function AdminDocsProductsTab({ onProductsChanged }: AdminDocsPro
       name: "",
       slug: "",
       description: "",
+      thumbnail: "",
       order: (products.length > 0 ? Math.max(...products.map((p: any) => p.order || 0)) + 10 : 10),
     });
     setIsFormOpen(true);
@@ -101,6 +106,7 @@ export default function AdminDocsProductsTab({ onProductsChanged }: AdminDocsPro
       name: product.name,
       slug: product.slug,
       description: product.description || "",
+      thumbnail: product.thumbnail || "",
       order: product.order || 0,
     });
     setIsFormOpen(true);
@@ -116,6 +122,7 @@ export default function AdminDocsProductsTab({ onProductsChanged }: AdminDocsPro
       name: formState.name,
       slug: formState.slug,
       description: formState.description || undefined,
+      thumbnail: formState.thumbnail || undefined,
       order: Number(formState.order),
     });
   };
@@ -174,23 +181,35 @@ export default function AdminDocsProductsTab({ onProductsChanged }: AdminDocsPro
         ),
       },
       {
+        accessorKey: "thumbnail",
+        meta: { title: "Ảnh đại diện" },
+        header: ({ column }) => <DataTableColumnHeader column={column} />,
+        cell: ({ row }) => {
+          const thumb = row.getValue("thumbnail") as string;
+          return (
+            <div className="size-11 rounded-lg border border-border bg-muted/40 overflow-hidden flex items-center justify-center shadow-2xs">
+              {thumb ? (
+                <img src={thumb} alt={row.original.name} className="size-full object-cover" />
+              ) : (
+                <Icon icon="solar:programming-line-duotone" className="size-5 text-muted-foreground" />
+              )}
+            </div>
+          );
+        },
+      },
+      {
         accessorKey: "name",
         meta: { title: "Tên Loại sản phẩm/API" },
         header: ({ column }) => <DataTableColumnHeader column={column} />,
         cell: ({ row }) => {
           const item = row.original;
           return (
-            <div className="flex items-center gap-2.5">
-              <div className="size-8 rounded-lg flex items-center justify-center border border-border bg-muted/40 shrink-0 text-vanixjnk">
-                <Icon icon="solar:widget-line-duotone" className="text-lg" />
-              </div>
-              <span
-                className="text-[13px] font-semibold text-foreground hover:text-vanixjnk transition-colors cursor-pointer"
-                onClick={() => handleOpenEdit(item)}
-              >
-                {item.name}
-              </span>
-            </div>
+            <span
+              className="text-[13px] font-semibold text-foreground hover:text-vanixjnk transition-colors cursor-pointer"
+              onClick={() => handleOpenEdit(item)}
+            >
+              {item.name}
+            </span>
           );
         },
       },
@@ -406,6 +425,34 @@ export default function AdminDocsProductsTab({ onProductsChanged }: AdminDocsPro
                 onChange={(e) => setFormState((prev) => ({ ...prev, description: e.target.value }))}
               />
             </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-muted-foreground">Ảnh đại diện (Thumbnail)</label>
+              <div className="flex items-center gap-2">
+                <Input
+                  value={formState.thumbnail}
+                  onChange={(e) => setFormState((prev) => ({ ...prev, thumbnail: e.target.value }))}
+                  placeholder="Đường dẫn ảnh bìa..."
+                  className="h-9 text-xs flex-1 font-mono bg-background"
+                />
+                <button
+                  type="button"
+                  onClick={() => setGalleryOpen(true)}
+                  className="size-9 flex items-center justify-center bg-vanixjnk/10 text-vanixjnk border border-vanixjnk/20 rounded-md hover:bg-vanixjnk/20 transition-colors shrink-0 cursor-pointer"
+                  title="Chọn ảnh"
+                >
+                  <Icon icon="solar:gallery-line-duotone" className="size-5" />
+                </button>
+              </div>
+              <div className="flex flex-col justify-center border border-border/50 rounded-xl bg-muted/20 min-h-[100px] p-2 items-center text-center overflow-hidden">
+                {formState.thumbnail ? (
+                  <img src={formState.thumbnail} alt="Thumbnail preview" className="max-h-20 w-auto object-contain rounded-lg shadow-sm" />
+                ) : (
+                  <span className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+                    <Icon icon="solar:gallery-remove-line-duotone" /> Chưa có ảnh bìa
+                  </span>
+                )}
+              </div>
+            </div>
             <DialogFooter className="pt-4 border-t border-border">
               <Button type="button" variant="outline" onClick={() => setIsFormOpen(false)}>
                 Hủy
@@ -457,6 +504,19 @@ export default function AdminDocsProductsTab({ onProductsChanged }: AdminDocsPro
         onSuccess={() => {
           refetch();
           if (onProductsChanged) onProductsChanged();
+        }}
+      />
+
+      <GalleryDialog
+        open={galleryOpen}
+        onOpenChange={setGalleryOpen}
+        onSelect={(url) => {
+          setFormState((prev) => ({
+            ...prev,
+            thumbnail: url,
+          }));
+          setGalleryOpen(false);
+          toast.success("Đã chọn ảnh thành công!");
         }}
       />
     </div>

@@ -247,6 +247,7 @@ export const apiDocsRouter = router({
         name: z.string().min(1, "Tên sản phẩm/API không được để trống"),
         slug: z.string().min(1, "Slug không được để trống"),
         description: z.string().optional().nullable(),
+        thumbnail: z.string().optional().nullable(),
         order: z.number().optional(),
       })
     )
