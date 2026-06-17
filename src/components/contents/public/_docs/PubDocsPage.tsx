@@ -20,7 +20,9 @@ interface ApiProduct {
   name: string;
   slug: string;
   description?: string | null;
+  thumbnail?: string | null;
   order: number;
+  createdAt: Date;
 }
 
 interface ApiParameter {
@@ -307,25 +309,60 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
     <div className="flex flex-col w-full flex-1">
       {/* 1. Header Section */}
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="border-l border-r border-dashed border-primary/20 pt-[60px] pb-6 px-6">
-          <div className="flex items-center gap-4">
-            <Link
-              href="/docs"
-              className="flex items-center justify-center size-9 rounded-lg border border-border bg-muted/40 hover:bg-muted transition-colors shrink-0 text-muted-foreground hover:text-foreground cursor-pointer"
-              title="Quay lại danh sách tài liệu"
-            >
-              <Icon icon="solar:arrow-left-line-duotone" className="text-xl" />
-            </Link>
-            <div className="flex items-center justify-center size-12 rounded-xl text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 shrink-0">
-              <Icon icon="solar:document-text-line-duotone" className="text-2xl" />
+        <div className="relative overflow-hidden border-l border-r border-dashed border-primary/20 pt-[60px] pb-6 px-6">
+          {currentProduct?.thumbnail && (
+            <div className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0">
+              <img
+                src={currentProduct.thumbnail}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover opacity-[0.5] dark:opacity-[0.5]"
+              />
+              <div className="absolute inset-0 bg-linear-to-b from-transparent via-background/40 to-background" />
+              <div
+                className="absolute inset-0"
+                style={{
+                  background: "radial-gradient(circle at center, transparent 30%, hsl(var(--background)) 100%)",
+                }}
+              />
             </div>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight text-foreground">
-                {currentProduct?.name || "Tài liệu Tích hợp API"}
+          )}
+
+          <div className="relative z-10 flex flex-col items-center text-center gap-4">
+            <div className="flex items-center justify-center rounded-xl text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 shrink-0 p-3 bg-background/60 backdrop-blur-md">
+              <Icon icon="solar:programming-line-duotone" className="text-3xl" />
+            </div>
+            <div className="flex flex-col items-center gap-2.5 max-w-2xl">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground select-none">
+                <Link href="/" className="hover:text-vanixjnk transition-colors flex items-center gap-1">
+                  <Icon icon="solar:home-2-line-duotone" className="size-4" />
+                  Trang chủ
+                </Link>
+                <Icon icon="solar:alt-arrow-right-line-duotone" className="size-3" />
+                <Link href="/docs" className="hover:text-vanixjnk transition-colors">
+                  Tài liệu API
+                </Link>
+                <Icon icon="solar:alt-arrow-right-line-duotone" className="size-3" />
+                <span className="text-foreground font-semibold truncate max-w-[200px]">
+                  {currentProduct?.name}
+                </span>
+              </div>
+
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+                {currentProduct?.name}
               </h1>
-              <p className="text-sm text-muted-foreground mt-0.5">
-                {currentProduct?.description || "Đọc tài liệu, đặc tả tham số và thử nghiệm chạy API trực tuyến."}
-              </p>
+
+              {currentProduct?.description && (
+                <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
+                  {currentProduct.description}
+                </p>
+              )}
+
+              {currentProduct?.createdAt && (
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-1 select-none">
+                  <Icon icon="solar:calendar-line-duotone" className="size-4" />
+                  <span>Cập nhật: {new Date(currentProduct.createdAt).toLocaleDateString("vi-VN")}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
