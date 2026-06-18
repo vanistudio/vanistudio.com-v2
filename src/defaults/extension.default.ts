@@ -158,6 +158,67 @@ export interface SecuritySettingsConfig {
   };
 }
 
+export interface SmtpServerConfig {
+  id: string;
+  name: string;
+  host: string;
+  port: number;
+  secure: boolean;
+  user: string;
+  pass: string;
+  fromEmail: string;
+  fromName: string;
+  isEnabled: boolean;
+  isDefault: boolean;
+  triggers: string[];
+}
+
+export interface TelegramBotConfig {
+  id: string;
+  name: string;
+  botToken: string;
+  chatId: string;
+  isEnabled: boolean;
+  triggers: string[];
+}
+
+export interface DiscordWebhookConfig {
+  id: string;
+  name: string;
+  webhookUrl: string;
+  isEnabled: boolean;
+  triggers: string[];
+}
+
+export interface SlackWebhookConfig {
+  id: string;
+  name: string;
+  webhookUrl: string;
+  isEnabled: boolean;
+  triggers: string[];
+}
+
+export interface NotificationConfig {
+  smtpServers: SmtpServerConfig[];
+  clientTelegramBot: {
+    botToken: string;
+    chatId: string;
+    isEnabled: boolean;
+    triggers: string[];
+  };
+  adminTelegramBots: TelegramBotConfig[];
+  clientDiscordWebhook: {
+    isEnabled: boolean;
+    triggers: string[];
+  };
+  adminDiscordWebhooks: DiscordWebhookConfig[];
+  clientSlackWebhook: {
+    isEnabled: boolean;
+    triggers: string[];
+  };
+  adminSlackWebhooks: SlackWebhookConfig[];
+}
+
 export type ContactFieldType = "text" | "email" | "tel" | "textarea" | "select" | "file";
 
 export interface ContactFieldItem {
@@ -396,6 +457,97 @@ export const DEFAULT_EXTENSIONS: DefaultExtension[] = [
         userAgentChangeDetection: true,
       },
     } as SecuritySettingsConfig,
+  },
+  {
+    id: "notification_config",
+    name: "Cấu hình Thông báo hệ thống",
+    description: "Cấu hình các cổng thông báo: SMTP Server (email), Telegram Bot, Discord Webhook, Slack Webhook và thiết lập quy tắc gửi tin cho từng sự kiện hệ thống.",
+    config: {
+      smtpServers: [
+        {
+          id: "default_smtp",
+          name: "VaniStudio Gmail SMTP",
+          host: "smtp.gmail.com",
+          port: 465,
+          secure: true,
+          user: "smtp@vanistudio.com",
+          pass: "password_example",
+          fromEmail: "noreply@vanistudio.com",
+          fromName: "VaniStudio Support",
+          isEnabled: false,
+          isDefault: true,
+          triggers: [
+            "user.register",
+            "auth.forgot_password",
+            "contact.new_submission",
+            "auth.two_factor_enabled",
+            "auth.two_factor_disabled",
+            "auth.otp_verification",
+            "auth.register_verification",
+            "auth.password_changed",
+            "auth.login_detected",
+            "license.issued"
+          ],
+        }
+      ],
+      clientTelegramBot: {
+        botToken: "",
+        chatId: "",
+        isEnabled: false,
+        triggers: [],
+      },
+      adminTelegramBots: [
+        {
+          id: "admin_bot_general",
+          name: "Admin General Bot",
+          botToken: "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ",
+          chatId: "-100123456789",
+          isEnabled: false,
+          triggers: [
+            "user.register",
+            "security.ip_banned",
+            "contact.new_submission",
+            "blog.comment_created"
+          ],
+        }
+      ],
+      clientDiscordWebhook: {
+        isEnabled: false,
+        triggers: [],
+      },
+      adminDiscordWebhooks: [
+        {
+          id: "admin_discord_security",
+          name: "Discord Security Logs",
+          webhookUrl: "https://discord.com/api/webhooks/example",
+          isEnabled: false,
+          triggers: [
+            "user.register",
+            "security.ip_banned",
+            "contact.new_submission",
+            "blog.comment_created"
+          ],
+        }
+      ],
+      clientSlackWebhook: {
+        isEnabled: false,
+        triggers: [],
+      },
+      adminSlackWebhooks: [
+        {
+          id: "admin_slack_crm",
+          name: "Slack CRM Notifications",
+          webhookUrl: "https://hooks.slack.com/services/example",
+          isEnabled: false,
+          triggers: [
+            "user.register",
+            "security.ip_banned",
+            "contact.new_submission",
+            "blog.comment_created"
+          ],
+        }
+      ],
+    } as NotificationConfig,
   },
   /*
   // TODO: Sẽ làm sau - contact_page_customizer
