@@ -6,6 +6,7 @@ export interface TemplateExtraConfig {
   parseMode?: "HTML" | "Markdown" | "MarkdownV2" | "PlainText";
   discordEmbeds?: Record<string, any>[];
   slackBlocks?: Record<string, any>[];
+  telegramInlineKeyboard?: Record<string, any>;
 }
 
 export const notificationTemplates = pgTable("notification_templates", {

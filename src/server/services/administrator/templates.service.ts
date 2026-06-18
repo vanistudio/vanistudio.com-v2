@@ -12,6 +12,14 @@ export class NotificationTemplatesService {
   ): Promise<NotificationTemplate> {
     return await notificationTemplatesRepository.updateTemplate(id, data);
   }
+
+  async resetTemplateToDefault(id: string): Promise<NotificationTemplate> {
+    return await notificationTemplatesRepository.resetTemplateToDefault(id);
+  }
+
+  async resetAllTemplatesToDefault(): Promise<NotificationTemplate[]> {
+    return await notificationTemplatesRepository.resetAllTemplatesToDefault();
+  }
 }
 
 export const notificationTemplatesService = new NotificationTemplatesService();

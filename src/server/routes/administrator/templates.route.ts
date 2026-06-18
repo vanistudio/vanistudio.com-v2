@@ -40,6 +40,7 @@ export const templatesRouter = router({
           parseMode: z.enum(["HTML", "Markdown", "MarkdownV2", "PlainText"]).optional(),
           discordEmbeds: z.array(z.any()).optional(),
           slackBlocks: z.array(z.any()).optional(),
+          telegramInlineKeyboard: z.any().optional(),
         }),
       })
     )
@@ -55,4 +56,34 @@ export const templatesRouter = router({
         });
       }
     }),
+
+  resetToDefault: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      await ensureAdmin();
+      try {
+        return await notificationTemplatesService.resetTemplateToDefault(input.id);
+      } catch (error: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message || "Không thể khôi phục mẫu thông báo về mặc định",
+        });
+      }
+    }),
+
+  resetAllToDefault: publicProcedure.mutation(async () => {
+    await ensureAdmin();
+    try {
+      return await notificationTemplatesService.resetAllTemplatesToDefault();
+    } catch (error: any) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: error.message || "Không thể khôi phục toàn bộ mẫu thông báo về mặc định",
+      });
+    }
+  }),
 });

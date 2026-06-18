@@ -132,8 +132,8 @@ export function TelegramMessagePreview({ message, chatId, inlineKeyboard }: Tele
     const [mounted, setMounted] = React.useState(false)
     React.useEffect(() => setMounted(true), [])
     
-    const urlMatch = message.match(/<a href="([^"]+)">/i)
-    const previewUrl = urlMatch ? urlMatch[1] : null
+    const urlMatch = message.match(/<a href="([^"]+)">/i) || message.match(/https?:\/\/[^\s"'<>|)]+/i)
+    const previewUrl = urlMatch ? (urlMatch[1] || urlMatch[0]) : null
 
     const { data: linkPreviewData } = trpc.tools.getLinkPreview.useQuery(
         { url: previewUrl! },

@@ -164,7 +164,7 @@ function renderSlackMrkdwn(text: string, tokens: typeof DARK): React.ReactNode[]
     const lines = text.split("\n")
     lines.forEach((line, li) => {
         if (li > 0) result.push(<br key={`br-${li}`} />)
-        const parts = line.split(/(\*[^*]+\*|_[^_]+_|~[^~]+~|`[^`]+`|\[([^\]]+)\]\(([^)]+)\))/g)
+        const parts = line.split(/(\*[^*]+\*|_[^_]+_|~[^~]+~|`[^`]+`|\[[^\]]+\]\([^)]+\)|<[^>]+>)/g)
         parts.forEach((part, i) => {
             if (!part) return
             const key = `${li}-${i}`
@@ -175,8 +175,22 @@ function renderSlackMrkdwn(text: string, tokens: typeof DARK): React.ReactNode[]
                 result.push(<code key={key} style={{ background: tokens.codeInline.bg, color: tokens.codeInline.text, fontFamily: "Monaco, Menlo, 'Courier New', monospace", fontSize: "12px", padding: "1px 5px", borderRadius: "3px", border: `1px solid ${tokens.codeInline.border}` }}>{part.slice(1, -1)}</code>)
                 return
             }
-            const lm = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/)
-            if (lm) { result.push(<a key={key} href={lm[2]} style={{ color: tokens.link, textDecoration: "none" }} target="_blank" rel="noopener noreferrer">{lm[1]}</a>); return }
+            if (part.startsWith("[") && part.endsWith(")")) {
+                const lm = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/)
+                if (lm) { result.push(<a key={key} href={lm[2]} style={{ color: tokens.link, textDecoration: "none" }} target="_blank" rel="noopener noreferrer">{lm[1]}</a>); return }
+            }
+            if (part.startsWith("<") && part.endsWith(">")) {
+                const inner = part.slice(1, -1)
+                const pipeIdx = inner.indexOf("|")
+                if (pipeIdx !== -1) {
+                    const url = inner.slice(0, pipeIdx)
+                    const label = inner.slice(pipeIdx + 1)
+                    result.push(<a key={key} href={url} style={{ color: tokens.link, textDecoration: "none" }} target="_blank" rel="noopener noreferrer">{label}</a>)
+                } else {
+                    result.push(<a key={key} href={inner} style={{ color: tokens.link, textDecoration: "none" }} target="_blank" rel="noopener noreferrer">{inner}</a>)
+                }
+                return
+            }
             result.push(<React.Fragment key={key}>{part}</React.Fragment>)
         })
     })
@@ -209,16 +223,16 @@ function renderSlackBlock(block: SlackBlock, t: typeof DARK, key: number): React
             <div key={key} style={{ display: "flex", gap: "12px", alignItems: "flex-start", margin: "4px 0" }}>
                 <div style={{ flex: 1, color: t.msgText, fontSize: "14.5px", lineHeight: "1.46667", wordBreak: "break-word" }}>
                     {textVal && <div>{renderSlackMrkdwn(textVal, t)}</div>}
-                    {fields && fields.length > 0 && (
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px 16px", marginTop: textVal ? "8px" : "0" }}>
-                            {fields.map((f, fi) => (
-                                <div key={fi}>
+                    {fields && fields.filter(f => getBlockText(f).trim()).length > 0 && (
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 16px", marginTop: textVal ? "10px" : "0", fontSize: "13px", lineHeight: "1.43" }}>
+                            {fields.filter(f => getBlockText(f).trim()).map((f, fi) => (
+                                <div key={fi} style={{ wordBreak: "break-word" }}>
                                     {renderSlackMrkdwn(getBlockText(f), t)}
                                 </div>
                             ))}
                         </div>
                     )}
-                    {!textVal && (!fields || fields.length === 0) && (
+                    {!textVal && (!fields || fields.filter(f => getBlockText(f).trim()).length === 0) && (
                         <span style={{ color: t.emptyText, fontStyle: "italic" }}>Nội dung trống</span>
                     )}
                 </div>

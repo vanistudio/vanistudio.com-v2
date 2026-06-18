@@ -55,6 +55,58 @@ export class NotificationTemplatesRepository {
     }
     return updated;
   }
+
+  async resetTemplateToDefault(id: string): Promise<NotificationTemplate> {
+    const existing = await this.getTemplateById(id);
+    if (!existing) {
+      throw new Error("Không tìm thấy mẫu thông báo để khôi phục");
+    }
+
+    const defaultTpl = DEFAULT_NOTIFICATION_TEMPLATES.find(
+      (d) => d.eventKey === existing.eventKey && d.channel === existing.channel && d.target === existing.target
+    );
+
+    if (!defaultTpl) {
+      throw new Error("Không tìm thấy cấu hình mặc định cho mẫu thông báo này");
+    }
+
+    return await this.updateTemplate(id, {
+      name: defaultTpl.name,
+      subject: defaultTpl.subject || null,
+      content: defaultTpl.content,
+      variables: defaultTpl.variables,
+      extraConfig: defaultTpl.extraConfig,
+      description: defaultTpl.description || null,
+      isActive: defaultTpl.isActive,
+    });
+  }
+
+  async resetAllTemplatesToDefault(): Promise<NotificationTemplate[]> {
+    const dbTemplates = await db.select().from(notificationTemplates);
+    const results: NotificationTemplate[] = [];
+
+    for (const existing of dbTemplates) {
+      const defaultTpl = DEFAULT_NOTIFICATION_TEMPLATES.find(
+        (d) => d.eventKey === existing.eventKey && d.channel === existing.channel && d.target === existing.target
+      );
+      if (defaultTpl) {
+        const updated = await this.updateTemplate(existing.id, {
+          name: defaultTpl.name,
+          subject: defaultTpl.subject || null,
+          content: defaultTpl.content,
+          variables: defaultTpl.variables,
+          extraConfig: defaultTpl.extraConfig,
+          description: defaultTpl.description || null,
+          isActive: defaultTpl.isActive,
+        });
+        results.push(updated);
+      } else {
+        results.push(existing);
+      }
+    }
+
+    return results;
+  }
 }
 
 export const notificationTemplatesRepository = new NotificationTemplatesRepository();

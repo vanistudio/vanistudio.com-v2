@@ -1,2 +1,2 @@
 export { TelegramMessagePreview } from "./telegram-message-preview";
-export { TelegramRichMessageBuilder } from "./telegram-rich-message-builder";
+export { TelegramRichMessageBuilder, type TelegramInlineKeyboard } from "./telegram-rich-message-builder";

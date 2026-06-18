@@ -1,334 +1,310 @@
 "use client"
 
 import * as React from "react"
-import { useTheme } from "next-themes"
-import { formatWithSiteTimezone } from "@/helpers/administrator/timezone.helper";
-import { useSetting } from "@/contexts/SettingContext";
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Icon } from "@iconify/react"
+import { cn } from "@/lib/utils"
+
+export interface TelegramInlineButton {
+    text: string
+    url: string
+}
+
+export interface TelegramInlineRow {
+    buttons: TelegramInlineButton[]
+}
+
+export interface TelegramInlineKeyboard {
+    rows: TelegramInlineRow[]
+}
+
 
 interface TelegramRichMessageBuilderProps {
     message: string
-    chatId?: string
-    inlineKeyboard?: { rows: { buttons: { text: string; url: string }[] }[] }
-}
-const DARK = {
-    panelBg:          "#17212b",
-    panelBorder:      "rgba(255,255,255,0.05)",
-    searchBg:         "#1c2733",
-    searchText:       "#4a6278",
-    searchIcon:       "#4a6278",
-    chatRowHover:     "rgba(255,255,255,0.06)",
-    chatRowActive:    "#2b5278",
-    chatName:         "#ffffff",
-    chatPreview:      "#6c8ea4",
-    chatTime:         "#6c8ea4",
-    unreadBadge:      "#2AABEE",
-    headerBg:         "#17212b",
-    headerBorder:     "rgba(255,255,255,0.05)",
-    menuIcon:         "#5288c1",
-    convHeaderBg:     "#17212b",
-    convHeaderBorder: "rgba(255,255,255,0.05)",
-    convHeaderIcon:   "#5288c1",
-    convBotName:      "#ffffff",
-    convBotSub:       "#5288c1",
-    chatBg:           "#0e1621",
-    datePill:         { bg: "rgba(23,33,43,0.88)", text: "#8ba5c3" },
-    botNameInChat:    "#2AABEE",
-    bubble:           "#182533",
-    bubbleText:       "#e8edf0",
-    bubbleTime:       "#6c8ea4",
-    bubbleTail:       "#182533",
-    emptyText:        "#4a5e72",
-    codeInline:       { bg: "rgba(0,0,0,0.35)", text: "#b9d7e0" },
-    link:             "#6ab3f3",
-    inputBarBg:       "#17212b",
-    inputBarBorder:   "rgba(255,255,255,0.05)",
-    inputFieldBg:     "#242f3d",
-    inputPlaceholder: "#4a6278",
-    inputIcon:        "#5288c1",
-    sendBg:           "#2AABEE",
+    onMessageChange: (v: string) => void
+    inlineKeyboard: TelegramInlineKeyboard
+    onKeyboardChange: (v: TelegramInlineKeyboard) => void
 }
 
-const LIGHT = {
-    panelBg:          "#ffffff",
-    panelBorder:      "rgba(0,0,0,0.08)",
-    searchBg:         "#f1f3f4",
-    searchText:       "#aaaaaa",
-    searchIcon:       "#aaaaaa",
-    chatRowHover:     "rgba(0,0,0,0.04)",
-    chatRowActive:    "#3390ec1a",
-    chatName:         "#000000",
-    chatPreview:      "#999999",
-    chatTime:         "#999999",
-    unreadBadge:      "#2AABEE",
-    headerBg:         "#ffffff",
-    headerBorder:     "rgba(0,0,0,0.08)",
-    menuIcon:         "#707579",
-    convHeaderBg:     "#ffffff",
-    convHeaderBorder: "rgba(0,0,0,0.08)",
-    convHeaderIcon:   "#707579",
-    convBotName:      "#000000",
-    convBotSub:       "#3390ec",
-    chatBg:           "#c8d4de",
-    datePill:         { bg: "rgba(0,0,0,0.28)", text: "#ffffff" },
-    botNameInChat:    "#3390ec",
-    bubble:           "#ffffff",
-    bubbleText:       "#000000",
-    bubbleTime:       "#939ba5",
-    bubbleTail:       "#ffffff",
-    emptyText:        "#939ba5",
-    codeInline:       { bg: "#f1f3f4", text: "#cc3333" },
-    link:             "#2678b6",
-    inputBarBg:       "#ffffff",
-    inputBarBorder:   "rgba(0,0,0,0.08)",
-    inputFieldBg:     "#f1f3f4",
-    inputPlaceholder: "#aaaaaa",
-    inputIcon:        "#707579",
-    sendBg:           "#2AABEE",
-}
-function renderTgHtml(html: string, t: typeof DARK): React.ReactNode[] {
-    const result: React.ReactNode[] = []
-    const tokenRegex = /<b>([\s\S]*?)<\/b>|<strong>([\s\S]*?)<\/strong>|<i>([\s\S]*?)<\/i>|<em>([\s\S]*?)<\/em>|<u>([\s\S]*?)<\/u>|<s>([\s\S]*?)<\/s>|<del>([\s\S]*?)<\/del>|<code>([\s\S]*?)<\/code>|<pre>([\s\S]*?)<\/pre>|<tg-spoiler>([\s\S]*?)<\/tg-spoiler>|<a href="([^"]*)">([\s\S]*?)<\/a>|(\n)/g
-    let last = 0
-    let match: RegExpExecArray | null
-    let key = 0
-    while ((match = tokenRegex.exec(html)) !== null) {
-        if (match.index > last) {
-            result.push(<React.Fragment key={key++}>{html.slice(last, match.index)}</React.Fragment>)
-        }
-        if (match[1] !== undefined || match[2] !== undefined) {
-            result.push(<strong key={key++}>{match[1] ?? match[2]}</strong>)
-        } else if (match[3] !== undefined || match[4] !== undefined) {
-            result.push(<em key={key++}>{match[3] ?? match[4]}</em>)
-        } else if (match[5] !== undefined) {
-            result.push(<span key={key++} style={{ textDecoration: "underline" }}>{match[5]}</span>)
-        } else if (match[6] !== undefined || match[7] !== undefined) {
-            result.push(<span key={key++} style={{ textDecoration: "line-through" }}>{match[6] ?? match[7]}</span>)
-        } else if (match[8] !== undefined) {
-            result.push(<code key={key++} style={{ background: t.codeInline.bg, fontFamily: "monospace", fontSize: "13px", padding: "1px 4px", borderRadius: "3px", color: t.codeInline.text }}>{match[8]}</code>)
-        } else if (match[9] !== undefined) {
-            result.push(<pre key={key++} style={{ background: t.codeInline.bg, fontFamily: "monospace", fontSize: "12px", padding: "6px 8px", borderRadius: "4px", color: t.codeInline.text, margin: "4px 0", overflowX: "auto", whiteSpace: "pre-wrap" }}>{match[9]}</pre>)
-        } else if (match[10] !== undefined) {
-            result.push(<span key={key++} style={{ background: t.bubbleText, color: t.bubbleText, borderRadius: "3px", cursor: "pointer" }} title="Spoiler">{match[10]}</span>)
-        } else if (match[11] !== undefined && match[12] !== undefined) {
-            result.push(<a key={key++} href={match[11]} style={{ color: t.link, textDecoration: "none" }} target="_blank" rel="noopener noreferrer">{match[12]}</a>)
-        } else if (match[13] !== undefined) {
-            result.push(<br key={key++} />)
-        }
-        last = match.index + match[0].length
-    }
-    if (last < html.length) result.push(<React.Fragment key={key++}>{html.slice(last)}</React.Fragment>)
-    return result
-}
-import { trpc } from "@/lib/trpc"
-const FAKE_CHATS = [
-    { name: "VaniStudio", preview: "Bot message preview...", time: "17:28", unread: 1 },
-    { name: "Team Alpha", preview: "Đã gửi: Ảnh", time: "16:45", unread: 0 },
-    { name: "Marketing", preview: "Meeting lúc 3h chiều nhé", time: "15:30", unread: 3 },
-    { name: "Support", preview: "Ticket #4821 đã đóng", time: "14:10", unread: 0 },
-]
+const MAX_CHARS = 4096
+const MAX_ROWS = 10
+const MAX_BUTTONS_PER_ROW = 8
 
-export function TelegramRichMessageBuilder({ message, chatId, inlineKeyboard }: TelegramRichMessageBuilderProps) {
-    const { resolvedTheme } = useTheme()
-    const [mounted, setMounted] = React.useState(false)
-    React.useEffect(() => setMounted(true), [])
+function applyFormatTag(textarea: HTMLTextAreaElement, open: string, close: string): string {
+    const { selectionStart: s, selectionEnd: e, value } = textarea
+    const selected = value.slice(s, e)
+    if (!selected) return value
+    return value.slice(0, s) + open + selected + close + value.slice(e)
+}
+
+export function TelegramRichMessageBuilder({ message, onMessageChange, inlineKeyboard, onKeyboardChange }: TelegramRichMessageBuilderProps) {
+    const textareaRef = React.useRef<HTMLTextAreaElement>(null)
+    const charCount = message.length
     
-    const urlMatch = message.match(/<a href="([^"]+)">/i)
-    const previewUrl = urlMatch ? urlMatch[1] : null
+    const [linkPopoverOpen, setLinkPopoverOpen] = React.useState(false)
+    const [linkUrl, setLinkUrl] = React.useState("")
+    const [savedSelection, setSavedSelection] = React.useState<{s: number, e: number} | null>(null)
 
-    const { data: linkPreviewData } = trpc.tools.getLinkPreview.useQuery(
-        { url: previewUrl! },
-        { enabled: !!previewUrl, staleTime: 1000 * 60 * 60, retry: false }
-    )
-    const linkMeta = (linkPreviewData as any)?.data as { title?: string, description?: string, images?: string[], siteName?: string } | undefined
+    const applyTag = (open: string, close: string) => {
+        const ta = textareaRef.current
+        if (!ta) return
+        const newVal = applyFormatTag(ta, open, close)
+        onMessageChange(newVal)
+        setTimeout(() => { ta.focus(); ta.setSelectionRange(ta.selectionStart, ta.selectionEnd) }, 0)
+    }
 
-    const dark = mounted ? resolvedTheme === "dark" : true
-    const t = dark ? DARK : LIGHT
+    const handleOpenLinkPopover = (open: boolean) => {
+        if (open) {
+            const ta = textareaRef.current
+            if (ta) setSavedSelection({ s: ta.selectionStart, e: ta.selectionEnd })
+        } else {
+            setLinkUrl("")
+            setSavedSelection(null)
+        }
+        setLinkPopoverOpen(open)
+    }
 
-    const setting = useSetting()
-    const siteTimezone = setting?.siteTimezone || "Asia/Ho_Chi_Minh"
-    const now = new Date()
-    const timeStr = formatWithSiteTimezone(now, siteTimezone, "HH:mm:ss")
+    const submitLink = () => {
+        const ta = textareaRef.current
+        if (!ta || !savedSelection) return
+        const { value } = ta
+        const { s, e } = savedSelection
+        const selected = value.slice(s, e) || "link text"
+        const finalUrl = linkUrl.trim() || "https://"
+        const newVal = value.slice(0, s) + `<a href="${finalUrl}">${selected}</a>` + value.slice(e)
+        onMessageChange(newVal)
+        setLinkPopoverOpen(false)
+        const newCursorPos = s + `<a href="${finalUrl}">`.length + selected.length + 4
+        setTimeout(() => { ta.focus(); ta.setSelectionRange(newCursorPos, newCursorPos) }, 0)
+    }
+
+    const addRow = () => {
+        if (inlineKeyboard.rows.length >= MAX_ROWS) return
+        onKeyboardChange({ rows: [...inlineKeyboard.rows, { buttons: [{ text: "", url: "" }] }] })
+    }
+
+    const removeRow = (ri: number) => {
+        const rows = inlineKeyboard.rows.filter((_, i) => i !== ri)
+        onKeyboardChange({ rows })
+    }
+
+    const moveRow = (ri: number, dir: -1 | 1) => {
+        const rows = [...inlineKeyboard.rows]
+        const ni = ri + dir
+        if (ni < 0 || ni >= rows.length) return
+        ;[rows[ri], rows[ni]] = [rows[ni], rows[ri]]
+        onKeyboardChange({ rows })
+    }
+
+    const addButton = (ri: number) => {
+        const rows = inlineKeyboard.rows.map((row, i) => {
+            if (i !== ri || row.buttons.length >= MAX_BUTTONS_PER_ROW) return row
+            return { buttons: [...row.buttons, { text: "", url: "" }] }
+        })
+        onKeyboardChange({ rows })
+    }
+
+    const removeButton = (ri: number, bi: number) => {
+        const rows = inlineKeyboard.rows.map((row, i) => {
+            if (i !== ri) return row
+            const buttons = row.buttons.filter((_, j) => j !== bi)
+            return { buttons }
+        }).filter(row => row.buttons.length > 0)
+        onKeyboardChange({ rows })
+    }
+
+    const updateButton = (ri: number, bi: number, field: keyof TelegramInlineButton, value: string) => {
+        const rows = inlineKeyboard.rows.map((row, i) => {
+            if (i !== ri) return row
+            return {
+                buttons: row.buttons.map((btn, j) => j === bi ? { ...btn, [field]: value } : btn)
+            }
+        })
+        onKeyboardChange({ rows })
+    }
+
+    const totalButtons = inlineKeyboard.rows.reduce((acc, r) => acc + r.buttons.length, 0)
 
     return (
-        <div style={{
-            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif",
-            borderRadius: "10px",
-            overflow: "hidden",
-            border: dark ? "1px solid rgba(255,255,255,0.04)" : "1px solid rgba(0,0,0,0.1)",
-            display: "flex",
-            height: "550px",
-            userSelect: "none",
-            transition: "all 0.2s",
-        }}>
-            <div className="hidden sm:flex" style={{ width: "220px", flexShrink: 0, background: t.panelBg, flexDirection: "column", borderRight: `1px solid ${t.panelBorder}` }}>
-                <div style={{ height: "52px", padding: "0 12px", display: "flex", alignItems: "center", gap: "10px", borderBottom: `1px solid ${t.headerBorder}`, background: t.headerBg }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill={t.menuIcon}><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-                    <span style={{ color: t.chatName, fontSize: "16px", fontWeight: 600, flex: 1 }}>Telegram</span>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill={t.menuIcon}><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                </div>
-                <div style={{ padding: "8px 10px", borderBottom: `1px solid ${t.panelBorder}` }}>
-                    <div style={{ background: t.searchBg, borderRadius: "20px", padding: "6px 10px", display: "flex", alignItems: "center", gap: "6px" }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill={t.searchIcon}><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                        <span style={{ color: t.searchText, fontSize: "13px" }}>Search</span>
-                    </div>
-                </div>
-                <div style={{ flex: 1, overflowY: "auto" }}>
-                    {FAKE_CHATS.map((chat, idx) => (
-                        <div key={idx} style={{
-                            padding: "8px 12px",
-                            display: "flex", alignItems: "center", gap: "10px",
-                            background: idx === 0 ? t.chatRowActive : "transparent",
-                            borderRadius: idx === 0 ? "0" : "0",
-                            cursor: "pointer",
-                            transition: "background 0.15s",
-                        }}>
-                            <div style={{ width: "40px", height: "40px", borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: idx === 0 ? "linear-gradient(135deg, #2AABEE, #229ED9)" : idx === 1 ? "#9c69e2" : idx === 2 ? "#e56555" : "#3dbb76", fontWeight: 700, fontSize: "15px", color: "white" }}>
-                                {chat.name.charAt(0)}
-                            </div>
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "4px" }}>
-                                    <span style={{ color: idx === 0 && dark ? "#ffffff" : t.chatName, fontSize: "14px", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{chat.name}</span>
-                                    <span style={{ color: chat.unread > 0 ? t.unreadBadge : t.chatTime, fontSize: "11px", flexShrink: 0 }}>{chat.time}</span>
-                                </div>
-                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                    <span style={{ color: t.chatPreview, fontSize: "13px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{chat.preview}</span>
-                                    {chat.unread > 0 && (
-                                        <div style={{ background: t.unreadBadge, color: "white", fontSize: "11px", fontWeight: 700, minWidth: "18px", height: "18px", borderRadius: "9px", display: "flex", alignItems: "center", justifyContent: "center", padding: "0 4px", flexShrink: 0, marginLeft: "4px" }}>
-                                            {chat.unread}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-            <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
-                <div style={{ height: "52px", padding: "0 16px", display: "flex", alignItems: "center", gap: "10px", background: t.convHeaderBg, borderBottom: `1px solid ${t.convHeaderBorder}` }}>
-                    <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: "linear-gradient(135deg, #2AABEE, #229ED9)", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/></svg>
-                    </div>
-                    <div style={{ flex: 1 }}>
-                        <div style={{ color: t.convBotName, fontSize: "15px", fontWeight: 600, lineHeight: 1.2 }}>VaniStudio</div>
-                        <div style={{ color: t.convBotSub, fontSize: "12px", lineHeight: 1.2 }}>bot</div>
-                    </div>
-                    <div style={{ display: "flex", gap: "14px", alignItems: "center" }}>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill={t.convHeaderIcon}><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill={t.convHeaderIcon}><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
-                    </div>
-                </div>
-                <div style={{ flex: 1, background: t.chatBg, padding: "12px 16px 8px", overflowY: "auto", minHeight: 0 }}>
-                    <div style={{ display: "flex", justifyContent: "center", marginBottom: "12px" }}>
-                        <div style={{ background: t.datePill.bg, color: t.datePill.text, fontSize: "12px", fontWeight: 500, padding: "4px 14px", borderRadius: "12px" }}>
-                            {formatWithSiteTimezone(now, siteTimezone, "DD/MM/YYYY HH:mm:ss")}
-                        </div>
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "flex-end", gap: "6px", marginBottom: "4px" }}>
-                        <div style={{ width: "28px", height: "28px", borderRadius: "50%", background: "linear-gradient(135deg, #2AABEE, #229ED9)", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: (inlineKeyboard && inlineKeyboard.rows.length > 0) || chatId ? "auto" : "0" }}>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/></svg>
-                        </div>
-                        <div style={{ maxWidth: "78%", display: "flex", flexDirection: "column", gap: "2px" }}>
-                            <div style={{ position: "relative" }}>
-                                <div style={{ color: t.botNameInChat, fontSize: "12px", fontWeight: 600, marginBottom: "3px", paddingLeft: "14px" }}>VaniStudio</div>
-                                <div style={{ background: t.bubble, borderRadius: "4px 12px 12px 12px", padding: "8px 12px 6px", position: "relative", boxShadow: dark ? "0 1px 2px rgba(0,0,0,0.45)" : "0 1px 2px rgba(0,0,0,0.12)" }}>
-                                    <div style={{ color: t.bubbleText, fontSize: "15px", lineHeight: "1.5", wordBreak: "break-word" }}>
-                                        {message
-                                            ? renderTgHtml(message, t)
-                                            : <span style={{ color: t.emptyText, fontStyle: "italic" }}>Nội dung tin nhắn...</span>
-                                        }
-                                    </div>
-                                    {message && previewUrl && (
-                                        <div style={{
-                                            marginTop: "6px",
-                                            marginBottom: "2px",
-                                            borderLeft: `2.5px solid ${t.unreadBadge}`,
-                                            paddingLeft: "8px",
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            gap: "4px"
-                                        }}>
-                                            <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                                                <div style={{ color: t.unreadBadge, fontSize: "13px", fontWeight: 600 }}>
-                                                    {linkMeta?.siteName || "Trang liên kết"}
-                                                </div>
-                                                <div style={{ color: t.bubbleText, fontSize: "14px", fontWeight: 600, lineHeight: 1.3 }}>
-                                                    {linkMeta?.title || previewUrl}
-                                                </div>
-                                                <div style={{ color: t.bubbleTime, fontSize: "13px", lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: linkMeta?.images?.length ? 2 : 4, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                                                    {linkMeta?.description || "Nhấn vào liên kết để truy cập và xem chi tiết theo hướng dẫn từ tin nhắn Telegram gốc."}
-                                                </div>
-                                            </div>
-                                            {linkMeta?.images && linkMeta.images.length > 0 && (
-                                                <div style={{ marginTop: "2px", borderRadius: "6px", overflow: "hidden", maxWidth: "100%", maxHeight: "160px", display: "flex" }}>
-                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                    <img src={linkMeta.images[0]} alt="preview" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-                                    <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "3px" }}>
-                                        <span style={{ color: t.bubbleTime, fontSize: "11px" }}>{timeStr}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            {chatId && (
-                                <div style={{ display: "flex", marginTop: "4px" }}>
-                                    <span style={{ background: dark ? "rgba(42,171,238,0.12)" : "rgba(42,171,238,0.1)", color: "#2AABEE", fontSize: "11px", padding: "3px 10px", borderRadius: "10px", border: "1px solid rgba(42,171,238,0.25)", fontWeight: 500 }}>
-                                        📢 Broadcast: {chatId}
-                                    </span>
-                                </div>
-                            )}
+        <Tabs defaultValue="content" className="w-full">
+            <TabsList className="w-full grid grid-cols-2 mb-4">
+                <TabsTrigger value="content" className="gap-1.5">
+                    <Icon icon="solar:document-text-line-duotone" className="size-4" />
+                    Nội dung
+                </TabsTrigger>
+                <TabsTrigger value="keyboard" className="gap-1.5">
+                    <Icon icon="solar:keyboard-line-duotone" className="size-4" />
+                    Bàn phím inline
+                    {totalButtons > 0 && <span className="ml-1 rounded-full bg-[#2AABEE] text-white text-[10px] px-1.5 py-0">{totalButtons}</span>}
+                </TabsTrigger>
+            </TabsList>
 
-                            {inlineKeyboard && inlineKeyboard.rows.length > 0 && (
-                                <div style={{ display: "flex", flexDirection: "column", gap: "2px", width: "100%" }}>
-                                    {inlineKeyboard.rows.map((row, ri) => (
-                                        <div key={ri} style={{ display: "flex", gap: "2px", width: "100%" }}>
-                                            {row.buttons.filter(b => b.text).map((btn, bi) => (
-                                                <div key={bi} style={{
-                                                    flex: 1, minWidth: 0,
-                                                    height: "34px",
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    justifyContent: "center",
-                                                    background: dark ? "#202b36" : "rgba(255, 255, 255, 0.8)",
-                                                    borderRadius: (ri === 0 && row.buttons.length === 1 && inlineKeyboard.rows.length === 1) ? "10px" : "8px",
-                                                    color: dark ? "#ffffff" : "#3390ec",
-                                                    fontSize: "14px",
-                                                    fontWeight: 500,
-                                                    position: "relative",
-                                                    cursor: "pointer",
-                                                    boxShadow: dark ? "0 1px 2px rgba(0,0,0,0.1)" : "0 1px 2px rgba(0,0,0,0.06)",
-                                                    transition: "background 0.2s"
-                                                }}>
-                                                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", padding: "0 20px" }}>
-                                                        {btn.text}
-                                                    </span>
-                                                    {btn.url && (
-                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style={{ position: "absolute", right: "8px", top: "6px", opacity: 0.8 }}>
-                                                            <path d="M5 19V17H15.59L4 5.41L5.41 4L17 15.59V5H19V19H5Z"/>
-                                                        </svg>
-                                                    )}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ))}
+            <TabsContent value="content" className="space-y-4">
+                <div className="flex flex-col rounded-lg border border-border/40 bg-card overflow-hidden shadow-sm">
+                    <div className="flex flex-wrap gap-1 p-2 border-b border-border/40 bg-muted/10">
+                        {[
+                            { label: "B", open: "<b>", close: "</b>", title: "Bold", cls: "font-bold" },
+                            { label: "I", open: "<i>", close: "</i>", title: "Italic", cls: "italic" },
+                            { label: "U", open: "<u>", close: "</u>", title: "Underline", cls: "underline" },
+                            { label: "S", open: "<s>", close: "</s>", title: "Strikethrough", cls: "line-through" },
+                            { label: "</>", open: "<code>", close: "</code>", title: "Inline code", cls: "font-mono" },
+                            { label: "pre", open: "<pre>", close: "</pre>", title: "Code block", cls: "font-mono" },
+                        ].map(f => (
+                            <button
+                                key={f.open}
+                                type="button"
+                                title={f.title}
+                                onClick={() => applyTag(f.open, f.close)}
+                                className={cn("h-7 min-w-[28px] px-2 rounded text-[13px] border border-transparent bg-transparent hover:bg-[#2AABEE]/10 hover:text-[#2AABEE] transition-colors", f.cls)}
+                            >{f.label}</button>
+                        ))}
+                        <Popover open={linkPopoverOpen} onOpenChange={handleOpenLinkPopover}>
+                            <PopoverTrigger asChild>
+                                <button
+                                    type="button"
+                                    title="Chèn link"
+                                    className="h-7 px-2 rounded text-[13px] border border-transparent bg-transparent hover:bg-[#2AABEE]/10 hover:text-[#2AABEE] transition-colors flex items-center gap-1"
+                                >
+                                    <Icon icon="solar:link-line-duotone" className="size-3.5" /> Link
+                                </button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-80 p-3" align="start">
+                                <div className="space-y-3">
+                                    <h4 className="font-medium text-sm leading-none">Chèn đường dẫn (Link)</h4>
+                                    <div className="flex gap-2">
+                                        <Input
+                                            placeholder="https://example.com"
+                                            className="h-8 text-sm flex-1 bg-muted/20"
+                                            value={linkUrl}
+                                            onChange={(e) => setLinkUrl(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter") {
+                                                    e.preventDefault()
+                                                    submitLink()
+                                                }
+                                            }}
+                                            autoFocus
+                                        />
+                                        <Button size="sm" className="h-8 bg-[#2AABEE] hover:bg-[#229ED9]" onClick={submitLink}>Chèn</Button>
+                                    </div>
                                 </div>
-                            )}
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+
+                    <div className="relative">
+                        <Textarea
+                            ref={textareaRef}
+                            value={message}
+                            onChange={e => {
+                                if (e.target.value.length <= MAX_CHARS) onMessageChange(e.target.value)
+                            }}
+                            placeholder={"Soạn nội dung Telegram...\n\nVí dụ: <b>Khuyến mãi</b> giảm <i>50%</i>"}
+                            rows={12}
+                            className="font-mono text-[13px] leading-relaxed resize-none border-0 focus-visible:ring-0 rounded-none shadow-none bg-transparent p-3"
+                        />
+                        <span className={cn("absolute bottom-2 right-3 text-[10px]", charCount > MAX_CHARS * 0.9 ? "text-amber-500" : "text-muted-foreground")}>
+                            {charCount}/{MAX_CHARS}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="rounded-lg bg-muted/10 border p-3 pt-2 text-[12px] text-muted-foreground space-y-2 shadow-sm">
+                    <p className="font-medium text-[#2AABEE] flex items-center gap-1.5"><Icon icon="solar:info-circle-line-duotone" className="size-4" /> HTML Tags hỗ trợ:</p>
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-1.5">
+                        <span className="flex items-center gap-1"><code className="bg-transparent text-foreground border border-border/50 font-semibold font-mono px-1 rounded">&lt;b&gt;</code> In đậm</span>
+                        <span className="flex items-center gap-1"><code className="bg-transparent text-foreground border border-border/50 font-semibold font-mono px-1 rounded">&lt;i&gt;</code> In nghiêng</span>
+                        <span className="flex items-center gap-1"><code className="bg-transparent text-foreground border border-border/50 font-semibold font-mono px-1 rounded">&lt;u&gt;</code> Gạch dưới</span>
+                        <span className="flex items-center gap-1"><code className="bg-transparent text-foreground border border-border/50 font-semibold font-mono px-1 rounded">&lt;s&gt;</code> Gạch ngang</span>
+                        <span className="flex items-center gap-1"><code className="bg-transparent text-foreground border border-border/50 font-semibold font-mono px-1 rounded">&lt;code&gt;</code> Inline code</span>
+                        <span className="flex items-center gap-1"><code className="bg-transparent text-foreground border border-border/50 font-semibold font-mono px-1 rounded">&lt;pre&gt;</code> Code block</span>
+                        <span className="flex items-center gap-1 col-span-2"><code className="bg-transparent text-foreground border border-border/50 font-semibold font-mono px-1 rounded">&lt;a href=""&gt;...&lt;/a&gt;</code> Hyperlink</span>
+                    </div>
+                </div>
+            </TabsContent>
+
+            <TabsContent value="keyboard" className="space-y-4">
+                <div className="flex items-center justify-between p-3 rounded-lg border border-border/40 bg-muted/10 shadow-sm">
+                    <p className="text-[13px] text-muted-foreground flex flex-col sm:flex-row sm:items-center sm:gap-1">
+                        <span>Thiết lập bàn phím: </span>
+                        <span className="font-semibold text-foreground">{inlineKeyboard.rows.length}/{MAX_ROWS} hàng</span>
+                        <span className="hidden sm:inline"> · </span>
+                        <span>Tối đa <strong className="text-foreground">{MAX_BUTTONS_PER_ROW}</strong> nút/hàng</span>
+                    </p>
+                    <Button type="button" size="sm" variant="outline" onClick={addRow} disabled={inlineKeyboard.rows.length >= MAX_ROWS} className="gap-1.5">
+                        <Icon icon="solar:add-square-line-duotone" className="size-4" />
+                        Thêm hàng
+                    </Button>
+                </div>
+
+                {inlineKeyboard.rows.length === 0 && (
+                    <div className="flex flex-col items-center gap-2 py-10 text-[#2AABEE] text-sm border-2 border-dashed border-[#2AABEE]/20 bg-[#2AABEE]/5 rounded-lg shadow-sm">
+                        <Icon icon="solar:keyboard-line-duotone" className="size-8 opacity-60" />
+                        <p className="font-medium opacity-80">Chưa có hàng nào. Bấm "Thêm hàng" để bắt đầu.</p>
+                    </div>
+                )}
+
+                {inlineKeyboard.rows.map((row, ri) => (
+                    <div key={ri} className="rounded-lg border border-border/60 bg-card p-3 space-y-3 shadow-sm">
+                        <div className="flex items-center justify-between mb-2 p-1.5 rounded-md bg-muted/30">
+                            <span className="text-[12px] font-semibold text-muted-foreground px-2">HÀNG {ri + 1}</span>
+                            <div className="flex items-center gap-1">
+                                <button type="button" onClick={() => moveRow(ri, -1)} disabled={ri === 0} className="size-6 flex items-center justify-center rounded hover:bg-muted disabled:opacity-30 transition-colors border-transparent bg-transparent">
+                                    <Icon icon="solar:arrow-up-line-duotone" className="size-3.5" />
+                                </button>
+                                <button type="button" onClick={() => moveRow(ri, 1)} disabled={ri === inlineKeyboard.rows.length - 1} className="size-6 flex items-center justify-center rounded hover:bg-muted disabled:opacity-30 transition-colors border-transparent bg-transparent">
+                                    <Icon icon="solar:arrow-down-line-duotone" className="size-3.5" />
+                                </button>
+                                <button type="button" onClick={() => removeRow(ri)} className="size-6 flex items-center justify-center rounded text-red-400 hover:bg-red-400/10 hover:text-red-500 transition-colors border-transparent bg-transparent">
+                                    <Icon icon="solar:trash-bin-trash-line-duotone" className="size-3.5" />
+                                </button>
+                            </div>
                         </div>
+
+                        <div className="space-y-3">
+                            {row.buttons.map((btn, bi) => (
+                                <div key={bi} className="flex gap-2 items-center">
+                                    <div className="grid grid-cols-2 gap-2 flex-1 relative">
+                                        <div className="relative">
+                                            <Icon icon="solar:text-field-line-duotone" className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground size-3.5" />
+                                            <Input
+                                                value={btn.text}
+                                                onChange={e => updateButton(ri, bi, "text", e.target.value)}
+                                                placeholder="Tên hiển thị..."
+                                                className="h-8 text-[13px] pl-8 bg-transparent shadow-sm border-border/60 focus-visible:border-[#2AABEE]"
+                                            />
+                                        </div>
+                                        <div className="relative">
+                                            <Icon icon="solar:global-line-duotone" className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground size-3.5" />
+                                            <Input
+                                                value={btn.url}
+                                                onChange={e => updateButton(ri, bi, "url", e.target.value)}
+                                                placeholder="https://..."
+                                                className="h-8 text-[13px] pl-8 bg-transparent shadow-sm border-border/60 focus-visible:border-[#2AABEE]"
+                                            />
+                                        </div>
+                                    </div>
+                                    <button type="button" onClick={() => removeButton(ri, bi)} className="shrink-0 size-8 flex items-center justify-center rounded-lg border border-transparent hover:border-red-400/30 hover:bg-red-400/10 text-red-500 transition-colors bg-transparent">
+                                        <Icon icon="solar:close-circle-line-duotone" className="size-4" />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+
+                        {row.buttons.length < MAX_BUTTONS_PER_ROW && (
+                            <Button type="button" size="sm" variant="ghost" onClick={() => addButton(ri)} className="gap-1.5 text-xs h-8 w-full border border-dashed border-border/40 text-muted-foreground hover:bg-[#2AABEE]/5 hover:text-[#2AABEE] hover:border-[#2AABEE]/30 bg-transparent">
+                                <Icon icon="solar:add-circle-line-duotone" className="size-3.5" />
+                                Thêm nút vào hàng này
+                            </Button>
+                        )}
                     </div>
-                </div>
-                <div style={{ background: t.inputBarBg, borderTop: `1px solid ${t.inputBarBorder}`, padding: "8px 12px", display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill={t.inputIcon}><path d="M11.5 2C6.81 2 3 5.81 3 10.5S6.81 19 11.5 19h.5v3c4.86-2.34 8-7 8-11.5C20 5.81 16.19 2 11.5 2zm1 14.5h-2v-6h2v6zm0-8h-2V7h2v1.5z"/></svg>
-                    <div style={{ flex: 1, padding: "8px 14px", display: "flex", alignItems: "center" }}>
-                        <span style={{ color: t.inputPlaceholder, fontSize: "14px" }}>Message</span>
-                    </div>
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill={t.inputIcon}><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm4.24 16L12 15.45 7.77 18l1.12-4.81-3.73-3.23 4.92-.42L12 5l1.92 4.53 4.92.42-3.73 3.23L16.23 18z"/></svg>
-                    <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: t.sendBg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-                    </div>
-                </div>
-            </div>
-        </div>
+                ))}
+            </TabsContent>
+        </Tabs>
     )
 }

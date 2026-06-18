@@ -6,6 +6,7 @@ import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { TemplateChannelTab } from "./TemplateChannelTab";
 import { type NotificationTemplate } from "@/server/db/schemas/template.schema";
 
@@ -42,9 +43,11 @@ export default function AdminTemplates() {
   });
 
   const updateMutation = trpc.administrator.templates.update.useMutation();
+  const resetAllMutation = trpc.administrator.templates.resetAllToDefault.useMutation();
   const [activeTab, setActiveTab] = useState("email");
   const [templatesList, setTemplatesList] = useState<NotificationTemplate[]>([]);
   const [modifiedIds, setModifiedIds] = useState<Set<string>>(new Set());
+  const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (dbTemplates) {
@@ -65,6 +68,18 @@ export default function AdminTemplates() {
       toast.success("Đã làm mới dữ liệu cấu hình");
     } catch {
       toast.error("Có lỗi xảy ra khi làm mới cấu hình");
+    }
+  };
+
+  const handleResetAllToDefault = async () => {
+    try {
+      await resetAllMutation.mutateAsync();
+      toast.success("Khôi phục toàn bộ mẫu thông báo về mặc định thành công!");
+      await refetch();
+      setModifiedIds(new Set());
+      setResetConfirmOpen(false);
+    } catch (err: any) {
+      toast.error(err.message || "Không thể khôi phục cấu hình mặc định");
     }
   };
 
@@ -139,6 +154,20 @@ export default function AdminTemplates() {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setResetConfirmOpen(true)}
+                disabled={isLoading || isFetching || resetAllMutation.isPending}
+                className="gap-1.5 shrink-0 text-red-500 hover:text-red-600 hover:bg-red-50/10 border-red-500/20"
+              >
+                {resetAllMutation.isPending ? (
+                  <Icon icon="solar:restart-line-duotone" className="animate-spin text-base" />
+                ) : (
+                  <Icon icon="solar:shield-warning-line-duotone" className="text-base" />
+                )}
+                <span>Khôi phục mặc định</span>
+              </Button>
               <Button
                 variant="outline"
                 size="sm"
@@ -257,6 +286,36 @@ export default function AdminTemplates() {
           )}
         </div>
       </div>
+
+      <Dialog open={resetConfirmOpen} onOpenChange={setResetConfirmOpen}>
+        <DialogContent className="sm:max-w-[380px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-500">
+              <Icon icon="solar:danger-triangle-line-duotone" className="text-xl" />
+              <span>Xác nhận khôi phục mặc định</span>
+            </DialogTitle>
+          </DialogHeader>
+          <DialogDescription className="sr-only">Xác nhận khôi phục toàn bộ mẫu thông báo về cấu hình mặc định ban đầu</DialogDescription>
+          <div className="py-2 text-sm text-muted-foreground">
+            Bạn có chắc chắn muốn khôi phục <strong className="text-foreground font-semibold">toàn bộ mẫu thông báo</strong> về cấu hình mặc định ban đầu không? Mọi tùy chỉnh hiện tại của bạn sẽ bị xóa và ghi đè hoàn toàn. Hành động này không thể hoàn tác.
+          </div>
+          <DialogFooter className="pt-2">
+            <Button variant="outline" onClick={() => setResetConfirmOpen(false)}>
+              Hủy
+            </Button>
+            <Button
+              variant="danger"
+              onClick={handleResetAllToDefault}
+              disabled={resetAllMutation.isPending}
+            >
+              {resetAllMutation.isPending && (
+                <Icon icon="solar:restart-line-duotone" className="mr-1.5 size-4 animate-spin" />
+              )}
+              Xác nhận khôi phục
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

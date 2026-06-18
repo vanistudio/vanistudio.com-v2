@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { type NotificationTemplate } from "@/server/db/schemas/template.schema";
-import { TelegramRichMessageBuilder } from "@/components/vanixjnk/telegram-rich-message-builder";
+import { TelegramRichMessageBuilder, TelegramMessagePreview, type TelegramInlineKeyboard } from "@/components/vanixjnk/telegram-rich-message-builder";
 import { DiscordEmbedBuilder, DiscordMessagePreview } from "@/components/vanixjnk/discord-embed-builder";
 import { SlackBlockBuilder, SlackMessagePreview } from "@/components/vanixjnk/slack-block-kit-builder";
 import type { DiscordEmbed } from "@/components/vanixjnk/discord-embed-builder/discord-embed-builder";
@@ -94,6 +94,19 @@ export function TemplateChannelTab({
     });
   };
 
+  const getTelegramInlineKeyboard = (): TelegramInlineKeyboard => {
+    return (activeTemplate.extraConfig?.telegramInlineKeyboard || { rows: [] }) as TelegramInlineKeyboard;
+  };
+
+  const handleTelegramKeyboardChange = (keyboard: TelegramInlineKeyboard) => {
+    onTemplateChange(activeTemplate.id, {
+      extraConfig: {
+        ...activeTemplate.extraConfig,
+        telegramInlineKeyboard: keyboard,
+      }
+    });
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <div className="space-y-2">
@@ -120,7 +133,10 @@ export function TemplateChannelTab({
               <Badge variant="secondary" className="font-mono text-[10px] px-1.5 py-0 h-5">
                 {activeTemplate.eventKey}
               </Badge>
-              <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5">
+              <Badge
+                variant={activeTemplate.target === "admin" ? "danger" : "success"}
+                className="text-[10px] px-1.5 py-0 h-5"
+              >
                 {activeTemplate.target === "admin" ? "Admin" : "Client"}
               </Badge>
             </div>
@@ -186,19 +202,12 @@ export function TemplateChannelTab({
           )}
 
           {activeTemplate.channel === "telegram" && (
-            <>
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-foreground">Nội dung thông báo (Content Template)</label>
-                <Textarea
-                  ref={textareaRef}
-                  value={activeTemplate.content}
-                  onChange={(e) => onTemplateChange(activeTemplate.id, { content: e.target.value })}
-                  placeholder="Nhập nội dung thông báo..."
-                  rows={12}
-                  className="font-mono text-xs leading-relaxed"
-                />
-              </div>
-            </>
+            <TelegramRichMessageBuilder
+              message={activeTemplate.content}
+              onMessageChange={(content) => onTemplateChange(activeTemplate.id, { content })}
+              inlineKeyboard={getTelegramInlineKeyboard()}
+              onKeyboardChange={handleTelegramKeyboardChange}
+            />
           )}
 
           {activeTemplate.channel === "discord" && (
@@ -271,8 +280,9 @@ export function TemplateChannelTab({
           )}
 
           {activeTemplate.channel === "telegram" && (
-            <TelegramRichMessageBuilder
+            <TelegramMessagePreview
               message={activeTemplate.content}
+              inlineKeyboard={getTelegramInlineKeyboard()}
             />
           )}
 
