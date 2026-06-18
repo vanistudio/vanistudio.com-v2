@@ -216,61 +216,53 @@ export default function AdminTemplates() {
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col">
           {isLoading ? (
-            <div className="grid grid-cols-1 lg:grid-cols-12 border-t border-b border-border/60 flex-1">
-              <div className="lg:col-span-4 p-6 border-b lg:border-b-0 lg:border-r border-border/60 flex flex-col gap-4">
-                <div className="pb-3">
-                  <Skeleton className="h-5 w-36 rounded" />
-                  <Skeleton className="h-3.5 w-48 rounded mt-1.5" />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <Skeleton className="h-10 w-full rounded-lg" />
-                  <Skeleton className="h-10 w-full rounded-lg" />
-                  <Skeleton className="h-10 w-full rounded-lg" />
-                </div>
+            <div className="flex-1 flex flex-col">
+              <div className="px-6 py-4 border-b border-border/60 flex items-center gap-2">
+                <Skeleton className="h-8 w-28 rounded-xl" />
+                <Skeleton className="h-8 w-28 rounded-xl" />
+                <Skeleton className="h-8 w-28 rounded-xl" />
+                <Skeleton className="h-8 w-28 rounded-xl" />
               </div>
-              <div className="lg:col-span-8 p-6 flex flex-col gap-4">
-                <div className="pb-3">
-                  <Skeleton className="h-5 w-44 rounded" />
-                  <Skeleton className="h-3.5 w-64 rounded mt-1.5" />
+              <div className="p-6 flex-1 flex flex-col lg:flex-row gap-6">
+                <div className="w-full lg:w-[280px] shrink-0 flex flex-col gap-2">
+                  <Skeleton className="h-10 w-full rounded-xl" />
+                  <Skeleton className="h-10 w-full rounded-xl" />
+                  <Skeleton className="h-10 w-full rounded-xl" />
                 </div>
-                <div className="space-y-6 mt-4">
-                  <Skeleton className="h-14 w-full rounded-xl" />
+                <div className="flex-1 flex flex-col gap-4">
+                  <Skeleton className="h-8 w-44 rounded" />
                   <Skeleton className="h-32 w-full rounded-xl" />
                 </div>
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-12 border-t border-b border-border/60 flex-1">
-              <div className="lg:col-span-4 p-6 border-b lg:border-b-0 lg:border-r border-border/60 flex flex-col gap-4">
-                <div className="pb-3">
-                  <h3 className="text-base font-bold text-foreground">Kênh thông báo</h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Chọn kênh để điều chỉnh các mẫu tin nhắn.
-                  </p>
-                </div>
-                <div className="flex flex-col gap-1.5 w-full">
-                  {TABS.map((tab) => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl border transition-all duration-200 ${
-                        activeTab === tab.id
-                          ? "bg-vanixjnk/15 border-vanixjnk/25 text-vanixjnk shadow-sm"
-                          : "border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
-                      }`}
-                    >
-                      <Icon
-                        icon={tab.icon}
-                        className={`size-5 ${
-                          activeTab === tab.id ? "text-vanixjnk" : "text-muted-foreground"
+            <div className="flex-1 flex flex-col">
+              <div className="px-6 py-4 border-b border-border/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  {TABS.map((tab) => {
+                    const isActive = activeTab === tab.id;
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-sm font-semibold transition-all duration-200 ${
+                          isActive
+                            ? "bg-vanixjnk/15 border-vanixjnk/25 text-vanixjnk shadow-sm"
+                            : "border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
                         }`}
-                      />
-                      <span className="text-[13px] font-bold">{tab.title}</span>
-                    </button>
-                  ))}
+                      >
+                        <Icon
+                          icon={tab.icon}
+                          className={`size-4 ${isActive ? "text-vanixjnk" : "text-muted-foreground"}`}
+                        />
+                        <span>{tab.title}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
-              <div className="lg:col-span-8 p-6">
+
+              <div className="p-6 flex-1 flex flex-col">
                 <div className="mb-6 pb-4 border-b border-border/60">
                   <h3 className="text-base font-bold text-foreground">{activeTabMeta?.title}</h3>
                   <p className="text-xs text-muted-foreground mt-0.5">{activeTabMeta?.desc}</p>

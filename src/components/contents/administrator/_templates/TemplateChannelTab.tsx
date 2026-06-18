@@ -8,12 +8,11 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/animate-ui/components/animate/tooltip";
 import { type NotificationTemplate } from "@/server/db/schemas/template.schema";
 import { TelegramRichMessageBuilder, TelegramMessagePreview, type TelegramInlineKeyboard } from "@/components/vanixjnk/telegram-rich-message-builder";
 import { DiscordEmbedBuilder, DiscordMessagePreview } from "@/components/vanixjnk/discord-embed-builder";
@@ -108,24 +107,48 @@ export function TemplateChannelTab({
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="space-y-2">
-        <label className="text-xs font-bold text-foreground">Chọn mẫu sự kiện</label>
-        <Select value={selectedId} onValueChange={setSelectedId}>
-          <SelectTrigger className="w-full h-10">
-            <SelectValue placeholder="Chọn mẫu sự kiện..." />
-          </SelectTrigger>
-          <SelectContent>
-            {templates.map((t) => (
-              <SelectItem key={t.id} value={t.id} className="text-[13px]">
-                {t.name} ({t.eventKey})
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <TooltipProvider>
+        <div className="lg:col-span-4 xl:col-span-3 flex flex-col gap-2">
+          {templates.map((template) => {
+            const isSelected = selectedId === template.id;
+            return (
+              <Tooltip key={template.id} side="right" sideOffset={12}>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => setSelectedId(template.id)}
+                    className={`flex items-start gap-3 w-full text-left p-3 rounded-xl border transition-all duration-200 ${
+                      isSelected
+                        ? "bg-vanixjnk/15 border-vanixjnk/25 text-vanixjnk shadow-sm"
+                        : "bg-muted/30 border-transparent text-muted-foreground hover:bg-muted/70 hover:text-foreground"
+                    }`}
+                  >
+                    <Icon
+                      icon={isSelected ? "solar:folder-open-line-duotone" : "solar:folder-with-files-line-duotone"}
+                      className={`size-5 mt-0.5 shrink-0 ${isSelected ? "text-vanixjnk" : ""}`}
+                    />
+                    <div className="flex flex-col gap-0.5 min-w-0 w-full">
+                      <span className={`text-[13px] font-bold whitespace-normal md:whitespace-nowrap md:truncate md:block ${isSelected ? "text-vanixjnk" : "text-foreground"}`}>
+                        {template.name}
+                      </span>
+                      <span className="text-[10px] font-medium text-muted-foreground/80 whitespace-normal md:whitespace-nowrap md:truncate md:block font-mono">
+                        {template.eventKey}
+                      </span>
+                    </div>
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent className="hidden md:flex flex-col gap-0.5 items-start">
+                  <span className="font-bold">{template.name}</span>
+                  <span className="text-[10px] text-muted-foreground font-mono">{template.eventKey}</span>
+                </TooltipContent>
+              </Tooltip>
+            );
+          })}
+        </div>
+      </TooltipProvider>
 
-      <Card className="bg-card/30! border-border shadow-sm p-6 flex flex-col gap-6">
+      <div className="lg:col-span-8 xl:col-span-9">
+        <Card className="bg-card/30! border-border shadow-sm p-6 flex flex-col gap-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-border/50">
           <div className="flex flex-col gap-1.5">
             <div className="flex items-center gap-2 flex-wrap">
@@ -302,5 +325,6 @@ export function TemplateChannelTab({
         </div>
       </Card>
     </div>
+  </div>
   );
 }
