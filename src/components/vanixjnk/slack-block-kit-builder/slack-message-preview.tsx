@@ -162,22 +162,26 @@ const LIGHT = {
 function renderSlackMrkdwn(text: string, tokens: typeof DARK): React.ReactNode[] {
     const result: React.ReactNode[] = []
     const lines = text.split("\n")
-    lines.forEach((line, li) => {
-        if (li > 0) result.push(<br key={`br-${li}`} />)
-        const parts = line.split(/(\*[^*]+\*|_[^_]+_|~[^~]+~|`[^`]+`|\[[^\]]+\]\([^)]+\)|<[^>]+>)/g)
+    
+    let inMultiQuote = false
+    let multiQuoteLines: string[] = []
+    
+    const renderLineContent = (lineText: string, lineKey: string) => {
+        const lineNodes: React.ReactNode[] = []
+        const parts = lineText.split(/(\*[^*]+\*|_[^_]+_|~[^~]+~|`[^`]+`|\[[^\]]+\]\([^)]+\)|<[^>]+>)/g)
         parts.forEach((part, i) => {
             if (!part) return
-            const key = `${li}-${i}`
-            if (part.startsWith("*") && part.endsWith("*") && part.length > 2) { result.push(<strong key={key}>{part.slice(1, -1)}</strong>); return }
-            if (part.startsWith("_") && part.endsWith("_") && part.length > 2) { result.push(<em key={key}>{part.slice(1, -1)}</em>); return }
-            if (part.startsWith("~") && part.endsWith("~") && part.length > 2) { result.push(<s key={key}>{part.slice(1, -1)}</s>); return }
+            const key = `${lineKey}-${i}`
+            if (part.startsWith("*") && part.endsWith("*") && part.length > 2) { lineNodes.push(<strong key={key}>{part.slice(1, -1)}</strong>); return }
+            if (part.startsWith("_") && part.endsWith("_") && part.length > 2) { lineNodes.push(<em key={key}>{part.slice(1, -1)}</em>); return }
+            if (part.startsWith("~") && part.endsWith("~") && part.length > 2) { lineNodes.push(<s key={key}>{part.slice(1, -1)}</s>); return }
             if (part.startsWith("`") && part.endsWith("`")) {
-                result.push(<code key={key} style={{ background: tokens.codeInline.bg, color: tokens.codeInline.text, fontFamily: "Monaco, Menlo, 'Courier New', monospace", fontSize: "12px", padding: "1px 5px", borderRadius: "3px", border: `1px solid ${tokens.codeInline.border}` }}>{part.slice(1, -1)}</code>)
+                lineNodes.push(<code key={key} style={{ background: tokens.codeInline.bg, color: tokens.codeInline.text, fontFamily: "Monaco, Menlo, 'Courier New', monospace", fontSize: "12px", padding: "1px 5px", borderRadius: "3px", border: `1px solid ${tokens.codeInline.border}` }}>{part.slice(1, -1)}</code>)
                 return
             }
             if (part.startsWith("[") && part.endsWith(")")) {
                 const lm = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/)
-                if (lm) { result.push(<a key={key} href={lm[2]} style={{ color: tokens.link, textDecoration: "none" }} target="_blank" rel="noopener noreferrer">{lm[1]}</a>); return }
+                if (lm) { lineNodes.push(<a key={key} href={lm[2]} style={{ color: tokens.link, textDecoration: "none" }} target="_blank" rel="noopener noreferrer">{lm[1]}</a>); return }
             }
             if (part.startsWith("<") && part.endsWith(">")) {
                 const inner = part.slice(1, -1)
@@ -185,15 +189,87 @@ function renderSlackMrkdwn(text: string, tokens: typeof DARK): React.ReactNode[]
                 if (pipeIdx !== -1) {
                     const url = inner.slice(0, pipeIdx)
                     const label = inner.slice(pipeIdx + 1)
-                    result.push(<a key={key} href={url} style={{ color: tokens.link, textDecoration: "none" }} target="_blank" rel="noopener noreferrer">{label}</a>)
+                    lineNodes.push(<a key={key} href={url} style={{ color: tokens.link, textDecoration: "none" }} target="_blank" rel="noopener noreferrer">{label}</a>)
                 } else {
-                    result.push(<a key={key} href={inner} style={{ color: tokens.link, textDecoration: "none" }} target="_blank" rel="noopener noreferrer">{inner}</a>)
+                    lineNodes.push(<a key={key} href={inner} style={{ color: tokens.link, textDecoration: "none" }} target="_blank" rel="noopener noreferrer">{inner}</a>)
                 }
                 return
             }
-            result.push(<React.Fragment key={key}>{part}</React.Fragment>)
+            lineNodes.push(<React.Fragment key={key}>{part}</React.Fragment>)
         })
+        return lineNodes
+    }
+
+    const flushMultiQuote = (keyPrefix: string) => {
+        if (multiQuoteLines.length > 0) {
+            result.push(
+                <div 
+                    key={`multiquote-${keyPrefix}`}
+                    style={{ 
+                        borderLeft: `4px solid ${tokens.headerBorder}`, 
+                        paddingLeft: "12px", 
+                        marginLeft: "4px",
+                        marginTop: "4px",
+                        marginBottom: "4px",
+                        color: tokens.msgText
+                    }}
+                >
+                    {multiQuoteLines.map((lText, li) => (
+                        <div key={li} style={{ minHeight: "1.46667em" }}>
+                            {renderLineContent(lText, `mq-${keyPrefix}-${li}`)}
+                        </div>
+                    ))}
+                </div>
+            )
+            multiQuoteLines = []
+        }
+    }
+
+    lines.forEach((line, li) => {
+        if (inMultiQuote) {
+            multiQuoteLines.push(line)
+            return
+        }
+
+        if (line.startsWith(">>>")) {
+            inMultiQuote = true
+            const rest = line.slice(3)
+            multiQuoteLines.push(rest)
+            return
+        }
+
+        if (line.startsWith(">")) {
+            let rest = line.slice(1)
+            if (rest.startsWith(" ")) rest = rest.slice(1)
+            result.push(
+                <div 
+                    key={`singlequote-${li}`}
+                    style={{ 
+                        borderLeft: `4px solid ${tokens.headerBorder}`, 
+                        paddingLeft: "12px", 
+                        marginLeft: "4px",
+                        marginTop: "2px",
+                        marginBottom: "2px",
+                        color: tokens.msgText
+                    }}
+                >
+                    {renderLineContent(rest, `sq-${li}`)}
+                </div>
+            )
+            return
+        }
+
+        result.push(
+            <div key={`normal-${li}`} style={{ minHeight: "1.46667em" }}>
+                {renderLineContent(line, `n-${li}`)}
+            </div>
+        )
     })
+
+    if (inMultiQuote) {
+        flushMultiQuote("end")
+    }
+
     return result
 }
 
@@ -272,13 +348,29 @@ function renderSlackBlock(block: SlackBlock, t: typeof DARK, key: number): React
             {block.elements.map((el, ei) => {
                 const isPrimary = el.style === "primary"
                 const isDanger = el.style === "danger"
+                const isLight = t.msgBg === "#ffffff"
                 return (
                     <div key={ei} style={{
-                        padding: "6px 14px", borderRadius: "4px", fontSize: "13px", fontWeight: 700,
-                        border: isPrimary ? "2px solid #007a5a" : isDanger ? "2px solid #e01e5a" : `2px solid ${t.inputBorder}`,
-                        color: isPrimary ? "#007a5a" : isDanger ? "#e01e5a" : t.msgText,
-                        background: isPrimary ? "rgba(0,122,90,0.1)" : isDanger ? "rgba(224,30,90,0.1)" : t.inputBg,
-                        cursor: "pointer"
+                        padding: "6px 12px", 
+                        borderRadius: "4px", 
+                        fontSize: "13px", 
+                        fontWeight: 700,
+                        border: isPrimary 
+                            ? "1px solid #007a5a" 
+                            : isDanger 
+                            ? "1px solid #e01e5a" 
+                            : `1px solid ${t.inputBorder}`,
+                        color: isPrimary || isDanger ? "#ffffff" : t.msgText,
+                        background: isPrimary 
+                            ? "#007a5a" 
+                            : isDanger 
+                            ? "#e01e5a" 
+                            : isLight 
+                            ? "#ffffff" 
+                            : "#2d3138",
+                        cursor: "pointer",
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+                        transition: "background-color 0.1s ease"
                     }}>{el.text || "Button"}</div>
                 )
             })}
