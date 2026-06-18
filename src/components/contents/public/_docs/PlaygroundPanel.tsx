@@ -380,7 +380,7 @@ export default function PlaygroundPanel({ endpointDetails }: PlaygroundPanelProp
                           }}
                           placeholder="Key"
                           className={cn(
-                            "h-9 text-[13px] border-none bg-transparent shadow-none focus-visible:ring-1 focus-visible:ring-vanixjnk/30 px-2 rounded-md",
+                            "h-9 text-[13px] px-2",
                             !param.isCustom && "font-semibold text-foreground/80 cursor-default"
                           )}
                         />
@@ -407,7 +407,7 @@ export default function PlaygroundPanel({ endpointDetails }: PlaygroundPanelProp
                           setQueryParams(next);
                         }}
                         placeholder="Value"
-                        className="border border-border/60 hover:border-border focus-visible:ring-1 focus-visible:ring-vanixjnk/30 h-9 text-[13px] px-2.5 bg-background dark:bg-background/40"
+                        className="h-9 text-[13px] px-2"
                       />
                     </TableCell>
                     <TableCell className="p-1 px-2">
@@ -421,7 +421,7 @@ export default function PlaygroundPanel({ endpointDetails }: PlaygroundPanelProp
                           setQueryParams(next);
                         }}
                         placeholder="Description"
-                        className="border-none shadow-none focus-visible:ring-1 focus-visible:ring-vanixjnk/30 h-9 text-[13px] px-2 bg-transparent text-muted-foreground/80"
+                        className="h-9 text-[13px] px-2"
                       />
                     </TableCell>
                     <TableCell className="text-center p-1 px-2">
