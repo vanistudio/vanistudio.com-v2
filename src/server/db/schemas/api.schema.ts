@@ -15,14 +15,13 @@ export interface ApiResponseSample {
   body: Record<string, any> | string;
 }
 
-// Bảng tài liệu hướng dẫn tổng quan (tương tự blog.schema.ts)
 export const apiOverviews = pgTable("api_overviews", {
   id: uuid("id").defaultRandom().primaryKey(),
   apiType: text("api_type").notNull().default("default"),
   title: text("title").notNull(),
   slug: text("slug").notNull(),
   description: text("description"),
-  content: text("content").notNull(), // Nội dung MDX
+  content: text("content").notNull(),
   thumbnail: text("thumbnail"),
   metaTitle: text("meta_title"),
   metaDescription: text("meta_description"),
@@ -34,7 +33,6 @@ export const apiOverviews = pgTable("api_overviews", {
   slugTypeIdx: uniqueIndex("api_overviews_slug_type_idx").on(table.slug, table.apiType)
 }));
 
-// Bảng gom nhóm các API Endpoint
 export const apiGroups = pgTable("api_groups", {
   id: uuid("id").defaultRandom().primaryKey(),
   apiType: text("api_type").notNull().default("default"),
@@ -48,16 +46,15 @@ export const apiGroups = pgTable("api_groups", {
   slugTypeIdx: uniqueIndex("api_groups_slug_type_idx").on(table.slug, table.apiType)
 }));
 
-// Bảng tài liệu chi tiết các API Endpoint
 export const apiEndpoints = pgTable("api_endpoints", {
   id: uuid("id").defaultRandom().primaryKey(),
   groupId: uuid("group_id")
     .notNull()
     .references(() => apiGroups.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
-  method: text("method").notNull(), // GET, POST, PUT, DELETE, PATCH
-  path: text("path").notNull(), // Ví dụ: /api/products
-  description: text("description").notNull(), // Nội dung MDX mô tả API
+  method: text("method").notNull(),
+  path: text("path").notNull(),
+  description: text("description").notNull(),
   headers: jsonb("headers").$type<ApiParameter[]>().default([]).notNull(),
   queryParams: jsonb("query_params").$type<ApiParameter[]>().default([]).notNull(),
   requestBody: jsonb("request_body").$type<ApiParameter[]>().default([]).notNull(),
@@ -76,7 +73,6 @@ export type NewApiGroup = typeof apiGroups.$inferInsert;
 export type ApiEndpoint = typeof apiEndpoints.$inferSelect;
 export type NewApiEndpoint = typeof apiEndpoints.$inferInsert;
 
-// Bảng các loại sản phẩm / API tự định nghĩa
 export const apiProducts = pgTable("api_products", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: text("name").notNull(),

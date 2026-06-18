@@ -32,7 +32,6 @@ export default function PubDocsProductList({
     setMounted(true);
   }, []);
 
-  // Debounced search logic (exactly 300ms)
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchQuery);

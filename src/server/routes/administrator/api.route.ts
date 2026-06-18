@@ -14,7 +14,6 @@ async function ensureAdmin() {
   }
 }
 
-// Định nghĩa Parameter Schema của Zod
 const parameterSchema = z.object({
   name: z.string(),
   type: z.enum(["string", "number", "boolean", "object", "array"]),
@@ -24,7 +23,6 @@ const parameterSchema = z.object({
   defaultValue: z.any().optional().nullable(),
 });
 
-// Định nghĩa Response Sample Schema của Zod
 const responseSampleSchema = z.object({
   status: z.number(),
   description: z.string(),
@@ -32,7 +30,6 @@ const responseSampleSchema = z.object({
 });
 
 export const apiDocsRouter = router({
-  // --- Overviews ---
   getOverviews: publicProcedure
     .input(z.object({ apiType: z.string().optional() }).optional())
     .query(async ({ input }) => {
@@ -117,7 +114,6 @@ export const apiDocsRouter = router({
       }
     }),
 
-  // --- Groups ---
   getGroupsWithEndpoints: publicProcedure
     .input(z.object({ apiType: z.string().optional() }).optional())
     .query(async ({ input }) => {
@@ -169,7 +165,6 @@ export const apiDocsRouter = router({
       }
     }),
 
-  // --- Endpoints ---
   upsertEndpoint: publicProcedure
     .input(
       z.object({
@@ -226,7 +221,6 @@ export const apiDocsRouter = router({
       }
     }),
 
-  // --- API Products ---
   getApiProducts: publicProcedure
     .query(async () => {
       await ensureAdmin();

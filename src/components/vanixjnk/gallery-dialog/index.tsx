@@ -61,7 +61,6 @@ export function GalleryDialog({ open, onOpenChange, onSelect, onSelectMultiple, 
     }
   }, [open]);
 
-  // Client-side search and pagination
   const filteredImages = React.useMemo(() => {
     if (!galleryData) return [];
     return galleryData.filter((img) => {

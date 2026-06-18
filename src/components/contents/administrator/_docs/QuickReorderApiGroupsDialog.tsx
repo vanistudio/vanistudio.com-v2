@@ -126,7 +126,7 @@ export function QuickReorderApiGroupsDialog({
     setIsSaving(true);
     const payload = items.map((item, idx) => ({
       id: item.id,
-      order: (idx + 1) * 10, // 10, 20, 30...
+      order: (idx + 1) * 10,
     }));
     try {
       await reorderMutation.mutateAsync(payload);

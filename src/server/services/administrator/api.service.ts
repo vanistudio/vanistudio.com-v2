@@ -6,7 +6,6 @@ import { eq } from "drizzle-orm";
 import { DEFAULT_API_DOCS } from "@/defaults/api-docs.default";
 
 export class ApiService {
-  // --- Overviews ---
   async getOverviews(apiType?: string): Promise<ApiOverview[]> {
     return await apiRepository.getOverviews(apiType);
   }
@@ -47,7 +46,6 @@ export class ApiService {
     return await apiRepository.deleteOverview(id);
   }
 
-  // --- Groups & Endpoints ---
   async getGroupsWithEndpoints(apiType?: string) {
     const groups = await apiRepository.getGroups(apiType);
     const endpoints = await apiRepository.getEndpoints(undefined, apiType);
@@ -107,7 +105,6 @@ export class ApiService {
     return await apiRepository.deleteEndpoint(id);
   }
 
-  // --- API Products ---
   async getApiProducts(): Promise<ApiProduct[]> {
     return await apiRepository.getApiProducts();
   }
@@ -123,7 +120,6 @@ export class ApiService {
     if (!data.name.trim()) throw new Error("Tên sản phẩm/API không được để trống");
     if (!data.slug.trim()) throw new Error("Slug sản phẩm/API không được để trống");
     
-    // Check if slug is unique
     const existing = await apiRepository.getApiProductBySlug(data.slug);
     if (existing && existing.id !== data.id) {
       throw new Error("Slug đã tồn tại, vui lòng chọn slug khác");
@@ -137,7 +133,6 @@ export class ApiService {
     const target = allProducts.find(p => p.id === id);
     if (!target) throw new Error("Không tìm thấy loại API để xóa");
 
-    // Xóa cascade các tài liệu và API liên quan
     await db.delete(apiOverviews).where(eq(apiOverviews.apiType, target.slug));
     
     const groups = await apiRepository.getGroups(target.slug);

@@ -129,7 +129,6 @@ export function QuickSeedApiDocsDialog({
 
   const handleSave = async () => {
     setIsSaving(true);
-    // Remove the tempId property when sending payload
     const payload = items.map((item) => {
       const { tempId, ...rest } = item;
       return rest;

@@ -12,7 +12,6 @@ import {
 import { eq, asc, and, desc, inArray } from "drizzle-orm";
 
 export class ApiRepository {
-  // --- Overviews ---
   async getOverviews(apiType?: string): Promise<ApiOverview[]> {
     const query = db.select().from(apiOverviews);
     if (apiType) {
@@ -68,7 +67,6 @@ export class ApiRepository {
     return !!deleted;
   }
 
-  // --- Groups ---
   async getGroups(apiType?: string): Promise<ApiGroup[]> {
     const query = db.select().from(apiGroups);
     if (apiType) {
@@ -109,7 +107,6 @@ export class ApiRepository {
     await db.update(apiGroups).set({ order, updatedAt: new Date() }).where(eq(apiGroups.id, id));
   }
 
-  // --- Endpoints ---
   async getEndpoints(groupId?: string, apiType?: string): Promise<ApiEndpoint[]> {
     if (groupId) {
       return await db.select().from(apiEndpoints).where(eq(apiEndpoints.groupId, groupId)).orderBy(asc(apiEndpoints.name));
@@ -164,7 +161,6 @@ export class ApiRepository {
     return !!deleted;
   }
 
-  // --- API Products ---
   async getApiProducts(): Promise<ApiProduct[]> {
     return await db.select().from(apiProducts).orderBy(asc(apiProducts.order), desc(apiProducts.createdAt));
   }
@@ -211,7 +207,6 @@ export class ApiRepository {
     const productSlugs = productsToSeed.map((p) => p.slug);
 
     if (productSlugs.length > 0) {
-      // 1. Select group IDs matching product slugs
       const groups = await db
         .select({ id: apiGroups.id })
         .from(apiGroups)
@@ -219,11 +214,9 @@ export class ApiRepository {
 
       const groupIds = groups.map((g) => g.id);
       if (groupIds.length > 0) {
-        // 2. Delete endpoints under matching groups
         await db.delete(apiEndpoints).where(inArray(apiEndpoints.groupId, groupIds));
       }
 
-      // 3. Delete overviews, groups, products
       await db.delete(apiOverviews).where(inArray(apiOverviews.apiType, productSlugs));
       await db.delete(apiGroups).where(inArray(apiGroups.apiType, productSlugs));
       await db.delete(apiProducts).where(inArray(apiProducts.slug, productSlugs));
@@ -231,7 +224,6 @@ export class ApiRepository {
 
     for (let i = 0; i < productsToSeed.length; i++) {
       const prod = productsToSeed[i];
-      // Insert product record
       await db.insert(apiProducts).values({
         name: prod.name,
         slug: prod.slug,
@@ -240,7 +232,6 @@ export class ApiRepository {
         order: (i + 1) * 10,
       });
 
-      // Insert overview documents (multiple or single fallback)
       if (prod.overviews && Array.isArray(prod.overviews)) {
         for (const ov of prod.overviews) {
           await db.insert(apiOverviews).values({
@@ -263,7 +254,6 @@ export class ApiRepository {
         });
       }
 
-      // Insert groups and endpoints
       for (let gIdx = 0; gIdx < prod.groups.length; gIdx++) {
         const groupData = prod.groups[gIdx];
         const [insertedGroup] = await db
