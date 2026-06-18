@@ -49,6 +49,22 @@ export default function AdminDocsList() {
       refetchOnWindowFocus: false,
     });
 
+  const { data: overviewsData, isLoading: isLoadingOverviews } =
+    trpc.administrator.apiDocs.getOverviews.useQuery({ apiType }, {
+      enabled: !!apiType,
+      refetchOnWindowFocus: false,
+    });
+
+  const { data: groupsData, isLoading: isLoadingGroups } =
+    trpc.administrator.apiDocs.getGroupsWithEndpoints.useQuery({ apiType }, {
+      enabled: !!apiType,
+      refetchOnWindowFocus: false,
+    });
+
+  const overviewsLoading = isLoadingOverviews || !apiType;
+  const groupsLoading = isLoadingGroups || !apiType;
+  const totalEndpoints = groupsData?.reduce((acc, group) => acc + (group.endpoints?.length || 0), 0) || 0;
+
   useEffect(() => {
     if (mounted && apiProducts.length > 0) {
       const savedType = localStorage.getItem("vanistudio_admin_api_type");
@@ -127,6 +143,44 @@ export default function AdminDocsList() {
       </div>
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col">
+          <div className="p-6 pb-2 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-4 rounded-xl border bg-background/60 flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Sản phẩm/Dịch vụ API</p>
+                <h3 className="text-2xl font-extrabold text-foreground tracking-tight">
+                  {isLoadingProducts ? <Skeleton className="h-8 w-16" /> : apiProducts.length}
+                </h3>
+              </div>
+              <div className="size-10 rounded-lg text-indigo-500 bg-indigo-500/10 border border-indigo-500/25 flex items-center justify-center shrink-0">
+                <Icon icon="solar:widget-line-duotone" className="text-xl" />
+              </div>
+            </div>
+
+            <div className="p-4 rounded-xl border bg-background/60 flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Tài liệu hướng dẫn</p>
+                <h3 className="text-2xl font-extrabold text-foreground tracking-tight">
+                  {overviewsLoading ? <Skeleton className="h-8 w-16" /> : overviewsData?.length || 0}
+                </h3>
+              </div>
+              <div className="size-10 rounded-lg text-amber-500 bg-amber-500/10 border border-amber-500/25 flex items-center justify-center shrink-0">
+                <Icon icon="solar:document-text-line-duotone" className="text-xl" />
+              </div>
+            </div>
+
+            <div className="p-4 rounded-xl border bg-background/60 flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">API Endpoints</p>
+                <h3 className="text-2xl font-extrabold text-foreground tracking-tight">
+                  {groupsLoading ? <Skeleton className="h-8 w-16" /> : totalEndpoints}
+                </h3>
+              </div>
+              <div className="size-10 rounded-lg text-emerald-500 bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center shrink-0">
+                <Icon icon="solar:programming-line-duotone" className="text-xl" />
+              </div>
+            </div>
+          </div>
+
           <div className="px-6 py-4 border-b border-border/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-2">
               {TABS.map((tab) => {

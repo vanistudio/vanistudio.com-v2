@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { trpc } from "@/lib/trpc";
+import { Skeleton } from "@/components/ui/skeleton";
 import AdminServicesTab from "./AdminServicesTab";
 import AdminServiceTypesTab from "./AdminServiceTypesTab";
 import AdminRequestsTab from "./AdminRequestsTab";
@@ -28,7 +29,15 @@ const TABS = [
 export default function AdminServicesList() {
   const [activeTab, setActiveTab] = useState<"services" | "service_types" | "requests">("services");
 
-  const { data: requestsData } = trpc.administrator.services.getRequests.useQuery(undefined, {
+  const { data: servicesData, isLoading: servicesLoading } = trpc.administrator.services.getAll.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: typesData, isLoading: typesLoading } = trpc.administrator.services.getTypes.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: requestsData, isLoading: requestsLoading } = trpc.administrator.services.getRequests.useQuery(undefined, {
     refetchOnWindowFocus: false,
   });
 
@@ -80,6 +89,44 @@ export default function AdminServicesList() {
 
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col">
+          <div className="p-6 pb-2 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-4 rounded-xl border bg-background/60 flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Tổng số dịch vụ</p>
+                <h3 className="text-2xl font-extrabold text-foreground tracking-tight">
+                  {servicesLoading ? <Skeleton className="h-8 w-16" /> : servicesData?.length || 0}
+                </h3>
+              </div>
+              <div className="size-10 rounded-lg text-indigo-500 bg-indigo-500/10 border border-indigo-500/25 flex items-center justify-center shrink-0">
+                <Icon icon="solar:case-round-line-duotone" className="text-xl" />
+              </div>
+            </div>
+
+            <div className="p-4 rounded-xl border bg-background/60 flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Phân loại dịch vụ</p>
+                <h3 className="text-2xl font-extrabold text-foreground tracking-tight">
+                  {typesLoading ? <Skeleton className="h-8 w-16" /> : typesData?.data?.length || 0}
+                </h3>
+              </div>
+              <div className="size-10 rounded-lg text-amber-500 bg-amber-500/10 border border-amber-500/25 flex items-center justify-center shrink-0">
+                <Icon icon="solar:widget-line-duotone" className="text-xl" />
+              </div>
+            </div>
+
+            <div className="p-4 rounded-xl border bg-background/60 flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Yêu cầu chờ duyệt</p>
+                <h3 className="text-2xl font-extrabold text-foreground tracking-tight">
+                  {requestsLoading ? <Skeleton className="h-8 w-16" /> : pendingRequestsCount}
+                </h3>
+              </div>
+              <div className="size-10 rounded-lg text-emerald-500 bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center shrink-0">
+                <Icon icon="solar:inbox-in-line-duotone" className="text-xl" />
+              </div>
+            </div>
+          </div>
+
           <div className="px-6 py-4 border-b border-border/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-2">
               {TABS.map((tab) => {
