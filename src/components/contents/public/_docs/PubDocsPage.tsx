@@ -52,7 +52,6 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
     currentProductSlug || initialProducts[0]?.slug || ""
   );
 
-  // Sync selected product slug if prop changes
   useEffect(() => {
     if (currentProductSlug) {
       setSelectedProductSlug(currentProductSlug);
@@ -63,19 +62,15 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
     return initialProducts.find((p) => p.slug === selectedProductSlug);
   }, [initialProducts, selectedProductSlug]);
   
-  // Navigation states
   const [activeDocType, setActiveDocType] = useState<"overview" | "endpoint">("overview");
   const [selectedOverviewSlug, setSelectedOverviewSlug] = useState<string>("");
   const [selectedEndpointId, setSelectedEndpointId] = useState<string>("");
 
-  // Search states (debounced)
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  // Sub-tabs for endpoint view
   const [activeSubTab, setActiveSubTab] = useState<"spec" | "playground">("spec");
 
-  // Playground execution states
   const [targetDomain, setTargetDomain] = useState("shoprandom247.com");
   const [playgroundHeaders, setPlaygroundHeaders] = useState<Array<{ name: string; value: string }>>([]);
   const [playgroundQueryParams, setPlaygroundQueryParams] = useState<Record<string, string>>({});
@@ -93,7 +88,6 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
     setMounted(true);
   }, []);
 
-  // Debounced search logic (exactly 300ms)
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchTerm);
@@ -101,7 +95,6 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Queries using publicApiDocsRouter
   const { data: overviews = [], isLoading: isLoadingOverviews } =
     trpc.apiDocs.getOverviews.useQuery(
       { apiType: selectedProductSlug },
@@ -120,13 +113,11 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
       { enabled: activeDocType === "endpoint" && !!selectedEndpointId, refetchOnWindowFocus: false }
     );
 
-  // Default selection when product changes or overviews loaded
   useEffect(() => {
     if (overviews.length > 0) {
       setSelectedOverviewSlug(overviews[0].slug);
       setActiveDocType("overview");
     } else {
-      // Find first group with endpoints
       const firstGroupWithEndpoints = groupsWithEndpoints.find(g => g.endpoints && g.endpoints.length > 0);
       if (firstGroupWithEndpoints && firstGroupWithEndpoints.endpoints.length > 0) {
         setSelectedEndpointId(firstGroupWithEndpoints.endpoints[0].id);
@@ -135,7 +126,6 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
     }
   }, [selectedProductSlug, overviews, groupsWithEndpoints]);
 
-  // Sync playground forms when endpoint changes
   useEffect(() => {
     if (endpointDetails) {
       const defaultHeaders = [
@@ -166,7 +156,6 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
     }
   }, [endpointDetails]);
 
-  // Filter groups and endpoints based on search query
   const filteredGroups = useMemo(() => {
     if (!debouncedSearch.trim()) return groupsWithEndpoints;
     return groupsWithEndpoints
@@ -307,7 +296,6 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
 
   return (
     <div className="flex flex-col w-full flex-1">
-      {/* 1. Header Section */}
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative overflow-hidden border-l border-r border-dashed border-primary/20 pt-[60px] pb-6 px-6">
           {currentProduct?.thumbnail && (
@@ -368,7 +356,6 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
         </div>
       </div>
 
-      {/* 2. Diagonal Stripe Divider */}
       <div
         className="relative w-full border-t border-b border-dashed border-primary/20 overflow-hidden text-primary/20"
         style={{ height: "36px" }}
@@ -382,12 +369,10 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
         />
       </div>
 
-      {/* 3. Main Content Split Pane */}
       <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col p-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start grow">
             
-            {/* LEFT SIDEBAR NAVIGATION */}
             <aside className="lg:col-span-3 flex flex-col gap-4 self-stretch border-r border-dashed border-primary/10 pr-4">
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground z-10">
@@ -413,7 +398,6 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
               </div>
 
               <div className="flex-1 overflow-y-auto space-y-5 pr-1 max-h-[70vh]">
-                {/* 1. Overviews Group */}
                 {filteredOverviews.length > 0 && (
                   <div className="space-y-1.5">
                     <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-2.5">
@@ -432,7 +416,7 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
                             className={cn(
                               "w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium text-left transition-all duration-200 cursor-pointer",
                               isSelected
-                                ? "bg-vanixjnk/15 border border-vanixjnk/25 text-vanixjnk font-semibold"
+                                ? "bg-vanixjnk/15 border border-vanixjnk/25 text-vanixjnk"
                                 : "border border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
                             )}
                           >
@@ -445,7 +429,6 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
                   </div>
                 )}
 
-                {/* 2. API Groups */}
                 {isLoadingGroups ? (
                   <div className="space-y-3 px-2">
                     <Skeleton className="h-3 w-32" />
@@ -469,19 +452,19 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
                             <button
                               key={ep.id}
                               onClick={() => {
-                                setActiveDocType("endpoint");
-                                setSelectedEndpointId(ep.id);
+                                  setActiveDocType("endpoint");
+                                  setSelectedEndpointId(ep.id);
                               }}
                               className={cn(
                                 "w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-all duration-200 cursor-pointer border",
                                 isSelected
-                                  ? "bg-vanixjnk/10 border-vanixjnk/25 text-vanixjnk font-bold"
+                                  ? "bg-vanixjnk/10 border-vanixjnk/25 text-vanixjnk"
                                   : "border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
                               )}
                             >
                               <span className={cn(
                                 "text-[9px] font-black tracking-wide uppercase px-1 rounded-sm font-mono scale-90 shrink-0",
-                                isSelected ? "bg-vanixjnk/15 border border-vanixjnk/20" : getMethodBadgeClass(ep.method)
+                                getMethodBadgeClass(ep.method)
                               )}>
                                 {ep.method}
                               </span>
@@ -496,9 +479,7 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
               </div>
             </aside>
 
-            {/* RIGHT DETAIL CONTENT AREA */}
             <main className="lg:col-span-9 flex flex-col gap-6 self-stretch overflow-y-auto max-h-[78vh] pr-1">
-              {/* OVERVIEW CONTENT VIEW */}
               {activeDocType === "overview" && (
                 <>
                   {isLoadingOverviews ? (
@@ -540,7 +521,6 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
                 </>
               )}
 
-              {/* API ENDPOINT VIEW */}
               {activeDocType === "endpoint" && (
                 <>
                   {isLoadingEndpointDetails ? (
@@ -554,7 +534,6 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
                     </div>
                   ) : endpointDetails ? (
                     <div className="space-y-6 animate-fadeIn">
-                      {/* API Header & Path */}
                       <div className="border-b border-border/60 pb-4 space-y-3">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className={cn(
@@ -580,17 +559,15 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
                         <h2 className="text-lg font-bold text-foreground mt-2">{endpointDetails.name}</h2>
                       </div>
 
-                      {/* MDX Endpoint Description */}
                       <div className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground/90">
                         <MdxRenderer content={endpointDetails.description} />
                       </div>
 
-                      {/* Spec vs Playground Tabs */}
                       <div className="flex items-center gap-1.5 p-1 rounded-xl bg-muted/20 border border-border/60 w-fit whitespace-nowrap">
                         <button
                           onClick={() => setActiveSubTab("spec")}
                           className={cn(
-                            "flex items-center justify-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 cursor-pointer",
+                            "flex items-center justify-center gap-2 px-4 py-1.5 rounded-lg text-xs transition-all duration-200 cursor-pointer",
                             activeSubTab === "spec"
                               ? "bg-vanixjnk/15 border border-vanixjnk/25 text-vanixjnk shadow-2xs"
                               : "border border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
@@ -602,7 +579,7 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
                         <button
                           onClick={() => setActiveSubTab("playground")}
                           className={cn(
-                            "flex items-center justify-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 cursor-pointer",
+                            "flex items-center justify-center gap-2 px-4 py-1.5 rounded-lg text-xs transition-all duration-200 cursor-pointer",
                             activeSubTab === "playground"
                               ? "bg-vanixjnk/15 border border-vanixjnk/25 text-vanixjnk shadow-2xs"
                               : "border border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
@@ -613,21 +590,16 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
                         </button>
                       </div>
 
-                      {/* SUB CONTENT VIEW */}
                       {activeSubTab === "spec" && (
                         <div className="space-y-6">
-                          {/* 1. Headers Parameter Table */}
                           <ParameterTable title="Request Headers" list={endpointDetails.headers || []} />
 
-                          {/* 2. Query Parameter Table */}
                           <ParameterTable title="Query Parameters" list={endpointDetails.queryParams || []} />
 
-                          {/* 3. Request Body Parameter Table */}
                           {["POST", "PUT", "PATCH", "DELETE"].includes(endpointDetails.method) && (
                             <ParameterTable title="JSON Body parameters" list={endpointDetails.requestBody || []} />
                           )}
 
-                          {/* 4. Response Samples */}
                           {endpointDetails.responses && endpointDetails.responses.length > 0 && (
                             <div className="space-y-4 border border-border/40 rounded-2xl p-5 bg-card/20">
                               <h3 className="text-xs font-extrabold text-foreground uppercase tracking-wider border-b pb-2 border-border/40 flex items-center gap-1.5">
@@ -668,7 +640,6 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
                             Giao diện Thử nghiệm (API Runner)
                           </h3>
 
-                          {/* Domain Configuration */}
                           <div className="flex flex-col gap-1.5">
                             <label className="text-xs font-bold text-foreground">Target Domain</label>
                             <div className="flex gap-2">
@@ -684,7 +655,6 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
                             </div>
                           </div>
 
-                          {/* Headers Panel */}
                           {playgroundHeaders.length > 0 && (
                             <div className="space-y-2">
                               <label className="text-xs font-bold text-foreground">HTTP Headers</label>
@@ -733,7 +703,6 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
                             </div>
                           )}
 
-                          {/* Query params Panel */}
                           {endpointDetails.queryParams && endpointDetails.queryParams.length > 0 && (
                             <div className="space-y-2">
                               <label className="text-xs font-bold text-foreground">Query Parameters</label>
@@ -757,7 +726,6 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
                             </div>
                           )}
 
-                          {/* Request Body Payload */}
                           {["POST", "PUT", "PATCH", "DELETE"].includes(endpointDetails.method) && (
                             <div className="flex flex-col gap-1.5">
                               <label className="text-xs font-bold text-foreground">JSON Body Payload</label>
@@ -770,7 +738,6 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
                             </div>
                           )}
 
-                          {/* Send Request Trigger */}
                           <Button
                             variant="vanixjnk"
                             onClick={handleSendRequest}
@@ -785,7 +752,6 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
                             <span>Gửi yêu cầu thử nghiệm</span>
                           </Button>
 
-                          {/* Playground Response Viewer */}
                           {playgroundResponse && (
                             <div className="border border-border/60 rounded-xl overflow-hidden bg-card animate-fadeIn">
                               <div className="flex items-center justify-between border-b border-border/60 bg-muted/20 px-4 py-2.5 text-xs">
