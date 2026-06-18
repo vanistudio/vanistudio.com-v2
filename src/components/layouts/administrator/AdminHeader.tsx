@@ -83,6 +83,7 @@ const navEntries: NavEntry[] = [
       { name: "Quản lý Database", href: "/adminPanel/database", icon: "solar:database-line-duotone" },
       { name: "Console hệ thống", href: "/adminPanel/console", icon: "solar:code-square-line-duotone" },
       { name: "Gói mở rộng", href: "/adminPanel/extensions", icon: "solar:cpu-line-duotone" },
+      { name: "Mẫu thông báo", href: "/adminPanel/templates", icon: "solar:letter-opened-line-duotone" },
     ],
   },
 ];
