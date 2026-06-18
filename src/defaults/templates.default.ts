@@ -273,5 +273,35 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
     },
     description: "Email gửi mã xác nhận khi đăng ký tài khoản mới để kích hoạt tài khoản.",
     isActive: true
+  },
+  {
+    name: "Email cảnh báo: Thay đổi mật khẩu thành công",
+    eventKey: "auth.password_changed",
+    channel: "email",
+    target: "client",
+    subject: "Cảnh báo bảo mật: Mật khẩu tài khoản VaniStudio đã bị thay đổi",
+    content: "Chào {{name}},\n\nMật khẩu cho tài khoản VaniStudio của bạn (liên kết với email {{email}}) đã được thay đổi thành công vào lúc {{changedAt}}.\n\nNếu bạn là người thực hiện thay đổi này, bạn có thể an tâm bỏ qua email này.\nNếu bạn KHÔNG thực hiện thay đổi này, tài khoản của bạn có thể đã bị xâm nhập. Vui lòng bấm vào liên kết dưới đây ngay lập tức để khóa tài khoản tạm thời và liên hệ hỗ trợ khẩn cấp:\n\n{{lockAccountLink}}\n\nTrân trọng,\nVaniStudio Security Team.",
+    variables: ["name", "email", "changedAt", "lockAccountLink"],
+    extraConfig: {
+      senderName: "VaniStudio Security",
+      senderEmail: "security@vanistudio.com"
+    },
+    description: "Email gửi thông báo bảo mật cho người dùng khi mật khẩu tài khoản của họ được cập nhật thành công.",
+    isActive: true
+  },
+  {
+    name: "Email cảnh báo: Đăng nhập từ thiết bị hoặc địa điểm lạ",
+    eventKey: "auth.login_detected",
+    channel: "email",
+    target: "client",
+    subject: "Cảnh báo bảo mật: Phát hiện hoạt động đăng nhập mới",
+    content: "Chào {{name}},\n\nChúng tôi phát hiện tài khoản VaniStudio của bạn vừa được đăng nhập thành công từ một thiết bị hoặc địa điểm mới:\n\n• Địa chỉ IP: {{ipAddress}}\n• Thiết bị/Trình duyệt: {{device}}\n• Thời gian: {{loginAt}}\n• Vị trí ước tính: {{location}}\n\nNếu đây là bạn, không cần thực hiện thêm hành động nào.\nNếu bạn KHÔNG thực hiện đăng nhập này, vui lòng đổi mật khẩu ngay lập tức hoặc bấm vào liên kết dưới đây để hủy tất cả các phiên đăng nhập khác của tài khoản này:\n\n{{logoutAllLink}}\n\nTrân trọng,\nVaniStudio Security Team.",
+    variables: ["name", "ipAddress", "device", "loginAt", "location", "logoutAllLink"],
+    extraConfig: {
+      senderName: "VaniStudio Security",
+      senderEmail: "security@vanistudio.com"
+    },
+    description: "Email gửi cảnh báo bảo mật khi phát hiện đăng nhập từ IP, vị trí hoặc thiết bị chưa từng sử dụng trước đây.",
+    isActive: true
   }
 ];
