@@ -183,43 +183,72 @@ function renderSlackMrkdwn(text: string, tokens: typeof DARK): React.ReactNode[]
     return result
 }
 
+function getBlockText(val: any): string {
+    if (!val) return "";
+    if (typeof val === "string") return val;
+    if (typeof val === "object" && typeof val.text === "string") return val.text;
+    return "";
+}
+
 function renderSlackBlock(block: SlackBlock, t: typeof DARK, key: number): React.ReactNode {
     if (block.type === "divider") return <div key={key} style={{ borderTop: `1px solid ${t.headerBorder}`, margin: "8px 0" }} />
 
-    if (block.type === "header") return (
-        <div key={key} style={{ fontSize: "18px", fontWeight: 700, color: t.msgText, margin: "6px 0 4px", lineHeight: 1.3 }}>
-            {block.text || <span style={{ color: t.emptyText, fontStyle: "italic" }}>Tiêu đề trống</span>}
-        </div>
-    )
-
-    if (block.type === "section") return (
-        <div key={key} style={{ display: "flex", gap: "12px", alignItems: "flex-start", margin: "4px 0" }}>
-            <div style={{ flex: 1, color: t.msgText, fontSize: "14.5px", lineHeight: "1.46667", wordBreak: "break-word" }}>
-                {block.text || <span style={{ color: t.emptyText, fontStyle: "italic" }}>Nội dung trống</span>}
+    if (block.type === "header") {
+        const textVal = getBlockText(block.text);
+        return (
+            <div key={key} style={{ fontSize: "18px", fontWeight: 700, color: t.msgText, margin: "6px 0 4px", lineHeight: 1.3 }}>
+                {textVal ? renderSlackMrkdwn(textVal, t) : <span style={{ color: t.emptyText, fontStyle: "italic" }}>Tiêu đề trống</span>}
             </div>
-            {block.accessory_image_url && (
-                <img src={block.accessory_image_url} alt={block.accessory_alt_text || ""} style={{ width: "72px", height: "72px", borderRadius: "4px", objectFit: "cover", flexShrink: 0 }} />
-            )}
-        </div>
-    )
+        );
+    }
 
-    if (block.type === "image") return (
-        <div key={key} style={{ margin: "6px 0" }}>
-            {block.title && <div style={{ color: t.msgText, fontSize: "13px", fontWeight: 600, marginBottom: "4px" }}>{block.title}</div>}
-            {block.image_url
-                ? <img src={block.image_url} alt={block.alt_text} style={{ maxWidth: "100%", maxHeight: "180px", borderRadius: "4px", objectFit: "cover" }} />
-                : <div style={{ background: t.inputBg, border: `1px dashed ${t.inputBorder}`, borderRadius: "4px", height: "60px", display: "flex", alignItems: "center", justifyContent: "center", color: t.emptyText, fontSize: "12px" }}>Image URL</div>
-            }
-            {block.alt_text && <div style={{ color: t.timestamp, fontSize: "11px", marginTop: "3px" }}>{block.alt_text}</div>}
-        </div>
-    )
+    if (block.type === "section") {
+        const textVal = getBlockText(block.text);
+        const fields = (block as any).fields as any[];
+        return (
+            <div key={key} style={{ display: "flex", gap: "12px", alignItems: "flex-start", margin: "4px 0" }}>
+                <div style={{ flex: 1, color: t.msgText, fontSize: "14.5px", lineHeight: "1.46667", wordBreak: "break-word" }}>
+                    {textVal && <div>{renderSlackMrkdwn(textVal, t)}</div>}
+                    {fields && fields.length > 0 && (
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px 16px", marginTop: textVal ? "8px" : "0" }}>
+                            {fields.map((f, fi) => (
+                                <div key={fi}>
+                                    {renderSlackMrkdwn(getBlockText(f), t)}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    {!textVal && (!fields || fields.length === 0) && (
+                        <span style={{ color: t.emptyText, fontStyle: "italic" }}>Nội dung trống</span>
+                    )}
+                </div>
+                {block.accessory_image_url && (
+                    <img src={block.accessory_image_url} alt={block.accessory_alt_text || ""} style={{ width: "72px", height: "72px", borderRadius: "4px", objectFit: "cover", flexShrink: 0 }} />
+                )}
+            </div>
+        );
+    }
+
+    if (block.type === "image") {
+        const titleVal = getBlockText(block.title);
+        return (
+            <div key={key} style={{ margin: "6px 0" }}>
+                {titleVal && <div style={{ color: t.msgText, fontSize: "13px", fontWeight: 600, marginBottom: "4px" }}>{renderSlackMrkdwn(titleVal, t)}</div>}
+                {block.image_url
+                    ? <img src={block.image_url} alt={block.alt_text} style={{ maxWidth: "100%", maxHeight: "180px", borderRadius: "4px", objectFit: "cover" }} />
+                    : <div style={{ background: t.inputBg, border: `1px dashed ${t.inputBorder}`, borderRadius: "4px", height: "60px", display: "flex", alignItems: "center", justifyContent: "center", color: t.emptyText, fontSize: "12px" }}>Image URL</div>
+                }
+                {block.alt_text && <div style={{ color: t.timestamp, fontSize: "11px", marginTop: "3px" }}>{block.alt_text}</div>}
+            </div>
+        );
+    }
 
     if (block.type === "context") return (
         <div key={key} style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", margin: "4px 0" }}>
             {block.elements.map((el, ei) =>
                 el.type === "image"
                     ? <img key={ei} src={(el as any).image_url} alt={(el as any).alt_text || ""} style={{ width: "20px", height: "20px", borderRadius: "3px", objectFit: "cover" }} />
-                    : <span key={ei} style={{ color: t.timestamp, fontSize: "12px" }}>{(el as any).text}</span>
+                    : <span key={ei} style={{ color: t.timestamp, fontSize: "12px" }}>{renderSlackMrkdwn(getBlockText(el), t)}</span>
             )}
         </div>
     )

@@ -126,6 +126,26 @@ function makeBlock(type: SlackBlock["type"]): SlackBlock {
     return { type: "actions", elements: [{ type: "button", text: "Button", style: "default" }] }
 }
 
+function getBlockText(val: any): string {
+    if (!val) return "";
+    if (typeof val === "string") return val;
+    if (typeof val === "object" && typeof val.text === "string") return val.text;
+    return "";
+}
+
+function setBlockText(original: any, newText: string, defaultType: "mrkdwn" | "plain_text" = "plain_text") {
+    if (original && typeof original === "object") {
+        return {
+            ...original,
+            text: newText
+        };
+    }
+    return {
+        type: defaultType,
+        text: newText
+    };
+}
+
 function BlockEditor({ block, index, totalBlocks, onChange, onRemove, onMove }: {
     block: SlackBlock
     index: number
@@ -165,12 +185,12 @@ function BlockEditor({ block, index, totalBlocks, onChange, onRemove, onMove }: 
                         <div className="space-y-1">
                             <label className="text-xs text-muted-foreground">Tiêu đề <span className="text-destructive">*</span> (max 150)</label>
                             <Input
-                                value={block.text}
-                                onChange={e => set({ text: e.target.value.slice(0, 150) })}
+                                value={getBlockText(block.text)}
+                                onChange={e => set({ text: setBlockText(block.text, e.target.value.slice(0, 150), "plain_text") as any })}
                                 placeholder="Tiêu đề lớn..."
                                 className="font-semibold"
                             />
-                            <span className="text-[10px] text-muted-foreground">{block.text.length}/150</span>
+                            <span className="text-[10px] text-muted-foreground">{getBlockText(block.text).length}/150</span>
                         </div>
                     )}
 
@@ -179,13 +199,13 @@ function BlockEditor({ block, index, totalBlocks, onChange, onRemove, onMove }: 
                             <div className="space-y-1">
                                 <label className="text-xs text-muted-foreground">Nội dung mrkdwn <span className="text-destructive">*</span> (max 3000)</label>
                                 <Textarea
-                                    value={block.text}
-                                    onChange={e => set({ text: e.target.value.slice(0, 3000) })}
+                                    value={getBlockText(block.text)}
+                                    onChange={e => set({ text: setBlockText(block.text, e.target.value.slice(0, 3000), "mrkdwn") as any })}
                                     placeholder={"*bold*, _italic_, ~strike~\n<https://example.com|Link text>"}
                                     rows={5}
                                     className="font-mono text-sm resize-none"
                                 />
-                                <span className="text-[10px] text-muted-foreground">{block.text.length}/3000</span>
+                                <span className="text-[10px] text-muted-foreground">{getBlockText(block.text).length}/3000</span>
                             </div>
                             <div className="space-y-1">
                                 <label className="text-xs text-muted-foreground">Accessory Image URL (tuỳ chọn)</label>
@@ -203,6 +223,36 @@ function BlockEditor({ block, index, totalBlocks, onChange, onRemove, onMove }: 
                                         onChange={e => set({ accessory_alt_text: e.target.value })}
                                         placeholder="Mô tả ảnh"
                                     />
+                                </div>
+                            )}
+                            {(block as any).fields && (block as any).fields.length > 0 && (
+                                <div className="space-y-2 pt-2">
+                                    <label className="text-xs text-muted-foreground font-semibold">Các ô thông tin (Fields)</label>
+                                    {((block as any).fields as any[]).map((f, fi) => (
+                                        <div key={fi} className="flex gap-2 items-center">
+                                            <Input
+                                                value={getBlockText(f)}
+                                                onChange={e => {
+                                                    const nextFields = ((block as any).fields as any[]).map((x, j) => j === fi ? setBlockText(x, e.target.value, "mrkdwn") : x);
+                                                    set({ fields: nextFields } as any);
+                                                }}
+                                                placeholder="Nội dung field (mrkdwn)..."
+                                                className="text-xs h-8"
+                                            />
+                                            <button type="button" onClick={() => {
+                                                const nextFields = ((block as any).fields as any[]).filter((_, j) => j !== fi);
+                                                set({ fields: nextFields } as any);
+                                            }} className="shrink-0 size-7 flex items-center justify-center rounded hover:bg-destructive/10 text-destructive transition-colors">
+                                                <Icon icon="solar:close-circle-line-duotone" className="size-4" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                    {((block as any).fields as any[]).length < 10 && (
+                                        <Button type="button" size="sm" variant="ghost" className="gap-1 text-xs h-7 w-full border border-dashed border-border/60"
+                                            onClick={() => set({ fields: [...((block as any).fields as any[]), { type: "mrkdwn", text: "" }] } as any)}>
+                                            <Icon icon="solar:add-circle-line-duotone" className="size-3.5" /> Thêm field
+                                        </Button>
+                                    )}
                                 </div>
                             )}
                         </>
@@ -223,7 +273,7 @@ function BlockEditor({ block, index, totalBlocks, onChange, onRemove, onMove }: 
                             </div>
                             <div className="space-y-1">
                                 <label className="text-xs text-muted-foreground">Tiêu đề ảnh (tuỳ chọn, max 2000)</label>
-                                <Input value={block.title || ""} onChange={e => set({ title: e.target.value.slice(0, 2000) })} placeholder="Caption..." />
+                                <Input value={getBlockText(block.title)} onChange={e => set({ title: setBlockText(block.title, e.target.value.slice(0, 2000), "plain_text") as any })} placeholder="Caption..." />
                             </div>
                         </>
                     )}
@@ -235,7 +285,7 @@ function BlockEditor({ block, index, totalBlocks, onChange, onRemove, onMove }: 
                                 <div className="flex gap-1">
                                     <Button type="button" size="sm" variant="outline" className="h-6 text-[10px] px-2 gap-1"
                                         disabled={block.elements.length >= 10}
-                                        onClick={() => set({ elements: [...block.elements, { type: "text", text: "" }] } as any)}>
+                                        onClick={() => set({ elements: [...block.elements, { type: "mrkdwn", text: "" }] } as any)}>
                                         <Icon icon="solar:add-circle-line-duotone" className="size-3" /> Text
                                     </Button>
                                     <Button type="button" size="sm" variant="outline" className="h-6 text-[10px] px-2 gap-1"
@@ -248,11 +298,11 @@ function BlockEditor({ block, index, totalBlocks, onChange, onRemove, onMove }: 
                             {block.elements.map((el, ei) => (
                                 <div key={ei} className="flex gap-2 items-start">
                                     <div className="flex-1 space-y-1">
-                                        {el.type === "text" && (
+                                        {el.type !== "image" && (
                                             <Input
-                                                value={(el as any).text || ""}
+                                                value={getBlockText(el)}
                                                 onChange={e => {
-                                                    const elements = block.elements.map((x, j) => j === ei ? { ...x, text: e.target.value } : x) as SlackContextElement[]
+                                                    const elements = block.elements.map((x, j) => j === ei ? setBlockText(x, e.target.value, "mrkdwn") : x) as SlackContextElement[]
                                                     set({ elements } as any)
                                                 }}
                                                 placeholder="Text (mrkdwn)..."

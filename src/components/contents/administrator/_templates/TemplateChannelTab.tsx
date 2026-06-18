@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { type NotificationTemplate } from "@/server/db/schemas/template.schema";
-import { TelegramMessagePreview } from "@/components/vanixjnk/telegram-rich-message-builder";
+import { TelegramRichMessageBuilder } from "@/components/vanixjnk/telegram-rich-message-builder";
 import { DiscordEmbedBuilder, DiscordMessagePreview } from "@/components/vanixjnk/discord-embed-builder";
 import { SlackBlockBuilder, SlackMessagePreview } from "@/components/vanixjnk/slack-block-kit-builder";
 import type { DiscordEmbed } from "@/components/vanixjnk/discord-embed-builder/discord-embed-builder";
@@ -137,175 +137,158 @@ export function TemplateChannelTab({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          <div className="lg:col-span-7 space-y-6">
-            {activeTemplate.channel === "email" && (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-foreground">Tên người gửi (Sender Name)</label>
-                    <Input
-                      value={activeTemplate.extraConfig?.senderName || ""}
-                      onChange={(e) => updateExtraConfig("senderName", e.target.value)}
-                      placeholder="Ví dụ: VaniStudio Support"
-                      className="h-10 text-[13px]"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-foreground">Email người gửi (Sender Email)</label>
-                    <Input
-                      value={activeTemplate.extraConfig?.senderEmail || ""}
-                      onChange={(e) => updateExtraConfig("senderEmail", e.target.value)}
-                      placeholder="Ví dụ: support@domain.com"
-                      className="h-10 text-[13px]"
-                    />
-                  </div>
-                </div>
-
+        <div className="space-y-6">
+          {activeTemplate.channel === "email" && (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-foreground">Tiêu đề Email (Subject)</label>
+                  <label className="text-xs font-bold text-foreground">Tên người gửi (Sender Name)</label>
                   <Input
-                    value={activeTemplate.subject || ""}
-                    onChange={(e) => onTemplateChange(activeTemplate.id, { subject: e.target.value })}
-                    placeholder="Nhập tiêu đề email..."
+                    value={activeTemplate.extraConfig?.senderName || ""}
+                    onChange={(e) => updateExtraConfig("senderName", e.target.value)}
+                    placeholder="Ví dụ: VaniStudio Support"
                     className="h-10 text-[13px]"
                   />
                 </div>
-
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-foreground">Nội dung thông báo (Content Template)</label>
-                  <Textarea
-                    ref={textareaRef}
-                    value={activeTemplate.content}
-                    onChange={(e) => onTemplateChange(activeTemplate.id, { content: e.target.value })}
-                    placeholder="Nhập nội dung thông báo..."
-                    rows={12}
-                    className="font-mono text-xs leading-relaxed"
+                  <label className="text-xs font-bold text-foreground">Email người gửi (Sender Email)</label>
+                  <Input
+                    value={activeTemplate.extraConfig?.senderEmail || ""}
+                    onChange={(e) => updateExtraConfig("senderEmail", e.target.value)}
+                    placeholder="Ví dụ: support@domain.com"
+                    className="h-10 text-[13px]"
                   />
                 </div>
-              </>
-            )}
+              </div>
 
-            {activeTemplate.channel === "telegram" && (
-              <>
-                <div className="space-y-2 max-w-[280px]">
-                  <label className="text-xs font-bold text-foreground">Định dạng tin nhắn (Parse Mode)</label>
-                  <Select
-                    value={activeTemplate.extraConfig?.parseMode || "HTML"}
-                    onValueChange={(val) => updateExtraConfig("parseMode", val)}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-foreground">Tiêu đề Email (Subject)</label>
+                <Input
+                  value={activeTemplate.subject || ""}
+                  onChange={(e) => onTemplateChange(activeTemplate.id, { subject: e.target.value })}
+                  placeholder="Nhập tiêu đề email..."
+                  className="h-10 text-[13px]"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-foreground">Nội dung thông báo (Content Template)</label>
+                <Textarea
+                  ref={textareaRef}
+                  value={activeTemplate.content}
+                  onChange={(e) => onTemplateChange(activeTemplate.id, { content: e.target.value })}
+                  placeholder="Nhập nội dung thông báo..."
+                  rows={12}
+                  className="font-mono text-xs leading-relaxed"
+                />
+              </div>
+            </>
+          )}
+
+          {activeTemplate.channel === "telegram" && (
+            <>
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-foreground">Nội dung thông báo (Content Template)</label>
+                <Textarea
+                  ref={textareaRef}
+                  value={activeTemplate.content}
+                  onChange={(e) => onTemplateChange(activeTemplate.id, { content: e.target.value })}
+                  placeholder="Nhập nội dung thông báo..."
+                  rows={12}
+                  className="font-mono text-xs leading-relaxed"
+                />
+              </div>
+            </>
+          )}
+
+          {activeTemplate.channel === "discord" && (
+            <DiscordEmbedBuilder
+              content={activeTemplate.content}
+              onContentChange={(content) => onTemplateChange(activeTemplate.id, { content })}
+              embeds={getDiscordEmbeds()}
+              onEmbedsChange={handleDiscordEmbedsChange}
+            />
+          )}
+
+          {activeTemplate.channel === "slack" && (
+            <SlackBlockBuilder
+              blocks={(activeTemplate.extraConfig?.slackBlocks || []) as SlackBlock[]}
+              onBlocksChange={(blocks) => updateExtraConfig("slackBlocks", blocks)}
+            />
+          )}
+
+          {(activeTemplate.channel === "email" || activeTemplate.channel === "telegram") && activeTemplate.variables && activeTemplate.variables.length > 0 && (
+            <div className="space-y-2 pt-2">
+              <span className="text-xs font-bold text-foreground">Từ khóa khả dụng (Click để chèn)</span>
+              <div className="flex flex-wrap gap-1.5">
+                {activeTemplate.variables.map((variable) => (
+                  <Badge
+                    key={variable}
+                    variant="secondary"
+                    className="cursor-pointer hover:bg-vanixjnk/20 text-xs px-2 py-0.5"
+                    onClick={() => handleInsertVariable(variable)}
                   >
-                    <SelectTrigger className="h-10 text-[13px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="HTML" className="text-[13px]">HTML Parser</SelectItem>
-                      <SelectItem value="Markdown" className="text-[13px]">Markdown Parser</SelectItem>
-                      <SelectItem value="MarkdownV2" className="text-[13px]">MarkdownV2 Parser</SelectItem>
-                      <SelectItem value="PlainText" className="text-[13px]">Plain Text Only</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-foreground">Nội dung thông báo (Content Template)</label>
-                  <Textarea
-                    ref={textareaRef}
-                    value={activeTemplate.content}
-                    onChange={(e) => onTemplateChange(activeTemplate.id, { content: e.target.value })}
-                    placeholder="Nhập nội dung thông báo..."
-                    rows={12}
-                    className="font-mono text-xs leading-relaxed"
-                  />
-                </div>
-              </>
-            )}
-
-            {activeTemplate.channel === "discord" && (
-              <DiscordEmbedBuilder
-                content={activeTemplate.content}
-                onContentChange={(content) => onTemplateChange(activeTemplate.id, { content })}
-                embeds={getDiscordEmbeds()}
-                onEmbedsChange={handleDiscordEmbedsChange}
-              />
-            )}
-
-            {activeTemplate.channel === "slack" && (
-              <SlackBlockBuilder
-                blocks={(activeTemplate.extraConfig?.slackBlocks || []) as SlackBlock[]}
-                onBlocksChange={(blocks) => updateExtraConfig("slackBlocks", blocks)}
-              />
-            )}
-
-            {(activeTemplate.channel === "email" || activeTemplate.channel === "telegram") && activeTemplate.variables && activeTemplate.variables.length > 0 && (
-              <div className="space-y-2 pt-2">
-                <span className="text-xs font-bold text-foreground">Từ khóa khả dụng (Click để chèn)</span>
-                <div className="flex flex-wrap gap-1.5">
-                  {activeTemplate.variables.map((variable) => (
-                    <Badge
-                      key={variable}
-                      variant="secondary"
-                      className="cursor-pointer hover:bg-vanixjnk/20 text-xs px-2 py-0.5"
-                      onClick={() => handleInsertVariable(variable)}
-                    >
-                      {`{{${variable}}}`}
-                    </Badge>
-                  ))}
-                </div>
+                    {`{{${variable}}}`}
+                  </Badge>
+                ))}
               </div>
-            )}
-          </div>
+            </div>
+          )}
+        </div>
 
-          <div className="lg:col-span-5 space-y-4 lg:sticky lg:top-6">
+        <div className="pt-6 border-t border-border/50 space-y-4">
+          <div className="flex items-center gap-2">
+            <Icon icon="solar:videocamera-record-line-duotone" className="size-4 text-muted-foreground" />
             <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Giao diện xem trước</span>
+          </div>
 
-            {activeTemplate.channel === "email" && (
-              <div className="rounded-lg border border-border bg-card overflow-hidden h-[550px] flex flex-col shadow-sm">
-                <div className="bg-muted/30 px-4 py-3 border-b border-border flex items-center justify-between text-xs text-muted-foreground">
-                  <span>Xem trước Email</span>
-                  <div className="flex items-center gap-1.5">
-                    <span className="size-2.5 rounded-full bg-destructive/60" />
-                    <span className="size-2.5 rounded-full bg-amber-500/60" />
-                    <span className="size-2.5 rounded-full bg-emerald-500/60" />
-                  </div>
-                </div>
-                <div className="p-4 border-b border-border space-y-2 text-xs bg-card">
-                  <div className="flex items-baseline gap-2">
-                    <span className="font-bold text-muted-foreground min-w-[60px]">Từ:</span>
-                    <span className="text-foreground text-[13px]">
-                      {activeTemplate.extraConfig?.senderName || "VaniStudio"} &lt;{activeTemplate.extraConfig?.senderEmail || "noreply@vanistudio.com"}&gt;
-                    </span>
-                  </div>
-                  <div className="flex items-baseline gap-2">
-                    <span className="font-bold text-muted-foreground min-w-[60px]">Tiêu đề:</span>
-                    <span className="text-foreground text-[13px] font-semibold">{activeTemplate.subject || "(Không có tiêu đề)"}</span>
-                  </div>
-                </div>
-                <div className="flex-1 p-6 overflow-y-auto bg-white dark:bg-zinc-950 font-sans text-sm leading-relaxed text-zinc-800 dark:text-zinc-200 whitespace-pre-wrap">
-                  {activeTemplate.content || <span className="text-muted-foreground italic text-xs">Chưa có nội dung...</span>}
+          {activeTemplate.channel === "email" && (
+            <div className="rounded-lg border border-border bg-card overflow-hidden h-[550px] flex flex-col shadow-sm">
+              <div className="bg-muted/30 px-4 py-3 border-b border-border flex items-center justify-between text-xs text-muted-foreground">
+                <span>Xem trước Email</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="size-2.5 rounded-full bg-destructive/60" />
+                  <span className="size-2.5 rounded-full bg-amber-500/60" />
+                  <span className="size-2.5 rounded-full bg-emerald-500/60" />
                 </div>
               </div>
-            )}
+              <div className="p-4 border-b border-border space-y-2 text-xs bg-card">
+                <div className="flex items-baseline gap-2">
+                  <span className="font-bold text-muted-foreground min-w-[60px]">Từ:</span>
+                  <span className="text-foreground text-[13px]">
+                    {activeTemplate.extraConfig?.senderName || "VaniStudio"} &lt;{activeTemplate.extraConfig?.senderEmail || "noreply@vanistudio.com"}&gt;
+                  </span>
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <span className="font-bold text-muted-foreground min-w-[60px]">Tiêu đề:</span>
+                  <span className="text-foreground text-[13px] font-semibold">{activeTemplate.subject || "(Không có tiêu đề)"}</span>
+                </div>
+              </div>
+              <div className="flex-1 p-6 overflow-y-auto bg-white dark:bg-zinc-950 font-sans text-sm leading-relaxed text-zinc-800 dark:text-zinc-200 whitespace-pre-wrap">
+                {activeTemplate.content || <span className="text-muted-foreground italic text-xs">Chưa có nội dung...</span>}
+              </div>
+            </div>
+          )}
 
-            {activeTemplate.channel === "telegram" && (
-              <TelegramMessagePreview
-                message={activeTemplate.content}
-              />
-            )}
+          {activeTemplate.channel === "telegram" && (
+            <TelegramRichMessageBuilder
+              message={activeTemplate.content}
+            />
+          )}
 
-            {activeTemplate.channel === "discord" && (
-              <DiscordMessagePreview
-                message={activeTemplate.content}
-                embeds={getDiscordEmbeds()}
-              />
-            )}
+          {activeTemplate.channel === "discord" && (
+            <DiscordMessagePreview
+              message={activeTemplate.content}
+              embeds={getDiscordEmbeds()}
+            />
+          )}
 
-            {activeTemplate.channel === "slack" && (
-              <SlackMessagePreview
-                message={activeTemplate.content}
-                blocks={(activeTemplate.extraConfig?.slackBlocks || []) as SlackBlock[]}
-              />
-            )}
-          </div>
+          {activeTemplate.channel === "slack" && (
+            <SlackMessagePreview
+              message={activeTemplate.content}
+              blocks={(activeTemplate.extraConfig?.slackBlocks || []) as SlackBlock[]}
+            />
+          )}
         </div>
       </Card>
     </div>
