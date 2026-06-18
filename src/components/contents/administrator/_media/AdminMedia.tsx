@@ -141,29 +141,55 @@ export default function AdminMedia() {
 
   const uploadFiles = async (files: FileList) => {
     setIsUploading(true);
-    let successCount = 0;
 
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const formData = new FormData();
-      formData.append("file", file);
+    const uploadPromise = new Promise(async (resolve, reject) => {
+      let successCount = 0;
+      let failCount = 0;
+      let lastError = "";
 
-      try {
-        await http.post("/api/upload", formData);
-        successCount++;
-      } catch (err: any) {
-        const errMsg = err.data?.error || err.message || "Tải tập tin lên thất bại";
-        toast.error(`Lỗi tải file "${file.name}": ${errMsg}`);
+      const uploadTasks = Array.from(files).map(async (file) => {
+        const formData = new FormData();
+        formData.append("file", file);
+        try {
+          await http.post("/api/upload", formData);
+          successCount++;
+        } catch (err: any) {
+          failCount++;
+          lastError = err.data?.error || err.message || "Lỗi không xác định";
+        }
+      });
+
+      await Promise.all(uploadTasks);
+
+      if (successCount > 0) {
+        refetch();
       }
-    }
 
-    if (successCount > 0) {
-      toast.success(`Đã tải lên thành công ${successCount} tập tin`);
-      refetch();
-    }
-    setIsUploading(false);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+      if (failCount > 0) {
+        if (successCount > 0) {
+          reject(new Error(`Đã tải lên ${successCount} tập tin, thất bại ${failCount} tập tin`));
+        } else {
+          reject(new Error(`Tải lên thất bại: ${lastError}`));
+        }
+      } else {
+        resolve(files.length > 1 ? `Đã tải lên thành công ${files.length} tập tin` : "Đã tải lên tập tin thành công");
+      }
+    });
+
+    toast.promise(uploadPromise, {
+      loading: files.length > 1 ? `Đang tải ${files.length} tập tin lên...` : "Đang tải tập tin lên...",
+      success: (msg: any) => msg,
+      error: (err: any) => err.message || "Tải lên thất bại",
+    });
+
+    try {
+      await uploadPromise;
+    } catch {
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   };
 
