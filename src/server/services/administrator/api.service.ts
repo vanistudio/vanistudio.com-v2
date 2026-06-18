@@ -3,6 +3,7 @@ import { type ApiOverview, type ApiGroup, type ApiEndpoint, type ApiProduct } fr
 import { db } from "@/server/db";
 import { apiOverviews, apiGroups, apiEndpoints } from "@/server/db/schemas/api.schema";
 import { eq } from "drizzle-orm";
+import { DEFAULT_API_DOCS } from "@/defaults/api-docs.default";
 
 export class ApiService {
   // --- Overviews ---
@@ -158,6 +159,11 @@ export class ApiService {
     for (const item of orders) {
       await apiRepository.updateApiProductOrder(item.id, item.order);
     }
+  }
+
+  async seedApiDocs(customProducts?: any[]) {
+    const dataToSeed = customProducts || DEFAULT_API_DOCS;
+    await apiRepository.seedDefaultApiDocs(dataToSeed);
   }
 }
 

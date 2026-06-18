@@ -9,7 +9,7 @@ import {
   type ApiEndpoint,
   type ApiProduct
 } from "@/server/db/schemas/api.schema";
-import { eq, asc, and, desc } from "drizzle-orm";
+import { eq, asc, and, desc, inArray } from "drizzle-orm";
 
 export class ApiRepository {
   // --- Overviews ---
@@ -204,6 +204,95 @@ export class ApiRepository {
 
   async updateApiProductOrder(id: string, order: number): Promise<void> {
     await db.update(apiProducts).set({ order, updatedAt: new Date() }).where(eq(apiProducts.id, id));
+  }
+
+  async seedDefaultApiDocs(customProducts: any[]): Promise<void> {
+    const productsToSeed = customProducts || [];
+    const productSlugs = productsToSeed.map((p) => p.slug);
+
+    if (productSlugs.length > 0) {
+      // 1. Select group IDs matching product slugs
+      const groups = await db
+        .select({ id: apiGroups.id })
+        .from(apiGroups)
+        .where(inArray(apiGroups.apiType, productSlugs));
+
+      const groupIds = groups.map((g) => g.id);
+      if (groupIds.length > 0) {
+        // 2. Delete endpoints under matching groups
+        await db.delete(apiEndpoints).where(inArray(apiEndpoints.groupId, groupIds));
+      }
+
+      // 3. Delete overviews, groups, products
+      await db.delete(apiOverviews).where(inArray(apiOverviews.apiType, productSlugs));
+      await db.delete(apiGroups).where(inArray(apiGroups.apiType, productSlugs));
+      await db.delete(apiProducts).where(inArray(apiProducts.slug, productSlugs));
+    }
+
+    for (let i = 0; i < productsToSeed.length; i++) {
+      const prod = productsToSeed[i];
+      // Insert product record
+      await db.insert(apiProducts).values({
+        name: prod.name,
+        slug: prod.slug,
+        description: prod.description,
+        thumbnail: prod.thumbnail,
+        order: (i + 1) * 10,
+      });
+
+      // Insert overview documents (multiple or single fallback)
+      if (prod.overviews && Array.isArray(prod.overviews)) {
+        for (const ov of prod.overviews) {
+          await db.insert(apiOverviews).values({
+            apiType: prod.slug,
+            title: ov.title,
+            slug: ov.slug,
+            description: ov.description || null,
+            content: ov.content,
+            isActive: true,
+          });
+        }
+      } else if (prod.overviewTitle) {
+        await db.insert(apiOverviews).values({
+          apiType: prod.slug,
+          title: prod.overviewTitle,
+          slug: prod.overviewSlug,
+          description: prod.overviewDescription || null,
+          content: prod.overviewContent,
+          isActive: true,
+        });
+      }
+
+      // Insert groups and endpoints
+      for (let gIdx = 0; gIdx < prod.groups.length; gIdx++) {
+        const groupData = prod.groups[gIdx];
+        const [insertedGroup] = await db
+          .insert(apiGroups)
+          .values({
+            apiType: prod.slug,
+            name: groupData.name,
+            slug: groupData.slug,
+            description: groupData.description || null,
+            order: (gIdx + 1) * 10,
+          })
+          .returning();
+
+        for (const ep of groupData.endpoints) {
+          await db.insert(apiEndpoints).values({
+            groupId: insertedGroup.id,
+            name: ep.name,
+            method: ep.method,
+            path: ep.path,
+            description: ep.description,
+            headers: ep.headers || [],
+            queryParams: ep.queryParams || [],
+            requestBody: ep.requestBody || [],
+            responses: ep.responses || [],
+            isActive: true,
+          });
+        }
+      }
+    }
   }
 }
 

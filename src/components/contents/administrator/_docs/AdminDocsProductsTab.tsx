@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
 import { QuickReorderApiProductsDialog } from "./QuickReorderApiProductsDialog";
+import { QuickSeedApiDocsDialog } from "./QuickSeedApiDocsDialog";
 import { Badge } from "@/components/ui/badge";
 import { useSetting } from "@/contexts/SettingContext";
 import { formatWithSiteTimezone } from "@/helpers/administrator/timezone.helper";
@@ -51,6 +52,7 @@ export default function AdminDocsProductsTab({ onProductsChanged }: AdminDocsPro
 
   const [productToDelete, setProductToDelete] = useState<any | null>(null);
   const [isSortDialogOpen, setIsSortDialogOpen] = useState(false);
+  const [isSeedDialogOpen, setIsSeedDialogOpen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -341,6 +343,14 @@ export default function AdminDocsProductsTab({ onProductsChanged }: AdminDocsPro
                 <Icon icon="solar:sort-vertical-line-duotone" className="mr-2 size-3.5 text-indigo-500" />
                 Sắp xếp
               </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-xs h-8 px-2 cursor-pointer font-bold text-amber-600 hover:text-amber-700 hover:bg-amber-500/10"
+                onClick={() => setIsSeedDialogOpen(true)}
+              >
+                <Icon icon="solar:database-line-duotone" className="mr-2 size-3.5 text-amber-500" />
+                Đổ dữ liệu mẫu
+              </Button>
             </PopoverContent>
           </Popover>
         </div>
@@ -501,6 +511,15 @@ export default function AdminDocsProductsTab({ onProductsChanged }: AdminDocsPro
       <QuickReorderApiProductsDialog
         open={isSortDialogOpen}
         onOpenChange={setIsSortDialogOpen}
+        onSuccess={() => {
+          refetch();
+          if (onProductsChanged) onProductsChanged();
+        }}
+      />
+
+      <QuickSeedApiDocsDialog
+        open={isSeedDialogOpen}
+        onOpenChange={setIsSeedDialogOpen}
         onSuccess={() => {
           refetch();
           if (onProductsChanged) onProductsChanged();

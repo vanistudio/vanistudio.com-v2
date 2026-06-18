@@ -304,4 +304,19 @@ export const apiDocsRouter = router({
         });
       }
     }),
+
+  seedApiDocs: publicProcedure
+    .input(z.array(z.any()).optional().nullable())
+    .mutation(async ({ input }) => {
+      await ensureAdmin();
+      try {
+        await apiService.seedApiDocs(input || undefined);
+        return { resultCode: 0, message: "Đổ dữ liệu mẫu API thành công!" };
+      } catch (error: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message || "Không thể đổ dữ liệu mẫu API",
+        });
+      }
+    }),
 });
