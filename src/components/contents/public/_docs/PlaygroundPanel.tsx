@@ -261,7 +261,7 @@ export default function PlaygroundPanel({ endpointDetails }: PlaygroundPanelProp
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center">
-        <div className="flex items-center border border-border bg-background/50 rounded-lg shadow-xs flex-1">
+        <div className="flex items-center border border-border bg-card/60 rounded-lg shadow-xs flex-1">
           <Badge
             className={cn(
               "h-9 px-4 rounded-none rounded-l-lg text-[13px] font-extrabold tracking-wider uppercase border-y-0 border-l-0 border-r border-border shrink-0 select-none",
@@ -305,7 +305,7 @@ export default function PlaygroundPanel({ endpointDetails }: PlaygroundPanelProp
         </TooltipProvider>
       </div>
 
-      <Tabs defaultValue="params" className="w-full border border-border dark:bg-card/10 rounded-lg overflow-hidden">
+      <Tabs defaultValue="params" className="w-full border border-border bg-card/60 rounded-lg overflow-hidden">
         <TabsList className="w-full justify-start rounded-none border-b border-border bg-muted/20 h-10 px-2" variant="line">
           <TabsTrigger value="params" className="text-[13px] gap-2 px-3">
             <Icon icon="solar:settings-line-duotone" className="size-4" />
@@ -334,9 +334,9 @@ export default function PlaygroundPanel({ endpointDetails }: PlaygroundPanelProp
         </TabsList>
 
         <TabsContent value="params" className="p-4 space-y-4">
-          <div className="border border-border rounded-lg overflow-hidden bg-background/50">
+          <div className="border border-border rounded-lg overflow-hidden bg-card/60">
             <Table>
-              <TableHeader className="bg-muted/10">
+              <TableHeader>
                 <TableRow>
                   <TableHead className="w-12 text-center"></TableHead>
                   <TableHead className="w-1/4">Key</TableHead>
@@ -347,7 +347,7 @@ export default function PlaygroundPanel({ endpointDetails }: PlaygroundPanelProp
               </TableHeader>
               <TableBody>
                 {queryParams.map((param, idx) => (
-                  <TableRow key={idx} className="hover:bg-muted/5">
+                  <TableRow key={idx}>
                     <TableCell className="text-center p-1 px-2">
                       <TooltipProvider>
                         <Tooltip>
@@ -460,9 +460,9 @@ export default function PlaygroundPanel({ endpointDetails }: PlaygroundPanelProp
         </TabsContent>
 
         <TabsContent value="headers" className="p-4 space-y-4">
-          <div className="border border-border rounded-lg overflow-hidden bg-background/50">
+          <div className="border border-border rounded-lg overflow-hidden bg-card/60">
             <Table>
-              <TableHeader className="bg-muted/10">
+              <TableHeader>
                 <TableRow>
                   <TableHead className="w-12 text-center"></TableHead>
                   <TableHead className="w-1/4">Key</TableHead>
@@ -473,7 +473,7 @@ export default function PlaygroundPanel({ endpointDetails }: PlaygroundPanelProp
               </TableHeader>
               <TableBody>
                 {headers.map((h, idx) => (
-                  <TableRow key={idx} className="hover:bg-muted/5">
+                  <TableRow key={idx}>
                     <TableCell className="text-center p-1 px-2">
                       <TooltipProvider>
                         <Tooltip>
@@ -647,7 +647,7 @@ export default function PlaygroundPanel({ endpointDetails }: PlaygroundPanelProp
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="responseBody" className="p-4 relative bg-background/25">
+            <TabsContent value="responseBody" className="p-4 relative bg-card/60!">
               <div className="relative">
                 <TooltipProvider>
                   <Tooltip>
@@ -656,7 +656,7 @@ export default function PlaygroundPanel({ endpointDetails }: PlaygroundPanelProp
                         onClick={handleCopyResponse}
                         variant="outline"
                         size="icon"
-                        className="absolute right-3 top-3 size-8 bg-background/60 hover:bg-background border border-border/60 cursor-pointer shadow-2xs z-10"
+                        className="absolute right-3 top-3 size-8 cursor-pointer shadow-2xs z-10"
                       >
                         <Icon icon="solar:copy-line-duotone" className="size-4 text-muted-foreground" />
                       </Button>
@@ -675,8 +675,8 @@ export default function PlaygroundPanel({ endpointDetails }: PlaygroundPanelProp
               </div>
             </TabsContent>
 
-            <TabsContent value="responseHeaders" className="p-4 bg-background/25">
-              <div className="border border-border/50 rounded-lg overflow-hidden bg-background/50">
+            <TabsContent value="responseHeaders" className="p-4 bg-card/60!">
+              <div className="border border-border/50 rounded-lg overflow-hidden">
                 <Table>
                   <TableHeader className="bg-muted/15 font-mono">
                     <TableRow>
