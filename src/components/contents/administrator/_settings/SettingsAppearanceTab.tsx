@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ColorPicker } from "@/components/vanixjnk/color-picker";
 import { GalleryDialog } from "@/components/vanixjnk/gallery-dialog";
+import { useFontStore } from "@/stores/font.store";
 
 const GOOGLE_FONTS = [
   { family: "Inter", category: "sans-serif", weights: ["100","200","300","400","500","600","700","800","900"] },
@@ -105,6 +106,18 @@ export function SettingsAppearanceTab({
 }: SettingsAppearanceTabProps) {
   const [galleryDialogOpen, setGalleryDialogOpen] = useState(false);
   const [activeFieldPicker, setActiveFieldPicker] = useState<"favicon" | "logo" | "ogImage" | null>(null);
+
+  const { setPrimaryFont, setSecondaryFont } = useFontStore();
+
+  useEffect(() => {
+    if (sitePrimaryFont) {
+      setPrimaryFont(sitePrimaryFont);
+    }
+  }, [sitePrimaryFont, setPrimaryFont]);
+
+  useEffect(() => {
+    setSecondaryFont(siteSecondaryFont);
+  }, [siteSecondaryFont, setSecondaryFont]);
 
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [sheetTarget, setSheetTarget] = useState<"primary" | "secondary">("primary");

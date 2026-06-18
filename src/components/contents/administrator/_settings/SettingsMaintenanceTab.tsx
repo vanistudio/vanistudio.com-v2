@@ -4,6 +4,7 @@ import React from "react";
 import { Icon } from "@iconify/react";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { Switch } from "@/components/ui/switch";
 
 interface SettingsMaintenanceTabProps {
   siteMaintenanceModeEnabled: boolean;
@@ -46,21 +47,10 @@ export function SettingsMaintenanceTab({
               Khi bật, khách truy cập thông thường sẽ chỉ thấy màn hình bảo trì.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => setSiteMaintenanceModeEnabled(!siteMaintenanceModeEnabled)}
-            className={cn(
-              "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none",
-              siteMaintenanceModeEnabled ? "bg-amber-500" : "bg-muted-foreground/30"
-            )}
-          >
-            <span
-              className={cn(
-                "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-background shadow ring-0 transition duration-200 ease-in-out",
-                siteMaintenanceModeEnabled ? "translate-x-5" : "translate-x-0"
-              )}
-            />
-          </button>
+          <Switch
+            checked={siteMaintenanceModeEnabled}
+            onCheckedChange={setSiteMaintenanceModeEnabled}
+          />
         </div>
 
         <div className={cn("space-y-2 transition-all duration-200", !siteMaintenanceModeEnabled && "opacity-50 pointer-events-none")}>
@@ -86,21 +76,10 @@ export function SettingsMaintenanceTab({
               Hiển thị một cửa sổ popup tự động bật lên khi người dùng truy cập trang chủ.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => setSiteGlobalPopupEnabled(!siteGlobalPopupEnabled)}
-            className={cn(
-              "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none",
-              siteGlobalPopupEnabled ? "bg-primary" : "bg-muted-foreground/30"
-            )}
-          >
-            <span
-              className={cn(
-                "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-background shadow ring-0 transition duration-200 ease-in-out",
-                siteGlobalPopupEnabled ? "translate-x-5" : "translate-x-0"
-              )}
-            />
-          </button>
+          <Switch
+            checked={siteGlobalPopupEnabled}
+            onCheckedChange={setSiteGlobalPopupEnabled}
+          />
         </div>
 
         <div className={cn("space-y-2 transition-all duration-200", !siteGlobalPopupEnabled && "opacity-50 pointer-events-none")}>

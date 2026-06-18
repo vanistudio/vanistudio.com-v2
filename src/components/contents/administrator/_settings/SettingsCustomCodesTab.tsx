@@ -65,36 +65,34 @@ export function SettingsCustomCodesTab({
           <p className="text-[11px] text-muted-foreground">Thích hợp cho các mã script tải chậm, widget liên hệ, chat hỗ trợ trực tuyến.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-foreground flex items-center gap-1.5">
-              <Icon icon="solar:css3-line-duotone" className="size-4 text-muted-foreground" />
-              CSS tùy chỉnh (Custom CSS)
-            </label>
-            <Textarea
-              value={siteCustomCodesCss}
-              onChange={(e) => setSiteCustomCodesCss(e.target.value)}
-              placeholder="/* CSS tùy chỉnh cho trang web */&#10;body { ... }"
-              rows={6}
-              className="font-mono text-xs"
-            />
-            <p className="text-[11px] text-muted-foreground">Ghi đè styles CSS mặc định mà không cần chỉnh sửa source code.</p>
-          </div>
+        <div className="space-y-2">
+          <label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+            <Icon icon="solar:css3-line-duotone" className="size-4 text-muted-foreground" />
+            CSS tùy chỉnh (Custom CSS)
+          </label>
+          <Textarea
+            value={siteCustomCodesCss}
+            onChange={(e) => setSiteCustomCodesCss(e.target.value)}
+            placeholder="/* CSS tùy chỉnh cho trang web */&#10;body { ... }"
+            rows={6}
+            className="font-mono text-xs"
+          />
+          <p className="text-[11px] text-muted-foreground">Ghi đè styles CSS mặc định mà không cần chỉnh sửa source code.</p>
+        </div>
 
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-foreground flex items-center gap-1.5">
-              <Icon icon="solar:javascript-line-duotone" className="size-4 text-muted-foreground" />
-              JavaScript tùy chỉnh (Custom JS)
-            </label>
-            <Textarea
-              value={siteCustomCodesJs}
-              onChange={(e) => setSiteCustomCodesJs(e.target.value)}
-              placeholder="/* JS chạy khi tải trang */&#10;console.log('Custom JS');"
-              rows={6}
-              className="font-mono text-xs"
-            />
-            <p className="text-[11px] text-muted-foreground">Mã Javascript chạy sau khi toàn bộ trang được tải xong.</p>
-          </div>
+        <div className="space-y-2">
+          <label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+            <Icon icon="solar:javascript-line-duotone" className="size-4 text-muted-foreground" />
+            JavaScript tùy chỉnh (Custom JS)
+          </label>
+          <Textarea
+            value={siteCustomCodesJs}
+            onChange={(e) => setSiteCustomCodesJs(e.target.value)}
+            placeholder="/* JS chạy khi tải trang */&#10;console.log('Custom JS');"
+            rows={6}
+            className="font-mono text-xs"
+          />
+          <p className="text-[11px] text-muted-foreground">Mã Javascript chạy sau khi toàn bộ trang được tải xong.</p>
         </div>
       </div>
     </div>
