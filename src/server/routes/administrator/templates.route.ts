@@ -38,14 +38,7 @@ export const templatesRouter = router({
           senderName: z.string().optional(),
           senderEmail: z.string().optional(),
           parseMode: z.enum(["HTML", "Markdown", "MarkdownV2", "PlainText"]).optional(),
-          discordEmbed: z.object({
-            color: z.string().optional(),
-            title: z.string().optional(),
-            authorName: z.string().optional(),
-            authorIcon: z.string().optional(),
-            footerText: z.string().optional(),
-            thumbnailUrl: z.string().optional(),
-          }).optional(),
+          discordEmbeds: z.array(z.any()).optional(),
           slackBlocks: z.array(z.any()).optional(),
         }),
       })

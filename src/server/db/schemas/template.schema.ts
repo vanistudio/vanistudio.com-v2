@@ -4,14 +4,7 @@ export interface TemplateExtraConfig {
   senderName?: string;
   senderEmail?: string;
   parseMode?: "HTML" | "Markdown" | "MarkdownV2" | "PlainText";
-  discordEmbed?: {
-    color?: string;
-    title?: string;
-    authorName?: string;
-    authorIcon?: string;
-    footerText?: string;
-    thumbnailUrl?: string;
-  };
+  discordEmbeds?: Record<string, any>[];
   slackBlocks?: Record<string, any>[];
 }
 

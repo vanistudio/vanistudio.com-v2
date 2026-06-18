@@ -65,12 +65,19 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
     content: "Hệ thống bảo mật VaniStudio Sentinel đã phát hiện và chặn một địa chỉ IP có hành vi tấn công brute force.",
     variables: ["ipAddress", "reason", "bannedAt"],
     extraConfig: {
-      discordEmbed: {
-        color: "#EF4444",
-        title: "🚨 CẢNH BÁO BẢO MẬT: CHẶN IP TRUY CẬP",
-        authorName: "VaniStudio Sentinel",
-        footerText: "Hạ tầng bảo vệ VaniStudio"
-      }
+      discordEmbeds: [
+        {
+          colorHex: "#EF4444",
+          color: 0xEF4444,
+          title: "🚨 CẢNH BÁO BẢO MẬT: CHẶN IP TRUY CẬP",
+          author: {
+            name: "VaniStudio Sentinel"
+          },
+          footer: {
+            text: "Hạ tầng bảo vệ VaniStudio"
+          }
+        }
+      ]
     },
     description: "Cảnh báo bảo mật nâng cao gửi qua Discord Rich Embed khi phát hiện và chặn IP spam.",
     isActive: true
@@ -168,12 +175,19 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
     content: "Nhận yêu cầu liên hệ mới từ biểu mẫu public.",
     variables: ["name", "email", "subject", "message"],
     extraConfig: {
-      discordEmbed: {
-        color: "#3B82F6",
-        title: "📬 LIÊN HỆ MỚI TỪ KHÁCH HÀNG",
-        authorName: "VaniStudio Inbox",
-        footerText: "VaniStudio Contact Form Engine"
-      }
+      discordEmbeds: [
+        {
+          colorHex: "#3B82F6",
+          color: 0x3B82F6,
+          title: "📬 LIÊN HỆ MỚI TỪ KHÁCH HÀNG",
+          author: {
+            name: "VaniStudio Inbox"
+          },
+          footer: {
+            text: "VaniStudio Contact Form Engine"
+          }
+        }
+      ]
     },
     description: "Gửi Rich Embed thông tin liên hệ mới vào Discord của quản trị viên.",
     isActive: true
@@ -325,12 +339,19 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
     content: "Có bình luận mới đang chờ kiểm duyệt trên Blog.",
     variables: ["postTitle", "postUrl", "authorName", "authorEmail", "content", "approveUrl"],
     extraConfig: {
-      discordEmbed: {
-        color: "#F59E0B",
-        title: "💬 BÌNH LUẬN MỚI CẦN KIỂM DUYỆT",
-        authorName: "VaniStudio Blog Mod",
-        footerText: "Hệ thống kiểm duyệt bài viết"
-      }
+      discordEmbeds: [
+        {
+          colorHex: "#F59E0B",
+          color: 0xF59E0B,
+          title: "💬 BÌNH LUẬN MỚI CẦN KIỂM DUYỆT",
+          author: {
+            name: "VaniStudio Blog Mod"
+          },
+          footer: {
+            text: "Hệ thống kiểm duyệt bài viết"
+          }
+        }
+      ]
     },
     description: "Gửi Rich Embed thông tin bình luận mới cần duyệt trên Blog qua kênh Discord.",
     isActive: true
