@@ -174,16 +174,11 @@ export default function AdminDocsOverviewTab({ apiType }: AdminDocsOverviewTabPr
         meta: { title: "Ngày tạo" },
         header: ({ column }) => <DataTableColumnHeader column={column} />,
         cell: ({ row }) => {
-          const date = new Date(row.original.createdAt);
+          const dateStr = row.getValue("createdAt") as string;
           return (
-            <div className="flex flex-col text-xs text-muted-foreground whitespace-nowrap leading-relaxed">
-              <span className="font-semibold text-foreground">
-                {formatWithSiteTimezone(date, "HH:mm, DD/MM/YYYY", siteTimezone)}
-              </span>
-              <span className="text-[10px] font-mono opacity-80">
-                {formatWithSiteTimezone(date, "[GMT]Z", siteTimezone)}
-              </span>
-            </div>
+            <span className="text-xs font-mono text-muted-foreground">
+              {formatWithSiteTimezone(dateStr, siteTimezone, "DD/MM/YYYY HH:mm")}
+            </span>
           );
         },
       },
