@@ -5,22 +5,20 @@ import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import { ColorPicker } from "@/components/vanixjnk/color-picker";
-import { cn } from "@/lib/utils";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { TIMEZONE_DATA } from "@/constants/timezones.constant";
-import { LANGUAGE_DATA } from "@/constants/languages.constant";
-import { CURRENCY_DATA } from "@/constants/currencies.constant";
-import { GalleryDialog } from "@/components/vanixjnk/gallery-dialog";
+import { SettingsGeneralTab } from "./SettingsGeneralTab";
+import { SettingsSeoTab } from "./SettingsSeoTab";
+import { SettingsAppearanceTab } from "./SettingsAppearanceTab";
+import { SettingsMaintenanceTab } from "./SettingsMaintenanceTab";
+import { SettingsCustomCodesTab } from "./SettingsCustomCodesTab";
 
 const TABS = [
   { id: "general", title: "Cấu hình chung", icon: "solar:globus-line-duotone" },
   { id: "seo", title: "SEO & Metadata", icon: "solar:magnifer-zoom-in-line-duotone" },
   { id: "appearance", title: "Giao diện & Asset", icon: "solar:palette-line-duotone" },
+  { id: "maintenance", title: "Bảo trì & Thông báo", icon: "solar:shield-warning-line-duotone" },
+  { id: "custom_codes", title: "Mã tùy chỉnh", icon: "solar:code-square-line-duotone" },
 ];
 
 export default function AdminSettings() {
@@ -44,44 +42,17 @@ export default function AdminSettings() {
   const [siteTimezone, setSiteTimezone] = useState("Asia/Ho_Chi_Minh");
   const [siteLanguage, setSiteLanguage] = useState("vi");
   const [siteCurrency, setSiteCurrency] = useState("VND");
-
-  const [timezoneDialogOpen, setTimezoneDialogOpen] = useState(false);
-  const [languageDialogOpen, setLanguageDialogOpen] = useState(false);
-  const [currencyDialogOpen, setCurrencyDialogOpen] = useState(false);
-  const [timezoneSearch, setTimezoneSearch] = useState("");
-  const [languageSearch, setLanguageSearch] = useState("");
-  const [currencySearch, setCurrencySearch] = useState("");
-
-  const [galleryDialogOpen, setGalleryDialogOpen] = useState(false);
-  const [activeFieldPicker, setActiveFieldPicker] = useState<"favicon" | "logo" | "ogImage" | null>(null);
-
-  const handleSelectImage = (url: string) => {
-    if (activeFieldPicker === "favicon") {
-      setSiteFavicon(url);
-    } else if (activeFieldPicker === "logo") {
-      setSiteLogo(url);
-    } else if (activeFieldPicker === "ogImage") {
-      setSiteOgImage(url);
-    }
-  };
-
-  const filteredTimezones = Object.values(TIMEZONE_DATA).filter((tz) =>
-    tz.code.toLowerCase().includes(timezoneSearch.toLowerCase()) ||
-    tz.name.toLowerCase().includes(timezoneSearch.toLowerCase()) ||
-    tz.offset.toLowerCase().includes(timezoneSearch.toLowerCase()) ||
-    tz.country.toLowerCase().includes(timezoneSearch.toLowerCase())
-  );
-
-  const filteredLanguages = Object.values(LANGUAGE_DATA).filter((lang) =>
-    lang.code.toLowerCase().includes(languageSearch.toLowerCase()) ||
-    lang.name.toLowerCase().includes(languageSearch.toLowerCase()) ||
-    lang.nativeName.toLowerCase().includes(languageSearch.toLowerCase())
-  );
-
-  const filteredCurrencies = Object.values(CURRENCY_DATA).filter((curr) =>
-    curr.code.toLowerCase().includes(currencySearch.toLowerCase()) ||
-    curr.name.toLowerCase().includes(currencySearch.toLowerCase())
-  );
+  const [sitePrimaryFont, setSitePrimaryFont] = useState("Signika");
+  const [siteSecondaryFont, setSiteSecondaryFont] = useState("");
+  const [siteFontWeights, setSiteFontWeights] = useState<string[]>(["400", "500", "600", "700"]);
+  const [siteMaintenanceModeEnabled, setSiteMaintenanceModeEnabled] = useState(false);
+  const [siteMaintenanceModeMessage, setSiteMaintenanceModeMessage] = useState("Hệ thống đang bảo trì. Vui lòng quay lại sau!");
+  const [siteGlobalPopupEnabled, setSiteGlobalPopupEnabled] = useState(false);
+  const [siteGlobalPopupHtmlContent, setSiteGlobalPopupHtmlContent] = useState("");
+  const [siteCustomCodesHead, setSiteCustomCodesHead] = useState("");
+  const [siteCustomCodesBody, setSiteCustomCodesBody] = useState("");
+  const [siteCustomCodesCss, setSiteCustomCodesCss] = useState("");
+  const [siteCustomCodesJs, setSiteCustomCodesJs] = useState("");
 
   useEffect(() => {
     if (data) {
@@ -97,6 +68,21 @@ export default function AdminSettings() {
       setSiteTimezone(data.siteTimezone);
       setSiteLanguage(data.siteLanguage);
       setSiteCurrency(data.siteCurrency);
+      const fontConfig = (data.siteFontConfig as any) || { primaryFont: "Signika", secondaryFont: "", fontWeights: ["400", "500", "600", "700"] };
+      setSitePrimaryFont(fontConfig.primaryFont || "Signika");
+      setSiteSecondaryFont(fontConfig.secondaryFont || "");
+      setSiteFontWeights(fontConfig.fontWeights || ["400", "500", "600", "700"]);
+      const maintenance = data.siteMaintenanceMode as any;
+      const popup = data.siteGlobalPopup as any;
+      const codes = data.siteCustomCodes as any;
+      setSiteMaintenanceModeEnabled(!!maintenance?.enabled);
+      setSiteMaintenanceModeMessage(maintenance?.message || "Hệ thống đang bảo trì. Vui lòng quay lại sau!");
+      setSiteGlobalPopupEnabled(!!popup?.enabled);
+      setSiteGlobalPopupHtmlContent(popup?.htmlContent || "");
+      setSiteCustomCodesHead(codes?.head || "");
+      setSiteCustomCodesBody(codes?.body || "");
+      setSiteCustomCodesCss(codes?.css || "");
+      setSiteCustomCodesJs(codes?.js || "");
     }
   }, [data]);
 
@@ -141,6 +127,25 @@ export default function AdminSettings() {
         siteTimezone,
         siteLanguage,
         siteCurrency,
+        siteFontConfig: {
+          primaryFont: sitePrimaryFont,
+          secondaryFont: siteSecondaryFont,
+          fontWeights: siteFontWeights,
+        },
+        siteMaintenanceMode: {
+          enabled: siteMaintenanceModeEnabled,
+          message: siteMaintenanceModeMessage,
+        },
+        siteGlobalPopup: {
+          enabled: siteGlobalPopupEnabled,
+          htmlContent: siteGlobalPopupHtmlContent,
+        },
+        siteCustomCodes: {
+          head: siteCustomCodesHead,
+          body: siteCustomCodesBody,
+          css: siteCustomCodesCss,
+          js: siteCustomCodesJs,
+        },
       });
       toast.success("Lưu cấu hình hệ thống thành công");
       router.refresh();
@@ -273,435 +278,76 @@ export default function AdminSettings() {
               </div>
               <div className="lg:col-span-8 p-6">
                 {activeTab === "general" && (
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="text-base font-bold text-foreground">Cấu hình chung</h3>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        Quản lý tên, múi giờ, ngôn ngữ mặc định và các cấu hình cơ bản của hệ thống.
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2 md:col-span-2">
-                        <label className="text-xs font-bold text-foreground">Tên trang web</label>
-                        <Input
-                          value={siteName}
-                          onChange={(e) => setSiteName(e.target.value)}
-                          placeholder="Nhập tên trang web..."
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-xs font-bold text-foreground">Địa chỉ trang web (Site URL)</label>
-                        <Input
-                          value={siteUrl}
-                          onChange={(e) => setSiteUrl(e.target.value)}
-                          placeholder="https://example.com"
-                        />
-                      </div>
-
-                      <div className="space-y-2 cursor-pointer" onClick={() => setTimezoneDialogOpen(true)}>
-                        <label className="text-xs font-bold text-foreground">Múi giờ hệ thống</label>
-                        <div className="relative w-full">
-                          {siteTimezone && TIMEZONE_DATA[siteTimezone] && (
-                            <div className="absolute top-1/2 left-3 -translate-y-1/2 flex items-center pointer-events-none">
-                              <Icon icon={`circle-flags:${TIMEZONE_DATA[siteTimezone].flag}`} className="size-5 rounded-full" />
-                            </div>
-                          )}
-                          <Input
-                            id="siteTimezone"
-                            type="text"
-                            className={cn("cursor-pointer pr-10 read-only:bg-background w-full", siteTimezone && TIMEZONE_DATA[siteTimezone] && "pl-10")}
-                            readOnly
-                            value={siteTimezone ? `${siteTimezone} (${TIMEZONE_DATA[siteTimezone]?.country || ''} - ${TIMEZONE_DATA[siteTimezone]?.offset || ''})` : ''}
-                            placeholder="Chọn múi giờ..."
-                          />
-                          <div className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground pointer-events-none">
-                            <Icon icon="solar:alt-arrow-down-line-duotone" className="size-4" />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2 cursor-pointer" onClick={() => setLanguageDialogOpen(true)}>
-                        <label className="text-xs font-bold text-foreground">Ngôn ngữ mặc định</label>
-                        <div className="relative w-full">
-                          {siteLanguage && LANGUAGE_DATA[siteLanguage] && (
-                            <div className="absolute top-1/2 left-3 -translate-y-1/2 flex items-center pointer-events-none">
-                              <Icon icon={`circle-flags:${LANGUAGE_DATA[siteLanguage].flag}`} className="size-5 rounded-full" />
-                            </div>
-                          )}
-                          <Input
-                            id="siteLanguage"
-                            type="text"
-                            className={cn("cursor-pointer pr-10 read-only:bg-background w-full", siteLanguage && LANGUAGE_DATA[siteLanguage] && "pl-10")}
-                            readOnly
-                            value={siteLanguage ? `${LANGUAGE_DATA[siteLanguage]?.name || siteLanguage} (${siteLanguage.toUpperCase()})` : ''}
-                            placeholder="Chọn ngôn ngữ..."
-                          />
-                          <div className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground pointer-events-none">
-                            <Icon icon="solar:alt-arrow-down-line-duotone" className="size-4" />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2 cursor-pointer" onClick={() => setCurrencyDialogOpen(true)}>
-                        <label className="text-xs font-bold text-foreground">Tiền tệ mặc định</label>
-                        <div className="relative w-full">
-                          {siteCurrency && CURRENCY_DATA[siteCurrency] && (
-                            <div className="absolute top-1/2 left-3 -translate-y-1/2 flex items-center pointer-events-none">
-                              <Icon icon={`circle-flags:${CURRENCY_DATA[siteCurrency].flag}`} className="size-5 rounded-full" />
-                            </div>
-                          )}
-                          <Input
-                            id="siteCurrency"
-                            type="text"
-                            className={cn("cursor-pointer pr-10 read-only:bg-background w-full", siteCurrency && CURRENCY_DATA[siteCurrency] && "pl-10")}
-                            readOnly
-                            value={siteCurrency ? `${CURRENCY_DATA[siteCurrency]?.name || siteCurrency} (${siteCurrency})` : ''}
-                            placeholder="Chọn tiền tệ..."
-                          />
-                          <div className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground pointer-events-none">
-                            <Icon icon="solar:alt-arrow-down-line-duotone" className="size-4" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <SettingsGeneralTab
+                    siteName={siteName}
+                    setSiteName={setSiteName}
+                    siteUrl={siteUrl}
+                    setSiteUrl={setSiteUrl}
+                    siteTimezone={siteTimezone}
+                    setSiteTimezone={setSiteTimezone}
+                    siteLanguage={siteLanguage}
+                    setSiteLanguage={setSiteLanguage}
+                    siteCurrency={siteCurrency}
+                    setSiteCurrency={setSiteCurrency}
+                  />
                 )}
                 {activeTab === "seo" && (
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="text-base font-bold text-foreground">SEO & Metadata</h3>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        Cấu hình thẻ mô tả, từ khóa và các thông số phục vụ cho việc tối ưu hóa tìm kiếm.
-                      </p>
-                    </div>
-
-                    <div className="space-y-6">
-                      <div className="space-y-2">
-                        <label className="text-xs font-bold text-foreground">Mô tả trang web (Meta Description)</label>
-                        <Textarea
-                          value={siteMetaDescription || ""}
-                          onChange={(e) => setSiteMetaDescription(e.target.value)}
-                          placeholder="Mô tả trang web..."
-                          rows={4}
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <label className="text-xs font-bold text-foreground">Từ khóa (Meta Keywords)</label>
-                          <Input
-                            value={siteMetaKeywords || ""}
-                            onChange={(e) => setSiteMetaKeywords(e.target.value)}
-                            placeholder="Từ khóa cách nhau bằng dấu phẩy..."
-                          />
-                        </div>
-
-                        <div className="space-y-2">
-                          <label className="text-xs font-bold text-foreground">Tác giả trang web (Meta Author)</label>
-                          <Input
-                            value={siteMetaAuthor || ""}
-                            onChange={(e) => setSiteMetaAuthor(e.target.value)}
-                            placeholder="Tên tác giả..."
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <SettingsSeoTab
+                    siteMetaDescription={siteMetaDescription}
+                    setSiteMetaDescription={setSiteMetaDescription}
+                    siteMetaKeywords={siteMetaKeywords}
+                    setSiteMetaKeywords={setSiteMetaKeywords}
+                    siteMetaAuthor={siteMetaAuthor}
+                    setSiteMetaAuthor={setSiteMetaAuthor}
+                  />
                 )}
                 {activeTab === "appearance" && (
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="text-base font-bold text-foreground">Giao diện & Asset</h3>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        Tùy chỉnh màu sắc chủ đạo và các hình ảnh đại diện thương hiệu.
-                      </p>
-                    </div>
-
-                    <div className="space-y-6">
-                      <div className="grid grid-cols-1 gap-6">
-                        <div className="space-y-2">
-                          <label className="text-xs font-bold text-foreground">Màu chủ đạo (Theme Color)</label>
-                          <ColorPicker
-                            value={siteColor}
-                            onChange={setSiteColor}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col gap-6 pt-4 border-t border-border/50">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-                          <div className="flex flex-col gap-2">
-                            <label className="text-[13px] font-bold text-foreground flex items-center gap-1.5"><Icon icon="solar:gallery-line-duotone" className="size-4 text-muted-foreground" /> URL Logo</label>
-                            <div className="flex items-center gap-2">
-                              <Input
-                                value={siteLogo || ""}
-                                onChange={(e) => setSiteLogo(e.target.value)}
-                                placeholder="Ví dụ: https://domain.com/logo.png"
-                                className="h-9 shadow-sm text-[13px] flex-1"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setActiveFieldPicker("logo");
-                                  setGalleryDialogOpen(true);
-                                }}
-                                className="size-9 flex items-center justify-center bg-vanixjnk/10 text-vanixjnk border border-vanixjnk/20 rounded-md hover:bg-vanixjnk/20 transition-colors shrink-0"
-                              >
-                                <Icon icon="solar:gallery-line-duotone" className="size-5" />
-                              </button>
-                            </div>
-                          </div>
-                          <div className="flex flex-col justify-center border border-border/50 rounded-xl bg-muted/10 min-h-[82px] p-2 items-center text-center">
-                            {siteLogo ? (
-                              <img src={siteLogo} alt="Preview Logo" className="max-h-20 max-w-full object-contain drop-shadow-sm" onError={(e) => (e.currentTarget.style.display = 'none')} />
-                            ) : (
-                              <span className="text-[12px] font-medium text-muted-foreground flex items-center gap-1.5"><Icon icon="solar:gallery-remove-line-duotone" /> Chưa có hình ảnh</span>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-                          <div className="flex flex-col gap-2">
-                            <label className="text-[13px] font-bold text-foreground flex items-center gap-1.5"><Icon icon="solar:star-fall-line-duotone" className="size-4 text-muted-foreground" /> URL Favicon</label>
-                            <div className="flex items-center gap-2">
-                              <Input
-                                value={siteFavicon || ""}
-                                onChange={(e) => setSiteFavicon(e.target.value)}
-                                placeholder="Ví dụ: https://domain.com/favicon.ico"
-                                className="h-9 shadow-sm text-[13px] flex-1"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setActiveFieldPicker("favicon");
-                                  setGalleryDialogOpen(true);
-                                }}
-                                className="size-9 flex items-center justify-center bg-vanixjnk/10 text-vanixjnk border border-vanixjnk/20 rounded-md hover:bg-vanixjnk/20 transition-colors shrink-0"
-                              >
-                                <Icon icon="solar:gallery-line-duotone" className="size-5" />
-                              </button>
-                            </div>
-                          </div>
-                          <div className="flex flex-col justify-center border border-border/50 rounded-xl bg-muted/10 min-h-[82px] p-2 items-center text-center">
-                            {siteFavicon ? (
-                              <img src={siteFavicon} alt="Preview Favicon" className="max-h-20 max-w-full object-contain drop-shadow-sm" onError={(e) => (e.currentTarget.style.display = 'none')} />
-                            ) : (
-                              <span className="text-[12px] font-medium text-muted-foreground flex items-center gap-1.5"><Icon icon="solar:gallery-remove-line-duotone" /> Chưa có hình ảnh</span>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-                          <div className="flex flex-col gap-2">
-                            <label className="text-[13px] font-bold text-foreground flex items-center gap-1.5"><Icon icon="solar:monitor-camera-line-duotone" className="size-4 text-muted-foreground" /> URL OG Image (Ảnh xem trước khi chia sẻ)</label>
-                            <div className="flex items-center gap-2">
-                              <Input
-                                value={siteOgImage || ""}
-                                onChange={(e) => setSiteOgImage(e.target.value)}
-                                placeholder="Ví dụ: https://domain.com/og-image.png"
-                                className="h-9 shadow-sm text-[13px] flex-1"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setActiveFieldPicker("ogImage");
-                                  setGalleryDialogOpen(true);
-                                }}
-                                className="size-9 flex items-center justify-center bg-vanixjnk/10 text-vanixjnk border border-vanixjnk/20 rounded-md hover:bg-vanixjnk/20 transition-colors shrink-0"
-                              >
-                                <Icon icon="solar:gallery-line-duotone" className="size-5" />
-                              </button>
-                            </div>
-                          </div>
-                          <div className="flex flex-col justify-center border border-border/50 rounded-xl bg-muted/10 min-h-[82px] p-2 items-center text-center">
-                            {siteOgImage ? (
-                              <img src={siteOgImage} alt="Preview OG Image" className="max-h-20 max-w-full object-contain drop-shadow-sm" onError={(e) => (e.currentTarget.style.display = 'none')} />
-                            ) : (
-                              <span className="text-[12px] font-medium text-muted-foreground flex items-center gap-1.5"><Icon icon="solar:gallery-remove-line-duotone" /> Chưa có hình ảnh</span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <SettingsAppearanceTab
+                    siteColor={siteColor}
+                    setSiteColor={setSiteColor}
+                    siteLogo={siteLogo}
+                    setSiteLogo={setSiteLogo}
+                    siteFavicon={siteFavicon}
+                    setSiteFavicon={setSiteFavicon}
+                    siteOgImage={siteOgImage}
+                    setSiteOgImage={setSiteOgImage}
+                    sitePrimaryFont={sitePrimaryFont}
+                    setSitePrimaryFont={setSitePrimaryFont}
+                    siteSecondaryFont={siteSecondaryFont}
+                    setSiteSecondaryFont={setSiteSecondaryFont}
+                    siteFontWeights={siteFontWeights}
+                    setSiteFontWeights={setSiteFontWeights}
+                  />
+                )}
+                {activeTab === "maintenance" && (
+                  <SettingsMaintenanceTab
+                    siteMaintenanceModeEnabled={siteMaintenanceModeEnabled}
+                    setSiteMaintenanceModeEnabled={setSiteMaintenanceModeEnabled}
+                    siteMaintenanceModeMessage={siteMaintenanceModeMessage}
+                    setSiteMaintenanceModeMessage={setSiteMaintenanceModeMessage}
+                    siteGlobalPopupEnabled={siteGlobalPopupEnabled}
+                    setSiteGlobalPopupEnabled={setSiteGlobalPopupEnabled}
+                    siteGlobalPopupHtmlContent={siteGlobalPopupHtmlContent}
+                    setSiteGlobalPopupHtmlContent={setSiteGlobalPopupHtmlContent}
+                  />
+                )}
+                {activeTab === "custom_codes" && (
+                  <SettingsCustomCodesTab
+                    siteCustomCodesHead={siteCustomCodesHead}
+                    setSiteCustomCodesHead={setSiteCustomCodesHead}
+                    siteCustomCodesBody={siteCustomCodesBody}
+                    setSiteCustomCodesBody={setSiteCustomCodesBody}
+                    siteCustomCodesCss={siteCustomCodesCss}
+                    setSiteCustomCodesCss={setSiteCustomCodesCss}
+                    siteCustomCodesJs={siteCustomCodesJs}
+                    setSiteCustomCodesJs={setSiteCustomCodesJs}
+                  />
                 )}
               </div>
             </div>
           )}
         </div>
       </div>
-      <Dialog open={timezoneDialogOpen} onOpenChange={setTimezoneDialogOpen}>
-        <DialogContent className="sm:max-w-[600px] max-h-[85vh] flex flex-col p-6">
-          <DialogHeader className="pr-6">
-            <DialogTitle className="flex items-center gap-2.5">
-              <div className="size-8 rounded-full text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 flex items-center justify-center shrink-0">
-                <Icon icon="solar:global-line-duotone" className="size-4.5" />
-              </div>
-              <span>Chọn múi giờ hệ thống</span>
-            </DialogTitle>
-          </DialogHeader>
-          <div className="relative my-3 shrink-0">
-            <div className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground pointer-events-none">
-              <Icon icon="solar:magnifer-line-duotone" className="size-4" />
-            </div>
-            <Input
-              type="text"
-              placeholder="Tìm kiếm múi giờ (ví dụ: Asia, GMT, UTC)..."
-              value={timezoneSearch}
-              onChange={(e) => setTimezoneSearch(e.target.value)}
-              className="pl-9 h-9"
-            />
-          </div>
-          <div className="flex-1 overflow-y-auto space-y-1 max-h-[350px] pr-1">
-            {filteredTimezones.map((tz) => (
-              <button
-                key={tz.code}
-                type="button"
-                onClick={() => {
-                  setSiteTimezone(tz.code);
-                  setTimezoneDialogOpen(false);
-                  setTimezoneSearch("");
-                }}
-                className={cn(
-                  "w-full flex items-center justify-between p-2.5 rounded-lg text-left text-sm hover:bg-muted transition-colors cursor-pointer",
-                  siteTimezone === tz.code && "bg-accent font-medium text-vanixjnk"
-                )}
-              >
-                <div className="flex items-center gap-3">
-                  <Icon icon={`circle-flags:${tz.flag}`} className="size-5 rounded-full shrink-0" />
-                  <div className="flex flex-col">
-                    <span className="font-medium text-foreground">{tz.code}</span>
-                    <span className="text-xs text-muted-foreground">{tz.country} - {tz.name}</span>
-                  </div>
-                </div>
-                <span className="text-xs font-mono bg-muted px-2 py-0.5 rounded text-muted-foreground">{tz.offset}</span>
-              </button>
-            ))}
-            {filteredTimezones.length === 0 && (
-              <div className="text-center py-6 text-sm text-muted-foreground">
-                Không tìm thấy múi giờ nào phù hợp
-              </div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
-      <Dialog open={languageDialogOpen} onOpenChange={setLanguageDialogOpen}>
-        <DialogContent className="sm:max-w-[600px] max-h-[85vh] flex flex-col p-6">
-          <DialogHeader className="pr-6">
-            <DialogTitle className="flex items-center gap-2.5">
-              <div className="size-8 rounded-full text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 flex items-center justify-center shrink-0">
-                <Icon icon="solar:global-line-duotone" className="size-4.5" />
-              </div>
-              <span>Chọn ngôn ngữ mặc định</span>
-            </DialogTitle>
-          </DialogHeader>
-          <div className="relative my-3 shrink-0">
-            <div className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground pointer-events-none">
-              <Icon icon="solar:magnifer-line-duotone" className="size-4" />
-            </div>
-            <Input
-              type="text"
-              placeholder="Tìm kiếm ngôn ngữ (ví dụ: vi, en, tiếng việt)..."
-              value={languageSearch}
-              onChange={(e) => setLanguageSearch(e.target.value)}
-              className="pl-9 h-9"
-            />
-          </div>
-          <div className="flex-1 overflow-y-auto space-y-1 max-h-[350px] pr-1">
-            {filteredLanguages.map((lang) => (
-              <button
-                key={lang.code}
-                type="button"
-                onClick={() => {
-                  setSiteLanguage(lang.code);
-                  setLanguageDialogOpen(false);
-                  setLanguageSearch("");
-                }}
-                className={cn(
-                  "w-full flex items-center justify-between p-2.5 rounded-lg text-left text-sm hover:bg-muted transition-colors cursor-pointer",
-                  siteLanguage === lang.code && "bg-accent font-medium text-vanixjnk"
-                )}
-              >
-                <div className="flex items-center gap-3">
-                  <Icon icon={`circle-flags:${lang.flag}`} className="size-5 rounded-full" />
-                  <div className="flex flex-col">
-                    <span className="font-medium text-foreground">{lang.name}</span>
-                    <span className="text-xs text-muted-foreground">{lang.nativeName}</span>
-                  </div>
-                </div>
-                <span className="text-xs font-mono bg-muted px-2 py-0.5 rounded text-muted-foreground">{lang.code.toUpperCase()}</span>
-              </button>
-            ))}
-            {filteredLanguages.length === 0 && (
-              <div className="text-center py-6 text-sm text-muted-foreground">
-                Không tìm thấy ngôn ngữ nào phù hợp
-              </div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
-      <Dialog open={currencyDialogOpen} onOpenChange={setCurrencyDialogOpen}>
-        <DialogContent className="sm:max-w-[600px] max-h-[85vh] flex flex-col p-6">
-          <DialogHeader className="pr-6">
-            <DialogTitle className="flex items-center gap-2.5">
-              <div className="size-8 rounded-full text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 flex items-center justify-center shrink-0">
-                <Icon icon="solar:global-line-duotone" className="size-4.5" />
-              </div>
-              <span>Chọn tiền tệ chính</span>
-            </DialogTitle>
-          </DialogHeader>
-          <div className="relative my-3 shrink-0">
-            <div className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground pointer-events-none">
-              <Icon icon="solar:magnifer-line-duotone" className="size-4" />
-            </div>
-            <Input
-              type="text"
-              placeholder="Tìm kiếm tiền tệ (ví dụ: vnd, usd, peso)..."
-              value={currencySearch}
-              onChange={(e) => setCurrencySearch(e.target.value)}
-              className="pl-9 h-9"
-            />
-          </div>
-          <div className="flex-1 overflow-y-auto space-y-1 max-h-[350px] pr-1">
-            {filteredCurrencies.map((curr) => (
-              <button
-                key={curr.code}
-                type="button"
-                onClick={() => {
-                  setSiteCurrency(curr.code);
-                  setCurrencyDialogOpen(false);
-                  setCurrencySearch("");
-                }}
-                className={cn(
-                  "w-full flex items-center justify-between p-2.5 rounded-lg text-left text-sm hover:bg-muted transition-colors cursor-pointer",
-                  siteCurrency === curr.code && "bg-accent font-medium text-vanixjnk"
-                )}
-              >
-                <div className="flex items-center gap-3">
-                  <Icon icon={`circle-flags:${curr.flag}`} className="size-5 rounded-full" />
-                  <div className="flex flex-col">
-                    <span className="font-medium text-foreground">{curr.code}</span>
-                    <span className="text-xs text-muted-foreground">{curr.name}</span>
-                  </div>
-                </div>
-                <span className="text-sm font-semibold text-foreground">{curr.symbol}</span>
-              </button>
-            ))}
-            {filteredCurrencies.length === 0 && (
-              <div className="text-center py-6 text-sm text-muted-foreground">
-                Không tìm thấy tiền tệ nào phù hợp
-              </div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
-      <GalleryDialog
-        open={galleryDialogOpen}
-        onOpenChange={setGalleryDialogOpen}
-        onSelect={handleSelectImage}
-      />
     </div>
   );
 }

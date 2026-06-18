@@ -3,7 +3,6 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import Script from "next/script";
 export const dynamic = "force-dynamic";
 import type { Metadata } from "next";
-import { Signika } from "next/font/google";
 import { ProgressProviders } from "@/components/providers/ProgressProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,12 +17,6 @@ import { UserProvider } from "@/contexts/UserContext";
 import { MenuProvider } from "@/contexts/MenuContext";
 import { menuRepository } from "@/server/repositories/menu.repository";
 import { getServerSession } from "@/lib/auth";
-
-const signika = Signika({
-  subsets: ["latin", "vietnamese"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-sans",
-});
 
 export async function generateMetadata(): Promise<Metadata> {
   let initialSetting = null;
@@ -95,6 +88,11 @@ export default async function RootLayout({
   }
 
   const vanixjnkColor = getVanixjnkColor(initialSetting?.siteColor || "#7c3aed");
+  const fontConfig = (initialSetting?.siteFontConfig as any) || { primaryFont: "Signika", secondaryFont: "", fontWeights: ["400", "500", "600", "700"] };
+  const primaryFont = fontConfig.primaryFont || "Signika";
+  const secondaryFont = fontConfig.secondaryFont || "";
+  const fontWeights = (fontConfig.fontWeights || ["400", "500", "600", "700"]).join(";");
+  const googleFontUrl = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(primaryFont)}:wght@${fontWeights}${secondaryFont && secondaryFont !== primaryFont ? `&family=${encodeURIComponent(secondaryFont)}:wght@${fontWeights}` : ""}&display=swap`;
 
   const { user: initialUser } = await getServerSession(true);
 
@@ -122,10 +120,14 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={signika.variable}
       suppressHydrationWarning
     >
-      <body className="selection:bg-vanixjnk/15 selection:text-vanixjnk antialiased" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href={googleFontUrl} rel="stylesheet" />
+      </head>
+      <body className="selection:bg-vanixjnk/15 selection:text-vanixjnk antialiased" style={{ fontFamily: `var(--font-primary)` }} suppressHydrationWarning>
         <Script
           id="json-ld"
           type="application/ld+json"
@@ -136,9 +138,15 @@ export default async function RootLayout({
             __html: `
               :root {
                 --vanixjnk: ${vanixjnkColor};
+                --font-sans: "${primaryFont}", sans-serif;
+                --font-primary: "${primaryFont}", sans-serif;
+                --font-secondary: "${secondaryFont || primaryFont}", sans-serif;
               }
               .dark {
                 --vanixjnk: ${vanixjnkColor};
+                --font-sans: "${primaryFont}", sans-serif;
+                --font-primary: "${primaryFont}", sans-serif;
+                --font-secondary: "${secondaryFont || primaryFont}", sans-serif;
               }
             `,
           }}

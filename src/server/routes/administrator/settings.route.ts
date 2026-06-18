@@ -43,6 +43,25 @@ export const settingsRouter = router({
         siteTimezone: z.string().min(1, "Múi giờ không được để trống"),
         siteLanguage: z.string().min(1, "Ngôn ngữ không được để trống"),
         siteCurrency: z.string().min(1, "Tiền tệ không được để trống"),
+        siteFontConfig: z.object({
+          primaryFont: z.string().min(1, "Phông chữ chính không được để trống"),
+          secondaryFont: z.string().optional(),
+          fontWeights: z.array(z.string()),
+        }),
+        siteMaintenanceMode: z.object({
+          enabled: z.boolean(),
+          message: z.string(),
+        }),
+        siteGlobalPopup: z.object({
+          enabled: z.boolean(),
+          htmlContent: z.string(),
+        }),
+        siteCustomCodes: z.object({
+          head: z.string(),
+          body: z.string(),
+          css: z.string(),
+          js: z.string(),
+        }),
       })
     )
     .mutation(async ({ input }) => {
