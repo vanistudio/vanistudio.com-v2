@@ -303,5 +303,93 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
     },
     description: "Email gửi cảnh báo bảo mật khi phát hiện đăng nhập từ IP, vị trí hoặc thiết bị chưa từng sử dụng trước đây.",
     isActive: true
+  },
+  {
+    name: "Thông báo Telegram: Có bình luận mới trên Blog",
+    eventKey: "blog.comment_created",
+    channel: "telegram",
+    target: "admin",
+    content: "💬 <b>BÌNH LUẬN MỚI CẦN DUYỆT</b>\n\n• Bài viết: <a href=\"{{postUrl}}\">{{postTitle}}</a>\n• Người gửi: {{authorName}} ({{authorEmail}})\n• Nội dung:\n<i>\"{{content}}\"</i>\n\n• Link duyệt: <a href=\"{{approveUrl}}\">Duyệt bình luận</a>",
+    variables: ["postTitle", "postUrl", "authorName", "authorEmail", "content", "approveUrl"],
+    extraConfig: {
+      parseMode: "HTML"
+    },
+    description: "Thông báo qua Telegram cho quản trị viên khi có bình luận mới được gửi trên bài viết blog.",
+    isActive: true
+  },
+  {
+    name: "Cảnh báo Discord: Có bình luận mới trên Blog",
+    eventKey: "blog.comment_created",
+    channel: "discord",
+    target: "admin",
+    content: "Có bình luận mới đang chờ kiểm duyệt trên Blog.",
+    variables: ["postTitle", "postUrl", "authorName", "authorEmail", "content", "approveUrl"],
+    extraConfig: {
+      discordEmbed: {
+        color: "#F59E0B",
+        title: "💬 BÌNH LUẬN MỚI CẦN KIỂM DUYỆT",
+        authorName: "VaniStudio Blog Mod",
+        footerText: "Hệ thống kiểm duyệt bài viết"
+      }
+    },
+    description: "Gửi Rich Embed thông tin bình luận mới cần duyệt trên Blog qua kênh Discord.",
+    isActive: true
+  },
+  {
+    name: "Thông báo Slack: Có bình luận mới trên Blog",
+    eventKey: "blog.comment_created",
+    channel: "slack",
+    target: "admin",
+    content: "Bình luận mới cần duyệt trên Blog",
+    variables: ["postTitle", "postUrl", "authorName", "authorEmail", "content", "approveUrl"],
+    extraConfig: {
+      slackBlocks: [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: "💬 *Bình luận mới cần duyệt trên Blog!*"
+          }
+        },
+        {
+          type: "section",
+          fields: [
+            { type: "mrkdwn", text: "*Bài viết:*\n<{{postUrl}}|{{postTitle}}>" },
+            { type: "mrkdwn", text: "*Người gửi:*\n{{authorName}} ({{authorEmail}})" }
+          ]
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: "*Nội dung bình luận:*\n\"{{content}}\""
+          }
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: "*Thao tác:*\n<{{approveUrl}}|Bấm vào đây để duyệt>"
+          }
+        }
+      ]
+    },
+    description: "Gửi thông tin bình luận mới qua Slack Block Kit để quản trị viên dễ dàng duyệt.",
+    isActive: true
+  },
+  {
+    name: "Email bàn giao License Key sản phẩm",
+    eventKey: "license.issued",
+    channel: "email",
+    target: "client",
+    subject: "Bàn giao bản quyền sản phẩm: {{productName}} - VaniStudio",
+    content: "Chào {{name}},\n\nCảm ơn bạn đã mua sản phẩm **{{productName}}** tại VaniStudio.\nChúng tôi xin bàn giao thông tin bản quyền và hướng dẫn kích hoạt sản phẩm của bạn như sau:\n\n• Sản phẩm: **{{productName}}**\n• Phiên bản: {{productVersion}}\n• Mã bản quyền (License Key): `{{licenseKey}}`\n• Loại giấy phép: {{licenseType}}\n• Ngày hết hạn: {{expiryDate}}\n\n**Hướng dẫn kích hoạt:**\n{{activationGuide}}\n\nNếu có bất kỳ khó khăn nào trong quá trình kích hoạt hoặc sử dụng sản phẩm, vui lòng liên hệ bộ phận hỗ trợ kỹ thuật tại support@vanistudio.com.\n\nTrân trọng,\nVaniStudio Product Team.",
+    variables: ["name", "productName", "productVersion", "licenseKey", "licenseType", "expiryDate", "activationGuide"],
+    extraConfig: {
+      senderName: "VaniStudio License Manager",
+      senderEmail: "license@vanistudio.com"
+    },
+    description: "Email gửi tự động cho khách hàng chứa mã bản quyền (license key) và hướng dẫn kích hoạt sau khi đơn hàng hoàn tất.",
+    isActive: true
   }
 ];
