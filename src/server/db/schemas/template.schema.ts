@@ -20,6 +20,7 @@ export const notificationTemplates = pgTable("notification_templates", {
   name: text("name").notNull(),
   eventKey: text("event_key").notNull(),
   channel: text("channel").notNull(),
+  target: text("target").$type<"admin" | "client">().default("client").notNull(),
   subject: text("subject"),
   content: text("content").notNull(),
   variables: jsonb("variables").$type<string[]>().default([]).notNull(),
@@ -29,7 +30,7 @@ export const notificationTemplates = pgTable("notification_templates", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 }, (table) => ({
-  eventChannelIdx: uniqueIndex("templates_event_channel_idx").on(table.eventKey, table.channel)
+  eventChannelTargetIdx: uniqueIndex("templates_event_channel_target_idx").on(table.eventKey, table.channel, table.target)
 }));
 
 export type NotificationTemplate = typeof notificationTemplates.$inferSelect;

@@ -12,6 +12,8 @@ import * as gallerySchema from "@/server/db/schemas/gallery.schema";
 import * as serviceSchema from "@/server/db/schemas/service.schema";
 import * as projectSchema from "@/server/db/schemas/project.schema";
 import * as productSchema from "@/server/db/schemas/product.schema";
+import * as templateSchema from "@/server/db/schemas/template.schema";
+import * as notificationSchema from "@/server/db/schemas/notification.schema";
 
 const connectionString = process.env.APP_DATABASE_URI_VALUE;
 
@@ -42,6 +44,8 @@ export const db = drizzle(pgClient, {
     ...serviceSchema,
     ...projectSchema,
     ...productSchema,
+    ...templateSchema,
+    ...notificationSchema,
   },
 });
 
