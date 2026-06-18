@@ -108,14 +108,19 @@ interface SexyEditorProps {
     modeType?: "rich-text" | "code" | "css-js"
 }
 
-export function SexyEditor({
+export interface SexyEditorRef {
+    insertContent: (content: string) => void;
+    getEditor: () => any;
+}
+
+export const SexyEditor = React.forwardRef<SexyEditorRef, SexyEditorProps>(function SexyEditor({
     value,
     onChange,
     placeholder = "Nhập nội dung tại đây...",
     className,
     isEmail = false,
     modeType = "rich-text",
-}: SexyEditorProps) {
+}, ref) {
     const [mode, setMode] = React.useState<"edit" | "source" | "preview">(
         modeType === "rich-text" ? "edit" : "source"
     )
@@ -192,6 +197,15 @@ export function SexyEditor({
             },
         },
     })
+
+    React.useImperativeHandle(ref, () => ({
+        insertContent: (content: string) => {
+            if (editor) {
+                editor.commands.insertContent(content);
+            }
+        },
+        getEditor: () => editor,
+    }));
 
     React.useEffect(() => {
         if (!editor) return
@@ -328,5 +342,5 @@ export function SexyEditor({
                 `}</style>
             </div>
         </div>
-    )
-}
+    );
+});

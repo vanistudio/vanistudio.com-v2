@@ -19,6 +19,8 @@ import { DiscordEmbedBuilder, DiscordMessagePreview } from "@/components/vanixjn
 import { SlackBlockBuilder, SlackMessagePreview } from "@/components/vanixjnk/slack-block-kit-builder";
 import type { DiscordEmbed } from "@/components/vanixjnk/discord-embed-builder/discord-embed-builder";
 import type { SlackBlock } from "@/components/vanixjnk/slack-block-kit-builder/slack-block-kit-builder";
+import { LazySexyEditor } from "@/components/vanixjnk/sexy-editor";
+import type { SexyEditorRef } from "@/components/vanixjnk/sexy-editor/sexy-editor";
 
 interface TemplateChannelTabProps {
   channel: string;
@@ -33,6 +35,7 @@ export function TemplateChannelTab({
 }: TemplateChannelTabProps) {
   const [selectedId, setSelectedId] = useState<string>("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const editorRef = useRef<SexyEditorRef>(null);
 
   const activeTemplate = templates.find((t) => t.id === selectedId) || templates[0];
 
@@ -54,6 +57,11 @@ export function TemplateChannelTab({
   }
 
   const handleInsertVariable = (variable: string) => {
+    if (activeTemplate.channel === "email") {
+      editorRef.current?.insertContent(`{{${variable}}}`);
+      return;
+    }
+
     const textarea = textareaRef.current;
     if (!textarea) return;
 
@@ -179,27 +187,6 @@ export function TemplateChannelTab({
         <div className="space-y-6">
           {activeTemplate.channel === "email" && (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-foreground">Tên người gửi (Sender Name)</label>
-                  <Input
-                    value={activeTemplate.extraConfig?.senderName || ""}
-                    onChange={(e) => updateExtraConfig("senderName", e.target.value)}
-                    placeholder="Ví dụ: VaniStudio Support"
-                    className="h-10 text-[13px]"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-foreground">Email người gửi (Sender Email)</label>
-                  <Input
-                    value={activeTemplate.extraConfig?.senderEmail || ""}
-                    onChange={(e) => updateExtraConfig("senderEmail", e.target.value)}
-                    placeholder="Ví dụ: support@domain.com"
-                    className="h-10 text-[13px]"
-                  />
-                </div>
-              </div>
-
               <div className="space-y-2">
                 <label className="text-xs font-bold text-foreground">Tiêu đề Email (Subject)</label>
                 <Input
@@ -212,13 +199,13 @@ export function TemplateChannelTab({
 
               <div className="space-y-2">
                 <label className="text-xs font-bold text-foreground">Nội dung thông báo (Content Template)</label>
-                <Textarea
-                  ref={textareaRef}
+                <LazySexyEditor
+                  ref={editorRef}
                   value={activeTemplate.content}
-                  onChange={(e) => onTemplateChange(activeTemplate.id, { content: e.target.value })}
-                  placeholder="Nhập nội dung thông báo..."
-                  rows={12}
-                  className="font-mono text-xs leading-relaxed"
+                  onChange={(val) => onTemplateChange(activeTemplate.id, { content: val })}
+                  placeholder="Nhập nội dung email..."
+                  isEmail={true}
+                  modeType="rich-text"
                 />
               </div>
             </>
@@ -296,8 +283,12 @@ export function TemplateChannelTab({
                   <span className="text-foreground text-[13px] font-semibold">{activeTemplate.subject || "(Không có tiêu đề)"}</span>
                 </div>
               </div>
-              <div className="flex-1 p-6 overflow-y-auto bg-white dark:bg-zinc-950 font-sans text-sm leading-relaxed text-zinc-800 dark:text-zinc-200 whitespace-pre-wrap">
-                {activeTemplate.content || <span className="text-muted-foreground italic text-xs">Chưa có nội dung...</span>}
+              <div className="flex-1 p-6 overflow-y-auto bg-white dark:bg-zinc-950 font-sans text-sm leading-relaxed text-zinc-800 dark:text-zinc-200 prose prose-sm dark:prose-invert max-w-none">
+                {activeTemplate.content ? (
+                  <div dangerouslySetInnerHTML={{ __html: activeTemplate.content }} />
+                ) : (
+                  <span className="text-muted-foreground italic text-xs">Chưa có nội dung...</span>
+                )}
               </div>
             </div>
           )}
