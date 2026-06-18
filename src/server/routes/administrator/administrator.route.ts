@@ -11,6 +11,7 @@ import { servicesRouter } from "./services.route";
 import { projectsRouter } from "./projects.route";
 import { productsRouter } from "./products.route";
 import { apiDocsRouter } from "./api.route";
+import { templatesRouter } from "./templates.route";
 
 export const administratorRouter = router({
   menu: menuRouter,
@@ -25,6 +26,7 @@ export const administratorRouter = router({
   projects: projectsRouter,
   products: productsRouter,
   apiDocs: apiDocsRouter,
+  templates: templatesRouter,
 });
 
 

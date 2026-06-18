@@ -9,6 +9,8 @@ import { menuGroups, menus } from "@/server/db/schemas/menu.schema";
 import { DEFAULT_MENU_GROUPS } from "@/defaults/menu.default";
 import { cmsPages } from "@/server/db/schemas/cms-page.schema";
 import { DEFAULT_CMS_PAGES } from "@/defaults/cms-page.default";
+import { notificationTemplates } from "@/server/db/schemas/template.schema";
+import { DEFAULT_NOTIFICATION_TEMPLATES } from "@/defaults/templates.default";
 
 
 export class ConfigurationRepository {
@@ -164,6 +166,26 @@ export class ConfigurationRepository {
               metaKeywords: p.metaKeywords,
               isActive: p.isActive,
               publishedAt: p.publishedAt,
+            }))
+          );
+        }
+      }
+
+      if (DEFAULT_NOTIFICATION_TEMPLATES && DEFAULT_NOTIFICATION_TEMPLATES.length > 0) {
+        const existingTemplates = await tx.select().from(notificationTemplates).limit(1);
+        if (existingTemplates.length === 0) {
+          await tx.insert(notificationTemplates).values(
+            DEFAULT_NOTIFICATION_TEMPLATES.map((t) => ({
+              name: t.name,
+              eventKey: t.eventKey,
+              channel: t.channel,
+              target: t.target,
+              subject: t.subject || null,
+              content: t.content,
+              variables: t.variables,
+              extraConfig: t.extraConfig,
+              description: t.description || null,
+              isActive: t.isActive,
             }))
           );
         }

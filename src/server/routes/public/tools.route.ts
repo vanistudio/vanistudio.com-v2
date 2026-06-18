@@ -43,4 +43,14 @@ export const toolsRouter = router({
     .mutation(async ({ input }) => {
       return await toolsService.lookupFacebookId(input.link, input.cookie);
     }),
+
+  getLinkPreview: publicProcedure
+    .input(
+      z.object({
+        url: z.string().url("Đường dẫn không hợp lệ"),
+      })
+    )
+    .query(async ({ input }) => {
+      return await toolsService.getLinkPreview(input.url);
+    }),
 });
