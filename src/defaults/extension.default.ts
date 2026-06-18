@@ -158,6 +158,83 @@ export interface SecuritySettingsConfig {
   };
 }
 
+export type ContactFieldType = "text" | "email" | "tel" | "textarea" | "select" | "file";
+
+export interface ContactFieldItem {
+  show: boolean;
+  required: boolean;
+  label: string;
+  placeholder?: string;
+  type: ContactFieldType;
+  options?: string[];
+}
+
+export interface CustomFieldItem extends ContactFieldItem {
+  key: string;
+}
+
+export interface ContactPageCustomizerConfig {
+  fields: {
+    name: ContactFieldItem;
+    email: ContactFieldItem;
+    phone: ContactFieldItem;
+    company: ContactFieldItem;
+    subject: ContactFieldItem;
+    message: ContactFieldItem;
+    attachments: ContactFieldItem & {
+      maxFiles: number;
+      maxSizeMb: number;
+      allowedExtensions: string[];
+    };
+    customFields: CustomFieldItem[];
+  };
+  socialChannels: {
+    address: { show: boolean; value: string; label: string; icon: string; mapUrl?: string };
+    phone: { show: boolean; value: string; label: string; icon: string };
+    email: { show: boolean; value: string; label: string; icon: string };
+    zalo: { show: boolean; value: string; label: string; icon: string };
+    facebook: { show: boolean; value: string; label: string; icon: string };
+    mapEmbedUrl: { show: boolean; value: string; height: number };
+    workingHours: { show: boolean; value: string; label: string; icon: string };
+  };
+  destination: {
+    saveToDb: boolean;
+    sendToEmails: {
+      enabled: boolean;
+      addresses: string[];
+    };
+    telegram: {
+      isEnabled: boolean;
+      botToken: string;
+      chatId: string;
+      sendFormat: "text" | "markdown" | "html";
+    };
+    discord: {
+      isEnabled: boolean;
+      webhookUrl: string;
+      avatarUrl?: string;
+      username?: string;
+    };
+  };
+  autoResponder: {
+    enabled: boolean;
+    senderName: string;
+    senderEmail: string;
+    subject: string;
+    bodyMdx: string;
+  };
+  uiConfig: {
+    title: string;
+    description: string;
+    submitButtonText: string;
+    loadingButtonText: string;
+    successTitle: string;
+    successMessage: string;
+    layout: "split_form_left" | "split_form_right" | "centered_card" | "full_width";
+    colorTheme: "default" | "brand" | "glassmorphism";
+  };
+}
+
 export interface DefaultExtension {
   id: string;
   name: string;
@@ -320,4 +397,76 @@ export const DEFAULT_EXTENSIONS: DefaultExtension[] = [
       },
     } as SecuritySettingsConfig,
   },
+  /*
+  // TODO: Sẽ làm sau - contact_page_customizer
+  {
+    id: "contact_page_customizer",
+    name: "Tùy biến Trang Liên hệ",
+    description: "Cấu hình chi tiết các trường dữ liệu biểu mẫu, thông tin liên hệ đa kênh, bản đồ nhúng, cài đặt email và các kênh thông báo tự động (Telegram, Discord).",
+    isEnabled: true,
+    config: {
+      fields: {
+        name: { show: true, required: true, label: "Họ và tên", placeholder: "Nhập họ và tên của bạn", type: "text" },
+        email: { show: true, required: true, label: "Địa chỉ Email", placeholder: "example@gmail.com", type: "email" },
+        phone: { show: true, required: false, label: "Số điện thoại", placeholder: "Nhập số điện thoại liên hệ", type: "tel" },
+        company: { show: false, required: false, label: "Tên công ty", placeholder: "Tên doanh nghiệp của bạn", type: "text" },
+        subject: { show: true, required: true, label: "Tiêu đề liên hệ", placeholder: "Bạn cần hỗ trợ về vấn đề gì?", type: "text" },
+        message: { show: true, required: true, label: "Nội dung lời nhắn", placeholder: "Mô tả chi tiết yêu cầu của bạn...", type: "textarea" },
+        attachments: {
+          show: false,
+          required: false,
+          label: "Tài liệu đính kèm",
+          type: "file",
+          maxFiles: 3,
+          maxSizeMb: 5,
+          allowedExtensions: ["png", "jpg", "jpeg", "pdf", "zip", "rar"]
+        },
+        customFields: []
+      },
+      socialChannels: {
+        address: { show: true, value: "123 Đường Tôn Đức Thắng, Quận 1, TP. Hồ Chí Minh", label: "Trụ sở chính", icon: "solar:map-point-line-duotone" },
+        phone: { show: true, value: "0900.123.456", label: "Hotline hỗ trợ", icon: "solar:phone-calling-line-duotone" },
+        email: { show: true, value: "support@vanistudio.com", label: "Email liên hệ", icon: "solar:letter-line-duotone" },
+        zalo: { show: true, value: "https://zalo.me/0900123456", label: "Zalo Chat", icon: "solar:chat-round-dots-line-duotone" },
+        facebook: { show: true, value: "https://facebook.com/vanistudio", label: "Fanpage", icon: "solar:globus-line-duotone" },
+        mapEmbedUrl: { show: true, value: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.509749174542!2d106.70200831526019!3d10.77259466217436!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f4165555555%3A0x1111111111111111!2sVaniStudio!5e0!3m2!1svi!2svn!4v1624000000000!5m2!1svi!2svn", height: 250 },
+        workingHours: { show: true, value: "Thứ 2 - Thứ 6: 08:30 - 17:30", label: "Thời gian làm việc", icon: "solar:clock-square-line-duotone" }
+      },
+      destination: {
+        saveToDb: true,
+        sendToEmails: {
+          enabled: false,
+          addresses: ["admin@vanistudio.com"]
+        },
+        telegram: {
+          isEnabled: false,
+          botToken: "",
+          chatId: "",
+          sendFormat: "markdown"
+        },
+        discord: {
+          isEnabled: false,
+          webhookUrl: ""
+        }
+      },
+      autoResponder: {
+        enabled: false,
+        senderName: "VaniStudio Team",
+        senderEmail: "no-reply@vanistudio.com",
+        subject: "Cảm ơn bạn đã liên hệ với VaniStudio!",
+        bodyMdx: "Chào {{name}},\n\nChúng tôi đã nhận được thông tin liên hệ của bạn về chủ đề: **{{subject}}**.\nĐội ngũ kỹ thuật sẽ xem xét và phản hồi lại bạn trong vòng 24 giờ làm việc.\n\nTrân trọng,\nVaniStudio Team."
+      },
+      uiConfig: {
+        title: "Liên hệ với chúng tôi",
+        description: "Chúng tôi luôn sẵn sàng lắng nghe ý kiến và hỗ trợ giải đáp các thắc mắc của bạn.",
+        submitButtonText: "Gửi tin nhắn liên hệ",
+        loadingButtonText: "Đang gửi thông tin...",
+        successTitle: "Gửi thành công!",
+        successMessage: "Cảm ơn bạn đã gửi liên hệ. Chúng tôi đã gửi email xác nhận và sẽ phản hồi sớm nhất có thể.",
+        layout: "split_form_left",
+        colorTheme: "brand"
+      }
+    } as ContactPageCustomizerConfig,
+  },
+  */
 ];
