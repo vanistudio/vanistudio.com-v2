@@ -14,6 +14,7 @@ import AnalyticsMarketing from "./AnalyticsMarketing";
 import StorageConfig from "./StorageConfig";
 import SecuritySettings from "./SecuritySettings";
 import NotificationConfig from "./NotificationConfig";
+import ContactPageCustomizer from "./ContactPageCustomizer";
 
 const TABS = [
   {
@@ -63,6 +64,12 @@ const TABS = [
     title: "Thông báo hệ thống",
     icon: "solar:bell-bing-line-duotone",
     desc: "Cấu hình các cổng thông báo SMTP, Telegram, Discord, Slack và thiết lập quy tắc kích hoạt gửi tin.",
+  },
+  {
+    id: "contact_page_customizer",
+    title: "Tùy biến Trang Liên hệ",
+    icon: "solar:letter-line-duotone",
+    desc: "Cấu hình chi tiết các trường dữ liệu biểu mẫu, thông tin liên hệ đa kênh, bản đồ nhúng và cổng thông báo.",
   },
 ];
 
@@ -347,6 +354,15 @@ export default function AdminExtensions() {
                     onConfigChange={(val) => handleConfigChange(activeExt.id, val)}
                     onSave={handleSave}
                     isSaving={updateMutation.isPending}
+                  />
+                )}
+
+                {activeTab === "contact_page_customizer" && (
+                  <ContactPageCustomizer
+                    isEnabled={activeExt.isEnabled}
+                    onEnabledChange={(val) => handleEnabledChange(activeExt.id, val)}
+                    config={activeExt.config as any}
+                    onConfigChange={(val) => handleConfigChange(activeExt.id, val)}
                   />
                 )}
               </div>

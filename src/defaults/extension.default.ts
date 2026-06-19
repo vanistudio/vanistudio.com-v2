@@ -260,29 +260,7 @@ export interface ContactPageCustomizerConfig {
   };
   destination: {
     saveToDb: boolean;
-    sendToEmails: {
-      enabled: boolean;
-      addresses: string[];
-    };
-    telegram: {
-      isEnabled: boolean;
-      botToken: string;
-      chatId: string;
-      sendFormat: "text" | "markdown" | "html";
-    };
-    discord: {
-      isEnabled: boolean;
-      webhookUrl: string;
-      avatarUrl?: string;
-      username?: string;
-    };
-  };
-  autoResponder: {
-    enabled: boolean;
-    senderName: string;
-    senderEmail: string;
-    subject: string;
-    bodyMdx: string;
+    useCentralNotification: boolean;
   };
   uiConfig: {
     title: string;
@@ -550,8 +528,6 @@ export const DEFAULT_EXTENSIONS: DefaultExtension[] = [
       ],
     } as NotificationConfig,
   },
-  /*
-  // TODO: Sẽ làm sau - contact_page_customizer
   {
     id: "contact_page_customizer",
     name: "Tùy biến Trang Liên hệ",
@@ -587,27 +563,7 @@ export const DEFAULT_EXTENSIONS: DefaultExtension[] = [
       },
       destination: {
         saveToDb: true,
-        sendToEmails: {
-          enabled: false,
-          addresses: ["admin@vanistudio.com"]
-        },
-        telegram: {
-          isEnabled: false,
-          botToken: "",
-          chatId: "",
-          sendFormat: "markdown"
-        },
-        discord: {
-          isEnabled: false,
-          webhookUrl: ""
-        }
-      },
-      autoResponder: {
-        enabled: false,
-        senderName: "VaniStudio Team",
-        senderEmail: "no-reply@vanistudio.com",
-        subject: "Cảm ơn bạn đã liên hệ với VaniStudio!",
-        bodyMdx: "Chào {{name}},\n\nChúng tôi đã nhận được thông tin liên hệ của bạn về chủ đề: **{{subject}}**.\nĐội ngũ kỹ thuật sẽ xem xét và phản hồi lại bạn trong vòng 24 giờ làm việc.\n\nTrân trọng,\nVaniStudio Team."
+        useCentralNotification: true,
       },
       uiConfig: {
         title: "Liên hệ với chúng tôi",
@@ -621,5 +577,4 @@ export const DEFAULT_EXTENSIONS: DefaultExtension[] = [
       }
     } as ContactPageCustomizerConfig,
   },
-  */
 ];
