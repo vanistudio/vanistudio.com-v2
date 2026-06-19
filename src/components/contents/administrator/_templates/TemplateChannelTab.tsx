@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { Icon } from "@iconify/react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -164,13 +163,6 @@ export function TemplateChannelTab({
             {activeTemplate.description && (
               <p className="text-xs text-muted-foreground font-medium">{activeTemplate.description}</p>
             )}
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <span className="text-xs font-bold text-muted-foreground">Hoạt động</span>
-            <Switch
-              checked={activeTemplate.isActive}
-              onCheckedChange={(checked) => onTemplateChange(activeTemplate.id, { isActive: checked })}
-            />
           </div>
         </div>
 

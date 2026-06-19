@@ -97,7 +97,6 @@ export default function AdminTemplates() {
           id: t.id,
           subject: t.subject,
           content: t.content,
-          isActive: t.isActive,
           extraConfig: t.extraConfig as any,
         });
       });

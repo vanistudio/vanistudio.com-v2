@@ -10,7 +10,6 @@ export interface DefaultNotificationTemplate {
   variables: string[];
   extraConfig: TemplateExtraConfig;
   description?: string;
-  isActive: boolean;
 }
 
 export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
@@ -43,7 +42,6 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       senderEmail: "welcome@vanistudio.com"
     },
     description: "Email tự động gửi chào mừng thành viên mới khi họ đăng ký thành công.",
-    isActive: true
   },
   {
     name: "Email khôi phục mật khẩu",
@@ -72,7 +70,6 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       senderEmail: "security@vanistudio.com"
     },
     description: "Email chứa liên kết bảo mật khôi phục mật khẩu cho khách hàng.",
-    isActive: true
   },
   {
     name: "Thông báo Telegram: Thành viên mới đăng ký",
@@ -108,7 +105,6 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       }
     },
     description: "Tin nhắn tự động gửi đến group Telegram của Admin để thông báo khi có user mới đăng ký.",
-    isActive: true
   },
   {
     name: "Cảnh báo Discord: Thành viên mới đăng ký",
@@ -161,7 +157,6 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       ]
     },
     description: "Gửi cảnh báo Rich Embed thông báo có thành viên mới đăng ký qua kênh Discord.",
-    isActive: true
   },
   {
     name: "Thông báo Slack: Thành viên mới đăng ký",
@@ -235,7 +230,6 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       ]
     },
     description: "Gửi cấu trúc Block Kit thông báo thành viên mới đăng ký qua kênh Slack.",
-    isActive: true
   },
   {
     name: "Báo động Discord: Phát hiện IP brute force bị chặn",
@@ -290,7 +284,6 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       ]
     },
     description: "Cảnh báo bảo mật nâng cao gửi qua Discord Rich Embed khi phát hiện và chặn IP spam.",
-    isActive: true
   },
   {
     name: "Cảnh báo Telegram: Phát hiện IP brute force bị chặn",
@@ -325,7 +318,6 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       }
     },
     description: "Cảnh báo bảo mật gửi qua tin nhắn Telegram khi phát hiện và chặn IP spam.",
-    isActive: true
   },
   {
     name: "Cảnh báo Slack: Phát hiện IP brute force bị chặn",
@@ -400,7 +392,6 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       ]
     },
     description: "Cảnh báo bảo mật gửi qua Slack Block Kit khi phát hiện và chặn IP spam.",
-    isActive: true
   },
   {
     name: "Email tự động phản hồi khách hàng gửi liên hệ",
@@ -426,7 +417,6 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       senderEmail: "support@vanistudio.com"
     },
     description: "Email tự động gửi phản hồi xác nhận cho khách hàng khi họ gửi form liên hệ.",
-    isActive: true
   },
   {
     name: "Email thông báo Admin: Có liên hệ mới",
@@ -457,7 +447,6 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       senderEmail: "crm@vanistudio.com"
     },
     description: "Email thông báo cho Admin khi có khách hàng gửi biểu mẫu liên hệ.",
-    isActive: true
   },
   {
     name: "Thông báo Telegram: Có liên hệ mới từ khách hàng",
@@ -490,7 +479,6 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       }
     },
     description: "Tin nhắn gửi vào Telegram của Admin thông báo có liên hệ mới.",
-    isActive: true
   },
   {
     name: "Cảnh báo Discord: Có liên hệ mới từ khách hàng",
@@ -540,7 +528,6 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       ]
     },
     description: "Gửi Rich Embed thông tin liên hệ mới vào Discord của quản trị viên.",
-    isActive: true
   },
   {
     name: "Thông báo Slack: Nhận liên hệ mới từ khách hàng",
@@ -619,7 +606,6 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       ]
     },
     description: "Gửi cấu trúc khối (Block Kit) thông tin liên hệ mới của khách hàng vào kênh Slack hỗ trợ.",
-    isActive: true
   },
   {
     name: "Email thông báo: Kích hoạt bảo mật 2FA",
@@ -646,7 +632,6 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       senderEmail: "security@vanistudio.com"
     },
     description: "Email thông báo cho khách hàng khi họ kích hoạt thành công tính năng bảo mật 2FA.",
-    isActive: true
   },
   {
     name: "Email thông báo: Hủy kích hoạt bảo mật 2FA",
@@ -672,7 +657,6 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       senderEmail: "security@vanistudio.com"
     },
     description: "Email thông báo cho khách hàng khi họ tắt tính năng bảo mật 2FA.",
-    isActive: true
   },
   {
     name: "Email gửi mã OTP xác nhận",
@@ -699,7 +683,6 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       senderEmail: "security@vanistudio.com"
     },
     description: "Email gửi mã OTP xác thực đăng nhập hoặc thực hiện giao dịch quan trọng.",
-    isActive: true
   },
   {
     name: "Email gửi mã xác minh tài khoản mới",
@@ -723,7 +706,6 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       senderEmail: "welcome@vanistudio.com"
     },
     description: "Email gửi mã xác nhận khi đăng ký tài khoản mới để kích hoạt tài khoản.",
-    isActive: true
   },
   {
     name: "Email cảnh báo: Thay đổi mật khẩu thành công",
@@ -750,7 +732,6 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       senderEmail: "security@vanistudio.com"
     },
     description: "Email gửi thông báo bảo mật cho người dùng khi mật khẩu tài khoản của họ được cập nhật thành công.",
-    isActive: true
   },
   {
     name: "Email cảnh báo: Đăng nhập từ thiết bị hoặc địa điểm lạ",
@@ -777,7 +758,6 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       senderEmail: "security@vanistudio.com"
     },
     description: "Email gửi cảnh báo bảo mật khi phát hiện đăng nhập từ IP, vị trí hoặc thiết bị chưa từng sử dụng trước đây.",
-    isActive: true
   },
   {
     name: "Thông báo Telegram: Có bình luận mới trên Blog",
@@ -819,7 +799,6 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       }
     },
     description: "Thông báo qua Telegram cho quản trị viên khi có bình luận mới được gửi trên bài viết blog.",
-    isActive: true
   },
   {
     name: "Cảnh báo Discord: Có bình luận mới trên Blog",
@@ -871,7 +850,6 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       ]
     },
     description: "Gửi Rich Embed thông tin bình luận mới cần duyệt trên Blog qua kênh Discord.",
-    isActive: true
   },
   {
     name: "Thông báo Slack: Có bình luận mới trên Blog",
@@ -947,7 +925,6 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       ]
     },
     description: "Gửi thông tin bình luận mới qua Slack Block Kit để quản trị viên dễ dàng duyệt.",
-    isActive: true
   },
   {
     name: "Email bàn giao License Key sản phẩm",
@@ -980,7 +957,6 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       senderEmail: "license@vanistudio.com"
     },
     description: "Email gửi tự động cho khách hàng chứa mã bản quyền (license key) và hướng dẫn kích hoạt sau khi đơn hàng hoàn tất.",
-    isActive: true
   }
 ];
 

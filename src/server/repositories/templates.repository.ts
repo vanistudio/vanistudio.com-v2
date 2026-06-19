@@ -23,7 +23,6 @@ export class NotificationTemplatesRepository {
           variables: m.variables,
           extraConfig: m.extraConfig,
           description: m.description || null,
-          isActive: m.isActive,
         }))
       ).onConflictDoNothing();
       return db.select().from(notificationTemplates);
@@ -77,7 +76,6 @@ export class NotificationTemplatesRepository {
       variables: defaultTpl.variables,
       extraConfig: defaultTpl.extraConfig,
       description: defaultTpl.description || null,
-      isActive: defaultTpl.isActive,
     });
   }
 
@@ -97,7 +95,6 @@ export class NotificationTemplatesRepository {
           variables: defaultTpl.variables,
           extraConfig: defaultTpl.extraConfig,
           description: defaultTpl.description || null,
-          isActive: defaultTpl.isActive,
         });
         results.push(updated);
       } else {

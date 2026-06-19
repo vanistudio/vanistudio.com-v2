@@ -19,8 +19,6 @@ export class NotificationService {
       .where(eq(notificationTemplates.eventKey, eventKey));
 
     for (const template of templates) {
-      if (!template.isActive) continue;
-
       const compiledContent = this.compile(template.content, variables);
       const compiledSubject = template.subject ? this.compile(template.subject, variables) : undefined;
 

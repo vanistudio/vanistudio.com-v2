@@ -185,7 +185,6 @@ export class ConfigurationRepository {
               variables: t.variables,
               extraConfig: t.extraConfig,
               description: t.description || null,
-              isActive: t.isActive,
             }))
           );
         }

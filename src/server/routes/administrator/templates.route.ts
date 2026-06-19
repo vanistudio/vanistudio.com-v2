@@ -33,7 +33,6 @@ export const templatesRouter = router({
         id: z.string(),
         subject: z.string().optional().nullable(),
         content: z.string().min(1, "Nội dung mẫu không được để trống"),
-        isActive: z.boolean(),
         extraConfig: z.object({
           senderName: z.string().optional(),
           senderEmail: z.string().optional(),
