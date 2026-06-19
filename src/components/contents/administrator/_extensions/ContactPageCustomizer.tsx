@@ -23,6 +23,13 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
   type ContactPageCustomizerConfig,
   type ContactFieldItem,
   type CustomFieldItem,
@@ -61,8 +68,30 @@ export default function ContactPageCustomizer({
 }: Props) {
   const [activeTab, setActiveTab] = useState<"fields" | "social" | "ui">("fields");
   const [editingCustomField, setEditingCustomField] = useState<Partial<CustomFieldItem> | null>(null);
+  const [isMapDialogOpen, setIsMapDialogOpen] = useState(false);
+  const [searchMapQuery, setSearchMapQuery] = useState("");
+  const [mapPreviewUrl, setMapPreviewUrl] = useState("");
 
   const fields = config.fields || {};
+
+  const handleMapValueChange = (val: string) => {
+    const iframeSrcMatch = val.match(/src=["'](https:[^"']+)["']/i);
+    const cleaned = iframeSrcMatch && iframeSrcMatch[1] ? iframeSrcMatch[1] : val.trim();
+    handleSocialChange("mapEmbedUrl", "value", cleaned);
+  };
+
+  const handleSearchMap = () => {
+    if (!searchMapQuery.trim()) return;
+    const url = `https://maps.google.com/maps?q=${encodeURIComponent(searchMapQuery.trim())}&output=embed`;
+    setMapPreviewUrl(url);
+  };
+
+  const handleApplyMap = () => {
+    if (mapPreviewUrl) {
+      handleSocialChange("mapEmbedUrl", "value", mapPreviewUrl);
+      setIsMapDialogOpen(false);
+    }
+  };
   const socialChannels = config.socialChannels || {};
   const destination = config.destination || { saveToDb: true, useCentralNotification: true };
   const uiConfig = config.uiConfig || {};
@@ -497,13 +526,30 @@ export default function ContactPageCustomizer({
               <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 mt-1">
                 <div className="flex flex-col gap-1.5 sm:col-span-10">
                   <label className="text-[10px] font-bold text-muted-foreground">Đường dẫn Iframe Google Maps</label>
-                  <Input
-                    value={socialChannels.mapEmbedUrl.value}
-                    onChange={(e) => handleSocialChange("mapEmbedUrl", "value", e.target.value)}
-                    placeholder="https://www.google.com/maps/embed?pb=..."
-                    className="h-8.5 text-xs"
-                    disabled={!socialChannels.mapEmbedUrl.show}
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      value={socialChannels.mapEmbedUrl.value}
+                      onChange={(e) => handleMapValueChange(e.target.value)}
+                      placeholder="Dán mã nhúng iframe hoặc đường dẫn Google Maps..."
+                      className="h-8.5 text-xs flex-1"
+                      disabled={!socialChannels.mapEmbedUrl.show}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setSearchMapQuery("");
+                        setMapPreviewUrl(socialChannels.mapEmbedUrl.value || "");
+                        setIsMapDialogOpen(true);
+                      }}
+                      className="h-8.5 shrink-0 px-3 font-semibold text-xs border-dashed border-primary/30"
+                      disabled={!socialChannels.mapEmbedUrl.show}
+                    >
+                      <Icon icon="solar:map-point-line-duotone" className="size-4 mr-1 text-primary" />
+                      Tìm & Xem Bản Đồ
+                    </Button>
+                  </div>
                 </div>
                 <div className="flex flex-col gap-1.5 sm:col-span-2">
                   <label className="text-[10px] font-bold text-muted-foreground">Chiều cao (px)</label>
@@ -741,6 +787,77 @@ export default function ContactPageCustomizer({
           </div>
         </SheetContent>
       </Sheet>
+
+      <Dialog open={isMapDialogOpen} onOpenChange={setIsMapDialogOpen}>
+        <DialogContent className="sm:max-w-[800px] w-full p-6">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold">Chọn Bản đồ Google Map</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 py-2">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-bold text-muted-foreground">Nhập địa chỉ cần hiển thị</label>
+              <div className="flex gap-2">
+                <Input
+                  value={searchMapQuery}
+                  onChange={(e) => setSearchMapQuery(e.target.value)}
+                  placeholder="Ví dụ: 123 Đường Tôn Đức Thắng, Quận 1, TP. HCM"
+                  className="h-9 flex-1"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSearchMap();
+                    }
+                  }}
+                />
+                <Button
+                  onClick={handleSearchMap}
+                  variant={"vanixjnk"}
+                  className="h-9 px-4"
+                >
+                  Tìm Vị Trí
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-bold text-muted-foreground">Bản đồ xem trước (Live Preview)</label>
+              <div className="border border-border rounded-xl overflow-hidden aspect-video bg-muted/20 flex items-center justify-center relative">
+                {mapPreviewUrl ? (
+                  <iframe
+                    src={mapPreviewUrl}
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen={false}
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="text-center p-4 text-muted-foreground flex flex-col items-center">
+                    <Icon icon="solar:map-point-line-duotone" className="size-8 opacity-40 mb-2" />
+                    <span className="text-xs">Chưa có vị trí xem trước. Vui lòng nhập địa chỉ ở trên và nhấn Tìm Vị Trí.</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsMapDialogOpen(false)}
+            >
+              Hủy
+            </Button>
+            <Button
+              variant="vanixjnk"
+              size="sm"
+              onClick={handleApplyMap}
+              disabled={!mapPreviewUrl}
+            >
+              Áp dụng bản đồ này
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
