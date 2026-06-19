@@ -86,7 +86,7 @@ export default function AppFooter() {
   const { publicMenus } = useMenu();
 
   const intro = publicMenus?.find((g) => g.group.key === "intro");
-  const services = publicMenus?.find((g) => g.group.key === "services");
+  const policies = publicMenus?.find((g) => g.group.key === "policies");
   const explore = publicMenus?.find((g) => g.group.key === "explore");
   const contact = publicMenus?.find((g) => g.group.key === "contact");
 
@@ -137,13 +137,13 @@ export default function AppFooter() {
               )}
             </div>
             <div className="relative p-6 md:p-8 flex flex-col border-b md:border-b-0 md:border-r border-dashed border-primary/20">
-              {services && (
+              {policies && (
                 <>
                   <h4 className="font-mono text-[10px] font-bold tracking-widest text-muted-foreground/80 uppercase mb-5 select-none">
-                    {services.group.name}
+                    {policies.group.name}
                   </h4>
                   <ul className="space-y-3">
-                    {services.items
+                    {policies.items
                       .filter((item) => item.isActive)
                       .map((item) => (
                         <li key={item.id}>

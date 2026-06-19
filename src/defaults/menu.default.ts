@@ -66,14 +66,16 @@ export const DEFAULT_MENU_GROUPS: DefaultMenuGroup[] = [
     ],
   },
   {
-    name: "Dịch vụ chính",
-    key: "services",
-    description: "Các dịch vụ công nghệ chính",
+    name: "Chính sách",
+    key: "policies",
+    description: "Các chính sách dịch vụ của Vani Studio",
     items: [
-      { name: "Thiết kế Website", url: "/services/website", icon: "solar:round-double-alt-arrow-right-line-duotone", order: 1 },
-      { name: "Ứng dụng di động", url: "/services/mobile", icon: "solar:round-double-alt-arrow-right-line-duotone", order: 2 },
-      { name: "Trợ lý ảo AI Chatbot", url: "/services/chatbot", icon: "solar:round-double-alt-arrow-right-line-duotone", order: 3 },
-      { name: "Thiết kế UI/UX", url: "/services/ui-ux", icon: "solar:round-double-alt-arrow-right-line-duotone", order: 4 },
+      { name: "Điều khoản", url: "/terms-of-service", icon: "solar:round-double-alt-arrow-right-line-duotone", order: 1 },
+      { name: "Bảo mật", url: "/privacy-policy", icon: "solar:round-double-alt-arrow-right-line-duotone", order: 2 },
+      { name: "Hoàn tiền", url: "/refund-policy", icon: "solar:round-double-alt-arrow-right-line-duotone", order: 3 },
+      { name: "Giao nhận", url: "/delivery-policy", icon: "solar:round-double-alt-arrow-right-line-duotone", order: 4 },
+      { name: "Bảo hành", url: "/warranty-policy", icon: "solar:round-double-alt-arrow-right-line-duotone", order: 5 },
+      { name: "Thanh toán", url: "/payment-policy", icon: "solar:round-double-alt-arrow-right-line-duotone", order: 6 },
     ],
   },
   {
