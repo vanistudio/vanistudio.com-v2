@@ -24,7 +24,7 @@ export default function PubHomeTools() {
           {
             name: "Roblox Checker",
             desc: "Kiểm tra thông tin profile và place Roblox.",
-            icon: "solar:gamepad-line-duotone",
+            icon: "proicons:roblox",
             href: "/tools/check-roblox",
             gradient: "from-rose-500/10 via-rose-500/5 to-transparent",
             border: "border-rose-500/20",
