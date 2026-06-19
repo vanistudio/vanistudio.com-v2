@@ -13,6 +13,23 @@ export class NotificationService {
     const config = ext.config as any;
     if (!config) return;
 
+    const hasSmtpTrigger = (config.smtpServers || []).some(
+      (s: any) => s.isEnabled && s.triggers?.includes(eventKey)
+    );
+    const hasTelegramTrigger =
+      (config.clientTelegramBot?.isEnabled && config.clientTelegramBot?.triggers?.includes(eventKey)) ||
+      (config.adminTelegramBots || []).some((b: any) => b.isEnabled && b.triggers?.includes(eventKey));
+    const hasDiscordTrigger =
+      (config.clientDiscordWebhook?.isEnabled && config.clientDiscordWebhook?.triggers?.includes(eventKey)) ||
+      (config.adminDiscordWebhooks || []).some((w: any) => w.isEnabled && w.triggers?.includes(eventKey));
+    const hasSlackTrigger =
+      (config.clientSlackWebhook?.isEnabled && config.clientSlackWebhook?.triggers?.includes(eventKey)) ||
+      (config.adminSlackWebhooks || []).some((w: any) => w.isEnabled && w.triggers?.includes(eventKey));
+
+    if (!hasSmtpTrigger && !hasTelegramTrigger && !hasDiscordTrigger && !hasSlackTrigger) {
+      return;
+    }
+
     const templates = await db
       .select()
       .from(notificationTemplates)
