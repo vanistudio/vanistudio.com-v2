@@ -26,7 +26,8 @@ import {
 const EMAIL_EVENTS = [
   { key: "user.register", name: "Đăng ký thành viên mới" },
   { key: "auth.forgot_password", name: "Yêu cầu khôi phục mật khẩu" },
-  { key: "contact.new_submission", name: "Khách hàng gửi liên hệ mới" },
+  { key: "contact.new_submission", name: "Khách hàng gửi liên hệ (Client)" },
+  { key: "contact.new_submission_admin", name: "Thông báo liên hệ mới (Admin)" },
   { key: "auth.two_factor_enabled", name: "Kích hoạt xác thực 2 lớp (2FA)" },
   { key: "auth.two_factor_disabled", name: "Tắt xác thực 2 lớp (2FA)" },
   { key: "auth.otp_verification", name: "Gửi mã xác thực OTP" },
@@ -37,9 +38,9 @@ const EMAIL_EVENTS = [
 ];
 
 const ADMIN_EVENTS = [
-  { key: "user.register", name: "Thành viên mới đăng ký" },
+  { key: "user.register_admin", name: "Thành viên mới đăng ký" },
   { key: "security.ip_banned", name: "Cảnh báo chặn IP hệ thống" },
-  { key: "contact.new_submission", name: "Khách hàng liên hệ mới" },
+  { key: "contact.new_submission_admin", name: "Khách hàng liên hệ mới" },
   { key: "blog.comment_created", name: "Bình luận bài viết Blog mới" },
 ];
 

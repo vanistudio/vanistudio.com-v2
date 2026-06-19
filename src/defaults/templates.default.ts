@@ -76,7 +76,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
   },
   {
     name: "Thông báo Telegram: Thành viên mới đăng ký",
-    eventKey: "user.register",
+    eventKey: "user.register_admin",
     channel: "telegram",
     target: "admin",
     content: "🆕 <b>THÀNH VIÊN ĐĂNG KÝ HỆ THỐNG MỚI</b>\n\nHệ thống ghi nhận tài khoản người dùng mới vừa kích hoạt thành công:\n• <b>Mã thành viên:</b> <code>#{{userId}}</code>\n• <b>Họ và tên:</b> <code>{{name}}</code>\n• <b>Địa chỉ Email:</b> <code>{{email}}</code>\n• <b>Gói đăng ký:</b> <code>{{pricingPlan}}</code>\n• <b>Nguồn giới thiệu:</b> <code>{{referralSource}}</code>\n• <b>Chiến dịch marketing:</b> <code>{{campaignName}}</code>\n• <b>Thời gian đăng ký:</b> <code>{{createdAt}}</code>\n\n🌐 <b>THÔNG TIN KẾT NỐI:</b>\n• <b>Địa chỉ IP:</b> <code>{{ipAddress}}</code>\n• <b>Nhà cung cấp mạng (ISP):</b> <code>{{ispProvider}}</code>\n• <b>Quốc gia:</b> <code>{{signupCountry}}</code> (Vị trí: <code>{{location}}</code>)\n• <b>Thiết bị sử dụng:</b> <code>{{device}}</code>\n\n⚙️ <b>Hành động quản trị:</b>\n👉 <a href=\"{{profileUrl}}\">Xem hồ sơ chi tiết trên Admin Panel</a>\n\n<i>Hệ thống đã tự động gửi email xác nhận và kích hoạt quà tặng chào mừng cho thành viên này.</i>",
@@ -112,7 +112,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
   },
   {
     name: "Cảnh báo Discord: Thành viên mới đăng ký",
-    eventKey: "user.register",
+    eventKey: "user.register_admin",
     channel: "discord",
     target: "admin",
     content: "Hệ thống quản trị ghi nhận thành viên mới đăng ký tài khoản thành công.",
@@ -165,7 +165,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
   },
   {
     name: "Thông báo Slack: Thành viên mới đăng ký",
-    eventKey: "user.register",
+    eventKey: "user.register_admin",
     channel: "slack",
     target: "admin",
     content: "Thông báo hệ thống: Có thành viên mới đăng ký.",
@@ -430,7 +430,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
   },
   {
     name: "Email thông báo Admin: Có liên hệ mới",
-    eventKey: "contact.new_submission",
+    eventKey: "contact.new_submission_admin",
     channel: "email",
     target: "admin",
     subject: "🚨 [Liên hệ mới] Đơn hàng/Hỗ trợ khách hàng - Mã vé #{{ticketId}} - {{name}}",
@@ -461,7 +461,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
   },
   {
     name: "Thông báo Telegram: Có liên hệ mới từ khách hàng",
-    eventKey: "contact.new_submission",
+    eventKey: "contact.new_submission_admin",
     channel: "telegram",
     target: "admin",
     content: "📬 <b>CÓ LIÊN HỆ MỚI TỪ WEBSITE VANI STUDIO</b>\n\nHệ thống vừa ghi nhận biểu mẫu liên hệ mới:\n• <b>Mã số vé:</b> <code>#{{ticketId}}</code>\n• <b>Phân loại:</b> <code>{{category}}</code>\n• <b>Độ ưu tiên:</b> 🚨 <b>{{priority}}</b>\n• <b>Họ tên khách hàng:</b> <code>{{name}}</code>\n• <b>Email liên lạc:</b> <code>{{email}}</code>\n• <b>Số điện thoại:</b> <code>{{phone}}</code>\n• <b>Chủ đề:</b> <u>{{subject}}</u>\n• <b>Nội dung tin nhắn:</b>\n<blockquote>\"{{message}}\"</blockquote>\n• <b>Thời gian gửi:</b> <code>{{createdAt}}</code>\n\n⚙️ <b>Thao tác xử lý:</b>\n👉 <a href=\"{{inboxUrl}}\">Xem & Trả lời trên Admin Panel</a>",
@@ -494,7 +494,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
   },
   {
     name: "Cảnh báo Discord: Có liên hệ mới từ khách hàng",
-    eventKey: "contact.new_submission",
+    eventKey: "contact.new_submission_admin",
     channel: "discord",
     target: "admin",
     content: "Nhận được một yêu cầu liên hệ mới cần xử lý từ khách hàng trực tuyến.",
@@ -544,7 +544,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
   },
   {
     name: "Thông báo Slack: Nhận liên hệ mới từ khách hàng",
-    eventKey: "contact.new_submission",
+    eventKey: "contact.new_submission_admin",
     channel: "slack",
     target: "admin",
     content: "Nhận liên hệ mới từ khách hàng",

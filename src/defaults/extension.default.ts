@@ -480,6 +480,7 @@ export const DEFAULT_EXTENSIONS: DefaultExtension[] = [
             "user.register",
             "auth.forgot_password",
             "contact.new_submission",
+            "contact.new_submission_admin",
             "auth.two_factor_enabled",
             "auth.two_factor_disabled",
             "auth.otp_verification",
@@ -504,9 +505,9 @@ export const DEFAULT_EXTENSIONS: DefaultExtension[] = [
           chatId: "-100123456789",
           isEnabled: false,
           triggers: [
-            "user.register",
+            "user.register_admin",
             "security.ip_banned",
-            "contact.new_submission",
+            "contact.new_submission_admin",
             "blog.comment_created"
           ],
         }
@@ -522,9 +523,9 @@ export const DEFAULT_EXTENSIONS: DefaultExtension[] = [
           webhookUrl: "https://discord.com/api/webhooks/example",
           isEnabled: false,
           triggers: [
-            "user.register",
+            "user.register_admin",
             "security.ip_banned",
-            "contact.new_submission",
+            "contact.new_submission_admin",
             "blog.comment_created"
           ],
         }
@@ -540,9 +541,9 @@ export const DEFAULT_EXTENSIONS: DefaultExtension[] = [
           webhookUrl: "https://hooks.slack.com/services/example",
           isEnabled: false,
           triggers: [
-            "user.register",
+            "user.register_admin",
             "security.ip_banned",
-            "contact.new_submission",
+            "contact.new_submission_admin",
             "blog.comment_created"
           ],
         }
