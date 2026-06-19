@@ -47,7 +47,7 @@ export default function PubBlogPage({ blog }: PubBlogPageProps) {
 
   return (
     <div className="flex flex-col w-full flex-1">
-      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative overflow-hidden border-l border-r border-dashed border-primary/20 pt-[60px] pb-6 px-6">
           {blog.thumbnail && (
             <div className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0">
@@ -159,7 +159,7 @@ export default function PubBlogPage({ blog }: PubBlogPageProps) {
         />
       </div>
 
-      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
+      <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col p-6 gap-6">
           <div className="prose dark:prose-invert max-w-none flex-1">
             <MdxRenderer content={blog.content} scope={{ formData: blog }} />

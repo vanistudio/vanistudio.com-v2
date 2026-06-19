@@ -232,7 +232,7 @@ export default function ServiceEditor({ mode, initialId }: ServiceEditorProps) {
   if (mode === "edit" && isLoadingService) {
     return (
       <div className="flex flex-col w-full flex-1">
-        <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="border-l border-r border-dashed border-primary/20 pt-[88px] pb-6 px-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="flex items-center gap-4">
@@ -262,7 +262,7 @@ export default function ServiceEditor({ mode, initialId }: ServiceEditorProps) {
           />
         </div>
 
-        <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
+        <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
           <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col p-6 gap-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/60">
               <div className="flex items-center gap-3">
@@ -388,7 +388,7 @@ export default function ServiceEditor({ mode, initialId }: ServiceEditorProps) {
 
   return (
     <div className="flex flex-col w-full flex-1">
-      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="border-l border-r border-dashed border-primary/20 pt-[88px] pb-6 px-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
@@ -418,7 +418,7 @@ export default function ServiceEditor({ mode, initialId }: ServiceEditorProps) {
         />
       </div>
 
-      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
+      <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col p-6 gap-6">
           
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/60">

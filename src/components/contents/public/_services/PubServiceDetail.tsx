@@ -168,7 +168,7 @@ export default function PubServiceDetail({ service, packages }: PubServiceDetail
 
   return (
     <div className="flex flex-col w-full flex-1">
-      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="border-l border-r border-dashed border-primary/20 pt-[60px] pb-6 px-6">
           <div className="flex flex-col items-center text-center gap-4">
             <div className="flex items-center justify-center rounded-xl text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 shrink-0 p-3">
@@ -225,7 +225,7 @@ export default function PubServiceDetail({ service, packages }: PubServiceDetail
         />
       </div>
 
-      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
+      <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col p-6 gap-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full">
             

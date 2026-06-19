@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 export default function PubHomeHero() {
   return (
-    <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
       <div className="relative border-l border-r border-dashed border-primary/20 pt-16 pb-8 px-6">
         <section className="flex flex-col items-center text-center gap-5 max-w-xl mx-auto select-none">
           <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-muted/40 border border-border/60 text-[10px] font-mono text-muted-foreground select-none">

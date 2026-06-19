@@ -104,7 +104,7 @@ export default function AppFooter() {
         />
       </div>
       <div className="w-full">
-        <div className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="mx-auto w-full max-w-[1200px] px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-4 border-l border-r border-dashed border-primary/20">
             <div className="relative p-6 md:p-8 md:pr-10 flex flex-col gap-5 border-b md:border-b-0 md:border-r border-dashed border-primary/20">
               <Link href="/" className="flex items-center gap-2 group self-start">
@@ -245,7 +245,7 @@ export default function AppFooter() {
         />
       </div>
 
-      <div className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="mx-auto w-full max-w-[1200px] px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="py-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
             <p className="text-[11px] text-muted-foreground font-mono select-none">

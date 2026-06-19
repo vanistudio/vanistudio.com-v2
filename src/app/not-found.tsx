@@ -22,7 +22,7 @@ export default function NotFound() {
   return (
     <div className="flex flex-col min-h-screen w-full bg-background text-foreground font-sans select-none relative overflow-x-hidden">
       <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--primary)/0.03)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--primary)/0.03)_1px,transparent_1px)] bg-size-24px_24px pointer-events-none -z-20" />
-      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 relative">
+      <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="border-l border-r border-dashed border-primary/20 pt-[88px] pb-6 px-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
@@ -56,7 +56,7 @@ export default function NotFound() {
         />
       </div>
 
-      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col relative">
+      <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col relative">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/5 flex-1 flex flex-col">
           
           <div className="grid grid-cols-1 lg:grid-cols-4 flex-1">
@@ -220,7 +220,7 @@ export default function NotFound() {
       </div>
 
       <div className="w-full border-t border-dashed border-primary/20 bg-muted/20 select-none">
-        <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="border-l border-r border-dashed border-primary/20 py-2.5 px-6 flex flex-wrap justify-between items-center gap-4 text-[10px] font-mono text-muted-foreground">
             <div className="flex items-center gap-6">
               <span className="flex items-center gap-1.5">
