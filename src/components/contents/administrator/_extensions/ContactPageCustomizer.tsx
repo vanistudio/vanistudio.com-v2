@@ -666,23 +666,6 @@ export default function ContactPageCustomizer({
                   </SelectContent>
                 </Select>
               </div>
-
-              <div className="flex flex-col gap-2">
-                <label className="text-[12px] font-bold text-foreground">Chủ đề màu sắc (Color Theme)</label>
-                <Select
-                  value={uiConfig.colorTheme || "brand"}
-                  onValueChange={(val) => handleUiConfigChange("colorTheme", val)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Chọn chủ đề màu..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="default">Mặc định hệ thống</SelectItem>
-                    <SelectItem value="brand">Màu chủ đạo (VaniStudio Brand)</SelectItem>
-                    <SelectItem value="glassmorphism">Hiệu ứng Kính (Glassmorphism)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
           </div>
         </div>
