@@ -606,7 +606,7 @@ function ParameterTableBuilder({
       ) : (
         <div className="space-y-4">
           {parameters.map((param, idx) => (
-            <div key={idx} className="flex flex-col gap-3 p-3.5 border border-border/60 bg-card/60 rounded-xl relative group">
+            <div key={idx} className="flex flex-col gap-3 p-3.5 border border-border/60 bg-card/30 rounded-xl relative group">
               <button
                 type="button"
                 onClick={() => handleRemoveParam(idx)}
@@ -732,7 +732,7 @@ function ResponseSampleBuilder({
           {responses.map((res, idx) => {
             const bodyStr = typeof res.body === "object" ? JSON.stringify(res.body, null, 2) : String(res.body);
             return (
-              <div key={idx} className="flex flex-col gap-3 p-3.5 border border-border/60 bg-card/60 rounded-xl relative group">
+              <div key={idx} className="flex flex-col gap-3 p-3.5 border border-border/60 bg-card/30 rounded-xl relative group">
                 <button
                   type="button"
                   onClick={() => handleRemoveResponse(idx)}

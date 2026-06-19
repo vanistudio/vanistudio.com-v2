@@ -256,7 +256,7 @@ export default function ContactPageCustomizer({
               const fieldVal = fields[fieldKey as keyof typeof fields] as ContactFieldItem;
               if (!fieldVal) return null;
               return (
-                <div key={fieldKey} className="border border-border/80 rounded-xl p-4 bg-card flex flex-col gap-3">
+                <Card key={fieldKey} className="bg-card/30! border-border shadow-sm p-4 flex flex-col gap-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-foreground">{FIELD_LABELS[fieldKey]}</span>
                     <div className="flex items-center gap-4">
@@ -300,12 +300,12 @@ export default function ContactPageCustomizer({
                       />
                     </div>
                   </div>
-                </div>
+                </Card>
               );
             })}
 
             {fields.attachments && (
-              <div className="border border-border/80 rounded-xl p-4 bg-card flex flex-col gap-3 col-span-1 md:col-span-2">
+              <Card className="bg-card/30! border-border shadow-sm p-4 flex flex-col gap-3 col-span-1 md:col-span-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Icon icon="solar:paperclip-line-duotone" className="size-4 text-primary" />
@@ -357,13 +357,13 @@ export default function ContactPageCustomizer({
                       type="number"
                       value={fields.attachments.maxSizeMb || 5}
                       onChange={(e) => handleAttachmentsChange("maxSizeMb", Number(e.target.value))}
-                      className="h-8 text-xs"
-                      disabled={!fields.attachments.show}
-                    />
-                  </div>
+                    className="h-8 text-xs"
+                    disabled={!fields.attachments.show}
+                  />
                 </div>
               </div>
-            )}
+            </Card>
+          )}
           </div>
 
           <div className="flex flex-col gap-4 mt-2">
@@ -402,7 +402,7 @@ export default function ContactPageCustomizer({
                 {fields.customFields.map((field) => (
                   <div
                     key={field.key}
-                    className="flex items-center justify-between p-3.5 border border-border/70 rounded-xl hover:bg-muted/10 transition-all bg-card"
+                    className="flex items-center justify-between p-3.5 border border-border/70 rounded-xl hover:bg-muted/10 transition-all bg-card/30!"
                   >
                     <div className="flex items-center gap-3">
                       <div className="flex size-9 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">
@@ -462,7 +462,7 @@ export default function ContactPageCustomizer({
             };
             if (!socialVal) return null;
             return (
-              <div key={socialKey} className="border border-border/80 rounded-xl p-4 bg-card flex flex-col gap-3">
+              <Card key={socialKey} className="bg-card/30! border-border shadow-sm p-4 flex flex-col gap-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20">
@@ -501,12 +501,12 @@ export default function ContactPageCustomizer({
                     />
                   </div>
                 </div>
-              </div>
+              </Card>
             );
           })}
 
           {socialChannels.mapEmbedUrl && (
-            <div className="border border-border/80 rounded-xl p-4 bg-card flex flex-col gap-3">
+            <Card className="bg-card/30! border-border shadow-sm p-4 flex flex-col gap-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20">
@@ -562,14 +562,14 @@ export default function ContactPageCustomizer({
                   />
                 </div>
               </div>
-            </div>
+            </Card>
           )}
         </div>
       )}
 
       {activeTab === "ui" && (
         <div className="flex flex-col gap-6">
-          <div className="border border-border/80 rounded-xl p-4 bg-card flex flex-col gap-4">
+          <Card className="bg-card/30! border-border shadow-sm p-4 flex flex-col gap-4">
             <h4 className="text-xs font-bold text-foreground pb-2 border-b border-border/50">Cơ chế lưu trữ & Thông báo</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex items-center justify-between p-3.5 border border-border/60 rounded-xl bg-background">
@@ -594,9 +594,9 @@ export default function ContactPageCustomizer({
                 />
               </div>
             </div>
-          </div>
+          </Card>
 
-          <div className="border border-border/80 rounded-xl p-4 bg-card flex flex-col gap-4">
+          <Card className="bg-card/30! border-border shadow-sm p-4 flex flex-col gap-4">
             <h4 className="text-xs font-bold text-foreground pb-2 border-b border-border/50">Cấu hình UI & Nội dung Form</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
@@ -667,7 +667,7 @@ export default function ContactPageCustomizer({
                 </Select>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       )}
 

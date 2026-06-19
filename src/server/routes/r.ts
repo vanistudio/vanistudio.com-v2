@@ -5,6 +5,7 @@ import { administratorRouter } from "./administrator/administrator.route";
 import { toolsRouter } from "./public/tools.route";
 import { publicBlogRouter } from "./public/blog.route";
 import { publicApiDocsRouter } from "./public/api.route";
+import { contactRouter } from "./public/contact.route";
 
 export const appRouter = router({
   configuration: configurationRouter,
@@ -13,6 +14,7 @@ export const appRouter = router({
   tools: toolsRouter,
   blog: publicBlogRouter,
   apiDocs: publicApiDocsRouter,
+  contact: contactRouter,
 });
 
 export type AppRouter = typeof appRouter;
