@@ -53,4 +53,44 @@ export const toolsRouter = router({
     .query(async ({ input }) => {
       return await toolsService.getLinkPreview(input.url);
     }),
+
+  checkRobloxUser: publicProcedure
+    .input(
+      z.object({
+        userIdOrUsername: z.union([z.string(), z.number()]),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await toolsService.checkRobloxUser(input.userIdOrUsername);
+    }),
+
+  checkRobloxPlace: publicProcedure
+    .input(
+      z.object({
+        placeId: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await toolsService.checkRobloxPlace(input.placeId);
+    }),
+
+  checkRobloxUserCurrentlyWearing: publicProcedure
+    .input(
+      z.object({
+        userId: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await toolsService.checkRobloxUserCurrentlyWearing(input.userId);
+    }),
+
+  checkRobloxUserBadges: publicProcedure
+    .input(
+      z.object({
+        userId: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await toolsService.checkRobloxUserBadges(input.userId);
+    }),
 });

@@ -49,6 +49,10 @@ export class MenuService {
   async getPublicMenus(): Promise<{ group: MenuGroup; items: Menu[] }[]> {
     return await menuRepository.getPublicMenus();
   }
+
+  async resetAllMenusToDefault(): Promise<void> {
+    await menuRepository.resetAllMenusToDefault();
+  }
 }
 
 export const menuService = new MenuService();

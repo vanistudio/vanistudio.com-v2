@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyContent, EmptyMedia } from "@/components/ui/empty";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
@@ -138,6 +138,21 @@ function SmoothAccordion({ children, open }: { children: React.ReactNode; open: 
 export default function AdminMenu() {
   const { data: groups, refetch: refetchGroups, isLoading: loadingGroups } = trpc.administrator.menu.getGroups.useQuery();
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
+
+  const resetAllMutation = trpc.administrator.menu.resetAllToDefault.useMutation();
+  const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
+
+  const handleResetAllToDefault = async () => {
+    try {
+      await resetAllMutation.mutateAsync();
+      toast.success("Đã khôi phục toàn bộ menu về mặc định");
+      setResetConfirmOpen(false);
+      refetchGroups();
+      setSelectedGroupId(null);
+    } catch (err: any) {
+      toast.error(err.message || "Không thể khôi phục menu");
+    }
+  };
 
   const { data: serverMenus, refetch: refetchMenus, isLoading: loadingMenus } = trpc.administrator.menu.getMenus.useQuery(
     { groupId: selectedGroupId || "" },
@@ -563,7 +578,22 @@ export default function AdminMenu() {
                 </p>
               </div>
             </div>
-
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setResetConfirmOpen(true)}
+                disabled={loadingGroups || resetAllMutation.isPending}
+                className="gap-1.5 shrink-0 text-red-500 hover:text-red-600 hover:bg-red-50/10 border-red-500/20"
+              >
+                {resetAllMutation.isPending ? (
+                  <Icon icon="solar:restart-line-duotone" className="animate-spin text-base" />
+                ) : (
+                  <Icon icon="solar:shield-warning-line-duotone" className="text-base" />
+                )}
+                <span>Khôi phục mặc định</span>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -991,6 +1021,35 @@ export default function AdminMenu() {
             </Button>
             <Button variant="danger" onClick={handleDeleteMenu}>
               Xác nhận xóa
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={resetConfirmOpen} onOpenChange={setResetConfirmOpen}>
+        <DialogContent className="sm:max-w-[380px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-500">
+              <Icon icon="solar:danger-triangle-line-duotone" className="text-xl" />
+              <span>Xác nhận khôi phục mặc định</span>
+            </DialogTitle>
+          </DialogHeader>
+          <DialogDescription className="sr-only">Xác nhận khôi phục toàn bộ menu về cấu hình mặc định ban đầu</DialogDescription>
+          <div className="py-2 text-sm text-muted-foreground">
+            Bạn có chắc chắn muốn khôi phục <strong className="text-foreground font-semibold">toàn bộ cấu hình Menu</strong> về mặc định ban đầu không? Mọi tùy chỉnh hiện tại của bạn sẽ bị xóa và ghi đè hoàn toàn. Hành động này không thể hoàn tác.
+          </div>
+          <DialogFooter className="pt-2">
+            <Button variant="outline" onClick={() => setResetConfirmOpen(false)}>
+              Hủy
+            </Button>
+            <Button
+              variant="danger"
+              onClick={handleResetAllToDefault}
+              disabled={resetAllMutation.isPending}
+            >
+              {resetAllMutation.isPending && (
+                <Icon icon="solar:restart-line-duotone" className="mr-1.5 size-4 animate-spin" />
+              )}
+              Xác nhận khôi phục
             </Button>
           </DialogFooter>
         </DialogContent>

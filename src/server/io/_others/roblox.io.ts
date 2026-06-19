@@ -1,5 +1,23 @@
 import { http } from "@/lib/http";
 
+async function robloxPost<T>(url: string, body: any): Promise<T> {
+  try {
+    return await http.post<T>(url, body);
+  } catch (err: any) {
+    if (err.status === 403 && err.response) {
+      const csrfToken = err.response.headers.get("x-csrf-token");
+      if (csrfToken) {
+        return await http.post<T>(url, body, {
+          headers: {
+            "X-CSRF-TOKEN": csrfToken,
+          },
+        });
+      }
+    }
+    throw err;
+  }
+}
+
 export interface RobloxProfile {
   id: number;
   name: string;
@@ -10,6 +28,10 @@ export interface RobloxProfile {
   hasVerifiedBadge: boolean;
   status: string;
   avatarUrl: string;
+  avatarUrlFull: string;
+  friendsCount: number;
+  followersCount: number;
+  followingCount: number;
   presence: {
     type: "Offline" | "Online" | "InGame" | "InStudio";
     lastOnline?: string;
@@ -25,6 +47,7 @@ export interface RobloxProfile {
     roleRank: number;
     memberCount: number;
     hasVerifiedBadge: boolean;
+    iconUrl: string;
   }[];
 }
 
@@ -59,7 +82,7 @@ export async function resolveUsernameToId(username: string): Promise<number> {
   }
 
   try {
-    const res = await http.post<{ data: { id: number; name: string; displayName: string }[] }>(
+    const res = await robloxPost<{ data: { id: number; name: string; displayName: string }[] }>(
       "https://users.roblox.com/v1/usernames/users",
       {
         usernames: [cleanUsername],
@@ -112,19 +135,67 @@ export async function checkUserProfile(userIdOrUsername: string | number): Promi
   }
 
   let avatarUrl = "";
-  try {
-    const avatarRes = await http.get<any>(
-      `https://thumbnails.roblox.com/v1/users/avatar?userIds=${userId}&size=352x352&format=Png&isCircular=false`
-    );
-    if (avatarRes?.data?.[0]?.imageUrl) {
-      avatarUrl = avatarRes.data[0].imageUrl;
-    }
-  } catch {
-  }
+  let avatarUrlFull = "";
+  let friendsCount = 0;
+  let followersCount = 0;
+  let followingCount = 0;
+
+  await Promise.allSettled([
+    (async () => {
+      try {
+        const avatarRes = await http.get<any>(
+          `https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userId}&size=352x352&format=Png&isCircular=false`
+        );
+        if (avatarRes?.data?.[0]?.imageUrl) {
+          avatarUrl = avatarRes.data[0].imageUrl;
+        }
+      } catch {}
+    })(),
+    (async () => {
+      try {
+        const avatarFullRes = await http.get<any>(
+          `https://thumbnails.roblox.com/v1/users/avatar?userIds=${userId}&size=352x352&format=Png&isCircular=false`
+        );
+        if (avatarFullRes?.data?.[0]?.imageUrl) {
+          avatarUrlFull = avatarFullRes.data[0].imageUrl;
+        }
+      } catch {}
+    })(),
+    (async () => {
+      try {
+        const friendsRes = await http.get<{ count: number }>(
+          `https://friends.roblox.com/v1/users/${userId}/friends/count`
+        );
+        if (friendsRes && typeof friendsRes.count === "number") {
+          friendsCount = friendsRes.count;
+        }
+      } catch {}
+    })(),
+    (async () => {
+      try {
+        const followersRes = await http.get<{ count: number }>(
+          `https://friends.roblox.com/v1/users/${userId}/followers/count`
+        );
+        if (followersRes && typeof followersRes.count === "number") {
+          followersCount = followersRes.count;
+        }
+      } catch {}
+    })(),
+    (async () => {
+      try {
+        const followingRes = await http.get<{ count: number }>(
+          `https://friends.roblox.com/v1/users/${userId}/followings/count`
+        );
+        if (followingRes && typeof followingRes.count === "number") {
+          followingCount = followingRes.count;
+        }
+      } catch {}
+    })(),
+  ]);
 
   let presence: RobloxProfile["presence"] = { type: "Offline" };
   try {
-    const presenceRes = await http.post<any>("https://presence.roblox.com/v1/presence/users", {
+    const presenceRes = await robloxPost<any>("https://presence.roblox.com/v1/presence/users", {
       userIds: [userId],
     });
     const userPresence = presenceRes?.userPresences?.[0];
@@ -151,14 +222,33 @@ export async function checkUserProfile(userIdOrUsername: string | number): Promi
   try {
     const groupsRes = await http.get<any>(`https://groups.roblox.com/v2/users/${userId}/groups/roles`);
     if (groupsRes?.data) {
-      groups = groupsRes.data.map((item: any) => ({
+      const parsedGroups = groupsRes.data.map((item: any) => ({
         id: item.group.id,
         name: item.group.name,
         roleName: item.role.name,
         roleRank: item.role.rank,
         memberCount: item.group.memberCount || 0,
         hasVerifiedBadge: !!item.group.hasVerifiedBadge,
+        iconUrl: "",
       }));
+
+      const groupIds = parsedGroups.map((g: any) => g.id);
+      if (groupIds.length > 0) {
+        try {
+          const iconsRes = await http.get<{ data: { targetId: number; imageUrl: string }[] }>(
+            `https://thumbnails.roblox.com/v1/groups/icons?groupIds=${groupIds.join(",")}&size=150x150&format=Png&isCircular=false`
+          );
+          if (iconsRes?.data) {
+            const iconMap = new Map(iconsRes.data.map((item) => [item.targetId, item.imageUrl]));
+            for (const g of parsedGroups) {
+              g.iconUrl = iconMap.get(g.id) || "";
+            }
+          }
+        } catch (err) {
+          console.error("Lỗi khi lấy icon nhóm Roblox:", err);
+        }
+      }
+      groups = parsedGroups;
     }
   } catch {
   }
@@ -173,6 +263,10 @@ export async function checkUserProfile(userIdOrUsername: string | number): Promi
     hasVerifiedBadge: !!baseInfo.hasVerifiedBadge,
     status,
     avatarUrl,
+    avatarUrlFull,
+    friendsCount,
+    followersCount,
+    followingCount,
     presence,
     groups,
   };
@@ -324,6 +418,7 @@ export interface RobloxBadge {
   iconImageId: number;
   awardCount: number;
   winRatePercentage: number;
+  iconUrl?: string;
 }
 
 export interface RobloxFriend {
@@ -441,38 +536,84 @@ export async function getUserCurrentlyWearingDetails(userId: number): Promise<Ro
   } catch {
   }
 
-  const detailPromises = assetIds.map(async (assetId) => {
-    try {
-      const detail = await http.get<any>(
-        `https://economy.roblox.com/v2/assets/${assetId}/details`
-      );
-      if (!detail) return null;
-
-      return {
-        assetId,
-        name: detail.Name || "",
-        description: detail.Description || "",
-        assetTypeId: detail.AssetTypeId || 0,
-        assetTypeName: getAssetTypeName(detail.AssetTypeId),
-        creator: {
-          id: detail.Creator?.Id || 0,
-          name: detail.Creator?.Name || "",
-          type: detail.Creator?.CreatorType || "User",
-          hasVerifiedBadge: !!detail.Creator?.HasVerifiedBadge,
-        },
-        created: detail.Created || "",
-        updated: detail.Updated || "",
-        priceInRobux: detail.PriceInRobux || 0,
-        isForSale: !!detail.IsForSale,
-        thumbnailUrl: thumbnailMap.get(assetId) || "",
-      } as RobloxAssetDetails;
-    } catch {
-      return null;
+  let details: RobloxAssetDetails[] = [];
+  try {
+    const batchItems = assetIds.map((id) => ({ itemType: "Asset", id }));
+    const response = await robloxPost<{ data: any[] }>(
+      "https://catalog.roblox.com/v1/catalog/items/details",
+      { items: batchItems }
+    );
+    if (response?.data) {
+      details = response.data.map((item: any) => {
+        const isForSale = item.priceStatus === "For Sale" || !!item.price || item.isForSale;
+        const price = item.price ?? item.lowestPrice ?? 0;
+        return {
+          assetId: item.id,
+          name: item.name || "",
+          description: item.description || "",
+          assetTypeId: item.assetType || 0,
+          assetTypeName: getAssetTypeName(item.assetType || 0),
+          creator: {
+            id: item.creatorTargetId || 0,
+            name: item.creatorName || "",
+            type: item.creatorType || "User",
+            hasVerifiedBadge: !!item.creatorHasVerifiedBadge,
+          },
+          created: item.created || "",
+          updated: item.updated || "",
+          priceInRobux: price,
+          isForSale: isForSale,
+          thumbnailUrl: thumbnailMap.get(item.id) || "",
+        };
+      });
     }
-  });
+  } catch (err) {
+    console.error("Batch catalog API failed, falling back to single items:", err);
+  }
 
-  const details = await Promise.all(detailPromises);
-  return details.filter((item): item is RobloxAssetDetails => item !== null);
+  const loadedIds = new Set(details.map((d) => d.assetId));
+  const missingIds = assetIds.filter((id) => !loadedIds.has(id));
+
+  if (missingIds.length > 0) {
+    const detailPromises = missingIds.map(async (assetId) => {
+      try {
+        const detail = await http.get<any>(
+          `https://economy.roblox.com/v2/assets/${assetId}/details`
+        );
+        if (!detail) return null;
+
+        return {
+          assetId,
+          name: detail.Name || "",
+          description: detail.Description || "",
+          assetTypeId: detail.AssetTypeId || 0,
+          assetTypeName: getAssetTypeName(detail.AssetTypeId),
+          creator: {
+            id: detail.Creator?.Id || 0,
+            name: detail.Creator?.Name || "",
+            type: detail.Creator?.CreatorType || "User",
+            hasVerifiedBadge: !!detail.Creator?.HasVerifiedBadge,
+          },
+          created: detail.Created || "",
+          updated: detail.Updated || "",
+          priceInRobux: detail.PriceInRobux || 0,
+          isForSale: !!detail.IsForSale,
+          thumbnailUrl: thumbnailMap.get(assetId) || "",
+        } as RobloxAssetDetails;
+      } catch {
+        return null;
+      }
+    });
+
+    const fallbackDetails = await Promise.all(detailPromises);
+    for (const item of fallbackDetails) {
+      if (item) details.push(item);
+    }
+  }
+
+  return assetIds
+    .map((id) => details.find((d) => d.assetId === id))
+    .filter((item): item is RobloxAssetDetails => !!item);
 }
 
 export async function searchRobloxUsers(keyword: string, limit: number = 10): Promise<RobloxSearchResultUser[]> {
@@ -631,5 +772,50 @@ export async function getUserFriends(userId: number): Promise<RobloxFriend[]> {
     }));
   } catch (err: any) {
     throw new Error(err.message || "Lỗi khi lấy danh sách bạn bè");
+  }
+}
+
+export async function getUserBadges(userId: number, limit: number = 100): Promise<RobloxBadge[]> {
+  if (!userId || isNaN(userId)) {
+    throw new Error("Mã người dùng không hợp lệ");
+  }
+
+  try {
+    const res = await http.get<{ data: any[] }>(
+      `https://badges.roblox.com/v1/users/${userId}/badges?limit=${limit}&sortOrder=Desc`
+    );
+    if (!res?.data || res.data.length === 0) return [];
+
+    const badges: RobloxBadge[] = res.data.map((badge) => ({
+      id: badge.id,
+      name: badge.name || "",
+      description: badge.description || "",
+      displayName: badge.displayName || "",
+      iconImageId: badge.iconImageId || 0,
+      awardCount: badge.awardCount || 0,
+      winRatePercentage: badge.winRatePercentage || 0,
+      iconUrl: "",
+    }));
+
+    const badgeIds = badges.map((b) => b.id);
+    if (badgeIds.length > 0) {
+      try {
+        const iconsRes = await http.get<{ data: { targetId: number; imageUrl: string }[] }>(
+          `https://thumbnails.roblox.com/v1/badges/icons?badgeIds=${badgeIds.join(",")}&size=150x150&format=Png&isCircular=false`
+        );
+        if (iconsRes?.data) {
+          const iconMap = new Map(iconsRes.data.map((item) => [item.targetId, item.imageUrl]));
+          for (const b of badges) {
+            b.iconUrl = iconMap.get(b.id) || "";
+          }
+        }
+      } catch (err) {
+        console.error("Lỗi khi lấy icon huy hiệu Roblox:", err);
+      }
+    }
+
+    return badges;
+  } catch (err: any) {
+    throw new Error(err.message || "Lỗi khi lấy danh sách huy hiệu");
   }
 }

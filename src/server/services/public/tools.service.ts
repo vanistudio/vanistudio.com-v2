@@ -1,4 +1,5 @@
 import { getWhoisRaw, resolveDns, getSslInfo, getHttpInfo, getIpGeo } from "@/server/io/_others/domain.io";
+import { checkUserProfile, checkPlaceDetails, getUserCurrentlyWearingDetails, getUserBadges } from "@/server/io/_others/roblox.io";
 import { http } from "@/lib/http";
 
 const UA_DESKTOP = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
@@ -382,6 +383,22 @@ export class ToolsService {
         error: err.message,
       };
     }
+  }
+
+  async checkRobloxUser(userIdOrUsername: string | number) {
+    return await checkUserProfile(userIdOrUsername);
+  }
+
+  async checkRobloxPlace(placeId: number) {
+    return await checkPlaceDetails(placeId);
+  }
+
+  async checkRobloxUserCurrentlyWearing(userId: number) {
+    return await getUserCurrentlyWearingDetails(userId);
+  }
+
+  async checkRobloxUserBadges(userId: number) {
+    return await getUserBadges(userId);
   }
 }
 

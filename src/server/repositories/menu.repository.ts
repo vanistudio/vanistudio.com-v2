@@ -112,6 +112,12 @@ export class MenuRepository {
     });
   }
 
+  async resetAllMenusToDefault(): Promise<void> {
+    await db.delete(menus);
+    await db.delete(menuGroups);
+    await this.seedDefaultMenus();
+  }
+
   async getPublicMenus(): Promise<{ group: MenuGroup; items: Menu[] }[]> {
     let groups = await db
       .select()

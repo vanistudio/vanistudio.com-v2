@@ -131,4 +131,10 @@ export const menuRouter = router({
   getPublicMenus: publicProcedure.query(async () => {
     return await menuService.getPublicMenus();
   }),
+
+  resetAllToDefault: publicProcedure.mutation(async () => {
+    await ensureAdmin();
+    await menuService.resetAllMenusToDefault();
+    return { success: true };
+  }),
 });
