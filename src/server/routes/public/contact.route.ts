@@ -122,8 +122,6 @@ export const contactRouter = router({
             createdAt,
             expectedResponseTime: "Trong vòng 24 giờ làm việc",
             message: input.message,
-            supportPortalUrl: `${siteUrl}/support`,
-            faqLink: `${siteUrl}/faq`,
           });
 
           await notificationService.trigger("contact.new_submission_admin", {
