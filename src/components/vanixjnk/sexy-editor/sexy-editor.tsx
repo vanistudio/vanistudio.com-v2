@@ -129,56 +129,59 @@ export const SexyEditor = React.forwardRef<SexyEditorRef, SexyEditorProps>(funct
     const lastHtmlRef = React.useRef<string | null>(value)
     const [, forceUpdate] = React.useReducer((x) => x + 1, 0)
 
+    const extensions = React.useMemo(() => [
+        StarterKit.configure({
+            heading: false,
+            horizontalRule: false,
+        }),
+        Heading.configure({
+            levels: [1, 2, 3, 4],
+        }),
+        Underline,
+        Link.configure({
+            openOnClick: false,
+            HTMLAttributes: {
+                class: "text-vanixjnk underline underline-offset-4 cursor-pointer",
+            },
+        }),
+        Image.configure({
+            HTMLAttributes: {
+                class: "rounded-md border shadow-sm max-w-full h-auto my-4",
+            },
+        }),
+        TextAlign.configure({
+            types: ["heading", "paragraph"],
+        }),
+        TextStyle,
+        Color,
+        Highlight.configure({ multicolor: true }),
+        Placeholder.configure({
+            placeholder: placeholder,
+            emptyEditorClass: "is-editor-empty",
+        }),
+        HorizontalRule,
+        Subscript,
+        Superscript,
+        Table.configure({
+            resizable: true,
+        }),
+        TableRow,
+        TableHeader,
+        TableCell,
+        TaskList,
+        TaskItem.configure({
+            nested: true,
+        }),
+        Typography,
+        CharacterCount,
+        StyleExtension,
+        CoreAttributes,
+        DivNode,
+        SpanNode,
+    ], [placeholder])
+
     const editor = useEditor({
-        extensions: [
-            StarterKit.configure({
-                heading: false,
-            }),
-            Heading.configure({
-                levels: [1, 2, 3, 4],
-            }),
-            Underline,
-            Link.configure({
-                openOnClick: false,
-                HTMLAttributes: {
-                    class: "text-vanixjnk underline underline-offset-4 cursor-pointer",
-                },
-            }),
-            Image.configure({
-                HTMLAttributes: {
-                    class: "rounded-md border shadow-sm max-w-full h-auto my-4",
-                },
-            }),
-            TextAlign.configure({
-                types: ["heading", "paragraph"],
-            }),
-            TextStyle,
-            Color,
-            Highlight.configure({ multicolor: true }),
-            Placeholder.configure({
-                placeholder: placeholder,
-                emptyEditorClass: "is-editor-empty",
-            }),
-            HorizontalRule,
-            Subscript,
-            Superscript,
-            Table.configure({
-                resizable: true,
-            }),
-            TableRow,
-            TableHeader,
-            TableCell,
-            TaskList,
-            TaskItem.configure({
-                nested: true,
-            }),
-            Typography,
-            CharacterCount,
-            StyleExtension,
-            CoreAttributes,
-            DivNode,
-            SpanNode,
-        ],
+        extensions,
         content: initialEnv.content,
         onUpdate: ({ editor }) => {
             const html = editor.getHTML()

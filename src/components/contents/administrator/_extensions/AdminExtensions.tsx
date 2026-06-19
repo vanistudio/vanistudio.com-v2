@@ -13,6 +13,7 @@ import CaptchaProvider from "./CaptchaProvider";
 import AnalyticsMarketing from "./AnalyticsMarketing";
 import StorageConfig from "./StorageConfig";
 import SecuritySettings from "./SecuritySettings";
+import NotificationConfig from "./NotificationConfig";
 
 const TABS = [
   {
@@ -56,6 +57,12 @@ const TABS = [
     title: "Cấu hình Bảo mật",
     icon: "solar:shield-keyhole-line-duotone",
     desc: "Cấu hình giới hạn request, chống spam IP, chặn brute-force và tăng cường bảo mật phiên người dùng.",
+  },
+  {
+    id: "notification_config",
+    title: "Thông báo hệ thống",
+    icon: "solar:bell-bing-line-duotone",
+    desc: "Cấu hình các cổng thông báo SMTP, Telegram, Discord, Slack và thiết lập quy tắc kích hoạt gửi tin.",
   },
 ];
 
@@ -329,6 +336,17 @@ export default function AdminExtensions() {
                     onEnabledChange={(val) => handleEnabledChange(activeExt.id, val)}
                     config={activeExt.config as any}
                     onConfigChange={(val) => handleConfigChange(activeExt.id, val)}
+                  />
+                )}
+
+                {activeTab === "notification_config" && (
+                  <NotificationConfig
+                    isEnabled={activeExt.isEnabled}
+                    onEnabledChange={(val) => handleEnabledChange(activeExt.id, val)}
+                    config={activeExt.config as any}
+                    onConfigChange={(val) => handleConfigChange(activeExt.id, val)}
+                    onSave={handleSave}
+                    isSaving={updateMutation.isPending}
                   />
                 )}
               </div>
