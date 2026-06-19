@@ -5,6 +5,37 @@ import { db } from "@/server/db";
 import { contactSubmissions } from "@/server/db/schemas/contact.schema";
 import { extensionsRepository } from "@/server/repositories/extensions.repository";
 import { notificationService } from "@/server/services/public/notification.service";
+import { extractActivityTracking } from "@/server/plugins/tracking.plugin";
+
+function getSiteUrl(headers: Headers): string {
+  const proto = headers.get("x-forwarded-proto") || "http";
+  const host = headers.get("x-forwarded-host") || headers.get("host") || "";
+  let resolvedUrl = "";
+  if (host) {
+    resolvedUrl = `${proto}://${host}`;
+  }
+
+  let envDomain = process.env.APP_BETTER_AUTH_DOMAIN || "";
+  if (envDomain) {
+    if (!envDomain.startsWith("http://") && !envDomain.startsWith("https://")) {
+      const isDev = envDomain.includes("localhost") || envDomain.includes("127.0.0.1");
+      envDomain = `${isDev ? "http://" : "https://"}${envDomain}`;
+    }
+  }
+
+  const fallbackUrl = envDomain || "https://vanistudio.com";
+  const isProd = process.env.NODE_ENV === "production";
+
+  if (isProd) {
+    const isLocal = resolvedUrl.includes("localhost") || resolvedUrl.includes("127.0.0.1") || !resolvedUrl;
+    if (isLocal) {
+      const isEnvLocal = envDomain.includes("localhost") || envDomain.includes("127.0.0.1") || !envDomain;
+      return isEnvLocal ? "https://vanistudio.com" : envDomain;
+    }
+  }
+
+  return resolvedUrl || fallbackUrl;
+}
 
 export const contactRouter = router({
   getConfig: publicProcedure.query(async () => {
@@ -42,8 +73,19 @@ export const contactRouter = router({
         customFields: z.record(z.string(), z.any()).default({}),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       try {
+        const tracking = await extractActivityTracking(ctx.headers);
+        const siteUrl = getSiteUrl(ctx.headers);
+        
+        let referrerUrl = ctx.headers.get("referer") || "";
+        const isProd = process.env.NODE_ENV === "production";
+        if (isProd && (referrerUrl.includes("localhost") || referrerUrl.includes("127.0.0.1") || !referrerUrl)) {
+          referrerUrl = `${siteUrl}/contact`;
+        } else if (!referrerUrl) {
+          referrerUrl = `${siteUrl}/contact`;
+        }
+
         const ext = await extensionsRepository.getExtensionById("contact_page_customizer");
         if (!ext || !ext.isEnabled) {
           throw new TRPCError({
@@ -80,8 +122,8 @@ export const contactRouter = router({
             createdAt,
             expectedResponseTime: "Trong vòng 24 giờ làm việc",
             message: input.message,
-            supportPortalUrl: "https://vanistudio.com/support",
-            faqLink: "https://vanistudio.com/faq",
+            supportPortalUrl: `${siteUrl}/support`,
+            faqLink: `${siteUrl}/faq`,
           });
 
           await notificationService.trigger("contact.new_submission_admin", {
@@ -95,13 +137,13 @@ export const contactRouter = router({
             company: input.company || "Không có",
             previousTicketsCount: "0",
             createdAt,
-            referrerUrl: "https://vanistudio.com/contact",
+            referrerUrl,
             assignedTeam: "Chăm sóc khách hàng",
-            ipAddress: "N/A",
-            deviceInfo: "Web Browser",
+            ipAddress: tracking.ipAddress || "unknown",
+            deviceInfo: tracking.deviceName || "unknown",
             subject: input.subject,
             message: input.message,
-            inboxUrl: "https://vanistudio.com/adminPanel/inbox",
+            inboxUrl: `${siteUrl}/adminPanel/inbox`,
           });
         }
 

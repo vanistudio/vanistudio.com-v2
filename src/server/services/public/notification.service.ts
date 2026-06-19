@@ -2,8 +2,11 @@ import { db } from "@/server/db";
 import { notificationLogs } from "@/server/db/schemas/notification.schema";
 import { notificationTemplates } from "@/server/db/schemas/template.schema";
 import { extensionsRepository } from "@/server/repositories/extensions.repository";
-import nodemailer from "nodemailer";
 import { eq } from "drizzle-orm";
+import * as telegramIO from "@/server/io/_notifications/telegram.io";
+import * as discordIO from "@/server/io/_notifications/discord.io";
+import * as slackIO from "@/server/io/_notifications/slack.io";
+import * as emailIO from "@/server/io/_notifications/email.io";
 
 export class NotificationService {
   async trigger(eventKey: string, variables: Record<string, string>) {
@@ -46,26 +49,14 @@ export class NotificationService {
         );
 
         for (const server of matchingServers) {
+          const recipient = variables.email || server.fromEmail;
           try {
-            const transporter = nodemailer.createTransport({
-              host: server.host,
-              port: server.port,
-              secure: server.secure,
-              auth: {
-                user: server.user,
-                pass: server.pass,
-              },
-            });
-
-            const senderEmail = template.extraConfig?.senderEmail || server.fromEmail;
-            const senderName = template.extraConfig?.senderName || server.fromName;
-            const recipient = variables.email || server.fromEmail;
-
-            await transporter.sendMail({
-              from: `"${senderName}" <${senderEmail}>`,
+            await emailIO.sendMessage(server, {
               to: recipient,
               subject: compiledSubject || "Thông báo từ hệ thống",
               html: compiledContent,
+              fromEmail: template.extraConfig?.senderEmail,
+              fromName: template.extraConfig?.senderName,
             });
 
             await db.insert(notificationLogs).values({
@@ -80,7 +71,7 @@ export class NotificationService {
             await db.insert(notificationLogs).values({
               eventKey,
               channel: "email",
-              recipient: variables.email || "unknown",
+              recipient: recipient || "unknown",
               subject: compiledSubject || "Thông báo từ hệ thống",
               content: compiledContent,
               status: "failed",
@@ -104,20 +95,13 @@ export class NotificationService {
 
         for (const bot of bots) {
           try {
-            const res = await fetch(`https://api.telegram.org/bot${bot.botToken}/sendMessage`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                chat_id: bot.chatId,
-                text: compiledContent,
-                parse_mode: "HTML",
-              }),
-            });
+            const telegramInlineKeyboard = template.extraConfig?.telegramInlineKeyboard
+              ? this.compileJson(template.extraConfig.telegramInlineKeyboard, variables)
+              : undefined;
 
-            if (!res.ok) {
-              const errText = await res.text();
-              throw new Error(errText);
-            }
+            await telegramIO.sendMessage(bot.botToken, bot.chatId, compiledContent, {
+              telegramInlineKeyboard,
+            });
 
             await db.insert(notificationLogs).values({
               eventKey,
@@ -153,18 +137,13 @@ export class NotificationService {
 
         for (const webhook of webhooks) {
           try {
-            const res = await fetch(webhook.webhookUrl, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                content: compiledContent,
-              }),
-            });
+            const embeds = template.extraConfig?.discordEmbeds
+              ? this.compileJson(template.extraConfig.discordEmbeds, variables)
+              : undefined;
 
-            if (!res.ok) {
-              const errText = await res.text();
-              throw new Error(errText);
-            }
+            await discordIO.sendMessage(webhook.webhookUrl, compiledContent, {
+              embeds,
+            });
 
             await db.insert(notificationLogs).values({
               eventKey,
@@ -200,18 +179,13 @@ export class NotificationService {
 
         for (const webhook of webhooks) {
           try {
-            const res = await fetch(webhook.webhookUrl, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                text: compiledContent,
-              }),
-            });
+            const blocks = template.extraConfig?.slackBlocks
+              ? this.compileJson(template.extraConfig.slackBlocks, variables)
+              : undefined;
 
-            if (!res.ok) {
-              const errText = await res.text();
-              throw new Error(errText);
-            }
+            await slackIO.sendMessage(webhook.webhookUrl, compiledContent, {
+              blocks,
+            });
 
             await db.insert(notificationLogs).values({
               eventKey,
@@ -241,6 +215,17 @@ export class NotificationService {
       compiled = compiled.replace(new RegExp(`{{\\s*${key}\\s*}}`, "g"), val || "");
     }
     return compiled;
+  }
+
+  private compileJson<T>(obj: T, variables: Record<string, string>): T {
+    if (!obj) return obj;
+    try {
+      const str = JSON.stringify(obj);
+      const compiledStr = this.compile(str, variables);
+      return JSON.parse(compiledStr);
+    } catch {
+      return obj;
+    }
   }
 }
 
