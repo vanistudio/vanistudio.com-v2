@@ -2,7 +2,6 @@ import { pgTable, text, timestamp, boolean, uuid, jsonb, uniqueIndex } from "dri
 
 export interface TemplateExtraConfig {
   senderName?: string;
-  senderEmail?: string;
   parseMode?: "HTML" | "Markdown" | "MarkdownV2" | "PlainText";
   discordEmbeds?: Record<string, any>[];
   slackBlocks?: Record<string, any>[];

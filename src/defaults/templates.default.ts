@@ -30,8 +30,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       "loginUrl"
     ],
     extraConfig: {
-      senderName: "VaniStudio Welcome Manager",
-      senderEmail: "welcome@vanistudio.com"
+      senderName: "VaniStudio Welcome Manager"
     },
     description: "Email tự động gửi chào mừng thành viên mới khi họ đăng ký thành công.",
   },
@@ -57,8 +56,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       "supportHotline"
     ],
     extraConfig: {
-      senderName: "VaniStudio Security Operations",
-      senderEmail: "security@vanistudio.com"
+      senderName: "VaniStudio Security Operations"
     },
     description: "Email chứa liên kết bảo mật khôi phục mật khẩu cho khách hàng.",
   },
@@ -67,7 +65,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
     eventKey: "user.register_admin",
     channel: "telegram",
     target: "admin",
-    content: "🆕 <b>THÀNH VIÊN ĐĂNG KÝ HỆ THỐNG MỚI</b>\n\nHệ thống ghi nhận tài khoản người dùng mới vừa kích hoạt thành công:\n• <b>Mã thành viên:</b> <code>#{{userId}}</code>\n• <b>Họ và tên:</b> <code>{{name}}</code>\n• <b>Địa chỉ Email:</b> <code>{{email}}</code>\n• <b>Nguồn giới thiệu:</b> <code>{{referralSource}}</code>\n• <b>Chiến dịch marketing:</b> <code>{{campaignName}}</code>\n• <b>Thời gian đăng ký:</b> <code>{{createdAt}}</code>\n\n🌐 <b>THÔNG TIN KẾT NỐI:</b>\n• <b>Địa chỉ IP:</b> <code>{{ipAddress}}</code>\n• <b>Nhà cung cấp mạng (ISP):</b> <code>{{ispProvider}}</code>\n• <b>Quốc gia:</b> <code>{{signupCountry}}</code> (Vị trí: <code>{{location}}</code>)\n• <b>Thiết bị sử dụng:</b> <code>{{device}}</code>\n\n⚙️ <b>Hành động quản trị:</b>\n👉 <a href=\"{{profileUrl}}\">Xem hồ sơ chi tiết trên Admin Panel</a>\n\n<i>Hệ thống đã tự động gửi email xác nhận và kích hoạt quà tặng chào mừng cho thành viên này.</i>",
+    content: "🆕 <b>THÀNH VIÊN ĐĂNG KÝ HỆ THỐNG MỚI</b>\n\nHệ thống ghi nhận tài khoản người dùng mới vừa kích hoạt thành công:\n• <b>Mã thành viên:</b> <code>#{{userId}}</code>\n• <b>Họ và tên:</b> <code>{{name}}</code>\n• <b>Địa chỉ Email:</b> <code>{{email}}</code>\n• <b>Nguồn giới thiệu:</b> <code>{{referralSource}}</code>\n• <b>Chiến dịch marketing:</b> <code>{{campaignName}}</code>\n• <b>Thời gian đăng ký:</b> <code>{{createdAt}}</code>\n\n🌐 <b>THÔNG TIN KẾT NỐI:</b>\n• <b>Địa chỉ IP:</b> <code>{{ipAddress}}</code>\n• <b>Nhà cung cấp mạng (ISP):</b> <code>{{ispProvider}}</code> (Vị trí: <code>{{location}}</code>)\n• <b>Thiết bị sử dụng:</b> <code>{{device}}</code>\n\n<i>Hệ thống đã tự động gửi email xác nhận và kích hoạt quà tặng chào mừng cho thành viên này.</i>",
     variables: [
       "userId",
       "name",
@@ -77,22 +75,11 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       "createdAt",
       "ipAddress",
       "ispProvider",
-      "signupCountry",
       "location",
-      "device",
-      "profileUrl"
+      "device"
     ],
     extraConfig: {
-      parseMode: "HTML",
-      telegramInlineKeyboard: {
-        rows: [
-          {
-            buttons: [
-              { text: "🔍 Xem Hồ Sơ Thành Viên", url: "{{profileUrl}}" }
-            ]
-          }
-        ]
-      }
+      parseMode: "HTML"
     },
     description: "Tin nhắn tự động gửi đến group Telegram của Admin để thông báo khi có user mới đăng ký.",
   },
@@ -111,10 +98,8 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       "createdAt",
       "ipAddress",
       "ispProvider",
-      "signupCountry",
       "location",
-      "device",
-      "profileUrl"
+      "device"
     ],
     extraConfig: {
       discordEmbeds: [
@@ -134,9 +119,8 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
             { name: "Chiến dịch", value: "📊 {{campaignName}}", inline: true },
             { name: "Địa chỉ IP", value: "`{{ipAddress}}`", inline: true },
             { name: "Nhà mạng (ISP)", value: "🌐 {{ispProvider}}", inline: true },
-            { name: "Quốc gia", value: "📍 {{signupCountry}} ({{location}})", inline: true },
-            { name: "Thiết bị sử dụng", value: "💻 {{device}}", inline: false },
-            { name: "Hồ sơ quản trị", value: "🔗 [Xem trên Admin Panel]({{profileUrl}})", inline: false }
+            { name: "Vị trí địa lý", value: "📍 {{location}}", inline: true },
+            { name: "Thiết bị sử dụng", value: "💻 {{device}}", inline: false }
           ],
           footer: {
             text: "Đăng ký lúc: {{createdAt}} • VaniStudio User Service"
@@ -161,10 +145,8 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       "createdAt",
       "ipAddress",
       "ispProvider",
-      "signupCountry",
       "location",
-      "device",
-      "profileUrl"
+      "device"
     ],
     extraConfig: {
       slackBlocks: [
@@ -194,7 +176,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
             { type: "mrkdwn", text: "*Nguồn giới thiệu:*\n{{referralSource}}" },
             { type: "mrkdwn", text: "*Chiến dịch:*\n{{campaignName}}" },
             { type: "mrkdwn", text: "*Địa chỉ IP:*\n`{{ipAddress}}`" },
-            { type: "mrkdwn", text: "*Quốc gia:*\n{{signupCountry}} ({{location}})" }
+            { type: "mrkdwn", text: "*Vị trí địa lý:*\n{{location}}" }
           ]
         },
         {
@@ -204,15 +186,6 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
             text: "*Thiết bị sử dụng:*\n`{{device}}`\n*Nhà mạng (ISP):*\n`{{ispProvider}}`"
           }
         },
-        {
-          type: "divider"
-        },
-        {
-          type: "actions",
-          elements: [
-            { type: "button", text: "Xem hồ sơ quản trị", url: "{{profileUrl}}", style: "primary" }
-          ]
-        }
       ]
     },
     description: "Gửi cấu trúc Block Kit thông báo thành viên mới đăng ký qua kênh Slack.",
@@ -236,8 +209,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       "bannedAt",
       "blockDuration",
       "userAgent",
-      "firewallRuleId",
-      "adminPanelUrl"
+      "firewallRuleId"
     ],
     extraConfig: {
       discordEmbeds: [
@@ -276,7 +248,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
     eventKey: "security.ip_banned",
     channel: "telegram",
     target: "admin",
-    content: "🚨 <b>CẢNH BÁO KHẨN CẤP: BẢO VỆ MÁY CHỦ THÀNH CÔNG</b>\n\nTường lửa VaniStudio Sentinel vừa ngăn chặn hành vi xâm nhập trái phép:\n• <b>Mã sự cố (ID):</b> <code>#{{incidentId}}</code>\n• <b>Mức độ cảnh báo:</b> 🔴 <b>{{severityLevel}}</b>\n• <b>Địa chỉ IP nguồn:</b> <code>{{ipAddress}}</code>\n• <b>Quốc gia:</b> {{country}} (Thành phố: {{city}})\n• <b>Nhà mạng (ISP):</b> <code>{{isp}}</code>\n• <b>Lý do xử lý:</b> <u>{{reason}}</u>\n• <b>Tổng yêu cầu ghi nhận:</b> <code>{{totalRequests}} requests</code>\n• <b>Endpoint bị spam:</b> <code>{{failedEndpoints}}</code>\n• <b>Thời gian chặn:</b> <code>{{bannedAt}}</code>\n• <b>Hiệu lực cấm:</b> <code>{{blockDuration}}</code>\n\n⚙️ <b>Thao tác khẩn cấp:</b>\n👉 <a href=\"{{adminPanelUrl}}\">Mở danh sách IP bị cấm trên Admin Panel</a>\n\n🚫 <i>Địa chỉ IP này đã được đẩy lên Cloudflare Firewall API để cấm truy cập ở mức CDN. Không cần xử lý thủ công thêm.</i>",
+    content: "🚨 <b>CẢNH BÁO KHẨN CẤP: BẢO VỆ MÁY CHỦ THÀNH CÔNG</b>\n\nTường lửa VaniStudio Sentinel vừa ngăn chặn hành vi xâm nhập trái phép:\n• <b>Mã sự cố (ID):</b> <code>#{{incidentId}}</code>\n• <b>Mức độ cảnh báo:</b> 🔴 <b>{{severityLevel}}</b>\n• <b>Địa chỉ IP nguồn:</b> <code>{{ipAddress}}</code>\n• <b>Quốc gia:</b> {{country}} (Thành phố: {{city}})\n• <b>Nhà mạng (ISP):</b> <code>{{isp}}</code>\n• <b>Lý do xử lý:</b> <u>{{reason}}</u>\n• <b>Tổng yêu cầu ghi nhận:</b> <code>{{totalRequests}} requests</code>\n• <b>Endpoint bị spam:</b> <code>{{failedEndpoints}}</code>\n• <b>Thời gian chặn:</b> <code>{{bannedAt}}</code>\n• <b>Hiệu lực cấm:</b> <code>{{blockDuration}}</code>\n\n🚫 <i>Địa chỉ IP này đã được đẩy lên Cloudflare Firewall API để cấm truy cập ở mức CDN. Không cần xử lý thủ công thêm.</i>",
     variables: [
       "incidentId",
       "severityLevel",
@@ -288,20 +260,10 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       "totalRequests",
       "failedEndpoints",
       "bannedAt",
-      "blockDuration",
-      "adminPanelUrl"
+      "blockDuration"
     ],
     extraConfig: {
-      parseMode: "HTML",
-      telegramInlineKeyboard: {
-        rows: [
-          {
-            buttons: [
-              { text: "🛠️ Quản Lý Tường Lửa", url: "{{adminPanelUrl}}" }
-            ]
-          }
-        ]
-      }
+      parseMode: "HTML"
     },
     description: "Cảnh báo bảo mật gửi qua tin nhắn Telegram khi phát hiện và chặn IP spam.",
   },
@@ -397,8 +359,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       "message"
     ],
     extraConfig: {
-      senderName: "VaniStudio Customer Support",
-      senderEmail: "support@vanistudio.com"
+      senderName: "VaniStudio Customer Support"
     },
     description: "Email tự động gửi phản hồi xác nhận cho khách hàng khi họ gửi form liên hệ.",
   },
@@ -427,8 +388,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       "inboxUrl"
     ],
     extraConfig: {
-      senderName: "VaniStudio CRM Dispatcher",
-      senderEmail: "crm@vanistudio.com"
+      senderName: "VaniStudio CRM Dispatcher"
     },
     description: "Email thông báo cho Admin khi có khách hàng gửi biểu mẫu liên hệ.",
   },
@@ -610,8 +570,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       "lockAccountLink"
     ],
     extraConfig: {
-      senderName: "VaniStudio Security Team",
-      senderEmail: "security@vanistudio.com"
+      senderName: "VaniStudio Security Team"
     },
     description: "Email thông báo cho khách hàng khi họ kích hoạt thành công tính năng bảo mật 2FA.",
   },
@@ -633,8 +592,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       "reEnableLink"
     ],
     extraConfig: {
-      senderName: "VaniStudio Security Team",
-      senderEmail: "security@vanistudio.com"
+      senderName: "VaniStudio Security Team"
     },
     description: "Email thông báo cho khách hàng khi họ tắt tính năng bảo mật 2FA.",
   },
@@ -658,8 +616,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       "browserName"
     ],
     extraConfig: {
-      senderName: "VaniStudio Security System",
-      senderEmail: "security@vanistudio.com"
+      senderName: "VaniStudio Security System"
     },
     description: "Email gửi mã OTP xác thực đăng nhập hoặc thực hiện giao dịch quan trọng.",
   },
@@ -681,8 +638,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       "helpLink"
     ],
     extraConfig: {
-      senderName: "VaniStudio Registration Desk",
-      senderEmail: "welcome@vanistudio.com"
+      senderName: "VaniStudio Registration Desk"
     },
     description: "Email gửi mã xác nhận khi đăng ký tài khoản mới để kích hoạt tài khoản.",
   },
@@ -706,8 +662,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       "passwordResetUrl"
     ],
     extraConfig: {
-      senderName: "VaniStudio Security Command",
-      senderEmail: "security@vanistudio.com"
+      senderName: "VaniStudio Security Command"
     },
     description: "Email gửi thông báo bảo mật cho người dùng khi mật khẩu tài khoản của họ được cập nhật thành công.",
   },
@@ -730,8 +685,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       "logoutAllLink"
     ],
     extraConfig: {
-      senderName: "VaniStudio Security Command",
-      senderEmail: "security@vanistudio.com"
+      senderName: "VaniStudio Security Command"
     },
     description: "Email gửi cảnh báo bảo mật khi phát hiện đăng nhập từ IP, vị trí hoặc thiết bị chưa từng sử dụng trước đây.",
   },
@@ -929,8 +883,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
       "customerPortalUrl"
     ],
     extraConfig: {
-      senderName: "VaniStudio Licensing Desk",
-      senderEmail: "license@vanistudio.com"
+      senderName: "VaniStudio Licensing Desk"
     },
     description: "Email gửi tự động cho khách hàng chứa mã bản quyền (license key) và hướng dẫn kích hoạt sau khi đơn hàng hoàn tất.",
   }
@@ -955,8 +908,6 @@ export const VARIABLE_EXPLANATIONS: Record<string, string> = {
   referralSource: "Nguồn giới thiệu đăng ký",
   campaignName: "Tên chiến dịch marketing thu hút",
   ispProvider: "Nhà cung cấp dịch vụ Internet (ISP)",
-  signupCountry: "Quốc gia thực hiện đăng ký",
-  profileUrl: "Đường dẫn quản trị xem hồ sơ chi tiết",
   incidentId: "Mã số định danh sự cố bảo mật",
   severityLevel: "Mức độ nghiêm trọng của cảnh báo an ninh",
   country: "Tên quốc gia phát hiện sự cố",
@@ -969,7 +920,6 @@ export const VARIABLE_EXPLANATIONS: Record<string, string> = {
   blockDuration: "Thời gian cấm truy cập",
   userAgent: "Thông tin trình duyệt và hệ điều hành nguồn",
   firewallRuleId: "Mã quy tắc tường lửa được áp dụng",
-  adminPanelUrl: "Đường dẫn đến danh sách IP bị cấm ở trang quản trị",
   firewallLink: "Đường dẫn quản lý Firewall IP an ninh",
   ignoreLink: "Đường dẫn bỏ qua cảnh báo bảo mật",
   ticketId: "Mã số vé hỗ trợ khách hàng",

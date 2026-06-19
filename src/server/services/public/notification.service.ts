@@ -55,7 +55,6 @@ export class NotificationService {
               to: recipient,
               subject: compiledSubject || "Thông báo từ hệ thống",
               html: compiledContent,
-              fromEmail: template.extraConfig?.senderEmail,
               fromName: template.extraConfig?.senderName,
             });
 

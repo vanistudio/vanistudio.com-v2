@@ -35,7 +35,6 @@ export const templatesRouter = router({
         content: z.string().min(1, "Nội dung mẫu không được để trống"),
         extraConfig: z.object({
           senderName: z.string().optional(),
-          senderEmail: z.string().optional(),
           parseMode: z.enum(["HTML", "Markdown", "MarkdownV2", "PlainText"]).optional(),
           discordEmbeds: z.array(z.any()).optional(),
           slackBlocks: z.array(z.any()).optional(),
