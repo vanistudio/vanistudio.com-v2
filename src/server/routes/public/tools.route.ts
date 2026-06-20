@@ -100,7 +100,7 @@ export const toolsRouter = router({
         query: z.string().min(1, "Vui lòng nhập tên miền hoặc địa chỉ IP"),
       })
     )
-    .mutation(async ({ input }) => {
+    .query(async ({ input }) => {
       return await toolsService.checkLicense(input.query);
     }),
 });

@@ -432,6 +432,7 @@ export class ToolsService {
         activatedAt: licenses.activatedAt,
         createdAt: licenses.createdAt,
         productName: products.name,
+        productSlug: products.slug,
         userName: users.name,
         userEmail: users.email,
       })
@@ -452,16 +453,12 @@ export class ToolsService {
 
     return {
       success: true,
-      licenseKey: license.licenseKey,
       status: license.status,
-      maxActivations: license.maxActivations,
-      activationCount: license.activationCount,
-      allowedDomains: license.allowedDomains,
-      allowedIps: license.allowedIps,
       expiresAt: license.expiresAt,
       activatedAt: license.activatedAt,
       createdAt: license.createdAt,
       productName: license.productName,
+      productSlug: license.productSlug,
       ownerName: license.userName,
       ownerEmail: license.userEmail.replace(/(.{2})(.*)(@.*)/, "$1***$3"),
       checkedValue: query.trim(),

@@ -279,6 +279,56 @@ export default function AdminLicensesList() {
         ),
       },
       {
+        id: "allowedDomains",
+        meta: { title: "Tên miền" },
+        header: "Tên miền",
+        cell: ({ row }) => {
+          const domains = row.original.allowedDomains as string[];
+          if (!domains || domains.length === 0) {
+            return <span className="text-muted-foreground text-[11px] italic">Không giới hạn</span>;
+          }
+          return (
+            <div className="flex flex-wrap gap-1 max-w-[150px]">
+              {domains.slice(0, 2).map((d, i) => (
+                <Badge key={i} variant="secondary" className="text-[10px] font-mono py-0 px-1 rounded-md shrink-0">
+                  {d}
+                </Badge>
+              ))}
+              {domains.length > 2 && (
+                <span className="text-[9px] text-muted-foreground font-bold self-center">
+                  +{domains.length - 2}
+                </span>
+              )}
+            </div>
+          );
+        },
+      },
+      {
+        id: "allowedIps",
+        meta: { title: "Địa chỉ IP" },
+        header: "Địa chỉ IP",
+        cell: ({ row }) => {
+          const ips = row.original.allowedIps as string[];
+          if (!ips || ips.length === 0) {
+            return <span className="text-muted-foreground text-[11px] italic">Không giới hạn</span>;
+          }
+          return (
+            <div className="flex flex-wrap gap-1 max-w-[150px]">
+              {ips.slice(0, 2).map((ip, i) => (
+                <Badge key={i} variant="secondary" className="text-[10px] font-mono py-0 px-1 rounded-md shrink-0">
+                  {ip}
+                </Badge>
+              ))}
+              {ips.length > 2 && (
+                <span className="text-[9px] text-muted-foreground font-bold self-center">
+                  +{ips.length - 2}
+                </span>
+              )}
+            </div>
+          );
+        },
+      },
+      {
         id: "activations",
         header: "Giới hạn thiết bị",
         cell: ({ row }) => (
