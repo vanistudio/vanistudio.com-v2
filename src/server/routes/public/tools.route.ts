@@ -93,4 +93,14 @@ export const toolsRouter = router({
     .mutation(async ({ input }) => {
       return await toolsService.checkRobloxUserBadges(input.userId);
     }),
+
+  checkLicense: publicProcedure
+    .input(
+      z.object({
+        query: z.string().min(1, "Vui lòng nhập tên miền hoặc địa chỉ IP"),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await toolsService.checkLicense(input.query);
+    }),
 });

@@ -18,8 +18,8 @@ export const licenses = pgTable("licenses", {
   // Unique License Key (e.g. VANI-XXXX-XXXX-XXXX)
   licenseKey: text("license_key").notNull().unique(),
 
-  // Status of the license: active, suspended, expired, revoked
-  status: text("status").default("active").notNull(),
+  // Status of the license: not_activated, activated, suspended, expired, revoked
+  status: text("status").default("not_activated").notNull(),
 
   // Allowed domains/servers (useful for Web scripts/Discord bots)
   allowedDomains: jsonb("allowed_domains").$type<string[]>().default([]).notNull(),

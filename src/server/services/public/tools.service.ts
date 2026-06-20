@@ -1,6 +1,11 @@
 import { getWhoisRaw, resolveDns, getSslInfo, getHttpInfo, getIpGeo } from "@/server/io/_others/domain.io";
 import { checkUserProfile, checkPlaceDetails, getUserCurrentlyWearingDetails, getUserBadges } from "@/server/io/_others/roblox.io";
 import { http } from "@/lib/http";
+import { db } from "@/server/db";
+import { licenses } from "@/server/db/schemas/license.schema";
+import { users } from "@/server/db/schemas/user.schema";
+import { products } from "@/server/db/schemas/product.schema";
+import { eq, or, sql } from "drizzle-orm";
 
 const UA_DESKTOP = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
@@ -399,6 +404,68 @@ export class ToolsService {
 
   async checkRobloxUserBadges(userId: number) {
     return await getUserBadges(userId);
+  }
+
+  async checkLicense(query: string) {
+    if (!query?.trim()) {
+      throw new Error("Vui lòng nhập tên miền hoặc địa chỉ IP");
+    }
+
+    let cleanedInput = query.trim().toLowerCase();
+    // Strip protocol and www.
+    cleanedInput = cleanedInput.replace(/^(https?:\/\/)?(www\.)?/, "");
+    // Strip trailing slashes or paths
+    cleanedInput = cleanedInput.split("/")[0];
+
+    const searchJson = JSON.stringify([cleanedInput]);
+
+    const [license] = await db
+      .select({
+        id: licenses.id,
+        licenseKey: licenses.licenseKey,
+        status: licenses.status,
+        maxActivations: licenses.maxActivations,
+        activationCount: licenses.activationCount,
+        allowedDomains: licenses.allowedDomains,
+        allowedIps: licenses.allowedIps,
+        expiresAt: licenses.expiresAt,
+        activatedAt: licenses.activatedAt,
+        createdAt: licenses.createdAt,
+        productName: products.name,
+        userName: users.name,
+        userEmail: users.email,
+      })
+      .from(licenses)
+      .innerJoin(products, eq(licenses.productId, products.id))
+      .innerJoin(users, eq(licenses.userId, users.id))
+      .where(
+        or(
+          sql`${licenses.allowedDomains} @> ${searchJson}::jsonb`,
+          sql`${licenses.allowedIps} @> ${searchJson}::jsonb`
+        )
+      )
+      .limit(1);
+
+    if (!license) {
+      throw new Error("Không tìm thấy bản quyền nào được đăng ký cho tên miền hoặc IP này");
+    }
+
+    return {
+      success: true,
+      licenseKey: license.licenseKey,
+      status: license.status,
+      maxActivations: license.maxActivations,
+      activationCount: license.activationCount,
+      allowedDomains: license.allowedDomains,
+      allowedIps: license.allowedIps,
+      expiresAt: license.expiresAt,
+      activatedAt: license.activatedAt,
+      createdAt: license.createdAt,
+      productName: license.productName,
+      ownerName: license.userName,
+      ownerEmail: license.userEmail.replace(/(.{2})(.*)(@.*)/, "$1***$3"),
+      checkedValue: query.trim(),
+    };
   }
 }
 

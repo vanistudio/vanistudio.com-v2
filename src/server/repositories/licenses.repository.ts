@@ -140,7 +140,8 @@ export class LicensesRepository {
     const [statsResult] = await db
       .select({
         totalLicenses: sql<number>`count(*)`,
-        activeLicenses: sql<number>`count(case when status = 'active' then 1 end)`,
+        activatedLicenses: sql<number>`count(case when status = 'activated' then 1 end)`,
+        notActivatedLicenses: sql<number>`count(case when status = 'not_activated' then 1 end)`,
         expiredLicenses: sql<number>`count(case when status = 'expired' then 1 end)`,
         suspendedLicenses: sql<number>`count(case when status = 'suspended' then 1 end)`,
       })
@@ -154,7 +155,8 @@ export class LicensesRepository {
       limit,
       stats: {
         totalLicenses: Number(statsResult?.totalLicenses || 0),
-        activeLicenses: Number(statsResult?.activeLicenses || 0),
+        activatedLicenses: Number(statsResult?.activatedLicenses || 0),
+        notActivatedLicenses: Number(statsResult?.notActivatedLicenses || 0),
         expiredLicenses: Number(statsResult?.expiredLicenses || 0),
         suspendedLicenses: Number(statsResult?.suspendedLicenses || 0),
       },

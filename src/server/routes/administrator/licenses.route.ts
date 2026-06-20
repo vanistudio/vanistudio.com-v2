@@ -19,7 +19,7 @@ const createLicenseSchema = z.object({
   userId: z.string().min(1, "Vui lòng chọn người sở hữu"),
   productId: z.string().uuid("Vui lòng chọn sản phẩm hợp lệ"),
   licenseKey: z.string().min(1, "Mã bản quyền không được để trống"),
-  status: z.enum(["active", "suspended", "expired", "revoked"]).default("active"),
+  status: z.enum(["not_activated", "activated", "suspended", "expired", "revoked"]).default("not_activated"),
   allowedDomains: z.array(z.string()).default([]),
   allowedIps: z.array(z.string()).default([]),
   maxActivations: z.number().int().positive().default(1),
@@ -27,7 +27,7 @@ const createLicenseSchema = z.object({
 });
 
 const updateLicenseSchema = z.object({
-  status: z.enum(["active", "suspended", "expired", "revoked"]).optional(),
+  status: z.enum(["not_activated", "activated", "suspended", "expired", "revoked"]).optional(),
   allowedDomains: z.array(z.string()).optional(),
   allowedIps: z.array(z.string()).optional(),
   maxActivations: z.number().int().positive().optional(),
