@@ -33,14 +33,12 @@ export default function AdminLicensesList() {
   const setting = useSetting();
   const siteTimezone = setting?.siteTimezone || "Asia/Ho_Chi_Minh";
 
-  // State
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [productFilter, setProductFilter] = useState("all");
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
 
-  // Query licenses list
   const {
     data: licensesData,
     isLoading: licensesLoading,
@@ -59,17 +57,14 @@ export default function AdminLicensesList() {
     { refetchOnWindowFocus: false }
   );
 
-  // Query products list for select options
   const { data: productsData } = trpc.administrator.licenses.getProducts.useQuery(undefined, {
     refetchOnWindowFocus: false,
   });
   const productsList = productsData || [];
 
-  // Dialog State
   const [editorOpen, setEditorOpen] = useState(false);
   const [editingLicense, setEditingLicense] = useState<any | null>(null);
   
-  // User Search State
   const [userSearch, setUserSearch] = useState("");
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [userComboOpen, setUserComboOpen] = useState(false);
@@ -78,11 +73,9 @@ export default function AdminLicensesList() {
     { refetchOnWindowFocus: false }
   );
 
-  // Product Combobox State
   const [productComboOpen, setProductComboOpen] = useState(false);
   const [productSearch, setProductSearch] = useState("");
 
-  // Form State
   const [form, setForm] = useState({
     productId: "",
     licenseKey: "",
@@ -97,7 +90,6 @@ export default function AdminLicensesList() {
 
   const [licenseToDelete, setLicenseToDelete] = useState<any | null>(null);
 
-  // Mutations
   const createMutation = trpc.administrator.licenses.create.useMutation({
     onSuccess: () => {
       toast.success("Tạo mã bản quyền thành công!");
@@ -420,7 +412,6 @@ export default function AdminLicensesList() {
 
   return (
     <div className="flex flex-col w-full flex-1">
-      {/* Header Area */}
       <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="border-l border-r border-dashed border-primary/20 pt-[88px] pb-6 px-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -439,7 +430,6 @@ export default function AdminLicensesList() {
         </div>
       </div>
 
-      {/* Decorative Stripe */}
       <div
         className="relative w-full border-t border-b border-dashed border-primary/20 overflow-hidden text-primary/20"
         style={{ height: "36px" }}
@@ -453,10 +443,8 @@ export default function AdminLicensesList() {
         />
       </div>
 
-      {/* Main Content Area */}
       <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col">
-          {/* Stats Bar */}
           <div className="p-6 pb-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
             <div className="p-4 rounded-xl border bg-background/60 flex items-center justify-between">
               <div className="space-y-1">
@@ -519,7 +507,6 @@ export default function AdminLicensesList() {
             </div>
           </div>
 
-          {/* Actions Toolbar */}
           <div className="px-6 py-4 flex flex-row items-center justify-between border-b border-border/60">
             <h3 className="text-base font-bold text-foreground">Danh mục Bản quyền</h3>
             <div className="flex items-center gap-2">
@@ -540,7 +527,6 @@ export default function AdminLicensesList() {
             </div>
           </div>
 
-          {/* List and Table */}
           <div className="p-6 space-y-6 flex-1">
             <DataTable
               columns={columns}
@@ -579,7 +565,6 @@ export default function AdminLicensesList() {
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-56 p-3 flex flex-col gap-3" align="end">
-                      {/* Product Filter */}
                       <div className="flex flex-col gap-1.5">
                         <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                           Sản phẩm
@@ -599,7 +584,6 @@ export default function AdminLicensesList() {
                         </Select>
                       </div>
 
-                      {/* Status Filter */}
                       <div className="flex flex-col gap-1.5">
                         <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                           Trạng thái
@@ -657,7 +641,6 @@ export default function AdminLicensesList() {
         </div>
       </div>
 
-      {/* Editor Modal */}
       <Sheet open={editorOpen} onOpenChange={setEditorOpen}>
         <SheetContent className="sm:max-w-[550px] w-full p-0 flex flex-col">
           <SheetHeader className="p-6">
@@ -673,7 +656,6 @@ export default function AdminLicensesList() {
           </SheetHeader>
 
           <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-5 custom-scrollbar bg-background">
-            {/* User Selection */}
             <div className="flex flex-col gap-2">
               <label className="text-[13px] font-bold text-foreground">Người sở hữu bản quyền</label>
               <Combobox open={userComboOpen} onOpenChange={setUserComboOpen}>
@@ -724,7 +706,6 @@ export default function AdminLicensesList() {
               </Combobox>
             </div>
 
-            {/* Product selection */}
             <div className="flex flex-col gap-2">
               <label className="text-[13px] font-bold text-foreground">Sản phẩm cấp phép</label>
               <Combobox open={productComboOpen} onOpenChange={setProductComboOpen}>
@@ -771,7 +752,6 @@ export default function AdminLicensesList() {
               </Combobox>
             </div>
 
-            {/* License Key */}
             <div className="flex flex-col gap-2">
               <label className="text-[13px] font-bold text-foreground">Mã License Key</label>
               <div className="flex gap-2">
@@ -797,7 +777,6 @@ export default function AdminLicensesList() {
               </div>
             </div>
 
-            {/* Status and Max activations */}
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
                 <label className="text-[13px] font-bold text-foreground">Trạng thái bản quyền</label>
@@ -919,7 +898,6 @@ export default function AdminLicensesList() {
               </div>
             </div>
 
-            {/* Allowed Domains */}
             <div className="flex flex-col gap-2 border-t pt-4">
               <label className="text-[13px] font-bold text-foreground">Giới hạn tên miền (Allowed Domains)</label>
               <div className="flex gap-2">
@@ -949,7 +927,6 @@ export default function AdminLicensesList() {
               )}
             </div>
 
-            {/* Allowed IPs */}
             <div className="flex flex-col gap-2 border-t pt-4">
               <label className="text-[13px] font-bold text-foreground">Giới hạn IP (Allowed IPs)</label>
               <div className="flex gap-2">
@@ -1001,7 +978,6 @@ export default function AdminLicensesList() {
         </SheetContent>
       </Sheet>
 
-      {/* Delete Confirmation */}
       <Dialog open={!!licenseToDelete} onOpenChange={(open) => !open && setLicenseToDelete(null)}>
         <DialogContent className="sm:max-w-[380px]">
           <DialogHeader>

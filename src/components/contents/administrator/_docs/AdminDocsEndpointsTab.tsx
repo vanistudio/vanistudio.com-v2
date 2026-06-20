@@ -388,8 +388,6 @@ export default function AdminDocsEndpointsTab({ apiType }: AdminDocsEndpointsTab
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      {/* Playground Drawer */}
       {playgroundEndpoint && (
         <PlaygroundSheet
           isOpen={!!playgroundEndpoint}
