@@ -155,7 +155,6 @@ export default function PubCheckRoblox() {
         });
         setBadges(parsedBadges as BadgeDetails[]);
       } catch {
-        // Fail silently
       }
     } catch (err: any) {
       toast.error(err.message || "Lỗi khi lấy thông tin người dùng Roblox.");

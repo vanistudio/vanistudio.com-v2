@@ -24,7 +24,15 @@ export const DEFAULT_MENU_GROUPS: DefaultMenuGroup[] = [
       { name: "Dự án", url: "/projects", icon: "solar:folder-open-line-duotone", order: 3 },
       { name: "Dịch vụ", url: "/services", icon: "solar:server-square-line-duotone", order: 4 },
       { name: "Blog", url: "/blog", icon: "solar:document-text-line-duotone", order: 5 },
-      { name: "Tài liệu API", url: "/docs", icon: "solar:document-text-line-duotone", order: 6 },
+      {
+        name: "Nhà phát triển",
+        icon: "solar:code-line-duotone",
+        order: 6,
+        children: [
+          { name: "Tài liệu API", url: "/docs", icon: "solar:document-text-line-duotone", order: 1 },
+          { name: "Kiểm tra Bản quyền", url: "/license", icon: "solar:verified-check-line-duotone", order: 2 },
+        ],
+      },
       { name: "Liên hệ", url: "/contact", icon: "solar:letter-line-duotone", order: 7 },
       {
         name: "Công cụ",
@@ -35,9 +43,8 @@ export const DEFAULT_MENU_GROUPS: DefaultMenuGroup[] = [
           { name: "Check Cookie", url: "/tools/check-cookie-facebook", icon: "solar:donut-bitten-line-duotone", order: 2 },
           { name: "Check Live UID", url: "/tools/check-live-uid", icon: "solar:user-rounded-line-duotone", order: 3 },
           { name: "Kiểm tra Domain", url: "/tools/check-domain", icon: "solar:global-line-duotone", order: 4 },
-          { name: "Kiểm tra Bản quyền", url: "/tools/check-license", icon: "solar:verified-check-line-duotone", order: 5 },
-          { name: "Tạo mã QR", url: "/tools/qr-generator", icon: "solar:qr-code-line-duotone", order: 6 },
-          { name: "Check Roblox", url: "/tools/check-roblox", icon: "proicons:roblox", order: 7 },
+          { name: "Tạo mã QR", url: "/tools/qr-generator", icon: "solar:qr-code-line-duotone", order: 5 },
+          { name: "Check Roblox", url: "/tools/check-roblox", icon: "proicons:roblox", order: 6 },
         ],
       },
       {

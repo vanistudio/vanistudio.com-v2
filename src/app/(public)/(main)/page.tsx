@@ -27,7 +27,6 @@ export default async function Home() {
       limit: 6,
     });
   } catch (e) {
-    // Fail silently
   }
 
   try {
@@ -37,7 +36,6 @@ export default async function Home() {
       limit: 20,
     });
   } catch (e) {
-    // Fail silently
   }
 
   try {
@@ -48,7 +46,6 @@ export default async function Home() {
       limit: 8,
     });
   } catch (e) {
-    // Fail silently
   }
 
   try {
@@ -58,7 +55,6 @@ export default async function Home() {
       limit: 4,
     });
   } catch (e) {
-    // Fail silently
   }
 
   try {
@@ -68,7 +64,6 @@ export default async function Home() {
       .orderBy(asc(apiProducts.order), desc(apiProducts.createdAt))
       .limit(8);
   } catch (e) {
-    // Fail silently
   }
 
   return (
