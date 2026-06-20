@@ -31,228 +31,294 @@ async function main() {
     // Dynamically import database and schemas
     const { db } = await import("../src/server/db");
     const { products } = await import("../src/server/db/schemas/product.schema");
-    const { inArray } = await import("drizzle-orm");
 
-    // List of product slugs we will seed
-    const productSlugs = [
-      "nextjs-premium-saas-boilerplate",
-      "auto-social-media-poster",
-      "chrome-extension-seo-analyzer"
-    ];
-
-    // Clean up existing products with those slugs to prevent unique constraint errors
-    console.log("Cleaning up existing matching product records...");
-    await db.delete(products).where(inArray(products.slug, productSlugs));
+    // Clean up existing products completely to make sure only our target product exists
+    console.log("Cleaning up all existing product records...");
+    await db.delete(products);
 
     // Seed data
     const productsData = [
       {
-        name: "Next.js Premium SaaS Boilerplate",
-        slug: "nextjs-premium-saas-boilerplate",
-        description: "Mẫu dự án Next.js 16 hoàn chỉnh tích hợp Better-Auth, Drizzle ORM, Stripe, và TailwindCSS v4 giúp bạn khởi chạy sản phẩm SaaS trong vài giờ.",
-        content: `### Next.js Premium SaaS Boilerplate
+        name: "Vani Shop - Mã nguồn Website Bán Quần Áo & Thời Trang Next.js",
+        slug: "vani-shop-ecommerce-clothing",
+        description: "Mã nguồn website bán hàng thời trang chuyên nghiệp, tích hợp thanh toán tự động qua cổng Momo, VNPAY, giỏ hàng slide-out, quản lý thuộc tính sản phẩm và trang quản trị doanh số trực quan.",
+        content: `### 🛍️ Vani Shop - Next.js Fashion E-Commerce Source Code
 
-Giải pháp khởi động SaaS tối ưu được xây dựng với công nghệ hiện đại nhất, giúp bạn bỏ qua phần thiết lập hạ tầng tẻ nhạt và tập trung hoàn toàn vào việc xây dựng tính năng sản phẩm cốt lõi.
+**Vani Shop** là mã nguồn website thương mại điện tử chuyên nghiệp dành riêng cho ngành thời trang, quần áo và phụ kiện. Được xây dựng trên nền tảng **Next.js 16 App Router**, **React 19** và **TailwindCSS v4**, sản phẩm mang lại trải nghiệm mua sắm mượt mà, tốc độ tải trang vượt trội cùng hệ thống quản trị vận hành tối ưu.
 
-#### Các tính năng chính đi kèm:
-- **Hệ thống xác thực mạnh mẽ (Better-Auth)**: Google, GitHub, Email/Password, xác thực 2 lớp (MFA), quản lý phiên hoạt động.
-- **Tích hợp cổng thanh toán Stripe**: Stripe Checkout, Subscriptions, Webhooks, Customer Portal tích hợp sẵn.
-- **Cơ sở dữ liệu (Drizzle ORM & Postgres)**: Schema tối ưu hóa hoàn chỉnh cho người dùng, thanh toán, phân quyền và lịch sử giao dịch.
-- **Giao diện đẳng cấp**: TailwindCSS v4 kết hợp thư viện Shadcn UI được thiết kế sang trọng, hỗ trợ Dark/Light mode tự động.
+<Alert variant="default" className="border-vanixjnk/20 bg-vanixjnk/5 text-foreground my-4">
+  <Icon icon="solar:info-square-line-duotone" className="size-5 text-vanixjnk" />
+  <AlertTitle className="text-vanixjnk font-bold">Lưu ý bản quyền thương mại</AlertTitle>
+  <AlertDescription>
+    Đây là mã nguồn thương mại được cấp phép sử dụng. Mỗi giấy phép (license key) được áp dụng cho một tên miền chạy production chính thức.
+  </AlertDescription>
+</Alert>
 
-#### Yêu cầu hệ thống / Môi trường:
-- Node.js v20 hoặc mới hơn
-- PostgreSQL database
-- Stripe Account (cho cấu hình thương mại)
+<Tabs defaultValue="features" className="w-full my-6">
+  <TabsList className="bg-muted/40 p-1">
+    <TabsTrigger value="features">Tính năng nổi bật</TabsTrigger>
+    <TabsTrigger value="admin">Trang quản trị (Admin)</TabsTrigger>
+    <TabsTrigger value="tech-stack">Kiến trúc & Công nghệ</TabsTrigger>
+    <TabsTrigger value="installation">Cài đặt & Tài liệu</TabsTrigger>
+  </TabsList>
+  
+  <TabsContent value="features" className="p-4 border rounded-xl mt-2 space-y-4">
+    #### 🚀 Tính năng vượt trội cho Khách hàng
+    
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+      <Card className="border-border/60 bg-card/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-foreground font-bold">
+            <Icon icon="solar:filter-line-duotone" className="text-vanixjnk size-5" />
+            <span>Bộ lọc biến thể động (Smart Filter)</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="text-[13px] text-muted-foreground leading-relaxed">
+          Lọc sản phẩm thông minh không tải lại trang theo size (S, M, L, XL, XXL), màu sắc trực quan (Color Swatches), khoảng giá tùy chọn, danh mục con và nhãn mác sản phẩm.
+        </CardContent>
+      </Card>
+      
+      <Card className="border-border/60 bg-card/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-foreground font-bold">
+            <Icon icon="solar:cart-large-line-duotone" className="text-vanixjnk size-5" />
+            <span>Giỏ hàng Slide-out (Ajax Cart Drawer)</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="text-[13px] text-muted-foreground leading-relaxed">
+          Trải nghiệm mua sắm nhanh gọn với giỏ hàng trượt từ bên hông. Hỗ trợ cập nhật số lượng trực tuyến mà không cần tải lại trang thông qua Zustand.
+        </CardContent>
+      </Card>
+      
+      <Card className="border-border/60 bg-card/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-foreground font-bold">
+            <Icon icon="solar:delivery-line-duotone" className="text-vanixjnk size-5" />
+            <span>Giao vận & Vận chuyển thông minh</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="text-[13px] text-muted-foreground leading-relaxed">
+          Tích hợp sẵn API bản đồ Tỉnh/Thành, Quận/Huyện Việt Nam giúp điền địa chỉ giao nhận nhanh chóng, giảm thiểu tối đa sai sót đơn hàng.
+        </CardContent>
+      </Card>
+
+      <Card className="border-border/60 bg-card/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-foreground font-bold">
+            <Icon icon="solar:smartphone-line-duotone" className="text-vanixjnk size-5" />
+            <span>Tối ưu hóa thiết bị di động (Mobile-First)</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="text-[13px] text-muted-foreground leading-relaxed">
+          Được tối ưu hóa hoàn toàn cho giao diện điện thoại, hỗ trợ thao tác vuốt chạm trượt ảnh sản phẩm cực kỳ mượt mà.
+        </CardContent>
+      </Card>
+    </div>
+
+    #### 💳 Cổng thanh toán tích hợp sẵn
+    - **VietQR (Chuyển khoản tự động)**: Tự động phát sinh mã QR ngân hàng (VietQR) tương ứng với số đơn hàng và giá trị tiền. Kiểm tra lịch sử giao dịch tức thời thông qua webhook ngân hàng đối tác.
+    - **Cổng ví điện tử MoMo / VNPAY**: Tích hợp các cổng thanh toán hàng đầu Việt Nam giúp người mua thanh toán bằng ATM nội địa, QR-Pay, hoặc thẻ tín dụng quốc tế.
+    - **Thanh toán giao hàng (COD)**: Hỗ trợ gửi thông báo đơn hàng qua Email tự động ngay khi khách đặt hàng thành công.
+  </TabsContent>
+  
+  <TabsContent value="admin" className="p-4 border rounded-xl mt-2 space-y-4">
+    #### 📊 Hệ thống quản trị doanh nghiệp chuyên nghiệp
+    
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+      <Card className="border-border/60 bg-card/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-foreground font-bold">
+            <Icon icon="solar:chart-square-line-duotone" className="text-emerald-500 size-5" />
+            <span>Dashboard Thống kê Doanh số</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="text-[13px] text-muted-foreground leading-relaxed">
+          Biểu đồ phân tích doanh thu theo thời gian thực (ngày, tuần, tháng), thống kê đơn hàng thành công, tỉ lệ hủy đơn và bảng xếp hạng các sản phẩm bán chạy nhất.
+        </CardContent>
+      </Card>
+      
+      <Card className="border-border/60 bg-card/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-foreground font-bold">
+            <Icon icon="solar:box-line-duotone" className="text-emerald-500 size-5" />
+            <span>Quản lý biến thể kho hàng (SKU)</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="text-[13px] text-muted-foreground leading-relaxed">
+          Quản lý số lượng tồn kho theo từng tùy chọn kích cỡ, màu sắc riêng biệt. Có cảnh báo thông minh khi sản phẩm chạm ngưỡng sắp hết hàng.
+        </CardContent>
+      </Card>
+    </div>
+    
+    #### ⚙️ Các mô-đun quản trị tích hợp:
+    - **Quản lý mã giảm giá (Coupon)**: Tạo mã giảm giá theo phần trăm hoặc số tiền mặt cố định, giới hạn lượt dùng, số tiền tối thiểu để áp dụng.
+    - **Quy trình xử lý đơn hàng**: Luồng xử lý đơn tự động thay đổi trạng thái và gửi email thông báo khách hàng (*Chờ duyệt -> Đang giao -> Đã giao -> Hủy đơn*). Tích hợp in hóa đơn PDF.
+    - **Quản lý tin tức (CMS Blog)**: Hệ thống đăng bài viết tin tức thời trang chuẩn SEO, tăng lượng truy cập tự nhiên (Organic Traffic).
+  </TabsContent>
+
+  <TabsContent value="tech-stack" className="p-4 border rounded-xl mt-2 space-y-4">
+    #### 🛠️ Kiến trúc công nghệ Modern & Clean
+    
+    Mã nguồn tuân thủ các quy tắc lập trình sạch và tối ưu SEO tuyệt đối:
+    
+    - **Framework**: Next.js 16 (App Router) & React 19 mới nhất.
+    - **Styling**: TailwindCSS v4 cho tốc độ dựng CSS vượt trội.
+    - **Database & ORM**: PostgreSQL kết hợp Drizzle ORM hỗ trợ migration tự động.
+    - **Authentication**: Hệ thống xác thực bảo mật Better-Auth (Google, Email/Password).
+    - **State Management**: Zustand lưu trữ giỏ hàng, tRPC đồng bộ dữ liệu Client-Server.
+    
+    | Công nghệ | Phiên bản | Vai trò |
+    | :--- | :--- | :--- |
+    | Next.js | v16.x | Framework ứng dụng phía máy chủ |
+    | React | v19.x | Thư viện UI cốt lõi |
+    | TailwindCSS | v4.x | Thiết kế và giao diện responsive |
+    | Drizzle ORM | v0.31.x | Giao tiếp cơ sở dữ liệu PostgreSQL |
+    | Better-Auth | v1.6.x | Hệ thống đăng nhập và phân quyền |
+    | tRPC | v11.x | API Client-Server đồng bộ Typescript |
+  </TabsContent>
+  
+  <TabsContent value="installation" className="p-4 border rounded-xl mt-2 space-y-4">
+    #### ⚙️ Yêu cầu môi trường & Cài đặt nhanh
+    
+    <Accordion type="single" collapsible className="w-full border border-border/60 rounded-xl px-4 py-2 bg-muted/10">
+      <AccordionItem value="req">
+        <AccordionTrigger>1. Yêu cầu cấu hình máy chủ</AccordionTrigger>
+        <AccordionContent className="space-y-2 text-[13px] text-muted-foreground leading-relaxed">
+          - **NodeJS**: Phiên bản v20.x hoặc mới hơn (khuyên dùng v22.x LTS).
+          - **Database**: PostgreSQL v15+ hoặc sử dụng các dịch vụ Cloud DB như Neon, Supabase.
+          - **Mail Server**: SMTP Mail (Gmail, Resend hoặc SendGrid) để gửi hóa đơn và mã xác nhận đăng ký tài khoản.
+        </AccordionContent>
+      </AccordionItem>
+      
+      <AccordionItem value="steps">
+        <AccordionTrigger>2. Các bước triển khai dưới Local</AccordionTrigger>
+        <AccordionContent className="space-y-3 text-[13px] text-muted-foreground leading-relaxed">
+          1. **Tải về và cài đặt thư viện**:
+             \`\`\`bash
+             npm install
+             \`\`\`
+             
+          2. **Cấu hình môi trường**:
+             Sao chép tệp \`.env.example\` thành \`.env\` và cập nhật các khóa kết nối cơ sở dữ liệu và API key:
+             \`\`\`env
+             DATABASE_URL=postgresql://user:pass@localhost:5432/vanishop
+             BETTER_AUTH_SECRET=your_auth_secret
+             VNPAY_TMN_CODE=your_tmn_code
+             VNPAY_HASH_SECRET=your_hash_secret
+             \`\`\`
+             
+          3. **Khởi tạo dữ liệu**:
+             \`\`\`bash
+             npx drizzle-kit push
+             npm run db:seed
+             \`\`\`
+             
+          4. **Khởi động chế độ Development**:
+             \`\`\`bash
+             npm run dev
+             \`\`\`
+        </AccordionContent>
+      </AccordionItem>
+
+      <AccordionItem value="deployment">
+        <AccordionTrigger>3. Hướng dẫn Deploy lên Vercel / Docker</AccordionTrigger>
+        <AccordionContent className="space-y-2 text-[13px] text-muted-foreground leading-relaxed">
+          Mã nguồn được cấu hình sẵn để dễ dàng triển khai lên **Vercel** chỉ với một vài click, hoặc đóng gói qua **Docker Container** để chạy trên các VPS riêng như Ubuntu Server, CentOs.
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  </TabsContent>
+</Tabs>
 `,
         type: "source_code",
         status: "active",
-        thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop",
+        thumbnail: "https://storage.vanistudio.com/uploads/Gemini-Generated-Image-9b2pbi9b2pbi9b2p-1781956741922.jpeg",
         gallery: [
-          "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=800&auto=format&fit=crop",
-          "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop"
+          "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=800&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=800&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?q=80&w=800&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1479064555552-3ef4979f8908?q=80&w=800&auto=format&fit=crop"
         ],
-        price: 99,
-        salePrice: 79,
-        currency: "USD",
+        price: 1490000,
+        salePrice: 990000,
+        currency: "VND",
         badge: "HOT",
         isFeatured: true,
-        version: "1.0.0",
-        licenseType: "single",
-        supportMonths: 6,
-        fileSize: "4.5 MB",
-        compatibility: ["Next.js 16", "React 19", "TailwindCSS v4", "Better-Auth", "Drizzle ORM"],
-        demoUrl: "https://saas-boilerplate.vanistudio.com",
-        githubUrl: "https://github.com/vanistudio/nextjs-saas-boilerplate",
-        downloadUrl: "https://gumroad.com/l/nextjs-saas-boilerplate",
-        salesCount: 45,
-        viewsCount: 1250,
-        downloadCount: 45,
-        features: [
-          {
-            name: "Xác thực bảo mật",
-            description: "Better-Auth cấu hình sẵn đầy đủ social logins và bảo mật phiên.",
-            icon: "solar:shield-keyhole-line-duotone"
-          },
-          {
-            name: "Cổng Stripe đồng bộ",
-            description: "Hỗ trợ gói định kỳ, thanh toán một lần và xử lý webhook tự động.",
-            icon: "solar:card-2-line-duotone"
-          },
-          {
-            name: "Drizzle ORM & Migrations",
-            description: "Tạo bảng, quản lý quan hệ và migrate dữ liệu Postgres chỉ bằng 1 câu lệnh.",
-            icon: "solar:database-line-duotone"
-          }
-        ],
-        changelog: [
-          {
-            version: "1.0.0",
-            date: "2026-06-15",
-            title: "Khởi tạo dự án",
-            changes: [
-              "Phát hành bộ Boilerplate phiên bản đầu tiên.",
-              "Tích hợp Next.js 16 App Router & React 19.",
-              "Cấu hình Better Auth Adapter cho Drizzle PostgreSQL.",
-              "Thiết lập luồng đăng ký gói dịch vụ qua Stripe Checkout."
-            ]
-          }
-        ],
-        metadata: {},
-        order: 1
-      },
-      {
-        name: "Auto Social Media Poster",
-        slug: "auto-social-media-poster",
-        description: "Công cụ lập lịch và đăng bài viết tự động đồng thời lên Facebook, Twitter, LinkedIn và Instagram chỉ từ một bảng điều khiển duy nhất.",
-        content: `### Auto Social Media Poster
-
-Công cụ quản trị mạng xã hội mạnh mẽ giúp các Content Creator và Marketing Agency tiết kiệm hàng chục giờ làm việc mỗi tuần bằng cách tự động hóa hoàn toàn quy trình phân phối nội dung.
-
-#### Chức năng nổi bật:
-- **Đăng bài đa kênh**: Đăng bài viết kèm hình ảnh/video đồng thời lên nhiều tài khoản mạng xã hội.
-- **Lập lịch thông minh**: Lên kế hoạch nội dung chi tiết theo ngày, tuần, tháng với giao diện Calendar trực quan.
-- **Báo cáo tương tác**: Tổng hợp lượt thích, chia sẻ và bình luận của các bài viết đã đăng để đánh giá hiệu quả chiến dịch.
-- **Quản lý Media Library**: Lưu trữ sẵn kho hình ảnh, video và bài viết mẫu để tái sử dụng nhanh chóng.
-`,
-        type: "tool",
-        status: "active",
-        thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop",
-        gallery: [
-          "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop"
-        ],
-        price: 49,
-        salePrice: 39,
-        currency: "USD",
-        badge: "SALE",
-        isFeatured: false,
         version: "1.2.0",
         licenseType: "single",
-        supportMonths: 12,
-        fileSize: "18.2 MB",
-        compatibility: ["Node.js v20+", "Chrome v120+", "Windows 10/11", "macOS 13+"],
-        demoUrl: "https://poster.vanistudio.com",
-        githubUrl: "https://github.com/vanistudio/auto-social-poster",
-        downloadUrl: "https://gumroad.com/l/auto-social-poster",
-        salesCount: 88,
-        viewsCount: 2100,
-        downloadCount: 88,
+        supportMonths: 6,
+        fileSize: "25.8 MB",
+        compatibility: ["Next.js 16", "TailwindCSS v4", "PostgreSQL", "Drizzle ORM", "Better-Auth", "TypeScript 5", "VietQR SDK", "VNPAY API", "MoMo API"],
+        demoUrl: "https://shop-demo.vanistudio.com",
+        githubUrl: null,
+        downloadUrl: "https://gumroad.com/l/vani-shop-clothing",
+        salesCount: 38,
+        viewsCount: 1540,
+        downloadCount: 38,
         features: [
           {
-            name: "Lập lịch trực quan",
-            description: "Giao diện kéo thả lịch đăng bài thông minh và tiện lợi.",
-            icon: "solar:calendar-line-duotone"
+            name: "Bộ lọc biến thể động",
+            description: "Lọc sản phẩm thời trang theo Size, Màu sắc và Giá cực nhanh.",
+            icon: "solar:filter-line-duotone"
           },
           {
-            name: "Đăng tải đa kênh",
-            description: "Hỗ trợ các nền tảng lớn Facebook, Instagram, LinkedIn và Twitter.",
-            icon: "solar:share-circle-line-duotone"
+            name: "Thanh toán QR tự động",
+            description: "Quét mã VietQR chuyển khoản tự động xác nhận đơn hàng qua Webhook.",
+            icon: "solar:qr-code-line-duotone"
+          },
+          {
+            name: "Quản lý tồn kho chi tiết",
+            description: "Theo dõi số lượng hàng tồn kho theo từng kích cỡ và màu sắc biến thể.",
+            icon: "solar:box-line-duotone"
+          },
+          {
+            name: "Giao diện chuẩn SEO & Mobile-First",
+            description: "Thiết kế chuẩn UX thời trang hiện đại, đạt điểm tối đa trên Google Lighthouse.",
+            icon: "solar:smartphone-line-duotone"
+          },
+          {
+            name: "Quản trị trực quan (Admin Dashboard)",
+            description: "Trang Dashboard phân tích doanh thu bằng biểu đồ trực quan, quản lý đơn hàng chuyên nghiệp.",
+            icon: "solar:chart-square-line-duotone"
           }
         ],
         changelog: [
           {
             version: "1.2.0",
-            date: "2026-06-10",
-            title: "Cập nhật API Facebook v20.0",
+            date: "2026-06-20",
+            title: "Cập nhật tích hợp VietQR & In hóa đơn",
             changes: [
-              "Nâng cấp SDK lên tương thích API Facebook Graph v20.0 mới nhất.",
-              "Sửa lỗi đăng nhiều ảnh cùng lúc bị lỗi trên mạng xã hội Twitter.",
-              "Tối ưu bộ nhớ đệm và cải tiến tốc độ đăng tải bài viết lên đến 40%."
+              "Tích hợp API quét mã VietQR tự động nhận diện thanh toán từ ngân hàng đối tác.",
+              "Thêm tính năng in hóa đơn đơn hàng ra file PDF cho Admin.",
+              "Tối ưu lại tốc độ tải trang bằng kỹ thuật Partial Prerendering (PPR) trên Next.js 16.",
+              "Nâng cấp giao diện Dark Mode toàn diện cho trang quản trị."
+            ]
+          },
+          {
+            version: "1.1.0",
+            date: "2026-06-05",
+            title: "Tối ưu hóa giỏ hàng và thanh toán",
+            changes: [
+              "Cải thiện hiệu năng Cart Drawer sử dụng Zustand state.",
+              "Thêm hệ thống Coupon mã giảm giá linh hoạt trong trang thanh toán.",
+              "Tích hợp API Tỉnh/Thành Việt Nam cho luồng vận chuyển giao nhận."
             ]
           },
           {
             version: "1.0.0",
-            date: "2026-05-01",
-            title: "Bản phát hành đầu tiên",
+            date: "2026-05-15",
+            title: "Phát hành phiên bản đầu tiên",
             changes: [
-              "Khởi chạy công cụ đăng bài cơ bản cho Facebook và Twitter.",
-              "Hỗ trợ soạn thảo nội dung Rich Text và chọn ảnh từ máy tính."
+              "Dựng khung dự án với Next.js 16 App Router & TailwindCSS v4.",
+              "Tạo các bảng cơ sở dữ liệu qua Drizzle ORM.",
+              "Xây dựng trang hiển thị sản phẩm, chi tiết sản phẩm và trang chủ.",
+              "Cài đặt hệ thống xác thực Better-Auth."
             ]
           }
         ],
         metadata: {},
-        order: 2
-      },
-      {
-        name: "Chrome Extension SEO Analyzer",
-        slug: "chrome-extension-seo-analyzer",
-        description: "Tiện ích mở rộng Chrome giúp phân tích các yếu tố SEO On-page, cấu trúc headings và chỉ số Core Web Vitals trực tiếp trên bất kỳ trang web nào chỉ với 1 click.",
-        content: `### Chrome Extension SEO Analyzer
-
-Tiện ích đắc lực dành cho các SEOer và Web Developer giúp kiểm tra, tối ưu hóa các tiêu chí kỹ thuật On-page một cách trực quan, nhanh chóng nhất.
-
-#### Các thông số phân tích:
-- **SEO cơ bản**: Tiêu đề (Title), Mô tả (Meta Description), Thẻ Canonical, Robots meta tags.
-- **Cấu trúc trang**: Cây sơ đồ Heading (H1 đến H6) giúp kiểm tra tính mạch lạc của nội dung.
-- **Hình ảnh**: Quét thuộc tính Alt của tất cả các ảnh trên trang hiện hành.
-- **Core Web Vitals**: Kiểm tra trực tiếp các chỉ số tốc độ LCP (Largest Contentful Paint), FID (First Input Delay), và CLS (Cumulative Layout Shift) thực tế.
-`,
-        type: "extension",
-        status: "active",
-        thumbnail: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=800&auto=format&fit=crop",
-        gallery: [],
-        price: 0,
-        salePrice: null,
-        currency: "USD",
-        badge: "NEW",
-        isFeatured: true,
-        version: "1.0.5",
-        licenseType: "free",
-        supportMonths: 0,
-        fileSize: "820 KB",
-        compatibility: ["Chrome v100+", "Edge v100+", "Opera v90+"],
-        demoUrl: "https://seo-analyzer.vanistudio.com",
-        githubUrl: "https://github.com/vanistudio/seo-analyzer-extension",
-        downloadUrl: "https://chromewebstore.google.com",
-        salesCount: 0,
-        viewsCount: 3400,
-        downloadCount: 1200,
-        features: [
-          {
-            name: "Phân tích 1-Click",
-            description: "Chỉ cần nhấn vào biểu tượng extension để nhận báo cáo phân tích toàn diện.",
-            icon: "solar:document-text-line-duotone"
-          },
-          {
-            name: "Đo lường Core Web Vitals",
-            description: "Kiểm tra tốc độ tải trang thực tế dựa trên các chỉ số của Google.",
-            icon: "solar:graph-line-duotone"
-          }
-        ],
-        changelog: [
-          {
-            version: "1.0.5",
-            date: "2026-06-12",
-            title: "Sửa lỗi và cải tiến",
-            changes: [
-              "Sửa lỗi hiển thị sai khi phát hiện các thẻ meta lặp lại.",
-              "Thêm tính năng xuất báo cáo SEO On-page ra tệp PDF.",
-              "Tối ưu hóa giao diện người dùng theo phong cách Modern Glassmorphism."
-            ]
-          }
-        ],
-        metadata: {},
-        order: 3
+        order: 1
       }
     ];
 
@@ -265,7 +331,7 @@ Tiện ích đắc lực dành cho các SEOer và Web Developer giúp kiểm tra
       console.log(`Seeded product successfully: ${productItem.name} -> ID: ${insertedProduct.id}`);
     }
 
-    console.log("Database seeding completed successfully for all products!");
+    console.log("Database seeding completed successfully for products!");
     process.exit(0);
   } catch (error: any) {
     console.error("Error seeding products:", error);

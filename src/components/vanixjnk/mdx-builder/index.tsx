@@ -672,7 +672,19 @@ const MarkdownBlockRenderer = ({ text }: { text: string }): React.ReactNode => {
   let codeContent = "";
   let codeLang = "";
   let keyIdx = 0;
-  
+
+  let inTable = false;
+  let tableHeaders: string[] = [];
+  let tableRows: string[][] = [];
+  let tableAlignments: ("left" | "center" | "right" | null)[] = [];
+
+  const parseTableRow = (rowText: string) => {
+    const parts = rowText.split("|");
+    if (parts[0] === "") parts.shift();
+    if (parts[parts.length - 1] === "") parts.pop();
+    return parts.map((cell) => cell.trim());
+  };
+
   const flushList = () => {
     if (inList && listItems.length > 0) {
       elements.push(
@@ -688,34 +700,121 @@ const MarkdownBlockRenderer = ({ text }: { text: string }): React.ReactNode => {
       listItems = [];
     }
   };
-  
+
+  const flushTable = () => {
+    if (inTable && (tableHeaders.length > 0 || tableRows.length > 0)) {
+      elements.push(
+        <div key={`table-wrapper-${keyIdx++}`} className="my-4 overflow-x-auto rounded-xl border border-border/80">
+          <table className="w-full border-collapse text-left text-[13px]">
+            {tableHeaders.length > 0 && (
+              <thead className="bg-muted/40 border-b border-border/80">
+                <tr>
+                  {tableHeaders.map((header, hIdx) => {
+                    const align = tableAlignments[hIdx] || "left";
+                    return (
+                      <th
+                        key={hIdx}
+                        className="px-4 py-2.5 font-bold text-foreground text-xs uppercase tracking-wider"
+                        style={{ textAlign: align }}
+                      >
+                        {renderInlineMarkdown(header)}
+                      </th>
+                    );
+                  })}
+                </tr>
+              </thead>
+            )}
+            <tbody className="divide-y divide-border/40">
+              {tableRows.map((row, rIdx) => (
+                <tr key={rIdx} className="hover:bg-muted/10 transition-colors">
+                  {row.map((cell, cIdx) => {
+                    const align = tableAlignments[cIdx] || "left";
+                    return (
+                      <td
+                        key={cIdx}
+                        className="px-4 py-2.5 text-muted-foreground leading-relaxed"
+                        style={{ textAlign: align }}
+                      >
+                        {renderInlineMarkdown(cell)}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+      inTable = false;
+      tableHeaders = [];
+      tableRows = [];
+      tableAlignments = [];
+    }
+  };
+
   for (let idx = 0; idx < lines.length; idx++) {
     const line = lines[idx];
     const trimmed = line.trim();
-    
-    if (trimmed.startsWith("```")) {
-      if (inCodeBlock) {
+
+    if (inCodeBlock) {
+      if (trimmed.startsWith("```")) {
         elements.push(
-          <ShikiCodeBlock 
-            key={`code-${keyIdx++}`} 
-            code={codeContent.trim()} 
-            lang={codeLang} 
+          <ShikiCodeBlock
+            key={`code-${keyIdx++}`}
+            code={codeContent.trim()}
+            lang={codeLang}
           />
         );
         inCodeBlock = false;
         codeContent = "";
       } else {
-        inCodeBlock = true;
-        codeLang = trimmed.slice(3).trim();
+        codeContent += line + "\n";
       }
       continue;
     }
-    
-    if (inCodeBlock) {
-      codeContent += line + "\n";
+
+    if (trimmed.startsWith("```")) {
+      flushList();
+      flushTable();
+      inCodeBlock = true;
+      codeLang = trimmed.slice(3).trim();
       continue;
     }
-    
+
+    if (trimmed.startsWith("|")) {
+      flushList();
+      if (!inTable) {
+        const nextLine = lines[idx + 1];
+        const nextTrimmed = nextLine ? nextLine.trim() : "";
+        const isSeparator = nextTrimmed.startsWith("|") && /^[|:\s-]+$/.test(nextTrimmed);
+
+        if (isSeparator) {
+          inTable = true;
+          tableHeaders = parseTableRow(line);
+
+          const cells = parseTableRow(nextTrimmed);
+          tableAlignments = cells.map((cell) => {
+            const left = cell.startsWith(":");
+            const right = cell.endsWith(":");
+            if (left && right) return "center";
+            if (right) return "right";
+            if (left) return "left";
+            return "left";
+          });
+
+          idx++; 
+          continue;
+        } else {
+          flushTable();
+        }
+      } else {
+        tableRows.push(parseTableRow(line));
+        continue;
+      }
+    } else {
+      flushTable();
+    }
+
     if (trimmed.startsWith("# ")) {
       flushList();
       elements.push(<h1 key={`h1-${keyIdx++}`} className="text-2xl font-extrabold text-foreground mt-6 mb-3 border-b pb-1.5 tracking-tight">{renderInlineMarkdown(trimmed.slice(2))}</h1>);
@@ -736,13 +835,13 @@ const MarkdownBlockRenderer = ({ text }: { text: string }): React.ReactNode => {
       elements.push(<h4 key={`h4-${keyIdx++}`} className="text-base font-bold text-foreground mt-3.5 mb-1.5 tracking-tight">{renderInlineMarkdown(trimmed.slice(5))}</h4>);
       continue;
     }
-    
+
     if (trimmed === "---") {
       flushList();
       elements.push(<hr key={`hr-${keyIdx++}`} className="my-6 border-t border-border/60" />);
       continue;
     }
-    
+
     if (trimmed.startsWith(">")) {
       flushList();
       elements.push(
@@ -752,23 +851,24 @@ const MarkdownBlockRenderer = ({ text }: { text: string }): React.ReactNode => {
       );
       continue;
     }
-    
+
     if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
       inList = true;
       listItems.push(trimmed.slice(2));
       continue;
     }
-    
+
     if (trimmed === "") {
       flushList();
       continue;
     }
-    
+
     flushList();
     elements.push(<p key={`p-${keyIdx++}`} className="text-[13px] leading-relaxed text-muted-foreground my-2">{renderInlineMarkdown(line)}</p>);
   }
-  
+
   flushList();
+  flushTable();
   return <>{elements}</>;
 };
 
