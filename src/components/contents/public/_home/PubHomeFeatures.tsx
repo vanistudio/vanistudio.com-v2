@@ -44,7 +44,6 @@ const features = [
 export default function PubHomeFeatures() {
   return (
     <section className="flex flex-col gap-10">
-      {/* Title */}
       <div className="flex flex-col items-center text-center gap-3 max-w-xl mx-auto select-none">
         <div className="flex items-center justify-center rounded-xl text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 shrink-0 p-2.5 shadow-md shadow-vanixjnk/5">
           <Icon icon="solar:stars-line-duotone" className="text-2xl" />
@@ -57,8 +56,6 @@ export default function PubHomeFeatures() {
           <div className="h-0.5 w-10 bg-linear-to-r from-transparent via-vanixjnk/50 to-transparent mt-1" />
         </div>
       </div>
-
-      {/* Grid */}
       <div className="relative z-10 h-full">
         <div className="grid grid-cols-2 sm:grid-cols-3 relative z-10">
           {features.map((feat, idx) => (

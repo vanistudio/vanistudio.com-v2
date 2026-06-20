@@ -102,7 +102,6 @@ export default function PubLicense() {
 
   return (
     <div className="flex flex-col w-full flex-1">
-      {/* Header Area */}
       <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="border-l border-r border-dashed border-primary/20 pt-[60px] pb-6 px-6">
           <div className="flex flex-col items-center text-center gap-4">
@@ -133,7 +132,6 @@ export default function PubLicense() {
         </div>
       </div>
 
-      {/* Decorative Stripe */}
       <div
         className="relative w-full border-t border-b border-dashed border-primary/20 overflow-hidden text-primary/20"
         style={{ height: "36px" }}
@@ -147,14 +145,11 @@ export default function PubLicense() {
         />
       </div>
 
-      {/* Main Content Area */}
       <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col p-6 gap-6 justify-center">
           
-          {/* Centered verification container */}
           <div className="w-full max-w-md mx-auto flex flex-col gap-6 py-6">
             
-            {/* Search Input Card */}
             <Card className="p-5 bg-card/30 border-border w-full">
               <form onSubmit={handleSearch} className="flex flex-col gap-3.5">
                 <div className="flex flex-col gap-1.5">
@@ -207,7 +202,6 @@ export default function PubLicense() {
               </form>
             </Card>
 
-            {/* Skeletons Loading */}
             {licenseQuery.isFetching && (
               <div className="flex flex-col gap-4 w-full">
                 <div className="h-36 rounded-xl bg-card/30 border border-border" />
@@ -215,7 +209,6 @@ export default function PubLicense() {
               </div>
             )}
 
-            {/* Error Message */}
             {licenseQuery.isError && !licenseQuery.isFetching && (
               <div className="flex flex-col items-center gap-3 w-full py-4">
                 <div className="p-4 rounded-full bg-destructive/10 border border-destructive/20 text-destructive">
@@ -230,7 +223,6 @@ export default function PubLicense() {
               </div>
             )}
 
-            {/* Default state */}
             {!licenseQuery.data && !licenseQuery.isFetching && !licenseQuery.isError && (
               <div className="flex flex-col items-center justify-center py-8 gap-2 text-center">
                 <Icon icon="solar:shield-check-line-duotone" className="text-4xl text-muted-foreground/20" />
@@ -238,10 +230,8 @@ export default function PubLicense() {
               </div>
             )}
 
-            {/* Verified Results */}
             {licenseQuery.data && !licenseQuery.isFetching && (
               <div className="flex flex-col gap-4 w-full">
-                {/* Status card */}
                 {(() => {
                   const statusInfo = statusMap[licenseQuery.data.status] || {
                     label: licenseQuery.data.status || "Không xác định",
@@ -276,7 +266,6 @@ export default function PubLicense() {
                   );
                 })()}
 
-                {/* Details list card */}
                 <div className="rounded-xl border border-border bg-card/30 overflow-hidden">
                   {[
                     { icon: "solar:global-line-duotone", label: "Tên miền / IP", value: licenseQuery.data.checkedValue || "—" },

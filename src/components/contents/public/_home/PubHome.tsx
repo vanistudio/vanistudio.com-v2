@@ -58,26 +58,22 @@ export default function PubHome({
 }: PubHomeProps) {
   return (
     <div className="flex flex-col w-full flex-1">
-      {/* 1. Header Hero Area */}
       <PubHomeHero />
 
       <StripeDivider />
 
-      {/* Core Features / Strengths Section */}
       <SectionContainer>
         <PubHomeFeatures />
       </SectionContainer>
 
       <StripeDivider />
 
-      {/* Tech Stack Section */}
       <SectionContainer>
         <PubHomeTechStack />
       </SectionContainer>
 
       <StripeDivider />
 
-      {/* Services Section */}
       {initialServices.length > 0 && (
         <>
           <SectionContainer>
@@ -87,14 +83,12 @@ export default function PubHome({
         </>
       )}
 
-      {/* Utilities & Tools Grid Section */}
       <SectionContainer>
         <PubHomeTools />
       </SectionContainer>
 
       <StripeDivider />
 
-      {/* API Docs Section */}
       {initialApiProducts.length > 0 && (
         <>
           <SectionContainer>
@@ -104,7 +98,6 @@ export default function PubHome({
         </>
       )}
 
-      {/* Products Section */}
       {initialProducts.length > 0 && (
         <>
           <SectionContainer>
@@ -114,7 +107,6 @@ export default function PubHome({
         </>
       )}
 
-      {/* Projects Section */}
       {initialProjects.length > 0 && (
         <>
           <SectionContainer>
@@ -124,7 +116,6 @@ export default function PubHome({
         </>
       )}
 
-      {/* Latest Blogs Section */}
       {initialBlogs.length > 0 && (
         <>
           <SectionContainer>
@@ -134,7 +125,6 @@ export default function PubHome({
         </>
       )}
 
-      {/* Minimal Collaboration Section */}
       <SectionContainer>
         <PubHomeCollaboration />
       </SectionContainer>

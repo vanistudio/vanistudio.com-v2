@@ -1,5 +1,5 @@
 import { getWhoisRaw, resolveDns, getSslInfo, getHttpInfo, getIpGeo } from "@/server/io/_others/domain.io";
-import { checkUserProfile, checkPlaceDetails, getUserCurrentlyWearingDetails, getUserBadges } from "@/server/io/_others/roblox.io";
+import { checkUserProfile, checkPlaceDetails, getUserCurrentlyWearingDetails } from "@/server/io/_others/roblox.io";
 import { http } from "@/lib/http";
 import { db } from "@/server/db";
 import { licenses } from "@/server/db/schemas/license.schema";
@@ -402,19 +402,13 @@ export class ToolsService {
     return await getUserCurrentlyWearingDetails(userId);
   }
 
-  async checkRobloxUserBadges(userId: number) {
-    return await getUserBadges(userId);
-  }
-
   async checkLicense(query: string) {
     if (!query?.trim()) {
       throw new Error("Vui lòng nhập tên miền hoặc địa chỉ IP");
     }
 
     let cleanedInput = query.trim().toLowerCase();
-    // Strip protocol and www.
     cleanedInput = cleanedInput.replace(/^(https?:\/\/)?(www\.)?/, "");
-    // Strip trailing slashes or paths
     cleanedInput = cleanedInput.split("/")[0];
 
     const searchJson = JSON.stringify([cleanedInput]);

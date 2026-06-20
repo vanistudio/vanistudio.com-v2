@@ -91,7 +91,6 @@ export function Toolbar({ editor, mode, onModeChange, modeType = "rich-text" }: 
 
     return (
         <>
-            {/* Dialogs bên ngoài ScrollArea để tránh portal clipping */}
             <Dialog open={isLinkDialogOpen} onOpenChange={setIsLinkDialogOpen}>
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
@@ -162,7 +161,6 @@ export function Toolbar({ editor, mode, onModeChange, modeType = "rich-text" }: 
                 </DialogContent>
             </Dialog>
 
-            {/* Toolbar */}
             <div className="sticky top-0 z-10 bg-muted/40 border-b backdrop-blur-md">
                 <ScrollArea className="w-full">
                     <div className="flex items-center gap-1.5 px-3 py-2">
@@ -217,7 +215,6 @@ export function Toolbar({ editor, mode, onModeChange, modeType = "rich-text" }: 
                         </div>
 
                         <div className={cn("flex items-center gap-2 shrink-0 transition-opacity", mode !== "edit" && "pointer-events-none opacity-50")}>
-                            {/* Bold/Italic/Underline/Strike */}
                             <div className="flex items-center gap-0.5 border p-0.5 rounded-md shadow-sm">
                                 <Tooltip>
                                     <TooltipTrigger asChild>
@@ -253,7 +250,6 @@ export function Toolbar({ editor, mode, onModeChange, modeType = "rich-text" }: 
                                 </Tooltip>
                             </div>
 
-                            {/* Sub/Superscript */}
                             <div className="flex items-center gap-0.5 border p-0.5 rounded-md shadow-sm">
                                 <Tooltip>
                                     <TooltipTrigger asChild>
@@ -273,7 +269,6 @@ export function Toolbar({ editor, mode, onModeChange, modeType = "rich-text" }: 
                                 </Tooltip>
                             </div>
 
-                            {/* Text align */}
                             <div className="flex items-center gap-0.5 border p-0.5 rounded-md shadow-sm">
                                 <Tooltip>
                                     <TooltipTrigger asChild>
@@ -309,7 +304,6 @@ export function Toolbar({ editor, mode, onModeChange, modeType = "rich-text" }: 
                                 </Tooltip>
                             </div>
 
-                            {/* Lists */}
                             <div className="flex items-center gap-0.5 border p-0.5 rounded-md shadow-sm">
                                 <Tooltip>
                                     <TooltipTrigger asChild>
@@ -339,7 +333,6 @@ export function Toolbar({ editor, mode, onModeChange, modeType = "rich-text" }: 
 
                             <Separator orientation="vertical" className="h-6 shrink-0 bg-border/60" />
 
-                            {/* Link/Image/HR */}
                             <div className="flex items-center gap-0.5 border p-0.5 rounded-md shadow-sm">
                                 <Tooltip>
                                     <TooltipTrigger asChild>
@@ -367,7 +360,6 @@ export function Toolbar({ editor, mode, onModeChange, modeType = "rich-text" }: 
                                 </Tooltip>
                             </div>
 
-                            {/* Table + Clear */}
                             <div className="flex items-center gap-0.5 border p-0.5 rounded-md shadow-sm">
                                 <Popover>
                                     <Tooltip>
@@ -406,7 +398,6 @@ export function Toolbar({ editor, mode, onModeChange, modeType = "rich-text" }: 
                                 </Tooltip>
                             </div>
 
-                            {/* Heading select */}
                             <Select value={currentHeading()} onValueChange={setHeading}>
                                 <SelectTrigger className="h-10 min-w-[150px] text-xs font-semibold focus:ring-0 focus:ring-offset-0 transition-colors">
                                     <SelectValue placeholder="Định dạng" />

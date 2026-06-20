@@ -71,7 +71,6 @@ export default function PubDocsProductList({
 
   return (
     <div className="flex flex-col w-full flex-1">
-      {/* 1. Header Banner */}
       <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="border-l border-r border-dashed border-primary/20 pt-[60px] pb-6 px-6">
           <div className="flex flex-col items-center text-center gap-4">
@@ -90,7 +89,6 @@ export default function PubDocsProductList({
         </div>
       </div>
 
-      {/* 2. Diagonal Stripe Divider */}
       <div
         className="relative w-full border-t border-b border-dashed border-primary/20 overflow-hidden text-primary/20"
         style={{ height: "36px" }}
@@ -104,7 +102,6 @@ export default function PubDocsProductList({
         />
       </div>
 
-      {/* 3. Products List Area */}
       <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col p-6 gap-6">
           
@@ -150,7 +147,6 @@ export default function PubDocsProductList({
               {filteredProducts.map((product) => {
                 return (
                   <Card key={product.id} className="group relative flex flex-col h-full bg-card/30 border-border p-0!">
-                    {/* Corner Ribbon / Bookmark */}
                     <div className="absolute top-[-6px] right-3 z-20 w-8 h-12 pointer-events-none">
                       <div
                         className="absolute top-[6px] left-[-4px] w-1 h-[6px]"
@@ -185,7 +181,6 @@ export default function PubDocsProductList({
                     </div>
 
                     <Link href={`/docs/${product.slug}`} className="flex flex-col h-full">
-                      {/* Product Thumbnail */}
                       <div className="relative aspect-video w-full overflow-hidden rounded-t-xl bg-muted/20 border-b border-border/55 flex items-center justify-center select-none">
                         {product.thumbnail ? (
                           <img
@@ -206,7 +201,6 @@ export default function PubDocsProductList({
                         </div>
                       </div>
 
-                      {/* Product Title & Description */}
                       <div className="flex flex-col flex-1 p-5 gap-3">
                         <div className="space-y-2">
                           <h3 className="text-base font-bold text-foreground line-clamp-2">
@@ -218,7 +212,6 @@ export default function PubDocsProductList({
                         </div>
                       </div>
 
-                      {/* Card Footer with Slide animation */}
                       <div className="border-t border-border px-5 py-4 flex items-center justify-between bg-muted/10 rounded-b-xl group-hover:bg-muted/15 transition-colors">
                         <div>
                           <div className="text-sm font-bold text-foreground flex items-center gap-1">

@@ -89,17 +89,6 @@ interface PlaceResult {
   thumbnailUrl: string;
 }
 
-interface BadgeDetails {
-  id: number;
-  name: string;
-  description: string;
-  displayName: string;
-  iconImageId: number;
-  awardCount: number;
-  winRatePercentage: number;
-  iconUrl?: string;
-}
-
 export default function PubCheckRoblox() {
   const [activeTab, setActiveTab] = useState<"user" | "place">("user");
   const [userInput, setUserInput] = useState("");
@@ -107,7 +96,6 @@ export default function PubCheckRoblox() {
 
   const [profile, setProfile] = useState<ProfileResult | null>(null);
   const [wearing, setWearing] = useState<AssetDetails[]>([]);
-  const [badges, setBadges] = useState<BadgeDetails[]>([]);
   const [place, setPlace] = useState<PlaceResult | null>(null);
 
   const [loadingUser, setLoadingUser] = useState(false);
@@ -115,7 +103,6 @@ export default function PubCheckRoblox() {
 
   const checkUserMutation = trpc.tools.checkRobloxUser.useMutation();
   const checkWearingMutation = trpc.tools.checkRobloxUserCurrentlyWearing.useMutation();
-  const checkBadgesMutation = trpc.tools.checkRobloxUserBadges.useMutation();
   const checkPlaceMutation = trpc.tools.checkRobloxPlace.useMutation();
 
   const handleCheckUser = async (e: React.FormEvent) => {
@@ -129,7 +116,6 @@ export default function PubCheckRoblox() {
     setLoadingUser(true);
     setProfile(null);
     setWearing([]);
-    setBadges([]);
 
     try {
       let isUserId = /^\d+$/.test(target);
@@ -149,13 +135,6 @@ export default function PubCheckRoblox() {
         toast.error("Không thể lấy danh sách vật phẩm đang đeo.");
       }
 
-      try {
-        const parsedBadges = await checkBadgesMutation.mutateAsync({
-          userId: parsedUser.id,
-        });
-        setBadges(parsedBadges as BadgeDetails[]);
-      } catch {
-      }
     } catch (err: any) {
       toast.error(err.message || "Lỗi khi lấy thông tin người dùng Roblox.");
     } finally {
@@ -309,7 +288,6 @@ export default function PubCheckRoblox() {
                             setUserInput("");
                             setProfile(null);
                             setWearing([]);
-                            setBadges([]);
                           }}
                           disabled={loadingUser}
                           className="text-xs text-muted-foreground hover:text-foreground"

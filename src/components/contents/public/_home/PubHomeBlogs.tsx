@@ -73,7 +73,6 @@ export default function PubHomeBlogs({ initialBlogs }: PubHomeBlogsProps) {
                       <Icon icon="solar:document-text-line-duotone" className="text-5xl text-vanixjnk opacity-30 group-hover:scale-110 transition-transform duration-500" />
                     </div>
                   )}
-                  {/* Tags instead of category */}
                 </div>
 
                 <div className="flex flex-col flex-1 p-5 gap-3">

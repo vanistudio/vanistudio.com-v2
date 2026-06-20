@@ -84,16 +84,6 @@ export const toolsRouter = router({
       return await toolsService.checkRobloxUserCurrentlyWearing(input.userId);
     }),
 
-  checkRobloxUserBadges: publicProcedure
-    .input(
-      z.object({
-        userId: z.number(),
-      })
-    )
-    .mutation(async ({ input }) => {
-      return await toolsService.checkRobloxUserBadges(input.userId);
-    }),
-
   checkLicense: publicProcedure
     .input(
       z.object({
