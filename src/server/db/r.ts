@@ -4,6 +4,8 @@ import { menus, menuGroups } from "@/server/db/schemas/menu.schema";
 import { services, servicePackages, serviceRequests, serviceTypes } from "@/server/db/schemas/service.schema";
 import { projects } from "@/server/db/schemas/project.schema";
 import { blogs, blogComments } from "@/server/db/schemas/blog.schema";
+import { products } from "@/server/db/schemas/product.schema";
+import { licenses } from "@/server/db/schemas/license.schema";
 
 export const userRelations = relations(users, ({ one, many }) => ({
   profile: one(userProfile, {
@@ -15,6 +17,7 @@ export const userRelations = relations(users, ({ one, many }) => ({
   serviceRequests: many(serviceRequests),
   blogComments: many(blogComments),
   blogs: many(blogs),
+  licenses: many(licenses),
 }));
 
 export const userSessionRelations = relations(userSession, ({ one }) => ({
@@ -124,6 +127,21 @@ export const blogCommentsRelations = relations(blogComments, ({ one, many }) => 
   }),
   replies: many(blogComments, {
     relationName: "commentParent",
+  }),
+}));
+
+export const productsRelations = relations(products, ({ many }) => ({
+  licenses: many(licenses),
+}));
+
+export const licensesRelations = relations(licenses, ({ one }) => ({
+  user: one(users, {
+    fields: [licenses.userId],
+    references: [users.id],
+  }),
+  product: one(products, {
+    fields: [licenses.productId],
+    references: [products.id],
   }),
 }));
 

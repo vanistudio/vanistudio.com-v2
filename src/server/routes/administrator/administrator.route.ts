@@ -12,6 +12,7 @@ import { projectsRouter } from "./projects.route";
 import { productsRouter } from "./products.route";
 import { apiDocsRouter } from "./api.route";
 import { templatesRouter } from "./templates.route";
+import { licensesRouter } from "./licenses.route";
 
 export const administratorRouter = router({
   menu: menuRouter,
@@ -27,6 +28,7 @@ export const administratorRouter = router({
   products: productsRouter,
   apiDocs: apiDocsRouter,
   templates: templatesRouter,
+  licenses: licensesRouter,
 });
 
 
