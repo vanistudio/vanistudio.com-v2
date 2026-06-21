@@ -215,7 +215,7 @@ export default function UserEditor({ initialId }: UserEditorProps) {
     return (
       <div className="flex flex-col w-full flex-1">
         <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="border-l border-r border-dashed border-primary/20 pt-[88px] pb-6 px-6">
+          <div className="border-l border-r border-dashed border-primary/20 pt-[100px] pb-6 px-6">
             <div className="flex items-center gap-4">
               <Skeleton className="size-12 rounded-xl" />
               <div className="space-y-2">
@@ -245,7 +245,7 @@ export default function UserEditor({ initialId }: UserEditorProps) {
     <div className="flex flex-col w-full flex-1">
       {/* Header */}
       <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="border-l border-r border-dashed border-primary/20 pt-[88px] pb-6 px-6">
+        <div className="border-l border-r border-dashed border-primary/20 pt-[100px] pb-6 px-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <button
@@ -369,7 +369,7 @@ export default function UserEditor({ initialId }: UserEditorProps) {
               
               {/* TAB 1: Core Account Settings */}
               {activeTab === "account" && (
-                <div className="space-y-6 max-w-4xl">
+                <div className="space-y-6 w-full">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
                     
                     {/* Profile image URL + Preview */}
@@ -526,7 +526,7 @@ export default function UserEditor({ initialId }: UserEditorProps) {
 
               {/* TAB 2: Detailed Profile Info (address, phone, identity card) */}
               {activeTab === "profile" && (
-                <div className="space-y-6 max-w-4xl">
+                <div className="space-y-6 w-full">
                   <div className="p-5 rounded-xl border border-border bg-background/50 flex flex-col gap-4">
                     <h4 className="text-xs font-bold text-foreground pb-2 border-b border-border/40">Hồ sơ cá nhân chính</h4>
                     
