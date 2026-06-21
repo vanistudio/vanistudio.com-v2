@@ -2,7 +2,7 @@ import { authenticationRepository } from "@/server/repositories/authentication.r
 import { auth } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { db } from "@/server/db";
-import { userProfile } from "@/server/db/schemas/user.schema";
+import { userProfile, generateUserAvatar } from "@/server/db/schemas/user.schema";
 import { extensionsRepository } from "@/server/repositories/extensions.repository";
 
 export class AuthenticationService {
@@ -131,6 +131,7 @@ export class AuthenticationService {
           password: input.password,
           name,
           username,
+          image: generateUserAvatar(username || name, email),
         } as any,
         returnHeaders: true,
       });

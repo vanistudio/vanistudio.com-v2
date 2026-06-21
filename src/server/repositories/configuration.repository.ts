@@ -1,6 +1,6 @@
 import { db } from "@/server/db";
 import { settings } from "@/server/db/schemas/setting.schema";
-import { users, provider } from "@/server/db/schemas/user.schema";
+import { users, provider, generateUserAvatar } from "@/server/db/schemas/user.schema";
 import { extensions } from "@/server/db/schemas/extension.schema";
 import { DEFAULT_EXTENSIONS } from "@/defaults/extension.default";
 import { eq, sql } from "drizzle-orm";
@@ -83,6 +83,7 @@ export class ConfigurationRepository {
         email: data.admin.email,
         username: data.admin.username,
         emailVerified: true,
+        image: generateUserAvatar(data.admin.username, data.admin.email),
         role: "admin",
         banned: false,
         createdAt: new Date(),

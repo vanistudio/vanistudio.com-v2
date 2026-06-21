@@ -86,3 +86,37 @@ export type NewUserVerification = typeof userVerification.$inferInsert;
 
 export type UserProfile = typeof userProfile.$inferSelect;
 export type NewUserProfile = typeof userProfile.$inferInsert;
+
+export function generateAvatarUrl(seed: string): string {
+  const encodedSeed = encodeURIComponent(seed);
+  return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodedSeed}`;
+}
+
+const DICEBEAR_STYLES = [
+  "identicon",
+  "lorelei",
+  "pixel-art",
+  "shapes",
+  "thumbs",
+  "avataaars",
+  "avataaars-neutral",
+  "bottts-neutral",
+  "dylan",
+  "fun-emoji",
+  "notionists-neutral",
+  "adventurer",
+  "adventurer-neutral",
+  "big-smile",
+  "miniavs",
+  "open-peeps"
+];
+
+export function generateDiceBearAvatars(seed: string): string[] {
+  const encodedSeed = encodeURIComponent(seed);
+  return DICEBEAR_STYLES.map(style => `https://api.dicebear.com/9.x/${style}/svg?seed=${encodedSeed}`);
+}
+
+export function generateUserAvatar(username: string, email?: string): string {
+  const seed = username || email || Math.random().toString(36).substring(7);
+  return generateAvatarUrl(seed);
+}
