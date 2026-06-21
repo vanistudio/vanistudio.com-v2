@@ -110,19 +110,6 @@ export default function PubLicense() {
             </div>
 
             <div className="flex flex-col items-center gap-2 max-w-xl">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground select-none mb-1">
-                <Link href="/" className="hover:text-vanixjnk transition-colors flex items-center gap-1">
-                  <Icon icon="solar:home-2-line-duotone" className="size-4" />
-                  Trang chủ
-                </Link>
-                <Icon icon="solar:alt-arrow-right-line-duotone" className="size-3" />
-                <Link href="/tools" className="hover:text-vanixjnk transition-colors">
-                  Công cụ
-                </Link>
-                <Icon icon="solar:alt-arrow-right-line-duotone" className="size-3" />
-                <span className="text-foreground font-semibold">Xác minh giấy phép</span>
-              </div>
-
               <h1 className="text-2xl font-bold tracking-tight text-foreground">Xác Minh Giấy Phép</h1>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Nhập tên miền website hoặc địa chỉ IP để kiểm tra giấy phép hoạt động được cấp bởi Vani Studio.
@@ -166,7 +153,7 @@ export default function PubLicense() {
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-9 pr-10 text-xs h-10 bg-background"
+                        className="pl-9 pr-10"
                         placeholder="Ví dụ: example.com, 103.82.20.1..."
                         disabled={licenseQuery.isFetching}
                       />
@@ -185,7 +172,7 @@ export default function PubLicense() {
                       type="submit"
                       size="lg"
                       variant="vanixjnk"
-                      className="font-bold text-xs shrink-0 px-4 rounded-lg h-10"
+                      className="font-bold text-xs shrink-0 px-4"
                       disabled={licenseQuery.isFetching || !searchQuery.trim()}
                     >
                       {licenseQuery.isFetching ? (
