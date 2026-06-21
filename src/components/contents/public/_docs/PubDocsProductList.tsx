@@ -55,7 +55,7 @@ export default function PubDocsProductList({
     return (
       <div className="flex flex-col w-full flex-1">
         <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="border-l border-r border-dashed border-primary/20 pt-[60px] pb-6 px-6">
+          <div className="border-l border-r border-dashed border-primary/20 pt-[100px] pb-6 px-6">
             <div className="flex flex-col items-center text-center gap-4">
               <div className="size-16 rounded-xl bg-muted/40 animate-pulse" />
               <div className="space-y-2">
@@ -72,7 +72,7 @@ export default function PubDocsProductList({
   return (
     <div className="flex flex-col w-full flex-1">
       <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="border-l border-r border-dashed border-primary/20 pt-[60px] pb-6 px-6">
+        <div className="border-l border-r border-dashed border-primary/20 pt-[100px] pb-6 px-6">
           <div className="flex flex-col items-center text-center gap-4">
             <div className="flex items-center justify-center rounded-xl text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 shrink-0 p-3">
               <Icon icon="solar:document-text-line-duotone" className="text-3xl" />

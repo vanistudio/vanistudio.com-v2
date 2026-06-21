@@ -67,7 +67,7 @@ export function DataTableViewOptions({
           role="combobox"
           variant="outline"
           size="sm"
-          className={cn("h-9 shadow-sm", triggerClassName)}
+          className={cn("h-9", triggerClassName)}
           disabled={disabled}
         >
           <Icon icon="solar:settings-line-duotone" className="size-4 text-muted-foreground" />

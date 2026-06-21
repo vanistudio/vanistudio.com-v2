@@ -481,7 +481,7 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
     return (
       <div className="flex flex-col w-full flex-1">
         <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="border-l border-r border-dashed border-primary/20 pt-[60px] pb-6 px-6">
+          <div className="border-l border-r border-dashed border-primary/20 pt-[100px] pb-6 px-6">
             <div className="flex items-center gap-4">
               <Skeleton className="size-12 rounded-xl" />
               <div className="space-y-2">
@@ -498,7 +498,7 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
   return (
     <div className="flex flex-col w-full flex-1">
       <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden border-l border-r border-dashed border-primary/20 pt-[60px] pb-6 px-6">
+        <div className="relative overflow-hidden border-l border-r border-dashed border-primary/20 pt-[100px] pb-6 px-6">
           {currentProduct?.thumbnail && (
             <div className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0">
               <img
