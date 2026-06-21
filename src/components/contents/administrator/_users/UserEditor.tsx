@@ -808,7 +808,6 @@ export function ResetPasswordDialog({
   userName,
 }: ResetPasswordDialogProps) {
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -817,7 +816,6 @@ export function ResetPasswordDialog({
   useEffect(() => {
     if (!open) {
       setPassword("");
-      setConfirmPassword("");
       setShowPassword(false);
     }
   }, [open]);
@@ -829,7 +827,6 @@ export function ResetPasswordDialog({
       randomPass += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     setPassword(randomPass);
-    setConfirmPassword(randomPass);
     setShowPassword(true);
     navigator.clipboard.writeText(randomPass);
     toast.success(`Đã tạo mật khẩu ngẫu nhiên: "${randomPass}" (Đã tự động sao chép vào bộ nhớ tạm)`);
@@ -839,10 +836,6 @@ export function ResetPasswordDialog({
     e.preventDefault();
     if (password.length < 6) {
       toast.error("Mật khẩu mới phải có ít nhất 6 ký tự");
-      return;
-    }
-    if (password !== confirmPassword) {
-      toast.error("Xác nhận mật khẩu mới không khớp");
       return;
     }
 
@@ -880,48 +873,35 @@ export function ResetPasswordDialog({
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-bold text-foreground">Mật khẩu mới</label>
-              <div className="flex items-center gap-2">
+              <div className="relative flex items-center w-full">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground/80">
+                  <Icon icon="solar:lock-password-line-duotone" className="text-lg" />
+                </span>
                 <Input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)..."
-                  className="h-9 text-xs flex-1"
+                  className="pl-10 pr-16 h-10 text-xs flex-1"
                   required
                 />
-                <Button
+                <button
                   type="button"
-                  variant="outline"
-                  size="icon"
-                  className="h-9 w-9 shrink-0 border-border"
                   onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-9 flex items-center text-muted-foreground/80 hover:text-foreground cursor-pointer focus:outline-none"
                   title={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
                 >
-                  <Icon icon={showPassword ? "solar:eye-closed-line-duotone" : "solar:eye-line-duotone"} className="size-4.5" />
-                </Button>
-                <Button
+                  <Icon icon={showPassword ? "solar:eye-closed-line-duotone" : "solar:eye-line-duotone"} className="text-lg" />
+                </button>
+                <button
                   type="button"
-                  variant="outline"
-                  size="icon"
-                  className="h-9 w-9 shrink-0 border-border"
                   onClick={generateRandom}
+                  className="absolute inset-y-0 right-3 flex items-center text-muted-foreground/80 hover:text-foreground cursor-pointer focus:outline-none"
                   title="Tạo mật khẩu ngẫu nhiên"
                 >
-                  <Icon icon="solar:magic-stick-line-duotone" className="size-4.5 text-amber-500" />
-                </Button>
+                  <Icon icon="solar:shuffle-line-duotone" className="text-lg" />
+                </button>
               </div>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-foreground">Xác nhận mật khẩu mới</label>
-              <Input
-                type={showPassword ? "text" : "password"}
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Xác nhận lại mật khẩu mới..."
-                className="h-9 text-xs"
-                required
-              />
             </div>
           </div>
 
