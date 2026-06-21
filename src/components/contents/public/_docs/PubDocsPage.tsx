@@ -429,28 +429,23 @@ export default function PubDocsPage({ initialProducts, currentProductSlug }: Pub
     if (promptText) {
       navigator.clipboard.writeText(promptText);
       let targetUrl = ai.url;
-      const maxLength = 2000;
       const encodedPrompt = encodeURIComponent(promptText);
-      if (encodedPrompt.length < maxLength) {
-        if (ai.id === "claude") {
-          targetUrl = `https://claude.ai/new?q=${encodedPrompt}`;
-        } else if (ai.id === "chatgpt") {
-          targetUrl = `https://chatgpt.com/?q=${encodedPrompt}`;
-        } else if (ai.id === "perplexity") {
-          targetUrl = `https://www.perplexity.ai/?q=${encodedPrompt}`;
-        } else if (ai.id === "gemini") {
-          targetUrl = `https://gemini.google.com/app?q=${encodedPrompt}`;
-        } else if (ai.id === "copilot") {
-          targetUrl = `https://copilot.microsoft.com/?q=${encodedPrompt}`;
-        } else if (ai.id === "lovable") {
-          targetUrl = `https://lovable.dev/#prompt=${encodedPrompt}`;
-        }
+      
+      if (ai.id === "claude") {
+        targetUrl = `https://claude.ai/new?q=${encodedPrompt}`;
+      } else if (ai.id === "chatgpt") {
+        targetUrl = `https://chatgpt.com/?q=${encodedPrompt}`;
+      } else if (ai.id === "perplexity") {
+        targetUrl = `https://www.perplexity.ai/?q=${encodedPrompt}`;
+      } else if (ai.id === "gemini") {
+        targetUrl = `https://gemini.google.com/app?q=${encodedPrompt}`;
+      } else if (ai.id === "copilot") {
+        targetUrl = `https://copilot.microsoft.com/?q=${encodedPrompt}`;
+      } else if (ai.id === "lovable") {
+        targetUrl = `https://lovable.dev/#prompt=${encodedPrompt}`;
       }
-      if (encodedPrompt.length >= maxLength) {
-        toast.success("Nội dung quá dài! Đã sao chép vào clipboard, vui lòng dán (Cmd+V) vào ô chat.");
-      } else {
-        toast.success(`Đang mở ${ai.name}...`);
-      }
+
+      toast.success(`Đang mở ${ai.name}... (Đã sao chép prompt vào bộ nhớ tạm)`);
       window.open(targetUrl, "_blank");
     }
   };
