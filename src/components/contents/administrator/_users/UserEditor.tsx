@@ -19,6 +19,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+
 
 interface UserEditorProps {
   initialId: string;
@@ -61,6 +69,8 @@ function formatDateTime(dateStr: string | Date | null | undefined) {
 export default function UserEditor({ initialId }: UserEditorProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("account");
+  const [resetPasswordOpen, setResetPasswordOpen] = useState(false);
+
 
   // Core User states
   const [name, setName] = useState("");
@@ -143,6 +153,8 @@ export default function UserEditor({ initialId }: UserEditorProps) {
     },
   });
 
+
+
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
@@ -178,6 +190,7 @@ export default function UserEditor({ initialId }: UserEditorProps) {
 
   const getProviderBadge = (providerId: string) => {
     switch (providerId.toLowerCase()) {
+      case "credential":
       case "credentials":
         return {
           label: "Tài khoản mật khẩu",
@@ -283,6 +296,16 @@ export default function UserEditor({ initialId }: UserEditorProps) {
 
             {/* Header Actions */}
             <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setResetPasswordOpen(true)}
+                className="font-bold text-xs gap-1.5"
+              >
+                <Icon icon="solar:key-line-duotone" className="size-3.5 text-vanixjnk" />
+                Đặt lại mật khẩu
+              </Button>
               <Button
                 type="button"
                 variant="outline"
@@ -451,7 +474,7 @@ export default function UserEditor({ initialId }: UserEditorProps) {
 
                         <div className="flex flex-col gap-1.5">
                           <label className="text-xs font-bold text-foreground">Vai trò phân quyền</label>
-                          <Select value={role} onValueChange={setRole}>
+                          <Select value={role} onValueChange={setRole} key={role}>
                             <SelectTrigger className="h-9 w-full text-xs">
                               <SelectValue placeholder="Chọn vai trò..." />
                             </SelectTrigger>
@@ -692,6 +715,16 @@ export default function UserEditor({ initialId }: UserEditorProps) {
                         })}
                       </div>
                     )}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setResetPasswordOpen(true)}
+                      className="w-full mt-2 font-bold text-xs gap-1.5"
+                    >
+                      <Icon icon="solar:key-line-duotone" className="size-3.5 text-vanixjnk" />
+                      Đặt lại mật khẩu
+                    </Button>
                   </div>
 
                   {/* Active Sessions */}
@@ -751,6 +784,178 @@ export default function UserEditor({ initialId }: UserEditorProps) {
           </div>
         </div>
       </div>
+      <ResetPasswordDialog
+        open={resetPasswordOpen}
+        onOpenChange={setResetPasswordOpen}
+        userId={initialId}
+        userName={name}
+      />
     </div>
+  );
+}
+
+interface ResetPasswordDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  userId: string;
+  userName: string;
+}
+
+export function ResetPasswordDialog({
+  open,
+  onOpenChange,
+  userId,
+  userName,
+}: ResetPasswordDialogProps) {
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const resetMutation = trpc.administrator.users.resetPassword.useMutation();
+
+  useEffect(() => {
+    if (!open) {
+      setPassword("");
+      setConfirmPassword("");
+      setShowPassword(false);
+    }
+  }, [open]);
+
+  const generateRandom = () => {
+    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$";
+    let randomPass = "";
+    for (let i = 0; i < 12; i++) {
+      randomPass += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setPassword(randomPass);
+    setConfirmPassword(randomPass);
+    setShowPassword(true);
+    navigator.clipboard.writeText(randomPass);
+    toast.success(`Đã tạo mật khẩu ngẫu nhiên: "${randomPass}" (Đã tự động sao chép vào bộ nhớ tạm)`);
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password.length < 6) {
+      toast.error("Mật khẩu mới phải có ít nhất 6 ký tự");
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast.error("Xác nhận mật khẩu mới không khớp");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await resetMutation.mutateAsync({
+        userId,
+        password,
+      });
+      toast.success("Đặt lại mật khẩu thành công!");
+      onOpenChange(false);
+    } catch (err: any) {
+      toast.error(err.message || "Đặt lại mật khẩu thất bại");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[450px] w-[95vw]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-xl">
+            <div className="size-8 rounded-full bg-vanixjnk/10 text-vanixjnk flex items-center justify-center">
+              <Icon icon="solar:key-line-duotone" className="size-5" />
+            </div>
+            Đặt lại mật khẩu
+          </DialogTitle>
+          <DialogDescription className="text-left mt-1 text-[13px]">
+            Đặt lại mật khẩu mới cho tài khoản của <strong>{userName}</strong>.
+          </DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={handleSave} className="flex flex-col gap-6 py-4 px-1">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-bold text-foreground">Mật khẩu mới</label>
+              <div className="flex items-center gap-2">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)..."
+                  className="h-9 text-xs flex-1"
+                  required
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="h-9 w-9 shrink-0 border-border"
+                  onClick={() => setShowPassword(!showPassword)}
+                  title={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                >
+                  <Icon icon={showPassword ? "solar:eye-closed-line-duotone" : "solar:eye-line-duotone"} className="size-4.5" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="h-9 w-9 shrink-0 border-border"
+                  onClick={generateRandom}
+                  title="Tạo mật khẩu ngẫu nhiên"
+                >
+                  <Icon icon="solar:magic-stick-line-duotone" className="size-4.5 text-amber-500" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-bold text-foreground">Xác nhận mật khẩu mới</label>
+              <Input
+                type={showPassword ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Xác nhận lại mật khẩu mới..."
+                className="h-9 text-xs"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 w-full mt-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1"
+              onClick={() => onOpenChange(false)}
+              disabled={isSaving}
+            >
+              Hủy bỏ
+            </Button>
+            <Button
+              type="submit"
+              variant="vanixjnk"
+              className="flex-1"
+              disabled={isSaving}
+            >
+              {isSaving ? (
+                <>
+                  <Icon icon="solar:restart-line-duotone" className="size-4 animate-spin mr-2" />
+                  Đang xử lý...
+                </>
+              ) : (
+                <>
+                  <Icon icon="solar:check-circle-line-duotone" className="size-4 mr-2" />
+                  Xác nhận đặt lại
+                </>
+              )}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

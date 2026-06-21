@@ -1,4 +1,5 @@
 import { usersRepository, GetUsersParams } from "@/server/repositories/users.repository";
+import bcrypt from "bcryptjs";
 
 export class UsersService {
   async getStats(params: GetUsersParams) {
@@ -158,6 +159,24 @@ export class UsersService {
     return {
       resultCode: 0,
       message: "Đã thu hồi phiên đăng nhập thành công.",
+      data: result,
+    };
+  }
+
+  async resetPassword(userId: string, newPassword: string) {
+    const existing = await usersRepository.findById(userId);
+    if (!existing) {
+      return { resultCode: -1, message: "Không tìm thấy người dùng này." };
+    }
+
+    const salt = bcrypt.genSaltSync(10);
+    const passwordHash = bcrypt.hashSync(newPassword, salt);
+
+    const result = await usersRepository.resetPassword(userId, passwordHash);
+
+    return {
+      resultCode: 0,
+      message: "Đặt lại mật khẩu cho thành viên thành công.",
       data: result,
     };
   }

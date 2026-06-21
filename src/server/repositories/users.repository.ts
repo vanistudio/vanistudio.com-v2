@@ -1,6 +1,7 @@
 import { db } from "@/server/db";
 import { users, userProfile, userSession, provider, type User, type NewUser, type UserProfile, type NewUserProfile } from "@/server/db/schemas/user.schema";
 import { eq, like, or, and, sql, desc, asc, count } from "drizzle-orm";
+import { uuidv7 } from "@/lib/utils";
 
 export interface GetUsersParams {
   search?: string;
@@ -191,6 +192,51 @@ export class UsersRepository {
       .where(and(eq(userSession.id, sessionId), eq(userSession.userId, userId)))
       .returning();
     return deleted || null;
+  }
+
+  async resetPassword(userId: string, newPasswordHash: string) {
+    const [existing] = await db
+      .select()
+      .from(provider)
+      .where(
+        and(
+          eq(provider.userId, userId),
+          or(eq(provider.providerId, "credential"), eq(provider.providerId, "credentials"))
+        )
+      )
+      .limit(1);
+
+    if (existing) {
+      const [updated] = await db
+        .update(provider)
+        .set({
+          password: newPasswordHash,
+          updatedAt: new Date(),
+        })
+        .where(eq(provider.id, existing.id))
+        .returning();
+      return updated;
+    } else {
+      const [userRecord] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      if (!userRecord) {
+        throw new Error("Không tìm thấy người dùng này trong hệ thống.");
+      }
+
+      const providerId = uuidv7();
+      const [inserted] = await db
+        .insert(provider)
+        .values({
+          id: providerId,
+          userId: userId,
+          providerId: "credential",
+          accountId: userRecord.email,
+          password: newPasswordHash,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .returning();
+      return inserted;
+    }
   }
 }
 

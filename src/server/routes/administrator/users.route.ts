@@ -198,4 +198,31 @@ export const usersRouter = router({
         });
       }
     }),
+
+  resetPassword: publicProcedure
+    .input(
+      z.object({
+        userId: z.string().min(1),
+        password: z.string().min(6, "Mật khẩu phải chứa ít nhất 6 ký tự"),
+      })
+    )
+    .mutation(async ({ input }) => {
+      await ensureAdmin();
+      try {
+        const result = await usersService.resetPassword(input.userId, input.password);
+        if (result.resultCode < 0) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: result.message,
+          });
+        }
+        return result;
+      } catch (error: any) {
+        if (error instanceof TRPCError) throw error;
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message || "Không thể đặt lại mật khẩu cho thành viên này",
+        });
+      }
+    }),
 });
