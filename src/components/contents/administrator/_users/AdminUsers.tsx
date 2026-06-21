@@ -31,22 +31,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
+import { useSetting } from "@/contexts/SettingContext";
+import { formatWithSiteTimezone } from "@/helpers/administrator/timezone.helper";
 
-function formatDateTime(dateStr: string | Date | null | undefined) {
-  if (!dateStr) return "—";
-  const date = new Date(dateStr);
-  return date.toLocaleString("vi-VN", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-}
 
 export default function AdminUsers() {
   const router = useRouter();
+  const setting = useSetting();
+  const siteTimezone = setting?.siteTimezone || "Asia/Ho_Chi_Minh";
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
@@ -203,11 +195,14 @@ export default function AdminUsers() {
       accessorKey: "createdAt",
       meta: { title: "Ngày tham gia" },
       header: ({ column }) => <DataTableColumnHeader column={column} />,
-      cell: ({ row }) => (
-        <span className="text-xs font-medium text-muted-foreground">
-          {formatDateTime(row.getValue("createdAt"))}
-        </span>
-      ),
+      cell: ({ row }) => {
+        const val = row.getValue("createdAt");
+        return (
+          <span className="text-xs font-medium text-muted-foreground">
+            {val ? formatWithSiteTimezone(val as string, siteTimezone, "DD/MM/YYYY HH:mm:ss") : "—"}
+          </span>
+        );
+      },
     },
     {
       id: "actions",
@@ -244,7 +239,7 @@ export default function AdminUsers() {
         </Popover>
       ),
     },
-  ], [data, router]);
+  ], [data, router, siteTimezone]);
 
   return (
     <div className="flex flex-col w-full flex-1">
