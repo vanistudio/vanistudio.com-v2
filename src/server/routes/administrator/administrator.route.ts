@@ -1,6 +1,7 @@
 import { router } from "../t";
 import { menuRouter } from "./menu.route";
 import { databaseRouter } from "./database.route";
+import { consoleRouter } from "./console.route";
 import { settingsRouter } from "./settings.route";
 import { extensionsRouter } from "./extensions.route";
 import { deniesRouter } from "./denies.route";
@@ -17,6 +18,7 @@ import { licensesRouter } from "./licenses.route";
 export const administratorRouter = router({
   menu: menuRouter,
   database: databaseRouter,
+  console: consoleRouter,
   settings: settingsRouter,
   extensions: extensionsRouter,
   denies: deniesRouter,
