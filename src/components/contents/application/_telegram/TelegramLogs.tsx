@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { trpc } from "@/lib/trpc";
 import {
   Dialog,
   DialogContent,
@@ -29,12 +30,12 @@ import { ColumnDef, SortingState } from "@tanstack/react-table";
 
 interface TelegramSelfbotLog {
   id: string;
-  phone: string;
-  event: "auto_reply" | "connection" | "proxy_error" | "rate_limit";
+  accountId: string;
+  actionType: string;
   message: string;
-  targetUser: string | null;
-  status: "success" | "failed" | "info";
-  createdAt: string;
+  status: "success" | "failed" | string;
+  details: any;
+  createdAt: Date | string;
 }
 
 const navItems = [
@@ -45,53 +46,27 @@ const navItems = [
 
 export default function TelegramLogs() {
   const pathname = usePathname();
+  const [selectedAccountId, setSelectedAccountId] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [eventFilter, setEventFilter] = useState<"all" | "auto_reply" | "connection" | "proxy_error" | "rate_limit">("all");
+  const [eventFilter, setEventFilter] = useState<"all" | "auto_reply" | "connection">("all");
   const [selectedLog, setSelectedLog] = useState<TelegramSelfbotLog | null>(null);
 
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [sorting, setSorting] = useState<SortingState>([]);
 
-  // Mock log history matching database schema
-  const [logs, setLogs] = useState<TelegramSelfbotLog[]>([
-    {
-      id: "log-1",
-      phone: "+84987654321",
-      event: "auto_reply",
-      message: "Đã tự động phản hồi tin nhắn thành công cho khách hàng",
-      targetUser: "@anhtuan_dev",
-      status: "success",
-      createdAt: "2026-06-26T18:10:15Z",
-    },
-    {
-      id: "log-2",
-      phone: "+84987654321",
-      event: "connection",
-      message: "Thiết lập kết nối với Telegram API gateway thành công",
-      targetUser: null,
-      status: "success",
-      createdAt: "2026-06-26T18:00:00Z",
-    },
-    {
-      id: "log-3",
-      phone: "+84912345678",
-      event: "proxy_error",
-      message: "Lỗi kết nối SOCKS5 Proxy: Connection timeout (10000ms)",
-      targetUser: null,
-      status: "failed",
-      createdAt: "2026-06-26T17:45:22Z",
-    },
-    {
-      id: "log-4",
-      phone: "+84987654321",
-      event: "rate_limit",
-      message: "Bị giới hạn API tạm thời (FLOOD_WAIT_60). Tự động tạm dừng 60s.",
-      targetUser: null,
-      status: "failed",
-      createdAt: "2026-06-26T16:30:10Z",
+  // Fetch accounts list
+  const { data: accountsData, isLoading: accountsLoading } = trpc.application.telegram.getAccounts.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
+  const accountsList = accountsData || [];
+
+  // Automatically select the first account when accounts list loads
+  useEffect(() => {
+    if (accountsList.length > 0 && !selectedAccountId) {
+      setSelectedAccountId(accountsList[0].id);
     }
-  ]);
+  }, [accountsList, selectedAccountId]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -105,14 +80,46 @@ export default function TelegramLogs() {
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   }, [eventFilter]);
 
+  const sortField = sorting[0]?.id || "createdAt";
+  const sortOrder = sorting[0]?.desc ? ("desc" as const) : ("asc" as const);
+
+  // Fetch paginated logs
+  const { data: queryResult, isLoading: logsLoading, refetch } = trpc.application.telegram.getLogsList.useQuery(
+    {
+      accountId: selectedAccountId,
+      search: debouncedSearch || undefined,
+      page: pagination.pageIndex + 1,
+      limit: pagination.pageSize,
+      sortField,
+      sortOrder,
+      event: eventFilter === "all" ? undefined : eventFilter,
+    },
+    {
+      enabled: !!selectedAccountId,
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  const responseData = queryResult?.data;
+  const logs = responseData?.items || [];
+  const totalRecords = responseData?.total || 0;
+  const pageCount = responseData?.totalPages || 0;
+  const stats = responseData?.stats || { total: 0, autoReply: 0, connection: 0 };
+
+  const clearLogsMutation = trpc.application.telegram.clearLogs.useMutation({
+    onSuccess: () => {
+      toast.success("Nhật ký đã được xóa sạch!");
+      refetch();
+    },
+    onError: (err) => {
+      toast.error(err.message || "Xóa lịch sử thất bại");
+    }
+  });
+
   const handleClearLogs = () => {
+    if (!selectedAccountId) return;
     toast.promise(
-      new Promise((resolve) => {
-        setTimeout(() => {
-          setLogs([]);
-          resolve(true);
-        }, 1000);
-      }),
+      clearLogsMutation.mutateAsync({ accountId: selectedAccountId }),
       {
         loading: "Đang xóa toàn bộ lịch sử hoạt động...",
         success: "Đã xóa sạch lịch sử nhật ký!",
@@ -135,62 +142,14 @@ export default function TelegramLogs() {
             Kết nối
           </Badge>
         );
-      case "proxy_error":
-        return (
-          <Badge className="bg-red-500/10 hover:bg-red-500/15 text-red-500 font-bold text-[10px] rounded-md px-2 py-0.5 border border-red-500/20">
-            Lỗi Proxy
-          </Badge>
-        );
-      case "rate_limit":
-        return (
-          <Badge className="bg-amber-500/10 hover:bg-amber-500/15 text-amber-500 font-bold text-[10px] rounded-md px-2 py-0.5 border border-amber-500/20">
-            Rate Limit
-          </Badge>
-        );
       default:
-        return <Badge variant="secondary">Info</Badge>;
+        return (
+          <Badge className="bg-muted hover:bg-muted text-muted-foreground font-bold text-[10px] rounded-md px-2 py-0.5 border border-border">
+            {event}
+          </Badge>
+        );
     }
   };
-
-  const filteredLogs = useMemo(() => {
-    let result = [...logs];
-
-    if (debouncedSearch) {
-      result = result.filter(
-        (log) =>
-          log.phone.includes(debouncedSearch) ||
-          (log.targetUser && log.targetUser.toLowerCase().includes(debouncedSearch.toLowerCase())) ||
-          log.message.toLowerCase().includes(debouncedSearch.toLowerCase())
-      );
-    }
-
-    if (eventFilter !== "all") {
-      result = result.filter((log) => log.event === eventFilter);
-    }
-
-    if (sorting.length > 0) {
-      const { id, desc } = sorting[0];
-      result.sort((a: any, b: any) => {
-        const valA = a[id];
-        const valB = b[id];
-        if (valA === undefined || valB === undefined) return 0;
-        if (typeof valA === "string" && typeof valB === "string") {
-          return desc ? valB.localeCompare(valA) : valA.localeCompare(valB);
-        }
-        return desc
-          ? new Date(valB).getTime() - new Date(valA).getTime()
-          : new Date(valA).getTime() - new Date(valB).getTime();
-      });
-    }
-
-    return result;
-  }, [logs, debouncedSearch, eventFilter, sorting]);
-
-  const paginatedLogs = useMemo(() => {
-    const start = pagination.pageIndex * pagination.pageSize;
-    const end = start + pagination.pageSize;
-    return filteredLogs.slice(start, end);
-  }, [filteredLogs, pagination]);
 
   const columns = React.useMemo<ColumnDef<TelegramSelfbotLog>[]>(() => [
     {
@@ -220,36 +179,24 @@ export default function TelegramLogs() {
       },
     },
     {
-      accessorKey: "phone",
-      meta: { title: "Tài khoản" },
-      header: ({ column }) => <DataTableColumnHeader column={column} />,
-      cell: ({ row }) => {
-        const phone = row.getValue("phone") as string;
-        return (
-          <span className="text-[13px] font-bold text-foreground">
-            {phone}
-          </span>
-        );
-      },
-    },
-    {
-      accessorKey: "event",
+      accessorKey: "actionType",
       meta: { title: "Sự kiện" },
       header: ({ column }) => <DataTableColumnHeader column={column} />,
       cell: ({ row }) => {
-        const event = row.getValue("event") as string;
+        const event = row.getValue("actionType") as string;
         return getEventBadge(event);
       },
     },
     {
-      accessorKey: "targetUser",
+      accessorKey: "details",
       meta: { title: "Đối tượng" },
       header: ({ column }) => <DataTableColumnHeader column={column} />,
       cell: ({ row }) => {
-        const target = row.getValue("targetUser") as string;
+        const details = row.getValue("details") as any;
+        const senderName = details?.senderName || details?.senderId || "";
         return (
           <span className="text-[13px] font-mono text-vanixjnk font-semibold">
-            {target || "—"}
+            {senderName ? `@${senderName}` : "—"}
           </span>
         );
       },
@@ -325,13 +272,13 @@ export default function TelegramLogs() {
       <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col">
           
-          {/* Stats Row: grid-cols-1 md:grid-cols-3 gap-6 exactly like services list */}
+          {/* Stats Row */}
           <div className="p-6 pb-2 grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="p-4 rounded-xl border bg-background/60 flex items-center justify-between">
               <div className="space-y-1">
                 <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Tự động trả lời</p>
                 <h3 className="text-2xl font-extrabold text-foreground tracking-tight">
-                  {logs.filter((l) => l.event === "auto_reply").length}
+                  {stats.autoReply}
                 </h3>
               </div>
               <div className="size-10 rounded-lg text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 flex items-center justify-center shrink-0">
@@ -341,13 +288,13 @@ export default function TelegramLogs() {
 
             <div className="p-4 rounded-xl border bg-background/60 flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Lỗi hệ thống / Proxy</p>
-                <h3 className="text-2xl font-extrabold text-rose-500 tracking-tight">
-                  {logs.filter((l) => l.event === "proxy_error" || l.status === "failed").length}
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Kết nối API</p>
+                <h3 className="text-2xl font-extrabold text-foreground tracking-tight">
+                  {stats.connection}
                 </h3>
               </div>
-              <div className="size-10 rounded-lg text-rose-500 bg-rose-500/10 border border-rose-500/25 flex items-center justify-center shrink-0">
-                <Icon icon="solar:danger-triangle-line-duotone" className="text-xl" />
+              <div className="size-10 rounded-lg text-emerald-500 bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center shrink-0">
+                <Icon icon="solar:link-circle-line-duotone" className="text-xl" />
               </div>
             </div>
 
@@ -355,7 +302,7 @@ export default function TelegramLogs() {
               <div className="space-y-1">
                 <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Tổng số sự kiện</p>
                 <h3 className="text-2xl font-extrabold text-foreground tracking-tight">
-                  {logs.length}
+                  {stats.total}
                 </h3>
               </div>
               <div className="size-10 rounded-lg text-sky-500 bg-sky-500/10 border border-sky-500/25 flex items-center justify-center shrink-0">
@@ -392,113 +339,146 @@ export default function TelegramLogs() {
 
           {/* Inner Content */}
           <div className="p-6 space-y-6">
-            <div className="flex flex-row items-center justify-between gap-4">
-              <div>
-                <h3 className="text-base font-bold text-foreground">Danh sách nhật ký hoạt động</h3>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Danh sách các log sự kiện, kết nối và hoạt động tự động phản hồi.
-                </p>
-              </div>
-              {logs.length > 0 && (
-                <div className="flex items-center gap-2 shrink-0">
-                  <Button
-                    variant="outline"
-                    onClick={handleClearLogs}
-                    className="h-9 rounded-xl text-xs font-bold gap-2 text-rose-500 border-rose-500/20 hover:bg-rose-500/10 cursor-pointer"
-                  >
-                    <Icon icon="solar:trash-bin-trash-line-duotone" className="text-lg" />
-                    Xóa tất cả logs
-                  </Button>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl border border-border/60 bg-background/50 backdrop-blur-sm">
+              <div className="flex items-center gap-3">
+                <Icon icon="solar:user-id-line-duotone" className="text-xl text-vanixjnk" />
+                <div>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Chọn tài khoản Telegram</h4>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">Nhật ký hoạt động sẽ được tải riêng theo từng tài khoản.</p>
                 </div>
-              )}
+              </div>
+              <Select value={selectedAccountId} onValueChange={setSelectedAccountId}>
+                <SelectTrigger className="w-full sm:w-80 h-10 text-[13px] justify-between bg-background border-border">
+                  <SelectValue placeholder="Chọn tài khoản" />
+                </SelectTrigger>
+                <SelectContent position="popper" align="end">
+                  {accountsList.map((acc) => {
+                    const name = [acc.firstName, acc.lastName].filter(Boolean).join(" ").trim() || "Telegram Account";
+                    return (
+                      <SelectItem key={acc.id} value={acc.id} className="text-[13px]">
+                        {name} ({acc.phone})
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
             </div>
 
-            <DataTable
-              columns={columns}
-              data={paginatedLogs}
-              pageCount={Math.ceil(filteredLogs.length / pagination.pageSize)}
-              totalRecords={filteredLogs.length}
-              pagination={pagination}
-              onPaginationChange={setPagination}
-              sorting={sorting}
-              onSortingChange={setSorting}
-              toolbarInput={
-                <div className="flex items-center gap-2 w-full">
-                  <div className="relative flex-1">
-                    <Icon
-                      icon="solar:magnifer-line-duotone"
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm"
-                    />
-                    <Input
-                      placeholder="Tìm kiếm nội dung logs, khách hàng..."
-                      className="pl-9 h-9 text-sm w-full bg-background"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+            {accountsList.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 text-center border rounded-xl bg-background/40">
+                <div className="size-14 rounded-2xl text-muted-foreground bg-muted flex items-center justify-center mb-4">
+                  <Icon icon="ph:telegram-logo-duotone" className="text-3xl" />
+                </div>
+                <h3 className="text-sm font-bold text-foreground">Chưa có tài khoản Telegram kết nối</h3>
+                <p className="text-xs text-muted-foreground mt-1 max-w-sm">
+                  Vui lòng thêm ít nhất một tài khoản Telegram ở trang danh sách tài khoản trước khi thực hiện xem nhật ký hoạt động.
+                </p>
+                <Link href="/application/telegram/accounts" className="mt-4">
+                  <Button variant="vanixjnk" size="sm">
+                    Đến trang tài khoản
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div className="flex flex-row items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-base font-bold text-foreground">Danh sách nhật ký hoạt động</h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Danh sách các log sự kiện, kết nối và hoạt động tự động phản hồi.
+                    </p>
                   </div>
-                  
-                  <Popover>
-                    <PopoverTrigger asChild>
+                  {logs.length > 0 && (
+                    <div className="flex items-center gap-2 shrink-0">
                       <Button
                         variant="outline"
-                        size="icon"
-                        className={cn(
-                          "h-9 w-9 border-border bg-background hover:bg-muted/50 shrink-0",
-                          eventFilter !== "all" && "text-vanixjnk border-vanixjnk/30 bg-vanixjnk/5 hover:bg-vanixjnk/10"
-                        )}
-                        title="Lọc loại sự kiện"
+                        onClick={handleClearLogs}
+                        className="h-9 rounded-xl text-xs font-bold gap-2 text-rose-500 border-rose-500/20 hover:bg-rose-500/10 cursor-pointer"
                       >
-                        <Icon icon="solar:filter-line-duotone" className="size-4 shrink-0" />
+                        <Icon icon="solar:trash-bin-trash-line-duotone" className="text-lg" />
+                        Xóa tất cả logs
                       </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-56 p-3 flex flex-col gap-2" align="end">
-                      <div className="flex flex-col gap-1.5">
-                        <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-                          Loại sự kiện
-                        </label>
-                        <Select value={eventFilter} onValueChange={(val: any) => setEventFilter(val)}>
-                          <SelectTrigger className="w-full h-9 text-[13px] justify-between">
-                            <SelectValue placeholder="Chọn sự kiện" />
-                          </SelectTrigger>
-                          <SelectContent position="popper" align="start">
-                            <SelectItem value="all" className="text-[13px]">
-                              <span className="flex items-center gap-2">
-                                <Icon icon="solar:widget-3-line-duotone" className="size-3.5 shrink-0 text-blue-500" />
-                                <span>Tất cả</span>
-                              </span>
-                            </SelectItem>
-                            <SelectItem value="auto_reply" className="text-[13px]">
-                              <span className="flex items-center gap-2">
-                                <Icon icon="solar:chat-round-unread-line-duotone" className="size-3.5 shrink-0 text-vanixjnk" />
-                                <span>Auto Reply</span>
-                              </span>
-                            </SelectItem>
-                            <SelectItem value="connection" className="text-[13px]">
-                              <span className="flex items-center gap-2">
-                                <Icon icon="solar:link-circle-line-duotone" className="size-3.5 shrink-0 text-emerald-500" />
-                                <span>Kết nối</span>
-                              </span>
-                            </SelectItem>
-                            <SelectItem value="proxy_error" className="text-[13px]">
-                              <span className="flex items-center gap-2">
-                                <Icon icon="solar:danger-triangle-line-duotone" className="size-3.5 shrink-0 text-rose-500" />
-                                <span>Lỗi Proxy</span>
-                              </span>
-                            </SelectItem>
-                            <SelectItem value="rate_limit" className="text-[13px]">
-                              <span className="flex items-center gap-2">
-                                <Icon icon="solar:shield-warning-line-duotone" className="size-3.5 shrink-0 text-amber-500" />
-                                <span>Rate Limit</span>
-                              </span>
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
+                    </div>
+                  )}
                 </div>
-              }
-            />
+
+                <DataTable
+                  columns={columns}
+                  data={logs}
+                  pageCount={pageCount}
+                  totalRecords={totalRecords}
+                  pagination={pagination}
+                  onPaginationChange={setPagination}
+                  sorting={sorting}
+                  onSortingChange={setSorting}
+                  isLoading={logsLoading}
+                  toolbarInput={
+                    <div className="flex items-center gap-2 w-full">
+                      <div className="relative flex-1">
+                        <Icon
+                          icon="solar:magnifer-line-duotone"
+                          className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm"
+                        />
+                        <Input
+                          placeholder="Tìm kiếm nội dung logs, khách hàng..."
+                          className="pl-9 h-9 text-sm w-full bg-background"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                      </div>
+                      
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className={cn(
+                              "h-9 w-9 border-border bg-background hover:bg-muted/50 shrink-0",
+                              eventFilter !== "all" && "text-vanixjnk border-vanixjnk/30 bg-vanixjnk/5 hover:bg-vanixjnk/10"
+                            )}
+                            title="Lọc loại sự kiện"
+                          >
+                            <Icon icon="solar:filter-line-duotone" className="size-4 shrink-0" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-56 p-3 flex flex-col gap-2" align="end">
+                          <div className="flex flex-col gap-1.5">
+                            <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                              Loại sự kiện
+                            </label>
+                            <Select value={eventFilter} onValueChange={(val: any) => setEventFilter(val)}>
+                              <SelectTrigger className="w-full h-9 text-[13px] justify-between">
+                                <SelectValue placeholder="Chọn sự kiện" />
+                              </SelectTrigger>
+                              <SelectContent position="popper" align="start">
+                                <SelectItem value="all" className="text-[13px]">
+                                  <span className="flex items-center gap-2">
+                                    <Icon icon="solar:widget-3-line-duotone" className="size-3.5 shrink-0 text-blue-500" />
+                                    <span>Tất cả</span>
+                                  </span>
+                                </SelectItem>
+                                <SelectItem value="auto_reply" className="text-[13px]">
+                                  <span className="flex items-center gap-2">
+                                    <Icon icon="solar:chat-round-unread-line-duotone" className="size-3.5 shrink-0 text-vanixjnk" />
+                                    <span>Auto Reply</span>
+                                  </span>
+                                </SelectItem>
+                                <SelectItem value="connection" className="text-[13px]">
+                                  <span className="flex items-center gap-2">
+                                    <Icon icon="solar:link-circle-line-duotone" className="size-3.5 shrink-0 text-emerald-500" />
+                                    <span>Kết nối</span>
+                                  </span>
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  }
+                />
+              </div>
+            )}
           </div>
 
         </div>
@@ -518,18 +498,22 @@ export default function TelegramLogs() {
             <div className="space-y-4 py-3 text-[13px]">
               <div className="grid grid-cols-3 gap-2 border-b border-border/50 pb-2">
                 <span className="text-muted-foreground font-semibold">Tài khoản:</span>
-                <span className="col-span-2 text-foreground font-mono font-bold">{selectedLog.phone}</span>
+                <span className="col-span-2 text-foreground font-mono font-bold">
+                  {accountsList.find((a) => a.id === selectedLog.accountId)?.phone || selectedLog.accountId}
+                </span>
               </div>
 
               <div className="grid grid-cols-3 gap-2 border-b border-border/50 pb-2">
                 <span className="text-muted-foreground font-semibold">Sự kiện:</span>
-                <span className="col-span-2">{getEventBadge(selectedLog.event)}</span>
+                <span className="col-span-2">{getEventBadge(selectedLog.actionType)}</span>
               </div>
 
-              {selectedLog.targetUser && (
+              {(selectedLog.details?.senderName || selectedLog.details?.senderId) && (
                 <div className="grid grid-cols-3 gap-2 border-b border-border/50 pb-2">
                   <span className="text-muted-foreground font-semibold">Khách hàng:</span>
-                  <span className="col-span-2 text-vanixjnk font-mono">{selectedLog.targetUser}</span>
+                  <span className="col-span-2 text-vanixjnk font-mono">
+                    @{selectedLog.details?.senderName || selectedLog.details?.senderId}
+                  </span>
                 </div>
               )}
 

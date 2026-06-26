@@ -190,6 +190,7 @@ export class TelegramService {
         workDays: [1, 2, 3, 4, 5],
         workStartHour: "08:00",
         workEndHour: "17:30",
+        timezone: "Asia/Ho_Chi_Minh",
         cooldownHours: 4,
         markAsRead: false,
       });
@@ -291,10 +292,11 @@ export class TelegramService {
 
         // Outside Work Hours Check
         if (config.detectionMode === "outside_work_hours") {
+          const tz = config.timezone || "Asia/Ho_Chi_Minh";
           const now = new Date();
-          const tzString = now.toLocaleTimeString("en-US", { timeZone: "Asia/Ho_Chi_Minh", hour12: false });
+          const tzString = now.toLocaleTimeString("en-US", { timeZone: tz, hour12: false });
           const [currentHour, currentMin] = tzString.split(":").map(Number);
-          const currentDay = now.toLocaleDateString("en-US", { timeZone: "Asia/Ho_Chi_Minh", weekday: "short" });
+          const currentDay = now.toLocaleDateString("en-US", { timeZone: tz, weekday: "short" });
           const dayMap: Record<string, number> = { Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 7 };
           const currentDayNum = dayMap[currentDay] || 1;
 
@@ -456,6 +458,7 @@ export class TelegramService {
         workDays: [1, 2, 3, 4, 5],
         workStartHour: "08:00",
         workEndHour: "17:30",
+        timezone: "Asia/Ho_Chi_Minh",
         cooldownHours: 4,
         markAsRead: false,
       });
@@ -476,6 +479,7 @@ export class TelegramService {
       workDays: data.workDays,
       workStartHour: data.workStartHour,
       workEndHour: data.workEndHour,
+      timezone: data.timezone,
       cooldownHours: data.cooldownHours,
       markAsRead: data.markAsRead,
     });

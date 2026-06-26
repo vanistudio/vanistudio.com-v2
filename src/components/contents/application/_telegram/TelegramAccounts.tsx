@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { trpc } from "@/lib/trpc";
 import {
   Dialog,
   DialogContent,
@@ -28,10 +29,10 @@ interface TelegramAccount {
   firstName: string | null;
   lastName: string | null;
   avatar: string | null;
-  status: "active" | "inactive" | "error" | "rate_limited";
+  status: string;
   proxy: string | null;
-  proxyStatus: "active" | "dead" | "unknown";
-  createdAt: string;
+  proxyStatus: string;
+  createdAt: Date | string;
 }
 
 const navItems = [
@@ -52,39 +53,13 @@ export default function TelegramAccounts() {
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [sorting, setSorting] = useState<SortingState>([]);
 
-  // Form states
+  // Wizard login states
+  const [step, setStep] = useState<"phone" | "otp">("phone");
   const [phone, setPhone] = useState("");
-  const [sessionString, setSessionString] = useState("");
   const [proxy, setProxy] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Mock initial data
-  const [accounts, setAccounts] = useState<TelegramAccount[]>([
-    {
-      id: "1",
-      phone: "+84987654321",
-      username: "vani_helper",
-      firstName: "Vani",
-      lastName: "Helper",
-      avatar: null,
-      status: "active",
-      proxy: "socks5://user:pass@45.119.82.12:1080",
-      proxyStatus: "active",
-      createdAt: "2026-06-26T10:00:00Z",
-    },
-    {
-      id: "2",
-      phone: "+84912345678",
-      username: "support_vanistudio",
-      firstName: "Vani Studio",
-      lastName: "Support",
-      avatar: null,
-      status: "rate_limited",
-      proxy: null,
-      proxyStatus: "unknown",
-      createdAt: "2026-06-25T14:30:00Z",
-    }
-  ]);
+  const [otpCode, setOtpCode] = useState("");
+  const [twoFactorPassword, setTwoFactorPassword] = useState("");
+  const [needTwoFactor, setNeedTwoFactor] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -94,102 +69,158 @@ export default function TelegramAccounts() {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  const handleAddAccount = (e: React.FormEvent) => {
+  const sortField = sorting[0]?.id || "createdAt";
+  const sortOrder = sorting[0]?.desc ? ("desc" as const) : ("asc" as const);
+
+  // Fetch accounts query
+  const { data: queryResult, isLoading, refetch, isFetching } = trpc.application.telegram.getAccountsList.useQuery(
+    {
+      search: debouncedSearch || undefined,
+      page: pagination.pageIndex + 1,
+      limit: pagination.pageSize,
+      sortField,
+      sortOrder,
+    },
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  const accounts = queryResult?.data?.items || [];
+  const totalRecords = queryResult?.data?.total || 0;
+  const pageCount = queryResult?.data?.totalPages || 0;
+  const stats = queryResult?.data?.stats || { total: 0, active: 0, inactive: 0 };
+
+  // Mutations
+  const sendLoginCodeMutation = trpc.application.telegram.sendLoginCode.useMutation({
+    onSuccess: (data) => {
+      if (data.success) {
+        toast.success("Mã xác minh OTP đã được gửi!");
+        setStep("otp");
+      }
+    },
+    onError: (err) => {
+      toast.error(err.message || "Gửi mã OTP thất bại");
+    }
+  });
+
+  const submitLoginCodeMutation = trpc.application.telegram.submitLoginCode.useMutation({
+    onSuccess: (data) => {
+      if (data.need2FA) {
+        setNeedTwoFactor(true);
+        toast.info("Tài khoản yêu cầu mật khẩu 2 lớp (2FA).");
+      } else if (data.success) {
+        toast.success("Đăng nhập và liên kết tài khoản Telegram thành công!");
+        handleOpenAddDialog(false);
+        refetch();
+      }
+    },
+    onError: (err) => {
+      toast.error(err.message || "Đăng nhập thất bại");
+    }
+  });
+
+  const updateProxyMutation = trpc.application.telegram.updateProxy.useMutation({
+    onSuccess: () => {
+      toast.success("Cập nhật Proxy thành công!");
+      setIsEditProxyOpen(false);
+      setProxy("");
+      refetch();
+    },
+    onError: (err) => {
+      toast.error(err.message || "Cập nhật Proxy thất bại");
+    }
+  });
+
+  const deleteAccountMutation = trpc.application.telegram.deleteAccount.useMutation({
+    onSuccess: () => {
+      toast.success("Đã xóa tài khoản Telegram thành công!");
+      setIsDeleteOpen(false);
+      refetch();
+    },
+    onError: (err) => {
+      toast.error(err.message || "Xóa tài khoản thất bại");
+    }
+  });
+
+  const checkProxyMutation = trpc.application.telegram.checkProxy.useMutation({
+    onSuccess: (data: any) => {
+      if (data.success) {
+        toast.success(data.message || `Proxy kết nối tốt (Ping: ${data.ping || 0}ms)`);
+      } else {
+        toast.error(data.message || "Kết nối proxy thất bại");
+      }
+      refetch();
+    },
+    onError: (err) => {
+      toast.error(err.message || "Kiểm tra Proxy thất bại");
+    }
+  });
+
+  // Action handlers
+  const handleOpenAddDialog = (open: boolean) => {
+    setIsAddOpen(open);
+    if (!open) {
+      setStep("phone");
+      setPhone("");
+      setProxy("");
+      setOtpCode("");
+      setTwoFactorPassword("");
+      setNeedTwoFactor(false);
+    }
+  };
+
+  const handleSendOTP = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!phone || !sessionString) {
-      toast.error("Vui lòng điền số điện thoại và String Session");
+    if (!phone) {
+      toast.error("Vui lòng điền số điện thoại");
       return;
     }
-    setIsSubmitting(true);
-    setTimeout(() => {
-      const newAcc: TelegramAccount = {
-        id: Math.random().toString(),
-        phone,
-        username: "checking...",
-        firstName: "Telegram",
-        lastName: "User",
-        avatar: null,
-        status: "active",
-        proxy: proxy || null,
-        proxyStatus: proxy ? "active" : "unknown",
-        createdAt: new Date().toISOString(),
-      };
-      setAccounts([newAcc, ...accounts]);
-      setIsAddOpen(false);
-      setPhone("");
-      setSessionString("");
-      setProxy("");
-      setIsSubmitting(false);
-      toast.success("Thêm tài khoản Telegram thành công! Đang đồng bộ hóa dữ liệu...");
-    }, 1000);
+    sendLoginCodeMutation.mutate({
+      phone,
+      proxy: proxy || undefined,
+    });
+  };
+
+  const handleSubmitOTP = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!otpCode) {
+      toast.error("Vui lòng điền mã OTP");
+      return;
+    }
+    submitLoginCodeMutation.mutate({
+      phone,
+      code: otpCode,
+      password: twoFactorPassword || undefined,
+    });
   };
 
   const handleUpdateProxy = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedAccount) return;
-    setAccounts(
-      accounts.map((acc) =>
-        acc.id === selectedAccount.id
-          ? { ...acc, proxy: proxy || null, proxyStatus: proxy ? "active" : "unknown" }
-          : acc
-      )
-    );
-    setIsEditProxyOpen(false);
-    setProxy("");
-    toast.success("Cập nhật Proxy thành công!");
+    updateProxyMutation.mutate({
+      accountId: selectedAccount.id,
+      proxy: proxy || null,
+    });
   };
 
   const handleDeleteAccount = () => {
     if (!selectedAccount) return;
-    setAccounts(accounts.filter((acc) => acc.id !== selectedAccount.id));
-    setIsDeleteOpen(false);
-    toast.success("Đã xóa tài khoản Telegram thành công!");
+    deleteAccountMutation.mutate({
+      accountId: selectedAccount.id,
+    });
   };
 
   const handleCheckProxy = (acc: TelegramAccount) => {
     toast.promise(
-      new Promise((resolve) => setTimeout(resolve, 1500)),
+      checkProxyMutation.mutateAsync({ accountId: acc.id }),
       {
         loading: `Đang kiểm tra kết nối proxy của ${acc.phone}...`,
-        success: "Proxy hoạt động tốt (Ping: 120ms)",
+        success: "Đã hoàn thành kiểm tra proxy!",
         error: "Lỗi kết nối proxy",
       }
     );
   };
-
-  const filteredAccounts = useMemo(() => {
-    let result = [...accounts];
-
-    if (debouncedSearch) {
-      result = result.filter(
-        (acc) =>
-          acc.phone.includes(debouncedSearch) ||
-          (acc.username && acc.username.toLowerCase().includes(debouncedSearch.toLowerCase())) ||
-          (acc.firstName && acc.firstName.toLowerCase().includes(debouncedSearch.toLowerCase()))
-      );
-    }
-
-    if (sorting.length > 0) {
-      const { id, desc } = sorting[0];
-      result.sort((a: any, b: any) => {
-        const valA = a[id];
-        const valB = b[id];
-        if (valA === undefined || valB === undefined) return 0;
-        if (typeof valA === "string" && typeof valB === "string") {
-          return desc ? valB.localeCompare(valA) : valA.localeCompare(valB);
-        }
-        return desc ? valB - valA : valA - valB;
-      });
-    }
-
-    return result;
-  }, [accounts, debouncedSearch, sorting]);
-
-  const paginatedAccounts = useMemo(() => {
-    const start = pagination.pageIndex * pagination.pageSize;
-    const end = start + pagination.pageSize;
-    return filteredAccounts.slice(start, end);
-  }, [filteredAccounts, pagination]);
 
   const columns = React.useMemo<ColumnDef<TelegramAccount>[]>(() => [
     {
@@ -211,14 +242,15 @@ export default function TelegramAccounts() {
       header: ({ column }) => <DataTableColumnHeader column={column} />,
       cell: ({ row }) => {
         const acc = row.original;
+        const name = [acc.firstName, acc.lastName].filter(Boolean).join(" ").trim() || "Telegram User";
         return (
           <div className="flex items-center gap-3">
             <div className="size-9 rounded-full bg-vanixjnk/10 text-vanixjnk font-bold border border-vanixjnk/20 flex items-center justify-center">
-              {acc.firstName ? acc.firstName.charAt(0).toUpperCase() : "T"}
+              {name.charAt(0).toUpperCase()}
             </div>
             <div className="flex flex-col min-w-0">
               <span className="font-bold text-foreground truncate">
-                {acc.firstName} {acc.lastName}
+                {name}
               </span>
               <span className="text-[10px] text-muted-foreground font-mono">{acc.phone}</span>
             </div>
@@ -258,7 +290,7 @@ export default function TelegramAccounts() {
               onClick={() => handleCheckProxy(acc)}
               title="Bấm vào để kiểm tra kết nối proxy"
             >
-              {acc.proxyStatus === "active" ? "Live" : "Dead"}
+              {acc.proxyStatus === "active" ? "Live" : acc.proxyStatus === "dead" ? "Dead" : "Unknown"}
             </Badge>
           </div>
         ) : (
@@ -298,7 +330,7 @@ export default function TelegramAccounts() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="size-8 text-muted-foreground hover:text-foreground"
+                className="size-8 text-muted-foreground hover:text-foreground cursor-pointer"
               >
                 <Icon icon="solar:menu-dots-bold-duotone" className="size-4" />
               </Button>
@@ -311,7 +343,7 @@ export default function TelegramAccounts() {
                   setProxy(acc.proxy || "");
                   setIsEditProxyOpen(true);
                 }}
-                className="w-full justify-start text-xs h-8 px-2"
+                className="w-full justify-start text-xs h-8 px-2 cursor-pointer"
               >
                 <Icon icon="solar:globus-line-duotone" className="mr-2 size-3.5" />
                 Đổi Proxy
@@ -319,7 +351,7 @@ export default function TelegramAccounts() {
               <Button
                 variant="ghost"
                 onClick={() => handleCheckProxy(acc)}
-                className="w-full justify-start text-xs h-8 px-2"
+                className="w-full justify-start text-xs h-8 px-2 cursor-pointer"
               >
                 <Icon icon="solar:restart-line-duotone" className="mr-2 size-3.5" />
                 Test kết nối
@@ -330,7 +362,7 @@ export default function TelegramAccounts() {
                   setSelectedAccount(acc);
                   setIsDeleteOpen(true);
                 }}
-                className="w-full justify-start text-xs h-8 px-2 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10"
+                className="w-full justify-start text-xs h-8 px-2 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 cursor-pointer"
               >
                 <Icon icon="solar:trash-bin-trash-line-duotone" className="mr-2 size-3.5" />
                 Xóa tài khoản
@@ -380,12 +412,12 @@ export default function TelegramAccounts() {
       <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col">
           
-          {/* Stats Row: grid-cols-1 md:grid-cols-3 gap-6 exactly like services list */}
+          {/* Stats Row */}
           <div className="p-6 pb-2 grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="p-4 rounded-xl border bg-background/60 flex items-center justify-between">
               <div className="space-y-1">
                 <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Tổng tài khoản</p>
-                <h3 className="text-2xl font-extrabold text-foreground tracking-tight">{accounts.length}</h3>
+                <h3 className="text-2xl font-extrabold text-foreground tracking-tight">{stats.total}</h3>
               </div>
               <div className="size-10 rounded-lg text-indigo-500 bg-indigo-500/10 border border-indigo-500/25 flex items-center justify-center shrink-0">
                 <Icon icon="solar:users-group-two-rounded-line-duotone" className="text-xl" />
@@ -395,9 +427,7 @@ export default function TelegramAccounts() {
             <div className="p-4 rounded-xl border bg-background/60 flex items-center justify-between">
               <div className="space-y-1">
                 <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Đang hoạt động</p>
-                <h3 className="text-2xl font-extrabold text-foreground tracking-tight">
-                  {accounts.filter((a) => a.status === "active").length}
-                </h3>
+                <h3 className="text-2xl font-extrabold text-foreground tracking-tight">{stats.active}</h3>
               </div>
               <div className="size-10 rounded-lg text-emerald-500 bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center shrink-0">
                 <Icon icon="solar:shield-check-line-duotone" className="text-xl" />
@@ -406,7 +436,7 @@ export default function TelegramAccounts() {
 
             <div className="p-4 rounded-xl border bg-background/60 flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Proxy hợp lệ</p>
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Proxy hoạt động</p>
                 <h3 className="text-2xl font-extrabold text-foreground tracking-tight">
                   {accounts.filter((a) => a.proxyStatus === "active").length}
                 </h3>
@@ -464,7 +494,7 @@ export default function TelegramAccounts() {
                     <Button
                       variant="ghost"
                       className="w-full justify-start text-xs h-8 px-2 cursor-pointer"
-                      onClick={() => setIsAddOpen(true)}
+                      onClick={() => handleOpenAddDialog(true)}
                     >
                       <Icon icon="solar:user-plus-line-duotone" className="mr-2 size-3.5 text-emerald-500" />
                       Thêm tài khoản
@@ -473,7 +503,12 @@ export default function TelegramAccounts() {
                       variant="ghost"
                       className="w-full justify-start text-xs h-8 px-2 cursor-pointer"
                       onClick={() => {
-                        toast.success("Đang quét kết nối tất cả tài khoản...");
+                        toast.success("Đang bắt đầu test toàn bộ proxy...");
+                        accounts.forEach((acc) => {
+                          if (acc.proxy) {
+                            handleCheckProxy(acc);
+                          }
+                        });
                       }}
                     >
                       <Icon icon="solar:bolt-line-duotone" className="mr-2 size-3.5 text-amber-500" />
@@ -486,13 +521,14 @@ export default function TelegramAccounts() {
 
             <DataTable
               columns={columns}
-              data={paginatedAccounts}
-              pageCount={Math.ceil(filteredAccounts.length / pagination.pageSize)}
-              totalRecords={filteredAccounts.length}
+              data={accounts}
+              pageCount={pageCount}
+              totalRecords={totalRecords}
               pagination={pagination}
               onPaginationChange={setPagination}
               sorting={sorting}
               onSortingChange={setSorting}
+              isLoading={isLoading || isFetching}
               toolbarInput={
                 <div className="relative flex-1">
                   <Icon
@@ -514,69 +550,109 @@ export default function TelegramAccounts() {
       </div>
 
       {/* Add Account Dialog */}
-      <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
+      <Dialog open={isAddOpen} onOpenChange={handleOpenAddDialog}>
         <DialogContent className="sm:max-w-[460px]">
-          <form onSubmit={handleAddAccount}>
+          <form onSubmit={step === "phone" ? handleSendOTP : handleSubmitOTP}>
             <DialogHeader className="flex flex-col items-center text-center">
               <div className="flex items-center justify-center size-12 rounded-xl text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 mb-3">
                 <Icon icon="ph:telegram-logo-duotone" className="text-2xl" />
               </div>
               <DialogTitle>Thêm tài khoản Telegram</DialogTitle>
               <DialogDescription>
-                Nhập số điện thoại đăng nhập và String Session của tài khoản (sử dụng thư viện GramJS/Telethon).
+                {step === "phone"
+                  ? "Nhập số điện thoại đăng nhập và proxy gán cho tài khoản để yêu cầu gửi mã OTP từ Telegram."
+                  : `Nhập mã OTP vừa được gửi tới số điện thoại ${phone}.`}
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4 py-4">
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Số điện thoại</label>
-                <Input
-                  placeholder="Ví dụ: +84987654321"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="h-9 text-[13px]"
-                  required
-                />
-              </div>
+              {step === "phone" ? (
+                <>
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Số điện thoại</label>
+                    <Input
+                      placeholder="Ví dụ: +84987654321"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="h-9 text-[13px]"
+                      required
+                    />
+                  </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">MTProto String Session</label>
-                <Input
-                  placeholder="Nhập chuỗi String Session kết nối..."
-                  value={sessionString}
-                  onChange={(e) => setSessionString(e.target.value)}
-                  className="h-9 text-[13px] font-mono"
-                  required
-                />
-              </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Proxy kết nối (Tùy chọn)</label>
+                    <Input
+                      placeholder="Ví dụ: socks5://username:password@ip:port"
+                      value={proxy}
+                      onChange={(e) => setProxy(e.target.value)}
+                      className="h-9 text-[13px]"
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Mã xác thực OTP (5 chữ số)</label>
+                    <Input
+                      placeholder="Nhập mã OTP..."
+                      value={otpCode}
+                      onChange={(e) => setOtpCode(e.target.value)}
+                      className="h-9 text-[13px] font-mono tracking-widest text-center"
+                      required
+                      maxLength={5}
+                    />
+                  </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Proxy kết nối (Tùy chọn)</label>
-                <Input
-                  placeholder="Ví dụ: socks5://username:password@ip:port"
-                  value={proxy}
-                  onChange={(e) => setProxy(e.target.value)}
-                  className="h-9 text-[13px]"
-                />
-              </div>
+                  {needTwoFactor && (
+                    <div className="space-y-1.5 animate-in fade-in slide-in-from-top-1 duration-200">
+                      <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Mật khẩu 2FA (Bảo mật 2 lớp)</label>
+                      <Input
+                        type="password"
+                        placeholder="Nhập mật khẩu 2FA của bạn..."
+                        value={twoFactorPassword}
+                        onChange={(e) => setTwoFactorPassword(e.target.value)}
+                        className="h-9 text-[13px]"
+                        required
+                      />
+                    </div>
+                  )}
+                </>
+              )}
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsAddOpen(false)}>
+              {step === "otp" && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setStep("phone");
+                    setOtpCode("");
+                    setTwoFactorPassword("");
+                    setNeedTwoFactor(false);
+                  }}
+                  className="mr-auto cursor-pointer"
+                >
+                  Quay lại
+                </Button>
+              )}
+              <Button type="button" variant="outline" onClick={() => handleOpenAddDialog(false)} className="cursor-pointer">
                 Hủy
               </Button>
               <Button
                 type="submit"
                 variant="vanixjnk"
-                disabled={isSubmitting}
+                disabled={sendLoginCodeMutation.isPending || submitLoginCodeMutation.isPending}
                 className="cursor-pointer"
               >
-                {isSubmitting ? (
+                {sendLoginCodeMutation.isPending || submitLoginCodeMutation.isPending ? (
                   <Icon icon="solar:restart-line-duotone" className="mr-1.5 size-4 animate-spin" />
+                ) : step === "phone" ? (
+                  <Icon icon="solar:paper-plane-line-duotone" className="mr-1.5 size-4" />
                 ) : (
-                  <Icon icon="solar:user-plus-line-duotone" className="mr-1.5 size-4" />
+                  <Icon icon="solar:shield-check-line-duotone" className="mr-1.5 size-4" />
                 )}
-                Xác nhận thêm
+                {step === "phone" ? "Gửi mã OTP" : "Xác nhận đăng nhập"}
               </Button>
             </DialogFooter>
           </form>
@@ -610,10 +686,13 @@ export default function TelegramAccounts() {
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsEditProxyOpen(false)}>
+              <Button type="button" variant="outline" onClick={() => setIsEditProxyOpen(false)} className="cursor-pointer">
                 Hủy
               </Button>
-              <Button type="submit" variant="vanixjnk" className="cursor-pointer">
+              <Button type="submit" variant="vanixjnk" className="cursor-pointer" disabled={updateProxyMutation.isPending}>
+                {updateProxyMutation.isPending ? (
+                  <Icon icon="solar:restart-line-duotone" className="mr-1.5 size-4 animate-spin" />
+                ) : null}
                 Lưu cấu hình
               </Button>
             </DialogFooter>
@@ -634,14 +713,18 @@ export default function TelegramAccounts() {
             Bạn có chắc muốn xóa tài khoản <strong className="text-foreground font-semibold">{selectedAccount?.phone}</strong> không? Hành động này sẽ gỡ bỏ hoàn toàn phiên kết nối khỏi hệ thống của Vani Studio.
           </div>
           <DialogFooter className="pt-2">
-            <Button variant="outline" onClick={() => setIsDeleteOpen(false)}>
+            <Button variant="outline" onClick={() => setIsDeleteOpen(false)} className="cursor-pointer">
               Hủy
             </Button>
             <Button
               variant="danger"
               onClick={handleDeleteAccount}
               className="cursor-pointer"
+              disabled={deleteAccountMutation.isPending}
             >
+              {deleteAccountMutation.isPending ? (
+                <Icon icon="solar:restart-line-duotone" className="mr-1.5 size-4 animate-spin" />
+              ) : null}
               Xác nhận xóa
             </Button>
           </DialogFooter>

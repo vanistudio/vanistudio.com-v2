@@ -38,6 +38,7 @@ export const telegramAutoResponders = pgTable("telegram_auto_responders", {
   workDays: jsonb("work_days").$type<number[]>().default([1, 2, 3, 4, 5]).notNull(),
   workStartHour: text("work_start_hour").default("08:00").notNull(),
   workEndHour: text("work_end_hour").default("18:00").notNull(),
+  timezone: text("timezone").default("Asia/Ho_Chi_Minh").notNull(),
   
   cooldownHours: integer("cooldown_hours").default(12).notNull(),
   markAsRead: boolean("mark_as_read").default(false).notNull(),

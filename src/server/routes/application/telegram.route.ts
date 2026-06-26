@@ -176,6 +176,7 @@ export const telegramRouter = router({
         workDays: z.array(z.number()),
         workStartHour: z.string(),
         workEndHour: z.string(),
+        timezone: z.string().optional(),
         cooldownHours: z.number().nonnegative(),
         markAsRead: z.boolean(),
       })
