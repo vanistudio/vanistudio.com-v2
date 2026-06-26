@@ -55,13 +55,11 @@ export default function TelegramLogs() {
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [sorting, setSorting] = useState<SortingState>([]);
 
-  // Fetch accounts list
   const { data: accountsData, isLoading: accountsLoading } = trpc.application.telegram.getAccounts.useQuery(undefined, {
     refetchOnWindowFocus: false,
   });
   const accountsList = accountsData || [];
 
-  // Automatically select the first account when accounts list loads
   useEffect(() => {
     if (accountsList.length > 0 && !selectedAccountId) {
       setSelectedAccountId(accountsList[0].id);
@@ -83,7 +81,6 @@ export default function TelegramLogs() {
   const sortField = sorting[0]?.id || "createdAt";
   const sortOrder = sorting[0]?.desc ? ("desc" as const) : ("asc" as const);
 
-  // Fetch paginated logs
   const { data: queryResult, isLoading: logsLoading, refetch } = trpc.application.telegram.getLogsList.useQuery(
     {
       accountId: selectedAccountId,
@@ -236,7 +233,6 @@ export default function TelegramLogs() {
 
   return (
     <div className="flex flex-col w-full flex-1">
-      {/* Page Header */}
       <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="border-l border-r border-dashed border-primary/20 pt-[88px] pb-6 px-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -255,7 +251,6 @@ export default function TelegramLogs() {
         </div>
       </div>
 
-      {/* Decorative separator line */}
       <div
         className="relative w-full border-t border-b border-dashed border-primary/20 overflow-hidden text-primary/20"
         style={{ height: "36px" }}
@@ -268,11 +263,9 @@ export default function TelegramLogs() {
         />
       </div>
 
-      {/* Main Content */}
       <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col">
           
-          {/* Stats Row */}
           <div className="p-6 pb-2 grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="p-4 rounded-xl border bg-background/60 flex items-center justify-between">
               <div className="space-y-1">
@@ -311,7 +304,6 @@ export default function TelegramLogs() {
             </div>
           </div>
 
-          {/* Navigation Tabs Bar */}
           <div className="px-6 py-4 border-b border-border/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-2">
               {navItems.map((item) => {
@@ -337,7 +329,6 @@ export default function TelegramLogs() {
             </div>
           </div>
 
-          {/* Inner Content */}
           <div className="p-6 space-y-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl border border-border/60 bg-background/50 backdrop-blur-sm">
               <div className="flex items-center gap-3">
@@ -484,7 +475,6 @@ export default function TelegramLogs() {
         </div>
       </div>
 
-      {/* Log Detail Dialog */}
       <Dialog open={!!selectedLog} onOpenChange={(open) => !open && setSelectedLog(null)}>
         <DialogContent className="sm:max-w-[420px]">
           <DialogHeader className="flex flex-col items-center text-center">
