@@ -45,6 +45,7 @@ export const DEFAULT_MENU_GROUPS: DefaultMenuGroup[] = [
           { name: "Kiểm tra Domain", url: "/tools/check-domain", icon: "solar:global-line-duotone", order: 4 },
           { name: "Tạo mã QR", url: "/tools/qr-generator", icon: "solar:qr-code-line-duotone", order: 5 },
           { name: "Check Roblox", url: "/tools/check-roblox", icon: "proicons:roblox", order: 6 },
+          { name: "Check Discord", url: "/tools/check-discord", icon: "ic:baseline-discord", order: 7 },
         ],
       },
       {

@@ -93,4 +93,14 @@ export const toolsRouter = router({
     .query(async ({ input }) => {
       return await toolsService.checkLicense(input.query);
     }),
+
+  checkDiscordToken: publicProcedure
+    .input(
+      z.object({
+        token: z.string().min(1, "Vui lòng nhập token Discord"),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await toolsService.checkDiscordToken(input.token);
+    }),
 });

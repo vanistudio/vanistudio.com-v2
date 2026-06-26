@@ -81,6 +81,16 @@ export default function PubHomeTools() {
             iconColor: "text-purple-500 dark:text-purple-400",
             badgeBg: "bg-purple-500/10",
           },
+          {
+            name: "Discord Checker",
+            desc: "Kiểm tra trạng thái hoạt động và cấu hình Token Discord.",
+            icon: "ic:baseline-discord",
+            href: "/tools/check-discord",
+            gradient: "from-indigo-500/10 via-indigo-500/5 to-transparent",
+            border: "border-indigo-500/20",
+            iconColor: "text-indigo-500 dark:text-indigo-400",
+            badgeBg: "bg-indigo-500/10",
+          },
         ].map((tool) => (
           <Link
             key={tool.href}
