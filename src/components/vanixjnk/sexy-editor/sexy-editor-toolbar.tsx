@@ -366,7 +366,7 @@ export function Toolbar({ editor, mode, onModeChange, modeType = "rich-text", is
 
                             <div className="flex items-center gap-0.5 border p-0.5 rounded-md shadow-sm">
                                 <Popover>
-                                    <Tooltip>
+                                    <Tooltip>fontsetting
                                         <TooltipTrigger asChild>
                                             <PopoverTrigger asChild>
                                                 <Button type="button" variant={editor.isActive("table") ? "secondary" : "ghost"} size="sm" className="h-8 w-8 p-0 data-[state=open]:bg-vanixjnk/15 data-[state=open]:text-vanixjnk transition-colors">
