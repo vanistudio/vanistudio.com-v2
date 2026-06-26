@@ -21,6 +21,12 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { DataTable, DataTableColumnHeader } from "@/components/vanixjnk/data-table";
 import { ColumnDef, SortingState } from "@tanstack/react-table";
+import { PhoneInput } from "@/components/vanixjnk/phone-input";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 
 interface TelegramAccount {
   id: string;
@@ -48,12 +54,12 @@ export default function TelegramAccounts() {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditProxyOpen, setIsEditProxyOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<TelegramAccount | null>(null);
 
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [sorting, setSorting] = useState<SortingState>([]);
 
-  // Wizard login states
   const [step, setStep] = useState<"phone" | "otp">("phone");
   const [phone, setPhone] = useState("");
   const [proxy, setProxy] = useState("");
@@ -72,7 +78,6 @@ export default function TelegramAccounts() {
   const sortField = sorting[0]?.id || "createdAt";
   const sortOrder = sorting[0]?.desc ? ("desc" as const) : ("asc" as const);
 
-  // Fetch accounts query
   const { data: queryResult, isLoading, refetch, isFetching } = trpc.application.telegram.getAccountsList.useQuery(
     {
       search: debouncedSearch || undefined,
@@ -91,7 +96,11 @@ export default function TelegramAccounts() {
   const pageCount = queryResult?.data?.totalPages || 0;
   const stats = queryResult?.data?.stats || { total: 0, active: 0, inactive: 0 };
 
-  // Mutations
+  const { data: detailStats, isLoading: isStatsLoading } = trpc.application.telegram.getAccountStats.useQuery(
+    { accountId: selectedAccount?.id || "" },
+    { enabled: !!selectedAccount && isDetailsOpen }
+  );
+
   const sendLoginCodeMutation = trpc.application.telegram.sendLoginCode.useMutation({
     onSuccess: (data) => {
       if (data.success) {
@@ -157,7 +166,6 @@ export default function TelegramAccounts() {
     }
   });
 
-  // Action handlers
   const handleOpenAddDialog = (open: boolean) => {
     setIsAddOpen(open);
     if (!open) {
@@ -245,9 +253,17 @@ export default function TelegramAccounts() {
         const name = [acc.firstName, acc.lastName].filter(Boolean).join(" ").trim() || "Telegram User";
         return (
           <div className="flex items-center gap-3">
-            <div className="size-9 rounded-full bg-vanixjnk/10 text-vanixjnk font-bold border border-vanixjnk/20 flex items-center justify-center">
-              {name.charAt(0).toUpperCase()}
-            </div>
+            {acc.avatar ? (
+              <img
+                src={acc.avatar}
+                alt={name}
+                className="size-9 rounded-full object-cover border border-vanixjnk/20"
+              />
+            ) : (
+              <div className="size-9 rounded-full bg-vanixjnk/10 text-vanixjnk font-bold border border-vanixjnk/20 flex items-center justify-center">
+                {name.charAt(0).toUpperCase()}
+              </div>
+            )}
             <div className="flex flex-col min-w-0">
               <span className="font-bold text-foreground truncate">
                 {name}
@@ -340,6 +356,17 @@ export default function TelegramAccounts() {
                 variant="ghost"
                 onClick={() => {
                   setSelectedAccount(acc);
+                  setIsDetailsOpen(true);
+                }}
+                className="w-full justify-start text-xs h-8 px-2 cursor-pointer"
+              >
+                <Icon icon="solar:user-id-line-duotone" className="mr-2 size-3.5 text-vanixjnk" />
+                Xem chi tiết
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  setSelectedAccount(acc);
                   setProxy(acc.proxy || "");
                   setIsEditProxyOpen(true);
                 }}
@@ -376,7 +403,6 @@ export default function TelegramAccounts() {
 
   return (
     <div className="flex flex-col w-full flex-1">
-      {/* Page Header */}
       <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="border-l border-r border-dashed border-primary/20 pt-[88px] pb-6 px-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -395,7 +421,6 @@ export default function TelegramAccounts() {
         </div>
       </div>
 
-      {/* Decorative separator line */}
       <div
         className="relative w-full border-t border-b border-dashed border-primary/20 overflow-hidden text-primary/20"
         style={{ height: "36px" }}
@@ -408,11 +433,9 @@ export default function TelegramAccounts() {
         />
       </div>
 
-      {/* Main Content */}
       <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col">
           
-          {/* Stats Row */}
           <div className="p-6 pb-2 grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="p-4 rounded-xl border bg-background/60 flex items-center justify-between">
               <div className="space-y-1">
@@ -447,7 +470,6 @@ export default function TelegramAccounts() {
             </div>
           </div>
 
-          {/* Navigation Tabs Bar */}
           <div className="px-6 py-4 border-b border-border/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-2">
               {navItems.map((item) => {
@@ -473,7 +495,6 @@ export default function TelegramAccounts() {
             </div>
           </div>
 
-          {/* Inner Content */}
           <div className="p-6 space-y-6">
             <div className="flex flex-row items-center justify-between gap-4">
               <div>
@@ -549,7 +570,6 @@ export default function TelegramAccounts() {
         </div>
       </div>
 
-      {/* Add Account Dialog */}
       <Dialog open={isAddOpen} onOpenChange={handleOpenAddDialog}>
         <DialogContent className="sm:max-w-[460px]">
           <form onSubmit={step === "phone" ? handleSendOTP : handleSubmitOTP}>
@@ -570,12 +590,10 @@ export default function TelegramAccounts() {
                 <>
                   <div className="space-y-1.5">
                     <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Số điện thoại</label>
-                    <Input
-                      placeholder="Ví dụ: +84987654321"
+                    <PhoneInput
                       value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="h-9 text-[13px]"
-                      required
+                      onChange={setPhone}
+                      placeholder="Ví dụ: 987654321"
                     />
                   </div>
 
@@ -591,16 +609,23 @@ export default function TelegramAccounts() {
                 </>
               ) : (
                 <>
-                  <div className="space-y-1.5">
-                    <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Mã xác thực OTP (5 chữ số)</label>
-                    <Input
-                      placeholder="Nhập mã OTP..."
-                      value={otpCode}
-                      onChange={(e) => setOtpCode(e.target.value)}
-                      className="h-9 text-[13px] font-mono tracking-widest text-center"
-                      required
-                      maxLength={5}
-                    />
+                  <div className="space-y-2 flex flex-col items-center">
+                    <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground self-start">Mã xác thực OTP (5 chữ số)</label>
+                    <div className="py-1">
+                      <InputOTP
+                        maxLength={5}
+                        value={otpCode}
+                        onChange={setOtpCode}
+                      >
+                        <InputOTPGroup className="w-full justify-center">
+                          <InputOTPSlot index={0} className="h-11 w-11 text-base" />
+                          <InputOTPSlot index={1} className="h-11 w-11 text-base" />
+                          <InputOTPSlot index={2} className="h-11 w-11 text-base" />
+                          <InputOTPSlot index={3} className="h-11 w-11 text-base" />
+                          <InputOTPSlot index={4} className="h-11 w-11 text-base" />
+                        </InputOTPGroup>
+                      </InputOTP>
+                    </div>
                   </div>
 
                   {needTwoFactor && (
@@ -659,7 +684,6 @@ export default function TelegramAccounts() {
         </DialogContent>
       </Dialog>
 
-      {/* Edit Proxy Dialog */}
       <Dialog open={isEditProxyOpen} onOpenChange={setIsEditProxyOpen}>
         <DialogContent className="sm:max-w-[400px]">
           <form onSubmit={handleUpdateProxy}>
@@ -700,7 +724,6 @@ export default function TelegramAccounts() {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
         <DialogContent className="sm:max-w-[380px]">
           <DialogHeader className="flex flex-col items-center text-center">
@@ -726,6 +749,154 @@ export default function TelegramAccounts() {
                 <Icon icon="solar:restart-line-duotone" className="mr-1.5 size-4 animate-spin" />
               ) : null}
               Xác nhận xóa
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isDetailsOpen} onOpenChange={(open) => {
+        setIsDetailsOpen(open);
+        if (!open) setSelectedAccount(null);
+      }}>
+        <DialogContent className="sm:max-w-[480px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Icon icon="solar:user-id-line-duotone" className="text-xl text-vanixjnk" />
+              <span>Chi tiết tài khoản Telegram</span>
+            </DialogTitle>
+            <DialogDescription>
+              Thông tin chi tiết và thống kê thời gian thực của tài khoản.
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedAccount && (
+            <div className="space-y-5 py-2">
+              <div className="flex items-center gap-4 p-4 rounded-xl border bg-muted/30">
+                {selectedAccount.avatar ? (
+                  <img
+                    src={selectedAccount.avatar}
+                    alt={selectedAccount.phone}
+                    className="size-14 rounded-full object-cover border border-vanixjnk/20"
+                  />
+                ) : (
+                  <div className="size-14 rounded-full bg-vanixjnk/10 text-vanixjnk text-xl font-bold border border-vanixjnk/20 flex items-center justify-center">
+                    {([selectedAccount.firstName, selectedAccount.lastName].filter(Boolean).join(" ").trim() || "T").charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-bold text-foreground truncate text-base">
+                    {[selectedAccount.firstName, selectedAccount.lastName].filter(Boolean).join(" ") || "Telegram User"}
+                  </h4>
+                  <p className="text-xs text-muted-foreground font-mono mt-0.5">{selectedAccount.phone}</p>
+                  {selectedAccount.username && (
+                    <p className="text-xs text-vanixjnk font-medium mt-0.5">@{selectedAccount.username}</p>
+                  )}
+                </div>
+                <div className="text-right">
+                  <Badge variant={selectedAccount.status === "active" ? "success" : "secondary"} className="text-[10px] font-bold">
+                    {selectedAccount.status === "active" ? "Đã kết nối" : "Ngắt kết nối"}
+                  </Badge>
+                </div>
+              </div>
+
+              {isStatsLoading ? (
+                <div className="py-8 flex flex-col items-center justify-center gap-2">
+                  <Icon icon="solar:restart-line-duotone" className="size-8 text-vanixjnk animate-spin" />
+                  <span className="text-xs text-muted-foreground">Đang tải thống kê thời gian thực...</span>
+                </div>
+              ) : detailStats ? (
+                <>
+                  {detailStats.isRestricted && (
+                    <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/25 text-rose-500 text-xs flex gap-2 items-start">
+                      <Icon icon="solar:danger-triangle-line-duotone" className="text-base shrink-0 mt-0.5" />
+                      <div className="space-y-0.5">
+                        <span className="font-bold">Tài khoản bị Telegram hạn chế (Restricted)</span>
+                        <p className="opacity-90">Lý do: {detailStats.restrictionReason || "Không rõ"}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-3 rounded-xl border bg-background/50 flex flex-col gap-1">
+                      <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Trạng thái tự động</span>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <div className={cn("size-2 rounded-full", detailStats.isOnline ? "bg-emerald-500 animate-pulse" : "bg-muted-foreground")} />
+                        <span className="text-xs font-bold text-foreground">
+                          {detailStats.isOnline ? "Đang chạy ngầm" : "Ngoại tuyến / Tắt"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded-xl border bg-background/50 flex flex-col gap-1">
+                      <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Gói tài khoản</span>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <Icon icon={detailStats.isPremium ? "solar:star-fall-minimalistic-line-duotone" : "solar:user-line-duotone"} className={cn("size-4", detailStats.isPremium ? "text-amber-500 animate-bounce" : "text-muted-foreground")} />
+                        <span className="text-xs font-bold text-foreground">
+                          {detailStats.isPremium ? "Telegram Premium" : "Tài khoản thường"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded-xl border bg-background/50 flex flex-col gap-1">
+                      <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Nhóm đã tham gia</span>
+                      <div className="flex items-baseline gap-1.5 mt-0.5">
+                        <span className="text-lg font-extrabold text-foreground">{detailStats.groupsCount}</span>
+                        <span className="text-[10px] text-muted-foreground">nhóm</span>
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded-xl border bg-background/50 flex flex-col gap-1">
+                      <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Kênh đã tham gia</span>
+                      <div className="flex items-baseline gap-1.5 mt-0.5">
+                        <span className="text-lg font-extrabold text-foreground">{detailStats.channelsCount}</span>
+                        <span className="text-[10px] text-muted-foreground">kênh</span>
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded-xl border bg-background/50 flex flex-col gap-1">
+                      <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Hội thoại chat cá nhân</span>
+                      <div className="flex items-baseline gap-1.5 mt-0.5">
+                        <span className="text-lg font-extrabold text-foreground">{detailStats.usersCount}</span>
+                        <span className="text-[10px] text-muted-foreground">cuộc hội thoại</span>
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded-xl border bg-background/50 flex flex-col gap-1">
+                      <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Tin nhắn chưa đọc</span>
+                      <div className="flex items-baseline gap-1.5 mt-0.5">
+                        <span className={cn("text-lg font-extrabold", detailStats.unreadCount > 0 ? "text-rose-500" : "text-foreground")}>
+                          {detailStats.unreadCount}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground">tin nhắn</span>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="p-4 text-center text-xs text-muted-foreground border border-dashed rounded-lg">
+                  Không thể tải thống kê. Có thể tài khoản đang ngoại tuyến hoặc proxy lỗi.
+                </div>
+              )}
+
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Proxy kết nối</label>
+                <div className="p-3 rounded-xl border bg-background/50 flex items-center justify-between text-xs">
+                  <span className="font-mono text-muted-foreground break-all max-w-[70%]">
+                    {selectedAccount.proxy || "Không dùng proxy"}
+                  </span>
+                  {selectedAccount.proxy && (
+                    <Badge variant={selectedAccount.proxyStatus === "active" ? "success" : "destructive"} className="text-[9px] font-bold">
+                      {selectedAccount.proxyStatus === "active" ? "Live" : "Dead"}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDetailsOpen(false)} className="cursor-pointer">
+              Đóng
             </Button>
           </DialogFooter>
         </DialogContent>

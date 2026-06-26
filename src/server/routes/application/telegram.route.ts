@@ -67,6 +67,7 @@ export const telegramRouter = router({
           input.proxy || undefined
         );
       } catch (error: any) {
+        console.error("sendLoginCode error:", error);
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: error.message || "Không thể gửi mã đăng nhập Telegram",
@@ -92,6 +93,7 @@ export const telegramRouter = router({
           input.password || undefined
         );
       } catch (error: any) {
+        console.error("submitLoginCode error:", error);
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: error.message || "Xác thực mã OTP thất bại",
@@ -233,6 +235,20 @@ export const telegramRouter = router({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: error.message || "Không thể tải lịch sử hoạt động",
+        });
+      }
+    }),
+
+  getAccountStats: publicProcedure
+    .input(z.object({ accountId: z.string() }))
+    .query(async ({ input }) => {
+      const session = await ensureAuthenticated();
+      try {
+        return await telegramService.getAccountStats(input.accountId, session.user.id);
+      } catch (error: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message || "Không thể tải thống kê tài khoản Telegram",
         });
       }
     }),

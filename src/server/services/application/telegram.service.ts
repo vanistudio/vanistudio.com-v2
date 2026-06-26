@@ -4,13 +4,11 @@ import { NewMessage } from "telegram/events";
 import { telegramRepository } from "@/server/repositories/telegram.repository";
 import { parseProxy, checkTelegramProxy } from "@/server/io/_others/telegram.io";
 
-// Fallback apiId and apiHash from Telegram Desktop if not specified
 const apiId = parseInt(process.env.TELEGRAM_API_ID || "2040");
 const apiHash = process.env.TELEGRAM_API_HASH || "b18441a1ab607e118b53b8785ef7a575";
 
 
 
-// Global state for Next.js hot reload safety
 interface LoginSession {
   client: TelegramClient;
   phone: string;
@@ -45,19 +43,14 @@ export class TelegramService {
     if (this.initialized) return;
     this.initialized = true;
     try {
-      // Find all accounts and boot up selfbots
-      // We don't have a direct "getAllAccounts" across all users, but we can query them if we want
-      // Or we can let it be initialized lazily.
     } catch (err) {
       console.error("Error during Telegram selfbot auto-initialization:", err);
     }
   }
 
-  // OTP Login Flow
   async sendLoginCode(userId: string, phone: string, proxy?: string) {
     await this.initAllSelfbots();
 
-    // Clean up any existing stale sessions for this number
     const oldSession = loginSessions.get(phone);
     if (oldSession) {
       try {
@@ -138,7 +131,6 @@ export class TelegramService {
       throw err;
     }
 
-    // Success! Save session
     const sessionString = (client.session as any).save() as string;
     const me = (await client.getMe()) as any;
 
@@ -147,7 +139,16 @@ export class TelegramService {
     const username = me.username || null;
     const telegramId = me.id.toString();
 
-    // Check if account already exists
+    let avatar: string | null = null;
+    try {
+      const buffer = await client.downloadProfilePhoto("me");
+      if (buffer && buffer.length > 0) {
+        avatar = `data:image/jpeg;base64,${Buffer.from(buffer).toString("base64")}`;
+      }
+    } catch (photoError) {
+      console.error("Failed to download profile photo at login:", photoError);
+    }
+
     const existing = await telegramRepository.getAccountByPhone(phone, userId);
     let accountId: string;
 
@@ -159,6 +160,7 @@ export class TelegramService {
         username,
         firstName,
         lastName,
+        avatar,
         proxy: proxy || null,
         proxyStatus: "active",
         status: "active",
@@ -173,6 +175,7 @@ export class TelegramService {
         username,
         firstName,
         lastName,
+        avatar,
         proxy: proxy || null,
         proxyStatus: "active",
         status: "active",
@@ -180,7 +183,6 @@ export class TelegramService {
       });
       accountId = newAcc.id;
 
-      // Create default auto responder
       await telegramRepository.createAutoResponder({
         accountId: newAcc.id,
         isActive: true,
@@ -196,10 +198,7 @@ export class TelegramService {
       });
     }
 
-    // Clean up login session
     loginSessions.delete(phone);
-
-    // Boot selfbot worker
     await this.startSelfbot(accountId, userId);
 
     return {
@@ -208,12 +207,10 @@ export class TelegramService {
     };
   }
 
-  // Start Background Selfbot Worker
   async startSelfbot(accountId: string, userId: string) {
     const account = await telegramRepository.getAccountById(accountId, userId);
     if (!account) return;
 
-    // Disconnect old instance if running
     await this.stopSelfbot(accountId);
 
     const proxyConfig = account.proxy ? parseProxy(account.proxy) : undefined;
@@ -229,12 +226,40 @@ export class TelegramService {
 
     try {
       await client.connect();
-      // Update proxy status to active if connected successfully
-      if (account.proxy) {
+      
+      try {
+        const me = (await client.getMe()) as any;
+        const firstName = me.firstName || null;
+        const lastName = me.lastName || null;
+        const username = me.username || null;
+        const telegramId = me.id.toString();
+        
+        let avatar: string | null = null;
+        try {
+          const buffer = await client.downloadProfilePhoto("me");
+          if (buffer && buffer.length > 0) {
+            avatar = `data:image/jpeg;base64,${Buffer.from(buffer).toString("base64")}`;
+          }
+        } catch (photoError) {
+          console.error("Failed to download profile photo in startSelfbot:", photoError);
+        }
+
         await telegramRepository.updateAccount(accountId, userId, {
-          proxyStatus: "active",
-          lastProxyCheckAt: new Date(),
+          telegramId,
+          username,
+          firstName,
+          lastName,
+          ...(avatar ? { avatar } : {}),
+          ...(account.proxy ? { proxyStatus: "active", lastProxyCheckAt: new Date() } : {})
         });
+      } catch (meError) {
+        console.error("Failed to update profile details during connection:", meError);
+        if (account.proxy) {
+          await telegramRepository.updateAccount(accountId, userId, {
+            proxyStatus: "active",
+            lastProxyCheckAt: new Date(),
+          });
+        }
       }
     } catch (err: any) {
       console.error(`Failed to connect selfbot client ${account.phone}:`, err);
@@ -253,17 +278,14 @@ export class TelegramService {
       return;
     }
 
-    // Setup auto-reply handler
     client.addEventHandler(async (event) => {
       try {
         const message = event.message;
         if (!message || message.out) return;
 
-        // Fetch config
         const config = await telegramRepository.getAutoResponder(accountId);
         if (!config || !config.isActive) return;
 
-        // Skip groups/channels/bots
         if (config.markAsRead && message.peerId) {
           try {
             await client.invoke(new Api.messages.ReadHistory({ peer: message.peerId, maxId: message.id }));
@@ -277,20 +299,17 @@ export class TelegramService {
           return;
         }
 
-        // Check sender constraints
         const senderId = sender.id ? String(sender.id) : "";
         const isGroup = message.isGroup || message.isChannel;
-        if (isGroup) return; // skip groups/channels
+        if (isGroup) return;
 
-        // Anti-spam cooldown check (using cooldownHours)
         const cooldownKey = `${accountId}:${senderId}`;
         const lastReplyTime = lastReplyMap.get(cooldownKey) || 0;
         const cooldownMs = config.cooldownHours * 60 * 60 * 1000;
         if (Date.now() - lastReplyTime < cooldownMs) {
-          return; // Still in cooldown
+          return;
         }
 
-        // Outside Work Hours Check
         if (config.detectionMode === "outside_work_hours") {
           const tz = config.timezone || "Asia/Ho_Chi_Minh";
           const now = new Date();
@@ -308,21 +327,16 @@ export class TelegramService {
             const startTotalMin = startH * 60 + startM;
             const endTotalMin = endH * 60 + endM;
 
-            // If we are inside work hours, we DO NOT auto-reply (since user is working)
             if (currentTotalMin >= startTotalMin && currentTotalMin <= endTotalMin) {
               return;
             }
           }
         }
 
-        // Idle time check
         if (config.detectionMode === "idle") {
-          // We can check if we received messages but no outgoing messages were sent in inactivityMinutes
-          // For simplicity, we just trigger the auto-reply
         }
 
-        // Send reply with slight delay to look natural
-        const delaySeconds = 5; // default 5 seconds delay
+        const delaySeconds = 5;
         await new Promise((r) => setTimeout(r, delaySeconds * 1000));
 
         if (message.peerId) {
@@ -331,10 +345,8 @@ export class TelegramService {
           });
         }
 
-        // Set cooldown timestamp
         lastReplyMap.set(cooldownKey, Date.now());
 
-        // Create log
         await telegramRepository.createLog({
           accountId,
           actionType: "auto_reply",
@@ -372,15 +384,12 @@ export class TelegramService {
     }
   }
 
-  // Accounts CRUD
   async getAccounts(userId: string) {
     await this.initAllSelfbots();
 
-    // Dynamically boot selfbots if not already running in activeSelfbots map
     const accounts = await telegramRepository.getAccounts(userId);
     for (const acc of accounts) {
       if (!activeSelfbots.has(acc.id) && acc.status === "active") {
-        // Start asynchronously
         this.startSelfbot(acc.id, userId).catch(() => {});
       }
     }
@@ -391,7 +400,6 @@ export class TelegramService {
     await this.initAllSelfbots();
     const result = await telegramRepository.getAccountsList(userId, params);
 
-    // Boot active selfbots asynchronously if they are active but not in activeSelfbots map
     for (const acc of result.items) {
       if (!activeSelfbots.has(acc.id) && acc.status === "active") {
         this.startSelfbot(acc.id, userId).catch(() => {});
@@ -411,7 +419,6 @@ export class TelegramService {
       proxy,
       proxyStatus: proxy ? "unknown" : "inactive",
     });
-    // Restart selfbot to apply new proxy
     await this.startSelfbot(accountId, userId);
     return updated;
   }
@@ -441,7 +448,6 @@ export class TelegramService {
     return res;
   }
 
-  // Auto Reply CRUD
   async getAutoResponder(accountId: string, userId: string) {
     await this.initAllSelfbots();
     const account = await telegramRepository.getAccountById(accountId, userId);
@@ -504,6 +510,53 @@ export class TelegramService {
       message: "Success",
       data: result,
     };
+  }
+
+  async getAccountStats(accountId: string, userId: string) {
+    await this.initAllSelfbots();
+    const account = await telegramRepository.getAccountById(accountId, userId);
+    if (!account) throw new Error("Không tìm thấy tài khoản");
+
+    const client = activeSelfbots.get(accountId);
+    const isOnline = client ? client.connected : false;
+
+    let stats = {
+      isOnline,
+      isPremium: false,
+      groupsCount: 0,
+      channelsCount: 0,
+      usersCount: 0,
+      unreadCount: 0,
+      isRestricted: false,
+      restrictionReason: null as string | null,
+    };
+
+    if (client && isOnline) {
+      try {
+        const me = (await client.getMe()) as any;
+        stats.isPremium = me?.premium || false;
+        stats.isRestricted = me?.restricted || false;
+        stats.restrictionReason = me?.restrictionReason ? JSON.stringify(me.restrictionReason) : null;
+
+        const dialogs = await client.getDialogs({});
+        for (const d of dialogs) {
+          if (d.isGroup) {
+            stats.groupsCount++;
+          } else if (d.isChannel) {
+            stats.channelsCount++;
+          } else if (d.isUser) {
+            stats.usersCount++;
+          }
+          if (d.unreadCount && d.unreadCount > 0) {
+            stats.unreadCount += d.unreadCount;
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch client stats in getAccountStats:", err);
+      }
+    }
+
+    return stats;
   }
 
   async clearLogs(accountId: string, userId: string) {

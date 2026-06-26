@@ -13,7 +13,6 @@ import {
 import { eq, desc, and, asc, or, like, sql, count } from "drizzle-orm";
 
 export class TelegramRepository {
-  // Accounts
   async getAccounts(userId: string): Promise<TelegramAccount[]> {
     return await db
       .select()
@@ -161,7 +160,6 @@ export class TelegramRepository {
       );
   }
 
-  // Auto Responders
   async getAutoResponder(accountId: string): Promise<TelegramAutoResponder | null> {
     const results = await db
       .select()
@@ -197,7 +195,6 @@ export class TelegramRepository {
     return updated;
   }
 
-  // Logs
   async getLogs(accountId: string, limitVal = 100): Promise<TelegramSelfbotLog[]> {
     return await db
       .select()
