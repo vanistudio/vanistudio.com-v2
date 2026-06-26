@@ -267,4 +267,42 @@ export const telegramRouter = router({
         });
       }
     }),
+
+  getChatDetails: publicProcedure
+    .input(
+      z.object({
+        accountId: z.string(),
+        chatId: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      const session = await ensureAuthenticated();
+      try {
+        return await telegramService.getChatDetails(input.accountId, input.chatId, session.user.id);
+      } catch (error: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message || "Không thể tải chi tiết cuộc trò chuyện",
+        });
+      }
+    }),
+
+  leaveChat: publicProcedure
+    .input(
+      z.object({
+        accountId: z.string(),
+        chatId: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const session = await ensureAuthenticated();
+      try {
+        return await telegramService.leaveChat(input.accountId, input.chatId, session.user.id);
+      } catch (error: any) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: error.message || "Rời nhóm/kênh thất bại",
+        });
+      }
+    }),
 });

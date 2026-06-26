@@ -529,6 +529,8 @@ export class TelegramService {
       unreadCount: 0,
       isRestricted: false,
       restrictionReason: null as string | null,
+      groups: [] as { id: string; title: string; username: string | null; unreadCount: number }[],
+      channels: [] as { id: string; title: string; username: string | null; unreadCount: number }[],
     };
 
     if (client && isOnline) {
@@ -540,10 +542,23 @@ export class TelegramService {
 
         const dialogs = await client.getDialogs({});
         for (const d of dialogs) {
+          const username = (d.entity as any)?.username || null;
           if (d.isGroup) {
             stats.groupsCount++;
+            stats.groups.push({
+              id: d.id?.toString() || "",
+              title: d.title || "Nhóm chưa đặt tên",
+              username,
+              unreadCount: d.unreadCount || 0,
+            });
           } else if (d.isChannel) {
             stats.channelsCount++;
+            stats.channels.push({
+              id: d.id?.toString() || "",
+              title: d.title || "Kênh chưa đặt tên",
+              username,
+              unreadCount: d.unreadCount || 0,
+            });
           } else if (d.isUser) {
             stats.usersCount++;
           }
@@ -565,6 +580,106 @@ export class TelegramService {
     if (!account) throw new Error("Không tìm thấy tài khoản");
 
     await telegramRepository.clearLogs(accountId);
+  }
+
+  async getChatDetails(accountId: string, chatId: string, userId: string) {
+    await this.initAllSelfbots();
+    const account = await telegramRepository.getAccountById(accountId, userId);
+    if (!account) throw new Error("Không tìm thấy tài khoản");
+
+    const client = activeSelfbots.get(accountId);
+    if (!client || !client.connected) {
+      throw new Error("Tài khoản đang ngoại tuyến");
+    }
+
+    try {
+      let resolvedId: any = chatId;
+      const entity = await client.getEntity(resolvedId);
+
+      let title = "Trò chuyện chưa đặt tên";
+      let username = null;
+      let participantsCount = null;
+      let about = null;
+      let type: "group" | "channel" = "group";
+      let photoBase64: string | null = null;
+
+      if (entity instanceof Api.Channel) {
+        title = entity.title || "Kênh chưa đặt tên";
+        username = entity.username || null;
+        type = entity.megagroup ? "group" : "channel";
+        participantsCount = entity.participantsCount || null;
+        
+        try {
+          const fullInfo = await client.invoke(new Api.channels.GetFullChannel({ channel: entity }));
+          about = (fullInfo as any).fullChat?.about || null;
+          if (participantsCount === null) {
+            participantsCount = (fullInfo as any).fullChat?.participantsCount || null;
+          }
+        } catch {}
+      } else if (entity instanceof Api.Chat) {
+        title = entity.title || "Nhóm chưa đặt tên";
+        type = "group";
+        participantsCount = entity.participantsCount || null;
+        try {
+          const fullInfo = await client.invoke(new Api.messages.GetFullChat({ chatId: entity.id }));
+          about = (fullInfo as any).fullChat?.about || null;
+        } catch {}
+      }
+
+      if ((entity as any).photo) {
+        try {
+          const photoBuffer = await client.downloadProfilePhoto(entity);
+          if (photoBuffer) {
+            photoBase64 = `data:image/jpeg;base64,${photoBuffer.toString("base64")}`;
+          }
+        } catch (e) {
+          console.error("Failed to download profile photo:", e);
+        }
+      }
+
+      return {
+        id: chatId,
+        title,
+        username,
+        type,
+        about,
+        participantsCount,
+        photoBase64,
+        link: username ? `https://t.me/${username}` : null,
+      };
+    } catch (error: any) {
+      console.error("Error in getChatDetails:", error);
+      throw new Error("Không thể tải chi tiết cuộc hội thoại: " + error.message);
+    }
+  }
+
+  async leaveChat(accountId: string, chatId: string, userId: string) {
+    await this.initAllSelfbots();
+    const account = await telegramRepository.getAccountById(accountId, userId);
+    if (!account) throw new Error("Không tìm thấy tài khoản");
+
+    const client = activeSelfbots.get(accountId);
+    if (!client || !client.connected) {
+      throw new Error("Tài khoản đang ngoại tuyến");
+    }
+
+    try {
+      const entity = await client.getEntity(chatId);
+      if (entity instanceof Api.Channel) {
+        await client.invoke(new Api.channels.LeaveChannel({ channel: entity }));
+      } else if (entity instanceof Api.Chat) {
+        await client.invoke(new Api.messages.DeleteChatUser({
+          chatId: entity.id,
+          userId: "me",
+        }));
+      } else {
+        throw new Error("Loại cuộc trò chuyện không hỗ trợ rời nhóm");
+      }
+      return { success: true };
+    } catch (error: any) {
+      console.error("Error leaving chat:", error);
+      throw new Error("Không thể rời khỏi nhóm/kênh: " + error.message);
+    }
   }
 }
 
