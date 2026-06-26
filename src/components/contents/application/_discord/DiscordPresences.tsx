@@ -528,7 +528,7 @@ export default function DiscordPresences() {
               </div>
 
               {/* Column 2: Configuration Form */}
-              <div className="lg:col-span-6">
+              <div className="lg:col-span-5">
                 <Card className="border border-border bg-card/10 rounded-lg p-5 flex flex-col gap-5">
                   <h3 className="text-sm font-extrabold text-foreground flex items-center gap-1.5 border-b border-border/60 pb-3">
                     <Icon icon="solar:pen-new-round-line-duotone" className="size-4.5 text-vanixjnk" />
@@ -821,8 +821,8 @@ export default function DiscordPresences() {
               </div>
 
               {/* Column 3: Live Preview */}
-              <div className="lg:col-span-3 flex flex-col gap-6 sticky top-6">
-                <div className="w-full max-w-[300px] mx-auto flex flex-col gap-4">
+              <div className="lg:col-span-4 flex flex-col gap-6 sticky top-6">
+                <div className="w-full flex flex-col gap-4">
                   <div className="flex items-center justify-between border-b border-border/60 pb-3">
                     <h3 className="text-sm font-extrabold text-foreground flex items-center gap-1.5">
                       <Icon icon="solar:monitor-play-line-duotone" className="size-4 text-vanixjnk" />
