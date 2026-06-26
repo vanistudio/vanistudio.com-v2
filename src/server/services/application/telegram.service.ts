@@ -19,6 +19,7 @@ interface LoginSession {
 const globalForTelegram = globalThis as unknown as {
   telegramLoginSessions: Map<string, LoginSession> | undefined;
   activeSelfbots: Map<string, TelegramClient> | undefined;
+  connectingSelfbots: Set<string> | undefined;
   lastReplyMap: Map<string, number> | undefined;
 };
 
@@ -28,12 +29,16 @@ if (!globalForTelegram.telegramLoginSessions) {
 if (!globalForTelegram.activeSelfbots) {
   globalForTelegram.activeSelfbots = new Map();
 }
+if (!globalForTelegram.connectingSelfbots) {
+  globalForTelegram.connectingSelfbots = new Set();
+}
 if (!globalForTelegram.lastReplyMap) {
   globalForTelegram.lastReplyMap = new Map();
 }
 
 const loginSessions = globalForTelegram.telegramLoginSessions;
 const activeSelfbots = globalForTelegram.activeSelfbots;
+const connectingSelfbots = globalForTelegram.connectingSelfbots;
 const lastReplyMap = globalForTelegram.lastReplyMap;
 
 export class TelegramService {
@@ -208,170 +213,178 @@ export class TelegramService {
   }
 
   async startSelfbot(accountId: string, userId: string) {
-    const account = await telegramRepository.getAccountById(accountId, userId);
-    if (!account) return;
-
-    await this.stopSelfbot(accountId);
-
-    const proxyConfig = account.proxy ? parseProxy(account.proxy) : undefined;
-    const client = new TelegramClient(
-      new StringSession(account.sessionString),
-      apiId,
-      apiHash,
-      {
-        connectionRetries: 5,
-        proxy: proxyConfig,
-      }
-    );
+    if (connectingSelfbots.has(accountId)) return;
+    connectingSelfbots.add(accountId);
 
     try {
-      await client.connect();
-      
+      const account = await telegramRepository.getAccountById(accountId, userId);
+      if (!account) return;
+
+      await this.stopSelfbot(accountId);
+
+      const proxyConfig = account.proxy ? parseProxy(account.proxy) : undefined;
+      const client = new TelegramClient(
+        new StringSession(account.sessionString),
+        apiId,
+        apiHash,
+        {
+          connectionRetries: 3,
+          proxy: proxyConfig,
+          timeout: 10000,
+        }
+      );
+
       try {
-        const me = (await client.getMe()) as any;
-        const firstName = me.firstName || null;
-        const lastName = me.lastName || null;
-        const username = me.username || null;
-        const telegramId = me.id.toString();
+        await client.connect();
         
-        let avatar: string | null = null;
         try {
-          const buffer = await client.downloadProfilePhoto("me");
-          if (buffer && buffer.length > 0) {
-            avatar = `data:image/jpeg;base64,${Buffer.from(buffer).toString("base64")}`;
-          }
-        } catch (photoError) {
-          console.error("Failed to download profile photo in startSelfbot:", photoError);
-        }
-
-        await telegramRepository.updateAccount(accountId, userId, {
-          telegramId,
-          username,
-          firstName,
-          lastName,
-          ...(avatar ? { avatar } : {}),
-          ...(account.proxy ? { proxyStatus: "active", lastProxyCheckAt: new Date() } : {})
-        });
-      } catch (meError) {
-        console.error("Failed to update profile details during connection:", meError);
-        if (account.proxy) {
-          await telegramRepository.updateAccount(accountId, userId, {
-            proxyStatus: "active",
-            lastProxyCheckAt: new Date(),
-          });
-        }
-      }
-    } catch (err: any) {
-      console.error(`Failed to connect selfbot client ${account.phone}:`, err);
-      await telegramRepository.updateAccount(accountId, userId, {
-        proxyStatus: "dead",
-        status: "disconnected",
-        lastProxyCheckAt: new Date(),
-      });
-      await telegramRepository.createLog({
-        accountId,
-        actionType: "proxy_error",
-        status: "failed",
-        message: `Lỗi kết nối SOCKS5 Proxy hoặc Session đã bị thu hồi: ${err.message}`,
-        details: { error: err.message },
-      });
-      return;
-    }
-
-    client.addEventHandler(async (event) => {
-      try {
-        const message = event.message;
-        if (!message || message.out) return;
-
-        const config = await telegramRepository.getAutoResponder(accountId);
-        if (!config || !config.isActive) return;
-
-        if (config.markAsRead && message.peerId) {
+          const me = (await client.getMe()) as any;
+          const firstName = me.firstName || null;
+          const lastName = me.lastName || null;
+          const username = me.username || null;
+          const telegramId = me.id.toString();
+          
+          let avatar: string | null = null;
           try {
-            await client.invoke(new Api.messages.ReadHistory({ peer: message.peerId, maxId: message.id }));
-          } catch {}
-        }
-
-        const sender = (await message.getSender()) as any;
-        if (!sender) return;
-
-        if (config.markAsRead && sender.bot) {
-          return;
-        }
-
-        const senderId = sender.id ? String(sender.id) : "";
-        const isGroup = message.isGroup || message.isChannel;
-        if (isGroup) return;
-
-        const cooldownKey = `${accountId}:${senderId}`;
-        const lastReplyTime = lastReplyMap.get(cooldownKey) || 0;
-        const cooldownMs = config.cooldownHours * 60 * 60 * 1000;
-        if (Date.now() - lastReplyTime < cooldownMs) {
-          return;
-        }
-
-        if (config.detectionMode === "outside_work_hours") {
-          const tz = config.timezone || "Asia/Ho_Chi_Minh";
-          const now = new Date();
-          const tzString = now.toLocaleTimeString("en-US", { timeZone: tz, hour12: false });
-          const [currentHour, currentMin] = tzString.split(":").map(Number);
-          const currentDay = now.toLocaleDateString("en-US", { timeZone: tz, weekday: "short" });
-          const dayMap: Record<string, number> = { Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 7 };
-          const currentDayNum = dayMap[currentDay] || 1;
-
-          const isWorkDay = config.workDays.includes(currentDayNum);
-          if (isWorkDay) {
-            const [startH, startM] = config.workStartHour.split(":").map(Number);
-            const [endH, endM] = config.workEndHour.split(":").map(Number);
-            const currentTotalMin = currentHour * 60 + currentMin;
-            const startTotalMin = startH * 60 + startM;
-            const endTotalMin = endH * 60 + endM;
-
-            if (currentTotalMin >= startTotalMin && currentTotalMin <= endTotalMin) {
-              return;
+            const buffer = await client.downloadProfilePhoto("me");
+            if (buffer && buffer.length > 0) {
+              avatar = `data:image/jpeg;base64,${Buffer.from(buffer).toString("base64")}`;
             }
+          } catch (photoError) {
+            console.error("Failed to download profile photo in startSelfbot:", photoError);
+          }
+
+          await telegramRepository.updateAccount(accountId, userId, {
+            telegramId,
+            username,
+            firstName,
+            lastName,
+            ...(avatar ? { avatar } : {}),
+            ...(account.proxy ? { proxyStatus: "active", lastProxyCheckAt: new Date() } : {})
+          });
+        } catch (meError) {
+          console.error("Failed to update profile details during connection:", meError);
+          if (account.proxy) {
+            await telegramRepository.updateAccount(accountId, userId, {
+              proxyStatus: "active",
+              lastProxyCheckAt: new Date(),
+            });
           }
         }
-
-        if (config.detectionMode === "idle") {
-        }
-
-        const delaySeconds = 5;
-        await new Promise((r) => setTimeout(r, delaySeconds * 1000));
-
-        if (message.peerId) {
-          await client.sendMessage(message.peerId, {
-            message: config.replyText,
-          });
-        }
-
-        lastReplyMap.set(cooldownKey, Date.now());
-
+      } catch (err: any) {
+        console.error(`Failed to connect selfbot client ${account.phone}:`, err);
+        await telegramRepository.updateAccount(accountId, userId, {
+          proxyStatus: "dead",
+          status: "disconnected",
+          lastProxyCheckAt: new Date(),
+        });
         await telegramRepository.createLog({
           accountId,
-          actionType: "auto_reply",
-          status: "success",
-          message: `Đã tự động phản hồi thành công đến ${sender.username || sender.firstName || "khách hàng"}.`,
-          details: {
-            senderId,
-            senderName: `${sender.firstName || ""} ${sender.lastName || ""}`.trim(),
-            replyText: config.replyText,
-          },
+          actionType: "proxy_error",
+          status: "failed",
+          message: `Lỗi kết nối SOCKS5 Proxy hoặc Session đã bị thu hồi: ${err.message}`,
+          details: { error: err.message },
         });
-      } catch (err: any) {
-        console.error("Error handling selfbot auto-reply event:", err);
+        return;
       }
-    }, new NewMessage({}));
 
-    activeSelfbots.set(accountId, client);
+      client.addEventHandler(async (event) => {
+        try {
+          const message = event.message;
+          if (!message || message.out) return;
 
-    await telegramRepository.createLog({
-      accountId,
-      actionType: "connection",
-      status: "success",
-      message: "Thiết lập kết nối với Telegram API thành công và đang hoạt động.",
-      details: { phone: account.phone },
-    });
+          const config = await telegramRepository.getAutoResponder(accountId);
+          if (!config || !config.isActive) return;
+
+          if (config.markAsRead && message.peerId) {
+            try {
+              await client.invoke(new Api.messages.ReadHistory({ peer: message.peerId, maxId: message.id }));
+            } catch {}
+          }
+
+          const sender = (await message.getSender()) as any;
+          if (!sender) return;
+
+          if (config.markAsRead && sender.bot) {
+            return;
+          }
+
+          const senderId = sender.id ? String(sender.id) : "";
+          const isGroup = message.isGroup || message.isChannel;
+          if (isGroup) return;
+
+          const cooldownKey = `${accountId}:${senderId}`;
+          const lastReplyTime = lastReplyMap.get(cooldownKey) || 0;
+          const cooldownMs = config.cooldownHours * 60 * 60 * 1000;
+          if (Date.now() - lastReplyTime < cooldownMs) {
+            return;
+          }
+
+          if (config.detectionMode === "outside_work_hours") {
+            const tz = config.timezone || "Asia/Ho_Chi_Minh";
+            const now = new Date();
+            const tzString = now.toLocaleTimeString("en-US", { timeZone: tz, hour12: false });
+            const [currentHour, currentMin] = tzString.split(":").map(Number);
+            const currentDay = now.toLocaleDateString("en-US", { timeZone: tz, weekday: "short" });
+            const dayMap: Record<string, number> = { Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 7 };
+            const currentDayNum = dayMap[currentDay] || 1;
+
+            const isWorkDay = config.workDays.includes(currentDayNum);
+            if (isWorkDay) {
+              const [startH, startM] = config.workStartHour.split(":").map(Number);
+              const [endH, endM] = config.workEndHour.split(":").map(Number);
+              const currentTotalMin = currentHour * 60 + currentMin;
+              const startTotalMin = startH * 60 + startM;
+              const endTotalMin = endH * 60 + endM;
+
+              if (currentTotalMin >= startTotalMin && currentTotalMin <= endTotalMin) {
+                return;
+              }
+            }
+          }
+
+          if (config.detectionMode === "idle") {
+          }
+
+          const delaySeconds = 5;
+          await new Promise((r) => setTimeout(r, delaySeconds * 1000));
+
+          if (message.peerId) {
+            await client.sendMessage(message.peerId, {
+              message: config.replyText,
+            });
+          }
+
+          lastReplyMap.set(cooldownKey, Date.now());
+
+          await telegramRepository.createLog({
+            accountId,
+            actionType: "auto_reply",
+            status: "success",
+            message: `Đã tự động phản hồi thành công đến ${sender.username || sender.firstName || "khách hàng"}.`,
+            details: {
+              senderId,
+              senderName: `${sender.firstName || ""} ${sender.lastName || ""}`.trim(),
+              replyText: config.replyText,
+            },
+          });
+        } catch (err: any) {
+          console.error("Error handling selfbot auto-reply event:", err);
+        }
+      }, new NewMessage({}));
+
+      activeSelfbots.set(accountId, client);
+
+      await telegramRepository.createLog({
+        accountId,
+        actionType: "connection",
+        status: "success",
+        message: "Thiết lập kết nối với Telegram API thành công và đang hoạt động.",
+        details: { phone: account.phone },
+      });
+    } finally {
+      connectingSelfbots.delete(accountId);
+    }
   }
 
   async stopSelfbot(accountId: string) {
