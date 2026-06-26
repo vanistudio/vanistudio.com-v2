@@ -1,3 +1,5 @@
+import DiscordLogs from "@/components/contents/application/_discord/DiscordLogs";
+
 export default function Page() {
-  return <div>Discord Logs</div>;
+  return <DiscordLogs />;
 }

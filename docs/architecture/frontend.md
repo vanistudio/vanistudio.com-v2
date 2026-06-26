@@ -90,7 +90,7 @@ src/
 - **Lớp bọc ngoài (Outer Container)**:
   `flex flex-col w-full flex-1`
 - **Giới hạn chiều rộng trang (Width Boundaries)**:
-  `w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8`
+  `w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8`
 - **Đường viền dọc đứt nét (Vertical Dashed Borders)**:
   `border-l border-r border-dashed border-primary/20`
 - **Nền thẻ nội dung**:
@@ -101,7 +101,7 @@ src/
 export default function StandardPage() {
   return (
     <div className="flex flex-col w-full flex-1">
-      <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="border-l border-r border-dashed border-primary/20 pt-[88px] pb-6 px-6">
           {/* Header Trang */}
         </div>
@@ -117,7 +117,7 @@ export default function StandardPage() {
         />
       </div>
 
-      <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
+      <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col p-6">
           {/* Body Nội dung */}
         </div>

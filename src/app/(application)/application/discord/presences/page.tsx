@@ -1,3 +1,5 @@
+import DiscordPresences from "@/components/contents/application/_discord/DiscordPresences";
+
 export default function Page() {
-  return <div>Discord Presences</div>;
+  return <DiscordPresences />;
 }
