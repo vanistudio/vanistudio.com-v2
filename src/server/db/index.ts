@@ -16,6 +16,8 @@ import * as templateSchema from "@/server/db/schemas/template.schema";
 import * as notificationSchema from "@/server/db/schemas/notification.schema";
 import * as contactSchema from "@/server/db/schemas/contact.schema";
 import * as licenseSchema from "@/server/db/schemas/license.schema";
+import * as telegramSelfbotSchema from "@/server/db/schemas/telegram-selfbot.schema";
+
 
 const connectionString = process.env.APP_DATABASE_URI_VALUE;
 
@@ -50,6 +52,7 @@ export const db = drizzle(pgClient, {
     ...notificationSchema,
     ...contactSchema,
     ...licenseSchema,
+    ...telegramSelfbotSchema,
   },
 });
 

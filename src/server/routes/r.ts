@@ -6,16 +6,19 @@ import { toolsRouter } from "./public/tools.route";
 import { publicBlogRouter } from "./public/blog.route";
 import { publicApiDocsRouter } from "./public/api.route";
 import { contactRouter } from "./public/contact.route";
+import { applicationRouter } from "./application/application.route";
 
 export const appRouter = router({
   configuration: configurationRouter,
   authentication: authenticationRouter,
   administrator: administratorRouter,
+  application: applicationRouter,
   tools: toolsRouter,
   blog: publicBlogRouter,
   apiDocs: publicApiDocsRouter,
   contact: contactRouter,
 });
+
 
 export type AppRouter = typeof appRouter;
 

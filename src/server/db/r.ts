@@ -6,6 +6,7 @@ import { projects } from "@/server/db/schemas/project.schema";
 import { blogs, blogComments } from "@/server/db/schemas/blog.schema";
 import { products } from "@/server/db/schemas/product.schema";
 import { licenses } from "@/server/db/schemas/license.schema";
+import { telegramAccounts, telegramAutoResponders, telegramSelfbotLogs } from "@/server/db/schemas/telegram-selfbot.schema";
 
 export const userRelations = relations(users, ({ one, many }) => ({
   profile: one(userProfile, {
@@ -142,6 +143,32 @@ export const licensesRelations = relations(licenses, ({ one }) => ({
   product: one(products, {
     fields: [licenses.productId],
     references: [products.id],
+  }),
+}));
+
+export const telegramAccountsRelations = relations(telegramAccounts, ({ one, many }) => ({
+  user: one(users, {
+    fields: [telegramAccounts.userId],
+    references: [users.id],
+  }),
+  autoResponder: one(telegramAutoResponders, {
+    fields: [telegramAccounts.id],
+    references: [telegramAutoResponders.accountId],
+  }),
+  logs: many(telegramSelfbotLogs),
+}));
+
+export const telegramAutoRespondersRelations = relations(telegramAutoResponders, ({ one }) => ({
+  account: one(telegramAccounts, {
+    fields: [telegramAutoResponders.accountId],
+    references: [telegramAccounts.id],
+  }),
+}));
+
+export const telegramSelfbotLogsRelations = relations(telegramSelfbotLogs, ({ one }) => ({
+  account: one(telegramAccounts, {
+    fields: [telegramSelfbotLogs.accountId],
+    references: [telegramAccounts.id],
   }),
 }));
 
