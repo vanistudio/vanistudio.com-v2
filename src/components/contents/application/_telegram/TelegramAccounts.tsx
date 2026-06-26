@@ -12,10 +12,10 @@ import { trpc } from "@/lib/trpc";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { DataTable, DataTableColumnHeader } from "@/components/vanixjnk/data-table";
 import { ColumnDef, SortingState } from "@tanstack/react-table";
-import AddAccountDialog from "./components/AddAccountDialog";
-import EditProxyDialog from "./components/EditProxyDialog";
-import DeleteAccountDialog from "./components/DeleteAccountDialog";
-import AccountDetailsDialog from "./components/AccountDetailsDialog";
+import AddAccountDialog from "./AddAccountDialog";
+import EditProxyDialog from "./EditProxyDialog";
+import DeleteAccountDialog from "./DeleteAccountDialog";
+import AccountDetailsDialog from "./AccountDetailsDialog";
 
 interface TelegramAccount {
   id: string;

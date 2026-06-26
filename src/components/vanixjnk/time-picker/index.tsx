@@ -117,10 +117,14 @@ export function TimePicker({
     );
 
     const ContentBody = (
-        <div className="flex flex-col w-full selection:bg-vanixjnk/20 bg-popover">
-            <div className="flex p-4 gap-4 bg-muted/20 w-full justify-center">
-                <div className="flex gap-4 h-[220px] w-full max-w-[280px]">
-                    {/* Hour Column */}
+        <div className="flex flex-col w-full selection:bg-vanixjnk/20">
+            <div className="flex flex-col p-4 gap-3 bg-muted/20 w-full">
+                <div className="flex items-center gap-2 mb-1 px-1">
+                    <Icon icon="solar:clock-circle-line-duotone" className="text-vanixjnk size-4 opacity-80" />
+                    <span className="text-sm font-bold tracking-tight">Thời gian</span>
+                </div>
+
+                <div className="flex gap-3 h-[256px]">
                     <div className="flex-1 flex flex-col items-center gap-1.5" ref={hourRef}>
                         <span className="text-[10px] font-bold text-muted-foreground/70 uppercase">Giờ</span>
                         <div
@@ -145,8 +149,6 @@ export function TimePicker({
                             })}
                         </div>
                     </div>
-
-                    {/* Minute Column */}
                     <div className="flex-1 flex flex-col items-center gap-1.5" ref={minuteRef}>
                         <span className="text-[10px] font-bold text-muted-foreground/70 uppercase">Phút</span>
                         <div
@@ -173,8 +175,6 @@ export function TimePicker({
                     </div>
                 </div>
             </div>
-            
-            {/* Footer buttons */}
             <div className="p-3.5 border-t bg-muted/30 flex items-center justify-between mt-auto">
                 <div className="text-[12px] font-medium text-muted-foreground px-2">
                     <span>Vào lúc <span className="font-bold text-foreground">{selectedHour.toString().padStart(2, "0")}:{selectedMinute.toString().padStart(2, "0")}</span></span>
@@ -186,7 +186,6 @@ export function TimePicker({
             </div>
         </div>
     );
-
     if (isMobile) {
         return (
             <Drawer open={isOpen} onOpenChange={setIsOpen}>
@@ -210,7 +209,7 @@ export function TimePicker({
             <PopoverTrigger asChild>
                 {Trigger}
             </PopoverTrigger>
-            <PopoverContent className="w-[280px] p-0 flex flex-col rounded-lg overflow-hidden shadow-lg border-border/60" align={align}>
+            <PopoverContent className="w-auto p-0 flex flex-col rounded-lg overflow-hidden shadow-lg border-border/60" align={align}>
                 {ContentBody}
             </PopoverContent>
         </Popover>

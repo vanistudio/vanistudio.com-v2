@@ -40,20 +40,17 @@ export default function TelegramAutoReply() {
   const [timezoneDialogOpen, setTimezoneDialogOpen] = useState(false);
   const [timezoneSearch, setTimezoneSearch] = useState("");
 
-  // Fetch accounts
   const { data: accountsData, isLoading: accountsLoading } = trpc.application.telegram.getAccounts.useQuery(undefined, {
     refetchOnWindowFocus: false,
   });
   const accountsList = accountsData || [];
 
-  // Automatically select the first account when accounts list loads
   useEffect(() => {
     if (accountsList.length > 0 && !selectedAccountId) {
       setSelectedAccountId(accountsList[0].id);
     }
   }, [accountsList, selectedAccountId]);
 
-  // Fetch auto responder for selected account
   const { data: responderData, isLoading: configLoading, refetch } = trpc.application.telegram.getAutoResponder.useQuery(
     { accountId: selectedAccountId },
     {
@@ -62,10 +59,9 @@ export default function TelegramAutoReply() {
     }
   );
 
-  // Auto responder form states
   const [isActive, setIsActive] = useState(true);
   const [replyText, setReplyText] = useState("");
-  const [detectionMode, setDetectionMode] = useState<"idle" | "outside_work_hours">("idle");
+  const [detectionMode, setDetectionMode] = useState<"always" | "idle" | "outside_work_hours">("always");
   const [inactivityMinutes, setInactivityMinutes] = useState(10);
   const [workDays, setWorkDays] = useState<number[]>([1, 2, 3, 4, 5]);
   const [workStartHour, setWorkStartHour] = useState("08:00");
@@ -74,7 +70,6 @@ export default function TelegramAutoReply() {
   const [markAsRead, setMarkAsRead] = useState(false);
   const [timezone, setTimezone] = useState("Asia/Ho_Chi_Minh");
 
-  // Sync state when responderData changes
   useEffect(() => {
     if (responderData) {
       setIsActive(responderData.isActive);
@@ -92,7 +87,6 @@ export default function TelegramAutoReply() {
     }
   }, [responderData]);
 
-  // Save mutation
   const updateAutoResponderMutation = trpc.application.telegram.updateAutoResponder.useMutation({
     onSuccess: () => {
       toast.success("Đã lưu cấu hình tự động trả lời thành công!");
@@ -158,7 +152,6 @@ export default function TelegramAutoReply() {
 
   return (
     <div className="flex flex-col w-full flex-1">
-      {/* Page Header */}
       <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="border-l border-r border-dashed border-primary/20 pt-[88px] pb-6 px-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -177,7 +170,6 @@ export default function TelegramAutoReply() {
         </div>
       </div>
 
-      {/* Decorative separator line */}
       <div
         className="relative w-full border-t border-b border-dashed border-primary/20 overflow-hidden text-primary/20"
         style={{ height: "36px" }}
@@ -190,11 +182,9 @@ export default function TelegramAutoReply() {
         />
       </div>
 
-      {/* Main Content */}
       <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col">
           
-          {/* Stats Row */}
           <div className="p-6 pb-2 grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="p-4 rounded-xl border bg-background/60 flex items-center justify-between">
               <div className="space-y-1">
@@ -212,7 +202,7 @@ export default function TelegramAutoReply() {
               <div className="space-y-1">
                 <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Chế độ hoạt động</p>
                 <h3 className="text-2xl font-extrabold text-foreground tracking-tight">
-                  {detectionMode === "idle" ? "Khi offline" : "Ngoài giờ"}
+                  {detectionMode === "always" ? "Mọi thời điểm" : detectionMode === "idle" ? "Khi offline" : "Ngoài giờ"}
                 </h3>
               </div>
               <div className="size-10 rounded-lg text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 flex items-center justify-center shrink-0">
@@ -233,7 +223,6 @@ export default function TelegramAutoReply() {
             </div>
           </div>
 
-          {/* Navigation Tabs Bar */}
           <div className="px-6 py-4 border-b border-border/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-2">
               {navItems.map((item) => {
@@ -259,7 +248,6 @@ export default function TelegramAutoReply() {
             </div>
           </div>
 
-          {/* Inner Content */}
           <div className="p-6 space-y-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl border border-border/60 bg-background/50 backdrop-blur-sm">
               <div className="flex items-center gap-3">
@@ -309,10 +297,8 @@ export default function TelegramAutoReply() {
             ) : (
               <form onSubmit={handleSave} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
-                {/* Left Area: Main settings */}
                 <div className="lg:col-span-2 space-y-6">
                   
-                  {/* Card 1: Nội dung phản hồi */}
                   <Card className="p-5 border-border bg-background/60 backdrop-blur-sm space-y-4">
                     <div className="flex items-center justify-between border-b border-border/50 pb-3">
                       <div className="flex items-center gap-2">
@@ -342,7 +328,6 @@ export default function TelegramAutoReply() {
                     </div>
                   </Card>
 
-                  {/* Card 2: Quy tắc kích hoạt */}
                   <Card className="p-5 border-border bg-background/60 backdrop-blur-sm space-y-5">
                     <div className="flex items-center gap-2 border-b border-border/50 pb-3">
                       <div className="size-6 rounded-md bg-vanixjnk/10 flex items-center justify-center text-vanixjnk">
@@ -352,7 +337,6 @@ export default function TelegramAutoReply() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* Mode Selector */}
                       <div className="space-y-1.5">
                         <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Kích hoạt khi nào?</label>
                         <Select
@@ -363,13 +347,13 @@ export default function TelegramAutoReply() {
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent position="popper" align="start">
+                            <SelectItem value="always" className="text-[13px]">Trả lời mọi thời điểm (Always)</SelectItem>
                             <SelectItem value="idle" className="text-[13px]">Khi không hoạt động (Offline)</SelectItem>
                             <SelectItem value="outside_work_hours" className="text-[13px]">Ngoài giờ làm việc</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
 
-                      {/* Mode Options */}
                       {detectionMode === "idle" && (
                         <div className="space-y-1.5">
                           <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Thời gian nhàn rỗi (Phút)</label>
@@ -409,7 +393,6 @@ export default function TelegramAutoReply() {
                       )}
                     </div>
 
-                    {/* Work hours configurations */}
                     {detectionMode === "outside_work_hours" && (
                       <div className="space-y-4 pt-3 border-t border-border/40">
                         <div className="grid grid-cols-2 gap-4">
@@ -459,10 +442,8 @@ export default function TelegramAutoReply() {
                   </Card>
                 </div>
 
-                {/* Right Area: Advanced & Spam filters */}
                 <div className="space-y-6">
                   
-                  {/* Card 3: Chống spam & Nâng cao */}
                   <Card className="p-5 border-border bg-background/60 backdrop-blur-sm space-y-4">
                     <div className="flex items-center gap-2 border-b border-border/50 pb-3">
                       <Icon icon="solar:shield-warning-line-duotone" className="text-lg text-amber-500" />
@@ -488,28 +469,6 @@ export default function TelegramAutoReply() {
                       <div className="space-y-3 pt-3 border-t border-border/30">
                         <div className="flex items-center justify-between">
                           <div className="space-y-0.5">
-                            <span className="text-xs font-bold text-foreground block">Bỏ qua Group & Channel</span>
-                            <span className="text-[10px] text-muted-foreground block">Mặc định không gửi phản hồi tự động vào nhóm.</span>
-                          </div>
-                          <Switch
-                            checked={true}
-                            disabled={true}
-                          />
-                        </div>
-
-                        <div className="flex items-center justify-between pt-2">
-                          <div className="space-y-0.5">
-                            <span className="text-xs font-bold text-foreground block">Bỏ qua tài khoản Bot</span>
-                            <span className="text-[10px] text-muted-foreground block">Không tự động phản hồi lại tin nhắn từ bot.</span>
-                          </div>
-                          <Switch
-                            checked={true}
-                            disabled={true}
-                          />
-                        </div>
-
-                        <div className="flex items-center justify-between pt-2">
-                          <div className="space-y-0.5">
                             <span className="text-xs font-bold text-foreground block">Đánh dấu đã đọc</span>
                             <span className="text-[10px] text-muted-foreground block">Đánh dấu đã xem ngay sau khi gửi tin nhắn tự động.</span>
                           </div>
@@ -522,7 +481,6 @@ export default function TelegramAutoReply() {
                     </div>
                   </Card>
 
-                  {/* Action Save Button */}
                   <Button
                     type="submit"
                     variant="vanixjnk"

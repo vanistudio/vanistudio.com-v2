@@ -187,7 +187,7 @@ export class TelegramService {
         accountId: newAcc.id,
         isActive: false,
         replyText: "Chào bạn, hiện tại mình đang không online trên Telegram. Mình sẽ phản hồi lại ngay khi có thể! Cảm ơn bạn.",
-        detectionMode: "idle",
+        detectionMode: "always",
         inactivityMinutes: 10,
         workDays: [1, 2, 3, 4, 5],
         workStartHour: "08:00",

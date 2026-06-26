@@ -173,7 +173,7 @@ export const telegramRouter = router({
         accountId: z.string(),
         isActive: z.boolean(),
         replyText: z.string().min(1, "Nội dung phản hồi không được để trống"),
-        detectionMode: z.enum(["idle", "outside_work_hours"]),
+        detectionMode: z.enum(["always", "idle", "outside_work_hours"]),
         inactivityMinutes: z.number().int().nonnegative(),
         workDays: z.array(z.number()),
         workStartHour: z.string(),
