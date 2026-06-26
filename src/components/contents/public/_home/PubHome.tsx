@@ -42,7 +42,7 @@ const StripeDivider = () => (
 );
 
 const SectionContainer = ({ children }: { children: ReactNode }) => (
-  <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+  <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
     <div className="border-l border-r border-dashed border-primary/20 bg-card/10 p-6">
       {children}
     </div>

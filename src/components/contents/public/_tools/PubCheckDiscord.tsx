@@ -154,11 +154,11 @@ export default function PubCheckDiscord() {
 
   return (
     <div className="flex flex-col w-full flex-1">
-      <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="border-l border-r border-dashed border-primary/20 pt-[100px] pb-6 px-6">
           <div className="flex flex-col items-center text-center gap-4">
             <div className="flex items-center justify-center rounded-xl text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 shrink-0 p-3">
-              <Icon icon="ic:baseline-discord" className="text-3xl" />
+              <Icon icon="qlementine-icons:discord-16" className="text-3xl" />
             </div>
             <div className="flex flex-col items-center gap-1.5 max-w-xl">
               <h1 className="text-2xl font-bold tracking-tight text-foreground">Kiểm Tra Token Discord</h1>
@@ -181,7 +181,7 @@ export default function PubCheckDiscord() {
           }}
         />
       </div>
-      <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
+      <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col p-6 gap-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full">
             <div className="lg:col-span-5 flex flex-col gap-4">

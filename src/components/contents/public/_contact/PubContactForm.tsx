@@ -83,7 +83,7 @@ export default function PubContactForm({ isEnabled, config }: Props) {
 
   if (!isEnabled) {
     return (
-      <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-20 flex flex-col items-center justify-center text-center">
+      <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-20 flex flex-col items-center justify-center text-center">
         <div className="size-16 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-500 mb-4 animate-bounce">
           <Icon icon="solar:lock-keyhole-line-duotone" className="text-3xl" />
         </div>
@@ -478,7 +478,7 @@ export default function PubContactForm({ isEnabled, config }: Props) {
 
   return (
     <div className="flex flex-col w-full flex-1">
-      <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="border-l border-r border-dashed border-primary/20 pt-[100px] pb-6 px-6">
           <div className="flex flex-col items-center text-center gap-4">
             <div className="flex items-center justify-center rounded-xl text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 shrink-0 p-3">
@@ -507,7 +507,7 @@ export default function PubContactForm({ isEnabled, config }: Props) {
         />
       </div>
 
-      <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
+      <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col p-6 sm:p-8">
           {isSubmitted ? (
             <div className="w-full max-w-xl mx-auto py-12 flex flex-col items-center text-center gap-5">
