@@ -2,6 +2,12 @@
 "use no memo"
 
 import * as React from "react"
+import { useTheme } from "next-themes"
+import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror"
+import { oneDark } from "@codemirror/theme-one-dark"
+import { html } from "@codemirror/lang-html"
+import { css } from "@codemirror/lang-css"
+import { javascript } from "@codemirror/lang-javascript"
 import { useEditor, EditorContent } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import { TextStyle } from "@tiptap/extension-text-style"
@@ -126,12 +132,14 @@ export const SexyEditor = React.forwardRef<SexyEditorRef, SexyEditorProps>(funct
     modeType = "rich-text",
 }, ref) {
     const [mode, setMode] = React.useState<"edit" | "source" | "preview">(
-        modeType === "rich-text" ? "edit" : "source"
+        isEmail ? "source" : (modeType === "rich-text" ? "edit" : "source")
     )
     const initialEnv = React.useMemo(() => extractHtmlEnvelope(value || ""), [])
     const envelopeRef = React.useRef({ prefix: initialEnv.prefix, suffix: initialEnv.suffix })
     const lastHtmlRef = React.useRef<string | null>(value)
     const [, forceUpdate] = React.useReducer((x) => x + 1, 0)
+    const { resolvedTheme } = useTheme()
+    const codeMirrorRef = React.useRef<ReactCodeMirrorRef>(null)
 
     const extensions = React.useMemo(() => [
         StarterKit.configure({
@@ -207,6 +215,19 @@ export const SexyEditor = React.forwardRef<SexyEditorRef, SexyEditorProps>(funct
 
     React.useImperativeHandle(ref, () => ({
         insertContent: (content: string) => {
+            if (mode === "source") {
+                const view = codeMirrorRef.current?.view;
+                if (view) {
+                    const selection = view.state.selection.main;
+                    view.dispatch({
+                        changes: { from: selection.from, to: selection.to, insert: content },
+                        selection: { anchor: selection.from + content.length },
+                        userEvent: "input"
+                    });
+                    view.focus();
+                    return;
+                }
+            }
             if (editor) {
                 editor.commands.insertContent(content);
             }
@@ -247,6 +268,16 @@ export const SexyEditor = React.forwardRef<SexyEditorRef, SexyEditorProps>(funct
         }
     }, [value, mode, editor])
 
+    const getLanguageExtension = () => {
+        if (modeType === "css-js") {
+            if (typeof value === "string" && value.includes("{") && (value.includes(":") || value.includes(";"))) {
+                return [css()];
+            }
+            return [javascript()];
+        }
+        return [html()];
+    };
+
     return (
         <div className="flex flex-col w-full border rounded-md overflow-hidden shadow-sm">
             {modeType !== "css-js" && (
@@ -255,24 +286,34 @@ export const SexyEditor = React.forwardRef<SexyEditorRef, SexyEditorProps>(funct
                     mode={mode}
                     onModeChange={setMode}
                     modeType={modeType}
+                    isEmail={isEmail}
                 />
             )}
             <div className="relative">
                 {mode === "source" ? (
-                    <textarea
-                        value={value}
-                        onChange={(e) => onChange(e.target.value)}
-                        className={cn(
-                            "w-full min-h-[450px] p-4 font-mono text-xs focus:outline-none resize-none border-none bg-transparent text-foreground",
-                            className
-                        )}
-                        spellCheck={false}
-                        placeholder={
-                            modeType === "css-js"
-                                ? "Nhập mã CSS hoặc JS tùy chỉnh..."
-                                : placeholder || "Nhập mã HTML tại đây..."
-                        }
-                    />
+                    <div className="w-full min-h-[450px] bg-background border-none overflow-hidden">
+                        <CodeMirror
+                            ref={codeMirrorRef}
+                            value={value}
+                            height="450px"
+                            theme={resolvedTheme === "light" ? "light" : oneDark}
+                            extensions={getLanguageExtension()}
+                            onChange={onChange}
+                            placeholder={
+                                modeType === "css-js"
+                                    ? "Nhập mã CSS hoặc JS tùy chỉnh..."
+                                    : placeholder || "Nhập mã HTML tại đây..."
+                            }
+                            className="w-full h-full text-xs font-mono"
+                            basicSetup={{
+                                lineNumbers: true,
+                                foldGutter: true,
+                                dropCursor: true,
+                                allowMultipleSelections: true,
+                                indentOnInput: true,
+                            }}
+                        />
+                    </div>
                 ) : mode === "preview" ? (
                     <div className="w-full min-h-[450px] p-4 lg:p-8 overflow-auto border-none">
                         <div 

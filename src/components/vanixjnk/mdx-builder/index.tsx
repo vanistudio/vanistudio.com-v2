@@ -2,6 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
+import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
+import { oneDark } from "@codemirror/theme-one-dark";
+import { markdown } from "@codemirror/lang-markdown";
+import { javascript } from "@codemirror/lang-javascript";
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -1228,33 +1232,49 @@ export const MdxEditor = React.forwardRef<HTMLTextAreaElement, MdxEditorProps>((
 }, ref) => {
   const [contentTab, setContentTab] = React.useState<"write" | "preview">("write");
   const [isMaximized, setIsMaximized] = React.useState(false);
-  const localRef = React.useRef<HTMLTextAreaElement>(null);
+  const { resolvedTheme } = useTheme();
   
-  const smallOverlayRef = React.useRef<HTMLPreElement>(null);
-  const maximizedOverlayRef = React.useRef<HTMLPreElement>(null);
+  const smallCodeMirrorRef = React.useRef<ReactCodeMirrorRef>(null);
+  const maximizedCodeMirrorRef = React.useRef<ReactCodeMirrorRef>(null);
+  const activeEditorRef = isMaximized ? maximizedCodeMirrorRef : smallCodeMirrorRef;
 
-  const setRef = React.useCallback((node: HTMLTextAreaElement | null) => {
-    if (typeof ref === "function") {
-      ref(node);
-    } else if (ref) {
-      (ref as any).current = node;
-    }
-    (localRef as any).current = node;
-  }, [ref]);
+  const mockTextarea = React.useMemo(() => {
+    const getActiveView = () => activeEditorRef.current?.view;
+    return {
+      focus: () => {
+        getActiveView()?.focus();
+      },
+      get value() {
+        return value;
+      },
+      get selectionStart() {
+        const view = getActiveView();
+        if (!view) return 0;
+        return view.state.selection.main.from;
+      },
+      set selectionStart(val: number) {
+        const view = getActiveView();
+        if (!view) return;
+        view.dispatch({
+          selection: { anchor: val, head: view.state.selection.main.to }
+        });
+      },
+      get selectionEnd() {
+        const view = getActiveView();
+        if (!view) return 0;
+        return view.state.selection.main.to;
+      },
+      set selectionEnd(val: number) {
+        const view = getActiveView();
+        if (!view) return;
+        view.dispatch({
+          selection: { anchor: view.state.selection.main.from, head: val }
+        });
+      }
+    } as unknown as HTMLTextAreaElement;
+  }, [value, isMaximized]);
 
-  const handleSmallScroll = React.useCallback((e: React.UIEvent<HTMLTextAreaElement>) => {
-    if (smallOverlayRef.current) {
-      smallOverlayRef.current.scrollTop = e.currentTarget.scrollTop;
-      smallOverlayRef.current.scrollLeft = e.currentTarget.scrollLeft;
-    }
-  }, []);
-
-  const handleMaximizedScroll = React.useCallback((e: React.UIEvent<HTMLTextAreaElement>) => {
-    if (maximizedOverlayRef.current) {
-      maximizedOverlayRef.current.scrollTop = e.currentTarget.scrollTop;
-      maximizedOverlayRef.current.scrollLeft = e.currentTarget.scrollLeft;
-    }
-  }, []);
+  React.useImperativeHandle(ref, () => mockTextarea, [mockTextarea]);
 
   React.useEffect(() => {
     if (isMaximized) {
@@ -1268,15 +1288,11 @@ export const MdxEditor = React.forwardRef<HTMLTextAreaElement, MdxEditorProps>((
   }, [isMaximized]);
 
   const handleInsert = (textToInsert: string) => {
-    insertMdxAtCursor(localRef.current, textToInsert, value, onChange);
+    insertMdxAtCursor(mockTextarea, textToInsert, value, onChange);
   };
 
   const insertFormatting = (prefix: string, suffix: string = "") => {
-    const textarea = localRef.current;
-    if (!textarea) {
-      onChange(value + prefix + suffix);
-      return;
-    }
+    const textarea = mockTextarea;
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const text = textarea.value;
@@ -1463,22 +1479,22 @@ export const MdxEditor = React.forwardRef<HTMLTextAreaElement, MdxEditorProps>((
 
       {contentTab === "write" ? (
         <div className="relative w-full h-[300px] md:h-[600px] border-0 rounded-none overflow-hidden bg-background">
-          <pre
-            ref={smallOverlayRef}
-            className="absolute inset-0 pointer-events-none select-none text-foreground bg-transparent"
-            style={smallOverlayStyle}
-          >
-            {highlightMarkdownMdx(value)}
-            {value.endsWith("\n") ? "\n" : ""}
-          </pre>
-          <textarea
-            ref={setRef}
+          <CodeMirror
+            ref={smallCodeMirrorRef}
             value={value}
-            onScroll={handleSmallScroll}
-            onChange={(e) => onChange(e.target.value)}
+            height="100%"
+            theme={resolvedTheme === "light" ? "light" : oneDark}
+            extensions={[markdown({ defaultCodeLanguage: javascript() })]}
+            onChange={onChange}
             placeholder={placeholder}
-            className="absolute inset-0 bg-transparent text-transparent caret-foreground outline-none focus:outline-none focus:ring-0"
-            style={smallTextareaStyle}
+            className="w-full h-full text-xs font-mono"
+            basicSetup={{
+              lineNumbers: true,
+              foldGutter: true,
+              dropCursor: true,
+              allowMultipleSelections: true,
+              indentOnInput: true,
+            }}
           />
         </div>
       ) : (
@@ -1753,22 +1769,22 @@ export const MdxEditor = React.forwardRef<HTMLTextAreaElement, MdxEditorProps>((
                       "flex-1 relative bg-background overflow-hidden min-h-0",
                       contentTab === "preview" && "lg:w-1/2 lg:border-r border-border/60"
                     )}>
-                      <pre
-                        ref={maximizedOverlayRef}
-                        className="absolute inset-0 pointer-events-none select-none text-foreground bg-transparent"
-                        style={maximizedOverlayStyle}
-                      >
-                        {highlightMarkdownMdx(value)}
-                        {value.endsWith("\n") ? "\n" : ""}
-                      </pre>
-                      <textarea
-                        ref={setRef}
+                      <CodeMirror
+                        ref={maximizedCodeMirrorRef}
                         value={value}
-                        onScroll={handleMaximizedScroll}
-                        onChange={(e) => onChange(e.target.value)}
+                        height="100%"
+                        theme={resolvedTheme === "light" ? "light" : oneDark}
+                        extensions={[markdown({ defaultCodeLanguage: javascript() })]}
+                        onChange={onChange}
                         placeholder={placeholder}
-                        className="absolute inset-0 bg-transparent text-transparent caret-foreground outline-none focus:outline-none focus:ring-0"
-                        style={maximizedTextareaStyle}
+                        className="w-full h-full text-sm font-mono"
+                        basicSetup={{
+                          lineNumbers: true,
+                          foldGutter: true,
+                          dropCursor: true,
+                          allowMultipleSelections: true,
+                          indentOnInput: true,
+                        }}
                       />
                     </div>
 

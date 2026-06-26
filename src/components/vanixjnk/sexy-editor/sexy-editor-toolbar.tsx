@@ -44,9 +44,10 @@ interface ToolbarProps {
     mode: "edit" | "source" | "preview"
     onModeChange: (mode: "edit" | "source" | "preview") => void
     modeType?: "rich-text" | "code" | "css-js"
+    isEmail?: boolean
 }
 
-export function Toolbar({ editor, mode, onModeChange, modeType = "rich-text" }: ToolbarProps) {
+export function Toolbar({ editor, mode, onModeChange, modeType = "rich-text", isEmail = false }: ToolbarProps) {
     const [linkUrl, setLinkUrl] = React.useState("")
     const [isLinkDialogOpen, setIsLinkDialogOpen] = React.useState(false)
 
@@ -166,7 +167,7 @@ export function Toolbar({ editor, mode, onModeChange, modeType = "rich-text" }: 
                     <div className="flex items-center gap-1.5 px-3 py-2">
                         {modeType !== "css-js" && (
                             <div className="flex items-center gap-1 rounded-md p-1 border shrink-0 shadow-sm">
-                                {modeType === "rich-text" && (
+                                {modeType === "rich-text" && !isEmail && (
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <Button type="button" variant={mode === "edit" ? "secondary" : "ghost"} size="sm" onClick={() => onModeChange("edit")} className="h-7 px-2.5 gap-1.5 text-[10px] font-bold uppercase tracking-wider">
@@ -195,26 +196,29 @@ export function Toolbar({ editor, mode, onModeChange, modeType = "rich-text" }: 
                             </div>
                         )}
 
-                        <div className="flex items-center gap-0.5 shrink-0 border p-0.5 rounded-md shadow-sm">
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button type="button" variant="ghost" size="sm" onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo() || mode !== "edit"} className="h-8 w-8 p-0">
-                                        <Icon icon="solar:undo-left-line-duotone" className="h-4 w-4" />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>Hoàn tác (Ctrl+Z)</TooltipContent>
-                            </Tooltip>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button type="button" variant="ghost" size="sm" onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo() || mode !== "edit"} className="h-8 w-8 p-0">
-                                        <Icon icon="solar:undo-right-line-duotone" className="h-4 w-4" />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>Làm lại (Ctrl+Y)</TooltipContent>
-                            </Tooltip>
-                        </div>
+                        {!isEmail && (
+                            <div className="flex items-center gap-0.5 shrink-0 border p-0.5 rounded-md shadow-sm">
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button type="button" variant="ghost" size="sm" onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo() || mode !== "edit"} className="h-8 w-8 p-0">
+                                            <Icon icon="solar:undo-left-line-duotone" className="h-4 w-4" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Hoàn tác (Ctrl+Z)</TooltipContent>
+                                </Tooltip>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button type="button" variant="ghost" size="sm" onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo() || mode !== "edit"} className="h-8 w-8 p-0">
+                                            <Icon icon="solar:undo-right-line-duotone" className="h-4 w-4" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Làm lại (Ctrl+Y)</TooltipContent>
+                                </Tooltip>
+                            </div>
+                        )}
 
-                        <div className={cn("flex items-center gap-2 shrink-0 transition-opacity", mode !== "edit" && "pointer-events-none opacity-50")}>
+                        {!isEmail && (
+                            <div className={cn("flex items-center gap-2 shrink-0 transition-opacity", mode !== "edit" && "pointer-events-none opacity-50")}>
                             <div className="flex items-center gap-0.5 border p-0.5 rounded-md shadow-sm">
                                 <Tooltip>
                                     <TooltipTrigger asChild>
@@ -411,6 +415,7 @@ export function Toolbar({ editor, mode, onModeChange, modeType = "rich-text" }: 
                                 </SelectContent>
                             </Select>
                         </div>
+                        )}
                     </div>
                     <ScrollBar orientation="horizontal" />
                 </ScrollArea>
