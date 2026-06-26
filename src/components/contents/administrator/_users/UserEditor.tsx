@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
+import { useSetting } from "@/contexts/SettingContext";
+import { formatWithSiteTimezone } from "@/helpers/administrator/timezone.helper";
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,26 +55,18 @@ const TABS = [
   },
 ];
 
-function formatDateTime(dateStr: string | Date | null | undefined) {
-  if (!dateStr) return "—";
-  const date = new Date(dateStr);
-  return date.toLocaleString("vi-VN", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-}
-
 export default function UserEditor({ initialId }: UserEditorProps) {
   const router = useRouter();
+  const setting = useSetting();
+  const siteTimezone = setting?.siteTimezone || "Asia/Ho_Chi_Minh";
+
   const [activeTab, setActiveTab] = useState("account");
+
+  function formatDateTime(dateStr: string | Date | null | undefined) {
+    if (!dateStr) return "—";
+    return formatWithSiteTimezone(dateStr, siteTimezone, "DD/MM/YYYY HH:mm:ss");
+  }
   const [resetPasswordOpen, setResetPasswordOpen] = useState(false);
-
-
-  // Core User states
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [role, setRole] = useState("user");
@@ -80,8 +74,6 @@ export default function UserEditor({ initialId }: UserEditorProps) {
   const [banReason, setBanReason] = useState("");
   const [image, setImage] = useState("");
   const [emailVerified, setEmailVerified] = useState(false);
-
-  // Profile states
   const [phone, setPhone] = useState("");
   const [address1, setAddress1] = useState("");
   const [address2, setAddress2] = useState("");
