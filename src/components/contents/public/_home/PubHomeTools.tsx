@@ -84,7 +84,7 @@ export default function PubHomeTools() {
           {
             name: "Discord Checker",
             desc: "Kiểm tra trạng thái hoạt động và cấu hình Token Discord.",
-            icon: "ic:baseline-discord",
+            icon: "qlementine-icons:discord-16",
             href: "/tools/check-discord",
             gradient: "from-indigo-500/10 via-indigo-500/5 to-transparent",
             border: "border-indigo-500/20",
