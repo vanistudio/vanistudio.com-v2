@@ -92,6 +92,10 @@ const SpanNode = Mark.create({
 
 function extractHtmlEnvelope(html: string) {
     if (!html) return { prefix: "", content: "", suffix: "" }
+    const commentMatch = html.match(/(^[\s\S]*?<!--\s*email-body-start\s*-->)([\s\S]*?)(<!--\s*email-body-end\s*-->[\s\S]*?$)/i)
+    if (commentMatch) {
+        return { prefix: commentMatch[1], content: commentMatch[2], suffix: commentMatch[3] }
+    }
     const match = html.match(/(^[\s\S]*?<body[^>]*>)([\s\S]*?)(<\/body>[\s\S]*?$)/i)
     if (match) {
         return { prefix: match[1], content: match[2], suffix: match[3] }

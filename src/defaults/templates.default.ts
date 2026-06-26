@@ -1,4 +1,17 @@
 import { type TemplateExtraConfig } from "@/server/db/schemas/template.schema";
+import {
+  welcomeEmailTemplate,
+  forgotPasswordEmailTemplate,
+  contactConfirmationEmailTemplate,
+  contactNotificationEmailTemplate,
+  twoFactorEnabledEmailTemplate,
+  twoFactorDisabledEmailTemplate,
+  otpVerificationEmailTemplate,
+  registerVerificationEmailTemplate,
+  passwordChangedEmailTemplate,
+  loginDetectedEmailTemplate,
+  licenseIssuedEmailTemplate,
+} from "./email-templates";
 
 export interface DefaultNotificationTemplate {
   name: string;
@@ -19,7 +32,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
     channel: "email",
     target: "client",
     subject: "Chào mừng bạn đến với VaniStudio - Khởi đầu hành trình sáng tạo của bạn!",
-    content: "<p>Chào {{name}},</p><p>Chào mừng bạn đã gia nhập VaniStudio - Nền tảng phát triển sản phẩm công nghệ và thiết kế giao diện cao cấp. Chúng tôi vô cùng vui mừng khi được đồng hành cùng bạn trên con đường xây dựng các giải pháp số hóa đột phá.</p><p>Tài khoản của bạn đã được khởi tạo thành công với các thông tin chi tiết dưới đây:</p><ul><li>Họ tên: {{name}}</li><li>Email tài khoản: {{email}}</li><li>Mã thành viên: #{{userId}}</li><li>Thời gian đăng ký: {{createdAt}}</li><li>Địa chỉ IP đăng ký: {{ipAddress}}</li><li>Vị trí địa lý đăng ký: {{location}}</li></ul><p>Để bắt đầu trải nghiệm đầy đủ các tính năng của hệ thống, vui lòng truy cập và đăng nhập tại đường dẫn sau:<br />👉 <a href=\"{{loginUrl}}\" target=\"_blank\">{{loginUrl}}</a></p><p>Một lần nữa, xin chân thành cảm ơn bạn đã lựa chọn VaniStudio!</p><p>Trân trọng,<br /><strong>Đội ngũ Sáng lập VaniStudio</strong><br /><a href=\"https://vanistudio.com\" target=\"_blank\">https://vanistudio.com</a></p>",
+    content: welcomeEmailTemplate,
     variables: [
       "name",
       "email",
@@ -40,7 +53,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
     channel: "email",
     target: "client",
     subject: "Yêu cầu khôi phục mật khẩu tài khoản VaniStudio - Hành động khẩn cấp cần thiết",
-    content: "<p>Chào {{name}},</p><p>Chúng tôi nhận được yêu cầu khôi phục mật khẩu cho tài khoản VaniStudio của bạn đăng ký qua địa chỉ email {{email}}.</p><p>Để tiến hành đặt lại mật khẩu mới, vui lòng nhấp vào liên kết bảo mật dưới đây:<br />👉 <a href=\"{{resetLink}}\" target=\"_blank\">{{resetLink}}</a></p><p><strong>Lưu ý bảo mật quan trọng:</strong></p><ul><li>Đường liên kết khôi phục này chỉ có hiệu lực sử dụng duy nhất một lần và sẽ tự động hết hạn sau đúng {{expiryDurationMinutes}} phút kể từ khi email này được gửi đi (hết hạn vào lúc {{expireTime}}).</li><li>Địa chỉ IP gửi yêu cầu này là: {{ipAddress}}</li><li>Quốc gia và Vị trí địa lý ghi nhận: {{location}}</li><li>Thiết bị và trình duyệt thực hiện yêu cầu: {{device}} (Hệ điều hành: {{operatingSystem}}, Trình duyệt: {{browserName}})</li></ul><p>Nếu bạn KHÔNG thực hiện yêu cầu này, có thể ai đó đang cố gắng truy cập trái phép vào tài khoản của bạn. Vui lòng bỏ qua email này, mật khẩu hiện tại của bạn vẫn sẽ được giữ an toàn và không bị thay đổi.</p><p>Để bảo vệ tối đa cho tài khoản, chúng tôi khuyên bạn nên:</p><ol><li>Tuyệt đối không chia sẻ email này hoặc sao chép liên kết trên gửi cho bất kỳ ai.</li><li>Đọc thêm các khuyến cáo an ninh mạng của chúng tôi tại: <a href=\"{{securityTipsUrl}}\" target=\"_blank\">{{securityTipsUrl}}</a>.</li></ol><p>Nếu cần trợ giúp thêm, vui lòng liên hệ ngay với Bộ phận Hỗ trợ Kỹ thuật &amp; An ninh VaniStudio qua số hotline {{supportHotline}} hoặc phản hồi trực tiếp email này.</p><p>Trân trọng,<br /><strong>Phòng An ninh mạng &amp; Bảo mật Thông tin VaniStudio</strong><br /><a href=\"mailto:security@vanistudio.com\">security@vanistudio.com</a></p>",
+    content: forgotPasswordEmailTemplate,
     variables: [
       "name",
       "email",
@@ -347,7 +360,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
     channel: "email",
     target: "client",
     subject: "Xác nhận tiếp nhận yêu cầu liên hệ thành công [Mã vé: #{{ticketId}}] - VaniStudio",
-    content: "<p>Chào {{name}},</p><p>Cảm ơn bạn đã gửi thư liên hệ tới VaniStudio.</p><p>Chúng tôi xin thông báo đã tiếp nhận yêu cầu của bạn thành công. Hệ thống đã tự động tạo một vé hỗ trợ có thông tin chi tiết như sau:</p><ul><li>Mã số vé (Ticket ID): #{{ticketId}}</li><li>Họ tên khách hàng: {{name}}</li><li>Email liên hệ: {{email}}</li><li>Danh mục yêu cầu: {{category}}</li><li>Tiêu đề liên hệ: {{subject}}</li><li>Thời gian ghi nhận: {{createdAt}}</li><li>Thời gian phản hồi dự kiến: {{expectedResponseTime}}</li></ul><p>Chi tiết nội dung tin nhắn bạn đã gửi:</p><blockquote style=\"border-left: 4px solid #ccc; padding-left: 16px; margin: 16px 0;\">\"{{message}}\"</blockquote><p><strong>Lưu ý:</strong> Nếu bạn có thêm bất kỳ thông tin nào cần bổ sung cho yêu cầu này, vui lòng phản hồi trực tiếp vào email này mà không cần thay đổi tiêu đề thư. Đội ngũ kỹ thuật viên và chuyên viên của chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.</p><p>Trân trọng,<br /><strong>Đội ngũ CSKH và Hỗ trợ Kỹ thuật VaniStudio</strong><br /><a href=\"mailto:support@vanistudio.com\">support@vanistudio.com</a></p>",
+    content: contactConfirmationEmailTemplate,
     variables: [
       "name",
       "ticketId",
@@ -369,7 +382,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
     channel: "email",
     target: "admin",
     subject: "🚨 [Liên hệ mới] Đơn hàng/Hỗ trợ khách hàng - Mã vé #{{ticketId}} - {{name}}",
-    content: "<p>Chào Admin,</p><p>Hệ thống VaniStudio CRM vừa tiếp nhận biểu mẫu liên hệ trực tuyến mới từ khách hàng. Vui lòng kiểm duyệt và phản hồi sớm nhất có thể.</p><p><strong>THÔNG TIN CHI TIẾT VÉ HỖ TRỢ:</strong></p><ul><li>Mã số vé: #{{ticketId}}</li><li>Danh mục: {{category}}</li><li>Độ ưu tiên: {{priorityLevel}}</li><li>Họ và tên khách hàng: {{name}}</li><li>Địa chỉ Email: {{email}}</li><li>Số điện thoại: {{phone}}</li><li>Số vé đã gửi trước đây của user này: {{previousTicketsCount}}</li><li>Thời gian gửi: {{createdAt}}</li><li>URL nguồn trang gửi liên hệ: <a href=\"{{referrerUrl}}\" target=\"_blank\">{{referrerUrl}}</a></li><li>Bộ phận tiếp nhận xử lý: {{assignedTeam}}</li></ul><p><strong>THÔNG TIN HẠ TẦNG KẾT NỐI:</strong></p><ul><li>Địa chỉ IP người gửi: {{ipAddress}}</li><li>Thiết bị &amp; Hệ điều hành sử dụng: {{deviceInfo}}</li></ul><p><strong>NỘI DUNG YÊU CẦU CHI TIẾT TỪ KHÁCH HÀNG:</strong></p><p>Chủ đề: {{subject}}</p><blockquote style=\"border-left: 4px solid #ccc; padding-left: 16px; margin: 16px 0;\">\"{{message}}\"</blockquote><p><strong>HƯỚNG DẪN XỬ LÝ DÀNH CHO ADMIN:</strong></p><ol><li>Đăng nhập trang quản trị CRM để phân công hoặc trả lời trực tiếp tại: <a href=\"{{inboxUrl}}\" target=\"_blank\">{{inboxUrl}}</a></li><li>Bạn cũng có thể phản hồi trực tiếp qua hòm thư điện tử cá nhân của khách hàng bằng cách bấm vào: <a href=\"mailto:{{email}}?subject=Re:%20[VaniStudio]%20{{subject}}\">mailto:{{email}}</a></li></ol><p>Trân trọng,<br /><strong>Hệ thống CRM Tự động VaniStudio Engine</strong></p>",
+    content: contactNotificationEmailTemplate,
     variables: [
       "ticketId",
       "category",
@@ -557,7 +570,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
     channel: "email",
     target: "client",
     subject: "Xác nhận kích hoạt tính năng Xác thực 2 lớp (2FA) bảo vệ tài khoản - VaniStudio",
-    content: "<p>Chào {{name}},</p><p>Chúng tôi gửi email này để xác nhận rằng tính năng Xác thực 2 lớp (2FA) đã được kích hoạt thành công cho tài khoản VaniStudio của bạn vào lúc {{enabledAt}}.</p><p><strong>THÔNG TIN CHI TIẾT THIẾT LẬP:</strong></p><ul><li>Trạng thái 2FA: Đã kích hoạt (ENABLED)</li><li>Phương thức xác thực chính: Ứng dụng xác thực mã OTP (Google Authenticator / Authy)</li><li>Địa chỉ IP yêu cầu: {{ipAddress}}</li><li>Vị trí địa lý ghi nhận: {{location}}</li><li>Thiết bị &amp; Trình duyệt thực hiện: {{device}} (Hệ điều hành: {{operatingSystem}}, Trình duyệt: {{browserName}})</li></ul><p>Kể từ thời điểm này, mỗi khi đăng nhập vào hệ thống từ bất kỳ thiết bị mới nào, bạn sẽ được yêu cầu nhập mã OTP gồm 6 chữ số được tạo ngẫu nhiên từ ứng dụng xác thực của bạn để hoàn tất đăng nhập. Điều này giúp nâng cao đáng kể mức độ bảo mật cho tài khoản của bạn, ngăn chặn các hành vi đánh cắp mật khẩu thông thường.</p><p><strong>Hành động cần thiết:</strong></p><ul><li>Hãy đảm bảo bạn đã lưu trữ các Mã dự phòng khôi phục (Backup Codes) ở một nơi an toàn. Nếu bạn làm mất thiết bị cài ứng dụng xác thực, các mã này là cách duy nhất giúp bạn tự lấy lại tài khoản mà không cần thông qua hỗ trợ của quản trị viên. Bạn có thể xem lại mã dự phòng tại: <a href=\"{{backupCodesUrl}}\" target=\"_blank\">{{backupCodesUrl}}</a>.</li></ul><p>🚨 <strong>CẢNH BÁO BẢO MẬT KHẨN CẤP:</strong><br />Nếu bạn không phải là người thực hiện kích hoạt 2FA này, điều đó có nghĩa mật khẩu của bạn đã bị lộ và ai đó đang cố tình chiếm đoạt tài khoản. Vui lòng bấm vào liên kết khóa khẩn cấp dưới đây ngay lập tức để tạm đóng tài khoản và liên hệ với nhóm hỗ trợ kỹ thuật của chúng tôi:<br />👉 <a href=\"{{lockAccountLink}}\" target=\"_blank\">{{lockAccountLink}}</a></p><p>Trân trọng,<br /><strong>Đội ngũ Bảo mật An ninh mạng VaniStudio</strong><br /><a href=\"mailto:support@vanistudio.com\">support@vanistudio.com</a></p>",
+    content: twoFactorEnabledEmailTemplate,
     variables: [
       "name",
       "enabledAt",
@@ -580,7 +593,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
     channel: "email",
     target: "client",
     subject: "CẢNH BÁO NGUY HIỂM: Tính năng Xác thực 2 lớp (2FA) đã bị tắt - VaniStudio",
-    content: "<p>Chào {{name}},</p><p>Đây là thông báo khẩn cấp từ trung tâm bảo mật VaniStudio. Tính năng Xác thực hai lớp (2FA) trên tài khoản của bạn đã bị HỦY KÍCH HOẠT thành công vào lúc {{disabledAt}}.</p><p><strong>CHI TIẾT PHIÊN THAY ĐỔI:</strong></p><ul><li>Trạng thái bảo mật 2FA: Đã tắt (DISABLED)</li><li>Địa chỉ IP thực hiện: {{ipAddress}}</li><li>Vị trí địa lý ghi nhận: {{location}}</li><li>Thiết bị thực hiện: {{device}} (Hệ điều hành: {{operatingSystem}}, Trình duyệt: {{browserName}})</li></ul><p>⚠️ <strong>CẢNH BÁO BẢO MẬT QUAN TRỌNG:</strong><br />Khi tính năng 2FA bị tắt, tài khoản của bạn sẽ không còn được bảo vệ bởi lớp xác thực thứ hai nữa. Tài khoản lúc này chỉ được bảo mật bằng một lớp mật khẩu thông thường, khiến cho nguy cơ bị xâm nhập, rò rỉ dữ liệu hoặc bị tấn công brute force tăng lên cực kỳ cao.</p><p>Chúng tôi khuyến cáo bạn nên kích hoạt lại 2FA càng sớm càng tốt tại:<br />👉 <a href=\"{{reEnableLink}}\" target=\"_blank\">{{reEnableLink}}</a></p><p>🚨 <strong>HÀNH ĐỘNG KHẨN CẤP NẾU BẠN KHÔNG TẮT 2FA:</strong><br />Nếu bạn không thực hiện việc tắt 2FA này, tài khoản của bạn đã bị kẻ tấn công chiếm quyền kiểm soát. Vui lòng thực hiện các bước sau ngay lập tức:</p><ol><li>Tiến hành đổi mật khẩu đăng nhập sang một mật khẩu mới mạnh hơn và kích hoạt lại 2FA trong phần Cài đặt Bảo mật.</li><li>Nếu không thể đăng nhập, hãy liên hệ ngay với phòng Hỗ trợ An ninh của chúng tôi qua địa chỉ email <a href=\"mailto:support@vanistudio.com\">support@vanistudio.com</a> để được khóa tài khoản và tiến hành xác minh danh tính khôi phục.</li></ol><p>Trân trọng,<br /><strong>Đội ngũ Bảo mật An ninh mạng VaniStudio</strong><br /><a href=\"mailto:support@vanistudio.com\">support@vanistudio.com</a></p>",
+    content: twoFactorDisabledEmailTemplate,
     variables: [
       "name",
       "disabledAt",
@@ -602,7 +615,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
     channel: "email",
     target: "client",
     subject: "Mã xác thực OTP (Mã bảo mật dùng một lần) tài khoản VaniStudio của bạn",
-    content: "Chào {{name}},\n\nChúng tôi nhận được yêu cầu lấy mã OTP xác minh giao dịch hoặc xác thực đăng nhập tài khoản VaniStudio của bạn.\n\nMã xác thực một lần (OTP) của bạn là:\n👉 **{{otpCode}}** 👈\n\n*Thông tin bảo mật quan trọng về mã OTP này:*\n- Mã OTP này chỉ có hiệu lực sử dụng duy nhất 1 lần và sẽ tự động hết hạn sau đúng {{expireMinutes}} phút kể từ khi email này được gửi đi (hết hạn vào lúc {{expireTime}}).\n- Loại hành động xác thực: {{actionType}}\n- Địa chỉ IP thực hiện yêu cầu: {{ipAddress}} (Khu vực ước tính: {{location}})\n- Thiết bị gửi yêu cầu: {{device}} (Hệ điều hành: {{operatingSystem}}, Trình duyệt: {{browserName}})\n\n🚫 *Nguyên tắc an toàn bảo mật tài khoản:*\n- Tuyệt đối KHÔNG chia sẻ mã OTP này với bất kỳ ai, kể cả nhân viên hỗ trợ của VaniStudio. Chúng tôi không bao giờ yêu cầu bạn cung cấp mã OTP qua điện thoại, email hoặc các kênh chat.\n- Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này. Tài khoản của bạn vẫn an toàn và mã này sẽ tự động hết hiệu lực sau vài phút.\n\nNếu bạn phát hiện thấy nhiều email yêu cầu OTP liên tiếp mà không phải do mình thực hiện, vui lòng liên hệ ngay với hòm thư an ninh của chúng tôi tại support@vanistudio.com để được tư vấn bảo vệ tài khoản.\n\nTrân trọng,\nĐội ngũ Kỹ thuật & Bảo mật Hệ thống VaniStudio",
+    content: otpVerificationEmailTemplate,
     variables: [
       "name",
       "otpCode",
@@ -626,7 +639,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
     channel: "email",
     target: "client",
     subject: "Mã xác minh kích hoạt tài khoản thành viên mới tại VaniStudio",
-    content: "<p>Chào {{name}},</p><p>Cảm ơn bạn đã lựa chọn đăng ký tài khoản tại hệ thống VaniStudio! Bước cuối cùng để bạn hoàn tất quy trình thiết lập tài khoản và bắt đầu sử dụng tài nguyên của chúng tôi là xác minh địa chỉ email đăng ký.</p><p>Mã xác minh kích hoạt của bạn là:<br />👉 <strong>{{verificationCode}}</strong> 👈</p><p><strong>Thông tin hướng dẫn sử dụng mã:</strong></p><ul><li>Mã này có hiệu lực sử dụng trong vòng đúng {{expireMinutes}} phút kể từ thời điểm gửi thư này (hết hiệu lực vào lúc {{expireTime}}).</li><li>Vui lòng sao chép và nhập chính xác chuỗi mã trên vào ô xác minh trên trình duyệt của bạn.</li><li>Thiết bị đăng ký ghi nhận: {{device}} tại địa chỉ IP: {{ipAddress}}.</li></ul><p>Nếu mã trên đã hết hạn sử dụng, bạn có thể gửi lại yêu cầu mã xác minh mới tại liên kết sau:<br />👉 <a href=\"{{resendLink}}\" target=\"_blank\">{{resendLink}}</a></p><p>Nếu bạn có bất kỳ câu hỏi nào trong quá trình kích hoạt tài khoản hoặc gặp sự cố kỹ thuật, vui lòng tham khảo trang Trợ giúp của chúng tôi tại <a href=\"{{helpLink}}\" target=\"_blank\">{{helpLink}}</a> hoặc gửi thư về email hỗ trợ để được hướng dẫn trực tiếp.</p><p>Chào mừng bạn gia nhập cộng đồng sáng tạo của chúng tôi!</p><p>Trân trọng,<br /><strong>Đội ngũ Vận hành &amp; Phát triển Cộng đồng VaniStudio</strong></p>",
+    content: registerVerificationEmailTemplate,
     variables: [
       "name",
       "verificationCode",
@@ -648,7 +661,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
     channel: "email",
     target: "client",
     subject: "🚨 CẢNH BÁO BẢO MẬT: Mật khẩu tài khoản VaniStudio đã được thay đổi",
-    content: "<p>Chào {{name}},</p><p>Đây là email thông báo bảo mật chính thức của VaniStudio. Mật khẩu tài khoản đăng nhập của bạn (liên kết với hòm thư {{email}}) đã được THAY ĐỔI THÀNH CÔNG vào lúc {{changedAt}}.</p><p><strong>CHI TIẾT PHIÊN THAY ĐỔI MẬT KHẨU:</strong></p><ul><li>Địa chỉ IP thực hiện thay đổi: {{ipAddress}}</li><li>Vị trí địa lý ước tính: {{location}}</li><li>Thiết bị thực hiện: {{device}} (Hệ điều hành: {{operatingSystem}}, Trình duyệt: {{browserName}})</li></ul><p>Nếu chính bạn là người đã thực hiện hành động thay đổi mật khẩu này, vui lòng bỏ qua nội dung email này, mật khẩu mới của bạn đã có hiệu lực để đăng nhập.</p><p>🚨 <strong>HÀNH ĐỘNG KHẨN CẤP NẾU BẠN KHÔNG PHẢI NGƯỜI THAY ĐỔI:</strong><br />Nếu bạn không hề thực hiện thay đổi mật khẩu này, tài khoản của bạn hiện tại đã bị kẻ gian chiếm giữ trái phép. Bạn cần thực hiện các hành động khẩn cấp sau đây ngay lập tức:</p><ol><li>Hãy bấm ngay vào đường liên kết dưới đây để thực hiện KHÓA KHẨN CẤP tài khoản của bạn, ngăn chặn các hành vi phá hoại dữ liệu hoặc rút tiền/mua sản phẩm:<br />👉 <a href=\"{{lockAccountLink}}\" target=\"_blank\">{{lockAccountLink}}</a></li><li>Thử tiến hành khôi phục mật khẩu thông qua email tại trang: <a href=\"{{passwordResetUrl}}\" target=\"_blank\">{{passwordResetUrl}}</a>.</li><li>Gửi thư điện tử trực tiếp tới phòng hỗ trợ khẩn cấp của chúng tôi tại <a href=\"mailto:support@vanistudio.com\">support@vanistudio.com</a> để các quản trị viên can thiệp kịp thời.</li></ol><p>Hãy giữ email này cẩn thận vì nó chứa các thông tin IP và thiết bị của kẻ xâm nhập để cung cấp cho cơ quan điều tra an ninh nếu cần thiết.</p><p>Trân trọng,<br /><strong>Đội ngũ An ninh mạng và Giám sát Tài khoản VaniStudio</strong></p>",
+    content: passwordChangedEmailTemplate,
     variables: [
       "name",
       "email",
@@ -672,7 +685,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
     channel: "email",
     target: "client",
     subject: "⚠️ Cảnh báo an ninh: Phát hiện phiên đăng nhập mới từ thiết bị hoặc địa điểm lạ",
-    content: "<p>Chào {{name}},</p><p>Hệ thống giám sát bảo mật tài khoản VaniStudio vừa ghi nhận một hoạt động đăng nhập thành công vào tài khoản của bạn từ một thiết bị hoặc vị trí địa lý mới chưa từng được sử dụng trước đây.</p><p><strong>THÔNG TIN CHI TIẾT PHIÊN ĐĂNG NHẬP MỚI:</strong></p><ul><li>Thời gian đăng nhập: {{loginAt}}</li><li>Địa chỉ IP kết nối: {{ipAddress}}</li><li>Nhà cung cấp mạng (ISP): {{ispProvider}}</li><li>Vị trí địa lý ước tính: {{location}}</li><li>Thiết bị ghi nhận: {{device}} (Hệ điều hành: {{operatingSystem}}, Trình duyệt: {{browserName}})</li></ul><p>Nếu hoạt động đăng nhập này do chính bạn thực hiện (ví dụ: bạn đổi máy tính mới, sử dụng điện thoại mới, đổi mạng Wifi công cộng hoặc sử dụng dịch vụ VPN ẩn danh), bạn có thể hoàn toàn yên tâm và bỏ qua email này.</p><p>🚨 <strong>HÀNH ĐỘNG CẦN THIẾT NẾU ĐÂY KHÔNG PHẢI BẠN:</strong><br />Nếu phiên đăng nhập này được thực hiện bởi một người nào khác, tài khoản của bạn đã bị rò rỉ thông tin đăng nhập. Vui lòng hành động ngay lập tức để bảo vệ dữ liệu:</p><ol><li>Nhấp vào liên kết dưới đây để thực hiện ĐĂNG XUẤT tài khoản ngay lập tức khỏi tất cả các phiên làm việc và thiết bị khác:<br />👉 <a href=\"{{logoutAllLink}}\" target=\"_blank\">{{logoutAllLink}}</a></li><li>Thực hiện thay đổi mật khẩu đăng nhập ngay lập tức sang một mật khẩu mạnh và duy nhất.</li><li>Kích hoạt tính năng bảo mật xác thực hai lớp (2FA) trong phần Cài đặt Bảo mật nếu chưa kích hoạt để tăng thêm lớp phòng thủ chắc chắn.</li></ol><p>Nếu cần bất kỳ hỗ trợ nào từ chúng tôi, hãy liên hệ qua hòm thư điện tử <a href=\"mailto:support@vanistudio.com\">support@vanistudio.com</a> bất kỳ lúc nào.</p><p>Trân trọng,<br /><strong>Đội ngũ Giám sát Bảo mật và An toàn Tài khoản VaniStudio</strong></p>",
+    content: loginDetectedEmailTemplate,
     variables: [
       "name",
       "loginAt",
@@ -862,7 +875,7 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: DefaultNotificationTemplate[] = [
     channel: "email",
     target: "client",
     subject: "Bàn giao chính thức Bản quyền sản phẩm & Hướng dẫn kích hoạt bản quyền - VaniStudio",
-    content: "<p>Chào {{name}},</p><p>Thay mặt VaniStudio, chúng tôi chân thành cảm ơn bạn đã tin tưởng mua sắm và sử dụng các sản phẩm công nghệ của chúng tôi. Giao dịch mua sản phẩm của bạn đã hoàn tất thành công và được hệ thống thanh toán tự động xác nhận.</p><p>Chúng tôi xin chính thức bàn giao thông tin bản quyền (License Key) và các tài liệu hướng dẫn kích hoạt đi kèm:</p><p><strong>THÔNG TIN KHÁCH HÀNG &amp; ĐƠN HÀNG:</strong></p><ul><li>Họ tên khách hàng: {{name}}</li><li>Mã số đơn hàng: #{{orderId}}</li><li>Thời gian giao dịch: {{issuedAt}}</li><li>Tổng chi phí thanh toán: {{price}} {{currency}}</li><li>Địa chỉ thanh toán ghi nhận: {{billingAddress}}</li></ul><p><strong>THÔNG TIN CHI TIẾT BẢN QUYỀN SẢN PHẨM:</strong></p><ul><li>Tên sản phẩm: <strong>{{productName}}</strong></li><li>Phiên bản phát hành hiện tại: {{productVersion}}</li><li>Loại giấy phép sở hữu: {{licenseType}}</li><li>Số thiết bị kích hoạt tối đa: {{maxActivations}} thiết bị</li><li>Mã bản quyền (License Key): <code>{{licenseKey}}</code></li><li>Thời gian hết hạn sử dụng: {{expiryDate}}</li><li>Thời hạn được hỗ trợ kỹ thuật miễn phí: {{supportDuration}}</li></ul><p><strong>HƯỚNG DẪN KÍCH HOẠT VÀ CÀI ĐẶT NHANH:</strong></p><pre><code>{{activationGuide}}</code></pre><p><strong>CÁC ĐƯỜNG DẪN TÀI NGUYÊN HỮU ÍCH:</strong></p><ul><li>Tải bộ cài đặt sản phẩm gốc: <a href=\"{{downloadUrl}}\" target=\"_blank\">{{downloadUrl}}</a></li><li>Xem tài liệu hướng dẫn kỹ thuật chi tiết: <a href=\"{{documentationUrl}}\" target=\"_blank\">{{documentationUrl}}</a></li><li>Truy cập Cổng quản lý bản quyền khách hàng để xem lịch sử kích hoạt hoặc đổi thiết bị: <a href=\"{{customerPortalUrl}}\" target=\"_blank\">{{customerPortalUrl}}</a></li></ul><p>⚠️ <strong>Lưu ý bảo mật quan trọng:</strong></p><ul><li>Vui lòng tuyệt đối không chia sẻ mã bản quyền này công khai hoặc chia sẻ cho bên thứ ba. Mỗi mã bản quyền gắn liền trực tiếp với tài khoản email của bạn và được kiểm soát thiết bị kích hoạt tự động qua máy chủ VaniStudio Activation Server.</li><li>Nếu phát hiện số lượng thiết bị kích hoạt vượt quá giới hạn cho phép ({{maxActivations}}), khóa bản quyền của bạn có thể bị tạm khóa tự động.</li></ul><p>Nếu gặp bất kỳ khó khăn nào trong quá trình cài đặt hoặc kích hoạt sản phẩm, vui lòng liên hệ trực tiếp với bộ phận chăm sóc khách hàng 24/7 của chúng tôi bằng cách phản hồi lại email này hoặc gửi yêu cầu tới <a href=\"mailto:support@vanistudio.com\">support@vanistudio.com</a>.</p><p>Chúc bạn có những trải nghiệm tuyệt vời cùng sản phẩm của VaniStudio!</p><p>Trân trọng,<br /><strong>Đội ngũ Quản lý Sản phẩm &amp; Chăm sóc Khách hàng VaniStudio</strong><br /><a href=\"https://vanistudio.com\" target=\"_blank\">https://vanistudio.com</a></p>",
+    content: licenseIssuedEmailTemplate,
     variables: [
       "name",
       "orderId",
