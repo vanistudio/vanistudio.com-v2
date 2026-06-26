@@ -185,7 +185,7 @@ export class TelegramService {
 
       await telegramRepository.createAutoResponder({
         accountId: newAcc.id,
-        isActive: true,
+        isActive: false,
         replyText: "Chào bạn, hiện tại mình đang không online trên Telegram. Mình sẽ phản hồi lại ngay khi có thể! Cảm ơn bạn.",
         detectionMode: "idle",
         inactivityMinutes: 10,
@@ -603,11 +603,13 @@ export class TelegramService {
       let type: "group" | "channel" = "group";
       let photoBase64: string | null = null;
 
-      if (entity instanceof Api.Channel) {
-        title = entity.title || "Kênh chưa đặt tên";
-        username = entity.username || null;
-        type = entity.megagroup ? "group" : "channel";
-        participantsCount = entity.participantsCount || null;
+      const className = (entity as any)?.className;
+
+      if (entity instanceof Api.Channel || className === "Channel") {
+        title = (entity as any).title || "Kênh chưa đặt tên";
+        username = (entity as any).username || null;
+        type = (entity as any).megagroup ? "group" : "channel";
+        participantsCount = (entity as any).participantsCount || null;
         
         try {
           const fullInfo = await client.invoke(new Api.channels.GetFullChannel({ channel: entity }));
@@ -616,12 +618,12 @@ export class TelegramService {
             participantsCount = (fullInfo as any).fullChat?.participantsCount || null;
           }
         } catch {}
-      } else if (entity instanceof Api.Chat) {
-        title = entity.title || "Nhóm chưa đặt tên";
+      } else if (entity instanceof Api.Chat || className === "Chat") {
+        title = (entity as any).title || "Nhóm chưa đặt tên";
         type = "group";
-        participantsCount = entity.participantsCount || null;
+        participantsCount = (entity as any).participantsCount || null;
         try {
-          const fullInfo = await client.invoke(new Api.messages.GetFullChat({ chatId: entity.id }));
+          const fullInfo = await client.invoke(new Api.messages.GetFullChat({ chatId: (entity as any).id }));
           about = (fullInfo as any).fullChat?.about || null;
         } catch {}
       }
@@ -665,15 +667,16 @@ export class TelegramService {
 
     try {
       const entity = await client.getEntity(chatId);
-      if (entity instanceof Api.Channel) {
+      const className = (entity as any)?.className;
+      if (entity instanceof Api.Channel || className === "Channel") {
         await client.invoke(new Api.channels.LeaveChannel({ channel: entity }));
-      } else if (entity instanceof Api.Chat) {
+      } else if (entity instanceof Api.Chat || className === "Chat") {
         await client.invoke(new Api.messages.DeleteChatUser({
-          chatId: entity.id,
+          chatId: (entity as any).id,
           userId: "me",
         }));
       } else {
-        throw new Error("Loại cuộc trò chuyện không hỗ trợ rời nhóm");
+        throw new Error(`Loại cuộc trò chuyện (${className || typeof entity}) không hỗ trợ rời nhóm`);
       }
       return { success: true };
     } catch (error: any) {
