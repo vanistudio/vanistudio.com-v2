@@ -45,6 +45,10 @@ interface PresenceActivity {
   button1Url?: string;
   button2Label?: string;
   button2Url?: string;
+  showTimer?: boolean;
+  timerType?: "elapsed" | "remaining";
+  timerValue?: number;
+  streamUrl?: string;
 }
 
 interface PresencePreset {
@@ -92,7 +96,9 @@ const mockPresets: PresencePreset[] = [
         smallImage: "https://images.unsplash.com/photo-1553481187-be93c21490a9?w=150&auto=format&fit=crop&q=60",
         smallText: "Radiant Badge",
         button1Label: "Xem Stream",
-        button1Url: "https://twitch.tv/vanixjnk"
+        button1Url: "https://twitch.tv/vanixjnk",
+        showTimer: true,
+        timerType: "elapsed"
       }
     ]
   },
@@ -134,11 +140,13 @@ const mockPresets: PresencePreset[] = [
         largeImage: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=150&auto=format&fit=crop&q=60",
         largeText: "Challenger Lobby",
         button1Label: "Xem ngay",
-        button1Url: "https://youtube.com"
+        button1Url: "https://youtube.com",
+        streamUrl: "https://twitch.tv/vanistudio"
       }
     ]
   }
 ];
+
 
 export default function DiscordPresences() {
   const pathname = usePathname();
@@ -169,6 +177,11 @@ export default function DiscordPresences() {
   const [btn1Url, setBtn1Url] = useState(selectedPreset.activities[0]?.button1Url || "");
   const [btn2Label, setBtn2Label] = useState(selectedPreset.activities[0]?.button2Label || "");
   const [btn2Url, setBtn2Url] = useState(selectedPreset.activities[0]?.button2Url || "");
+
+  const [showTimer, setShowTimer] = useState<boolean>(selectedPreset.activities[0]?.showTimer || false);
+  const [timerType, setTimerType] = useState<"elapsed" | "remaining">(selectedPreset.activities[0]?.timerType || "elapsed");
+  const [timerValue, setTimerValue] = useState<number>(selectedPreset.activities[0]?.timerValue || 30);
+  const [streamUrl, setStreamUrl] = useState<string>(selectedPreset.activities[0]?.streamUrl || "");
 
   const [rotatorInterval, setRotatorInterval] = useState("300");
   const [rotatorMode, setRotatorMode] = useState<"sequential" | "random">("sequential");
@@ -201,6 +214,10 @@ export default function DiscordPresences() {
     setBtn1Url(act.button1Url || "");
     setBtn2Label(act.button2Label || "");
     setBtn2Url(act.button2Url || "");
+    setShowTimer(act.showTimer || false);
+    setTimerType(act.timerType || "elapsed");
+    setTimerValue(act.timerValue || 30);
+    setStreamUrl(act.streamUrl || "");
   };
 
   const handleSavePreset = () => {
@@ -227,6 +244,10 @@ export default function DiscordPresences() {
           button1Url: btn1Url || undefined,
           button2Label: btn2Label || undefined,
           button2Url: btn2Url || undefined,
+          showTimer,
+          timerType,
+          timerValue,
+          streamUrl: streamUrl || undefined,
         }
       ]
     };
@@ -437,9 +458,7 @@ export default function DiscordPresences() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               <div className="lg:col-span-8 flex flex-col gap-6">
 
-                {/* Top side-by-side Presets & Rotator cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Presets List Card */}
                   <Card className="bg-card/30! border-border shadow-sm rounded-xl p-5 flex flex-col gap-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -498,7 +517,7 @@ export default function DiscordPresences() {
                     </div>
                   </Card>
 
-                  {/* Rotator Card */}
+
                   <Card className="bg-card/30! border-border shadow-sm rounded-xl p-5 flex flex-col gap-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -570,7 +589,7 @@ export default function DiscordPresences() {
                   </Card>
                 </div>
 
-                {/* Editor Card */}
+
                 <Card className="bg-card/30! border-border shadow-sm rounded-xl p-6 flex flex-col gap-6">
                   <div className="flex items-center justify-between border-b border-border/60 pb-3">
                     <div className="flex items-center gap-2">
@@ -581,7 +600,7 @@ export default function DiscordPresences() {
                     </div>
                   </div>
 
-                  {/* Tab selection buttons matching the custom style of PubTwoFactor.tsx */}
+
                   <div className="grid grid-cols-3 sm:flex items-center gap-1.5 p-1 rounded-xl bg-muted/20 border border-border/60 w-full sm:w-auto sm:self-start whitespace-nowrap">
                     <button
                       type="button"
@@ -624,7 +643,7 @@ export default function DiscordPresences() {
                     </button>
                   </div>
 
-                  {/* Tab 1: Profile & Status */}
+
                   {activeEditorTab === "profile" && (
                     <div className="mt-5 space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -711,7 +730,7 @@ export default function DiscordPresences() {
                     </div>
                   )}
 
-                  {/* Tab 2: RPC */}
+
                   {activeEditorTab === "rpc" && (
                     <div className="mt-5 space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -722,11 +741,36 @@ export default function DiscordPresences() {
                               <SelectValue placeholder="Chọn hoạt động" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="playing" className="text-[13px]">Playing (Đang chơi)</SelectItem>
-                              <SelectItem value="streaming" className="text-[13px]">Streaming (Trực tiếp)</SelectItem>
-                              <SelectItem value="listening" className="text-[13px]">Listening (Đang nghe)</SelectItem>
-                              <SelectItem value="watching" className="text-[13px]">Watching (Đang xem)</SelectItem>
-                              <SelectItem value="competing" className="text-[13px]">Competing (Thi đấu)</SelectItem>
+                              <SelectItem value="playing">
+                                <div className="flex items-center gap-2 text-[13px]">
+                                  <Icon icon="solar:gamepad-line-duotone" className="size-4 text-vanixjnk" />
+                                  <span>Playing (Đang chơi)</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="streaming">
+                                <div className="flex items-center gap-2 text-[13px]">
+                                  <Icon icon="solar:videocamera-record-line-duotone" className="size-4 text-vanixjnk" />
+                                  <span>Streaming (Trực tiếp)</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="listening">
+                                <div className="flex items-center gap-2 text-[13px]">
+                                  <Icon icon="solar:music-note-line-duotone" className="size-4 text-vanixjnk" />
+                                  <span>Listening (Đang nghe)</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="watching">
+                                <div className="flex items-center gap-2 text-[13px]">
+                                  <Icon icon="solar:eye-line-duotone" className="size-4 text-vanixjnk" />
+                                  <span>Watching (Đang xem)</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="competing">
+                                <div className="flex items-center gap-2 text-[13px]">
+                                  <Icon icon="solar:cup-first-line-duotone" className="size-4 text-vanixjnk" />
+                                  <span>Competing (Thi đấu)</span>
+                                </div>
+                              </SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -751,6 +795,21 @@ export default function DiscordPresences() {
                         />
                       </div>
 
+                      {activityType === "streaming" && (
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-black uppercase tracking-wider text-purple-400 font-bold flex items-center gap-1">
+                            <Icon icon="solar:videocamera-record-line-duotone" className="size-3.5" />
+                            Stream URL (Twitch / YouTube)
+                          </label>
+                          <Input
+                            placeholder="Ví dụ: https://twitch.tv/vanistudio"
+                            value={streamUrl}
+                            onChange={(e) => setStreamUrl(e.target.value)}
+                            className="h-9 text-[13px] bg-background border-purple-500/30 focus-visible:border-purple-500/60 font-mono text-purple-200"
+                          />
+                        </div>
+                      )}
+
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-1.5">
                           <label className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Details (Dòng 1)</label>
@@ -771,13 +830,58 @@ export default function DiscordPresences() {
                           />
                         </div>
                       </div>
+
+                      <div className="space-y-3 pt-3 border-t border-border/40 font-mono">
+                        <h4 className="text-[10px] font-black text-foreground uppercase tracking-wider flex items-center gap-1.5">
+                          <Icon icon="solar:clock-circle-line-duotone" className="size-4 text-vanixjnk" />
+                          Thời gian hoạt động (Timestamps)
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                          <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-muted/20">
+                            <div className="flex flex-col gap-0.5">
+                              <label className="text-xs font-bold text-foreground">Hiển thị thời gian</label>
+                              <span className="text-[10px] text-muted-foreground">Thời gian trôi qua/còn lại</span>
+                            </div>
+                            <Switch checked={showTimer} onCheckedChange={setShowTimer} />
+                          </div>
+
+                          {showTimer && (
+                            <>
+                              <div className="space-y-1.5 font-sans">
+                                <label className="text-[10px] font-black uppercase tracking-wider text-muted-foreground font-mono">Kiểu hiển thị</label>
+                                <Select value={timerType} onValueChange={(val: any) => setTimerType(val)}>
+                                  <SelectTrigger className="w-full h-9 text-[13px] bg-background border-border/80">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="elapsed">Đã trôi qua (Elapsed)</SelectItem>
+                                    <SelectItem value="remaining">Thời gian còn lại (Remaining)</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              {timerType === "remaining" && (
+                                <div className="space-y-1.5 font-sans">
+                                  <label className="text-[10px] font-black uppercase tracking-wider text-muted-foreground font-mono">Số phút còn lại</label>
+                                  <Input
+                                    type="number"
+                                    placeholder="Ví dụ: 30"
+                                    value={timerValue}
+                                    onChange={(e) => setTimerValue(Number(e.target.value))}
+                                    className="h-9 text-[13px] bg-background border-border/80"
+                                  />
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   )}
 
-                  {/* Tab 3: Assets & Buttons */}
                   {activeEditorTab === "assets-buttons" && (
                     <div className="mt-5 space-y-5 font-mono">
-                      {/* Assets */}
+
                       <div className="space-y-3">
                         <h4 className="text-[10px] font-black text-foreground uppercase tracking-wider flex items-center gap-1.5 border-b border-border/40 pb-1.5">
                           <Icon icon="solar:gallery-line-duotone" className="size-4 text-vanixjnk" />
@@ -806,7 +910,7 @@ export default function DiscordPresences() {
                         </div>
                       </div>
 
-                      {/* Buttons */}
+
                       <div className="space-y-3">
                         <h4 className="text-[10px] font-black text-foreground uppercase tracking-wider flex items-center gap-1.5 border-b border-border/40 pb-1.5">
                           <Icon icon="solar:link-line-duotone" className="size-4 text-vanixjnk" />
@@ -934,6 +1038,10 @@ export default function DiscordPresences() {
                   btn1Url={btn1Url}
                   btn2Label={btn2Label}
                   btn2Url={btn2Url}
+                  showTimer={showTimer}
+                  timerType={timerType}
+                  timerValue={timerValue}
+                  streamUrl={streamUrl}
                   displayName="Vani Dev"
                   username="vanixjnk"
                 />

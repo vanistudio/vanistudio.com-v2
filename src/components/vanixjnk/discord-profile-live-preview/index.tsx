@@ -25,9 +25,12 @@ export interface DiscordProfileLivePreviewProps {
     displayName?: string
     username?: string
     avatarUrl?: string
+    showTimer?: boolean
+    timerType?: "elapsed" | "remaining"
+    timerValue?: number
+    streamUrl?: string
 }
 
-// Styling tokens for Dark/Light Discord Profile Card
 const DARK = {
     cardBg: "#1e1f22",
     innerBg: "#111214",
@@ -78,7 +81,6 @@ function renderMarkdown(text: string, tokens: typeof DARK): React.ReactNode[] {
     if (!text) return []
     const result: React.ReactNode[] = []
     
-    // Split bold, italic, code
     const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\n)/g)
     parts.forEach((p, i) => {
         if (!p) return
@@ -138,13 +140,16 @@ export function DiscordProfileLivePreview({
     btn2Url = "",
     displayName = "Vani Dev",
     username = "vanixjnk",
-    avatarUrl = ""
+    avatarUrl = "",
+    showTimer = false,
+    timerType = "elapsed",
+    timerValue = 30,
+    streamUrl = ""
 }: DiscordProfileLivePreviewProps) {
     const { resolvedTheme } = useTheme()
     const [mounted, setMounted] = React.useState(false)
     React.useEffect(() => setMounted(true), [])
 
-    // Generate unique ID for SVG masks to prevent collisions on same page
     const componentId = React.useId()
     const avatarMaskId = `avatar-mask-${componentId.replace(/:/g, "")}`
     const idleMaskId = `idle-mask-${componentId.replace(/:/g, "")}`
@@ -154,8 +159,63 @@ export function DiscordProfileLivePreview({
     const isDark = mounted ? resolvedTheme === "dark" : true
     const t = isDark ? DARK : LIGHT
 
+    const [timeString, setTimeString] = React.useState("")
+
+    React.useEffect(() => {
+        if (!showTimer) {
+            setTimeString("")
+            return
+        }
+
+        let start = Date.now()
+        let interval: NodeJS.Timeout
+
+        if (timerType === "elapsed") {
+            const update = () => {
+                const diff = Math.floor((Date.now() - start) / 1000)
+                const hrs = Math.floor(diff / 3600)
+                const mins = Math.floor((diff % 3600) / 60)
+                const secs = diff % 60
+
+                const pad = (num: number) => String(num).padStart(2, "0")
+                if (hrs > 0) {
+                    setTimeString(`${pad(hrs)}:${pad(mins)}:${pad(secs)} đã trôi qua`)
+                } else {
+                    setTimeString(`${pad(mins)}:${pad(secs)} đã trôi qua`)
+                }
+            }
+            update()
+            interval = setInterval(update, 1000)
+        } else {
+            let totalSecs = timerValue * 60
+            const update = () => {
+                if (totalSecs <= 0) {
+                    setTimeString("Hết giờ")
+                    clearInterval(interval)
+                    return
+                }
+                const hrs = Math.floor(totalSecs / 3600)
+                const mins = Math.floor((totalSecs % 3600) / 60)
+                const secs = totalSecs % 60
+
+                const pad = (num: number) => String(num).padStart(2, "0")
+                if (hrs > 0) {
+                    setTimeString(`còn ${pad(hrs)}:${pad(mins)}:${pad(secs)}`)
+                } else {
+                    setTimeString(`còn ${pad(mins)}:${pad(secs)}`)
+                }
+                totalSecs--
+            }
+            update()
+            interval = setInterval(update, 1000)
+        }
+
+        return () => clearInterval(interval)
+    }, [showTimer, timerType, timerValue])
+
     const hasActivity = activityName && activityName.trim().length > 0
     const isSpotify = activityType === "listening" && (activityName.toLowerCase() === "spotify" || activityName.toLowerCase() === "listening to spotify")
+    const isStreaming = activityType === "streaming"
 
     const getActivityHeading = () => {
         if (isSpotify) return "LISTENING TO SPOTIFY"
@@ -170,6 +230,14 @@ export function DiscordProfileLivePreview({
     }
 
     const renderStatusBadge = () => {
+        if (isStreaming) {
+            return (
+                <svg width="24" height="24" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="8" fill="#593695" />
+                    <polygon points="10,8 15,12 10,16" fill="white" />
+                </svg>
+            )
+        }
         switch (status) {
             case "online":
                 return (
@@ -192,7 +260,6 @@ export function DiscordProfileLivePreview({
                     </svg>
                 )
             default:
-                // offline/invisible
                 return (
                     <svg width="24" height="24" viewBox="0 0 24 24">
                         <circle cx="12" cy="12" r="8" fill="#80848e" />
@@ -218,7 +285,6 @@ export function DiscordProfileLivePreview({
                 transition: "all 0.2s ease-in-out"
             }}
         >
-            {/* Custom Banner */}
             <div
                 style={{
                     height: "105px",
@@ -228,8 +294,6 @@ export function DiscordProfileLivePreview({
                     transition: "background-color 0.3s ease",
                 }}
             />
-
-            {/* Main content body */}
             <div
                 style={{
                     padding: "12px",
@@ -239,7 +303,6 @@ export function DiscordProfileLivePreview({
                     flexDirection: "column"
                 }}
             >
-                {/* Avatar container */}
                 <div
                     style={{
                         position: "absolute",
@@ -260,8 +323,6 @@ export function DiscordProfileLivePreview({
                                 <circle cx="68" cy="68" r="14" fill="black" />
                             </mask>
                         </defs>
-                        
-                        {/* Group containing background border and image, both masked */}
                         <g mask={`url(#${avatarMaskId})`}>
                             <circle cx="40" cy="40" r="40" fill={t.cardBg} />
                             <foreignObject x="6" y="6" width="68" height="68">
@@ -285,15 +346,11 @@ export function DiscordProfileLivePreview({
                                 </div>
                             </foreignObject>
                         </g>
-
-                        {/* Status badge placed exactly at the cutout position (cx=68, cy=68, r=8) */}
                         <g transform="translate(56, 56)">
                             {renderStatusBadge()}
                         </g>
                     </svg>
                 </div>
-
-                {/* Custom Status Speech Bubble next to Avatar */}
                 {(customEmoji || customText) && (
                     <div
                         style={{
@@ -317,7 +374,6 @@ export function DiscordProfileLivePreview({
                                 boxSizing: "border-box",
                             }}
                         >
-                            {/* Medium connection dot (:before) */}
                             <div
                                 style={{
                                     background: "inherit",
@@ -333,7 +389,6 @@ export function DiscordProfileLivePreview({
                                     zIndex: -1,
                                 }}
                             />
-                            {/* Small connection dot (:after) */}
                             <div
                                 style={{
                                     background: "inherit",
@@ -349,8 +404,6 @@ export function DiscordProfileLivePreview({
                                     zIndex: -2,
                                 }}
                             />
-
-                            {/* Content wrapper */}
                             <div
                                 style={{
                                     display: "flex",
@@ -384,8 +437,6 @@ export function DiscordProfileLivePreview({
                         </div>
                     </div>
                 )}
-
-                {/* Badges container */}
                 <div
                     style={{
                         position: "absolute",
@@ -411,10 +462,7 @@ export function DiscordProfileLivePreview({
                         <Icon icon="solar:crown-minimalistic-bold-duotone" style={{ width: "13px", height: "13px", color: "#f47fff" }} />
                     </span>
                 </div>
-
-                {/* Info block */}
                 <div style={{ marginTop: "40px", display: "flex", flexDirection: "column" }}>
-                    {/* User display name & tag */}
                     <div>
                         <span style={{ color: t.textPrimary, fontSize: "17px", fontWeight: 700, lineHeight: "20px" }}>
                             {displayName}
@@ -423,8 +471,6 @@ export function DiscordProfileLivePreview({
                             @{username}
                         </div>
                     </div>
-
-                    {/* Tabs */}
                     <div
                         style={{
                             display: "flex",
@@ -460,8 +506,6 @@ export function DiscordProfileLivePreview({
                             Máy chủ chung
                         </div>
                     </div>
-
-                    {/* Inner Panel */}
                     <div
                         style={{
                             background: t.innerBg,
@@ -472,7 +516,6 @@ export function DiscordProfileLivePreview({
                             gap: "12px",
                         }}
                     >
-                        {/* About me (Bio) */}
                         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
                             <span style={{ color: t.textMuted, fontSize: "10px", fontWeight: 700, letterSpacing: "0.5px" }}>
                                 VỀ TÔI
@@ -489,8 +532,6 @@ export function DiscordProfileLivePreview({
                                 {bio ? renderMarkdown(bio, t) : <span style={{ color: t.textMuted, fontStyle: "italic" }}>Không có tiểu sử.</span>}
                             </div>
                         </div>
-
-                        {/* Member Since */}
                         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
                             <span style={{ color: t.textMuted, fontSize: "10px", fontWeight: 700, letterSpacing: "0.5px" }}>
                                 THÀNH VIÊN TỪ
@@ -502,19 +543,15 @@ export function DiscordProfileLivePreview({
                                 </span>
                             </div>
                         </div>
-
-                        {/* Activity Section */}
                         {hasActivity && (
                             <>
                                 <div style={{ height: "1px", background: t.border, margin: "2px 0" }} />
-                                
                                 <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                                     <span style={{ color: t.textMuted, fontSize: "10px", fontWeight: 700, letterSpacing: "0.5px" }}>
                                         {getActivityHeading()}
                                     </span>
 
                                     <div style={{ display: "flex", gap: "10px", alignItems: "start" }}>
-                                        {/* Large/Small images container */}
                                         <div style={{ position: "relative", width: "48px", height: "48px", flexShrink: 0 }}>
                                             {largeImage ? (
                                                 <img
@@ -572,8 +609,6 @@ export function DiscordProfileLivePreview({
                                                 </div>
                                             )}
                                         </div>
-
-                                        {/* Activity details text */}
                                         <div style={{ display: "flex", flexDirection: "column", gap: "2px", overflow: "hidden" }}>
                                             <span style={{ color: t.textPrimary, fontSize: "12px", fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                                                 {activityName}
@@ -588,10 +623,19 @@ export function DiscordProfileLivePreview({
                                                     {state}
                                                 </span>
                                             )}
+                                            {isStreaming && streamUrl && (
+                                                <span style={{ color: t.linkText, fontSize: "12px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", display: "flex", alignItems: "center", gap: "4px" }}>
+                                                    <Icon icon="solar:videocamera-record-line-duotone" style={{ width: "12px", height: "12px", color: "#593695" }} />
+                                                    Stream URL: {streamUrl}
+                                                </span>
+                                            )}
+                                            {showTimer && !isSpotify && timeString && (
+                                                <span style={{ color: t.textMuted, fontSize: "12px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                                    {timeString}
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
-
-                                    {/* Spotify Progress Bar */}
                                     {isSpotify && (
                                         <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "4px" }}>
                                             <div style={{ width: "100%", height: "4px", borderRadius: "2px", background: "rgba(255, 255, 255, 0.16)", position: "relative" }}>
@@ -603,8 +647,6 @@ export function DiscordProfileLivePreview({
                                             </div>
                                         </div>
                                     )}
-
-                                    {/* Activity Buttons */}
                                     {!isSpotify && (btn1Label || btn2Label) && (
                                         <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "4px" }}>
                                             {btn1Label && (
@@ -678,8 +720,6 @@ export function DiscordProfileLivePreview({
                                 </div>
                             </>
                         )}
-
-                        {/* Note Section */}
                         <div style={{ height: "1px", background: t.border, margin: "2px 0" }} />
                         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
                             <span style={{ color: t.textMuted, fontSize: "10px", fontWeight: 700, letterSpacing: "0.5px" }}>
