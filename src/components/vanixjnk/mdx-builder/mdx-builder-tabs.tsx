@@ -26,7 +26,7 @@ export const MintlifyTabsRenderer = ({ tabs }: { tabs: TabData[] }) => {
               "flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold transition-all duration-150 border-b-2 whitespace-nowrap",
               activeTab === idx
                 ? "border-vanixjnk text-vanixjnk"
-                : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted"
+                : "border-transparent text-muted-foreground hover:text-foreground hover:border-transparent hover:border-b-muted"
             )}
           >
             {tab.icon && <Icon icon={tab.icon} className="size-3.5" />}

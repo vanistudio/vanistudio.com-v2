@@ -1,4 +1,4 @@
-import { MdxTemplate } from "./types";
+import { MdxTemplate } from "./mdx-builder-types";
 
 export const UI_COMPONENTS_TEMPLATES: MdxTemplate[] = [
   {
@@ -175,7 +175,7 @@ export const UI_COMPONENTS_TEMPLATES: MdxTemplate[] = [
     name: "Nhóm mã (CodeGroup)",
     icon: "solar:programming-line-duotone",
     description: "Tabs chuyển đổi CLI (npm/pnpm/bun...)",
-    template: "<CodeGroup>\n\n```bash npm\nnpm install package-name\n```\n\n```bash pnpm\npnpm add package-name\n```\n\n```bash bun\nbun add package-name\n```\n\n</CodeGroup>\n"
+    template: "<CodeGroup>\n\n```bash npm\nnpm install package-name\n```\n\n```bash pnpm\nnpm install package-name\n```\n\n```bash bun\nbun install package-name\n```\n\n</CodeGroup>\n"
   },
   {
     name: "Các bước (Steps)",

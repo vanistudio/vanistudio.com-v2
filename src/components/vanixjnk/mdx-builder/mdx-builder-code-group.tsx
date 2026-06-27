@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
-import { ShikiCodeBlock } from "./shiki-code-block";
-import { MdxASTNode } from "../types";
+import { ShikiCodeBlock } from "./mdx-builder-shiki-code-block";
+import { MdxASTNode } from "./mdx-builder-types";
 
 export interface ParsedCodeBlock {
   lang: string;

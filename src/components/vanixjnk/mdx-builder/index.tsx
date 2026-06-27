@@ -13,12 +13,12 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "motion/react";
 
-import { UI_COMPONENTS_TEMPLATES } from "./templates";
-import { MdxRenderer } from "./parser";
-import { MdxTemplate } from "./types";
+import { UI_COMPONENTS_TEMPLATES } from "./mdx-builder-templates";
+import { MdxRenderer } from "./mdx-builder-parser";
+import { MdxTemplate } from "./mdx-builder-types";
 
 export { MdxRenderer };
-export type { MdxRendererProps } from "./parser";
+export type { MdxRendererProps } from "./mdx-builder-parser";
 export type { MdxTemplate };
 
 export function insertMdxAtCursor(

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,11 +15,11 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
-import { ShikiCodeBlock } from "./components/shiki-code-block";
-import { CodeGroupRenderer, parseCodeGroupBlocks } from "./components/code-group";
-import { TreeContainer, TreeFolderRenderer, TreeFileRenderer } from "./components/tree";
-import { MintlifyTabsRenderer } from "./components/tabs";
-import { MdxToken, MdxASTNode } from "./types";
+import { ShikiCodeBlock } from "./mdx-builder-shiki-code-block";
+import { CodeGroupRenderer, parseCodeGroupBlocks } from "./mdx-builder-code-group";
+import { TreeContainer, TreeFolderRenderer, TreeFileRenderer } from "./mdx-builder-tree";
+import { MintlifyTabsRenderer } from "./mdx-builder-tabs";
+import { MdxToken, MdxASTNode } from "./mdx-builder-types";
 
 export interface MdxRendererProps {
   content: string;
