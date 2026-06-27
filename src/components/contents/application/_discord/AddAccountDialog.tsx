@@ -222,10 +222,10 @@ export default function AddAccountDialog({
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-0.5">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 py-3">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 py-3 md:h-[340px]">
             {/* ---- Col 1: DevTools Screenshot ---- */}
-            <div className="flex flex-col gap-3">
-              <p className="text-sm">
+            <div className="flex flex-col gap-3 h-full overflow-hidden">
+              <p className="text-sm shrink-0">
                 <span className="font-semibold">Step 1:</span>{" "}
                 Mở DevTools (
                 <kbd className="inline-flex h-5 w-fit items-center rounded-sm bg-muted px-1.5 font-mono text-[11px] text-muted-foreground">Ctrl</kbd>
@@ -235,7 +235,7 @@ export default function AddAccountDialog({
                 <kbd className="inline-flex h-5 w-fit items-center rounded-sm bg-muted px-1.5 font-mono text-[11px] text-muted-foreground">I</kbd>
                 ) trong Discord, chọn tab <strong>Console</strong>.
               </p>
-              <div className="rounded-lg border bg-black overflow-hidden" style={{ minHeight: "220px" }}>
+              <div className="flex-1 overflow-hidden min-h-0">
                 <img
                   src="/svg/discord-console.svg"
                   alt="Discord DevTools Console"
@@ -245,8 +245,8 @@ export default function AddAccountDialog({
             </div>
 
             {/* ---- Col 2: Script ---- */}
-            <div className="flex flex-col gap-3">
-              <p className="text-sm">
+            <div className="flex flex-col gap-3 h-full overflow-hidden">
+              <p className="text-sm shrink-0">
                 <span className="font-semibold">Step 2:</span>{" "}
                 Nhấn nút khởi tạo, copy script rồi dán vào tab <strong>Console</strong> của Discord.
               </p>
@@ -266,7 +266,7 @@ export default function AddAccountDialog({
                   </div>
                 </div>
               ) : (
-                <div className="flex-1 rounded-lg border bg-card overflow-hidden flex flex-col min-h-[220px]">
+                <div className="flex-1 rounded-lg border bg-card overflow-hidden flex flex-col min-h-0">
                   <div className="flex items-center gap-3 px-3 py-1.5 border-b bg-muted/40 shrink-0 justify-end">
                     <Button
                       type="button"
@@ -279,7 +279,7 @@ export default function AddAccountDialog({
                       Sao chép
                     </Button>
                   </div>
-                  <div className="overflow-y-auto" style={{ maxHeight: "285px" }}>
+                  <div className="flex-1 overflow-y-auto min-h-0">
                     <CodeMirror
                       value={extractScript}
                       height="100%"

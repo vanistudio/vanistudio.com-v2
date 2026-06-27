@@ -46,7 +46,7 @@
 
         .svg-root {
           width: 718px; height: 448px; box-sizing: border-box;
-          display: grid; place-items: center; padding: 18px 24px;
+          display: grid; place-items: center;
           background: var(--bg-background); color: var(--fg-foreground);
           font-family: var(--font-body); -webkit-font-smoothing: antialiased;
         }
