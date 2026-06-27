@@ -291,7 +291,10 @@ export const SexyEditor = React.forwardRef<SexyEditorRef, SexyEditorProps>(funct
             )}
             <div className="relative">
                 {mode === "source" ? (
-                    <div className="w-full min-h-[450px] bg-background border-none overflow-hidden">
+                    <div className={cn(
+                        "w-full min-h-[450px] border-none overflow-hidden",
+                        resolvedTheme === "light" ? "bg-background" : "bg-[#101010]"
+                    )}>
                         <CodeMirror
                             ref={codeMirrorRef}
                             value={value}
@@ -304,14 +307,17 @@ export const SexyEditor = React.forwardRef<SexyEditorRef, SexyEditorProps>(funct
                                     ? "Nhập mã CSS hoặc JS tùy chỉnh..."
                                     : placeholder || "Nhập mã HTML tại đây..."
                             }
-                            className="w-full h-full text-xs font-mono"
+                            className={cn(
+                                "w-full h-full text-xs font-mono",
+                                resolvedTheme !== "light" && "[&_.cm-editor]:bg-[#101010]! [&_.cm-scroller]:bg-[#101010]! [&_.cm-gutters]:bg-[#101010]! [&_.cm-gutters]:border-r! [&_.cm-gutters]:border-border/30! [&_.cm-activeLine]:bg-[#161616]! [&_.cm-activeLineGutter]:bg-[#161616]!"
+                            )}
                             basicSetup={{
                                 lineNumbers: true,
                                 foldGutter: true,
                                 dropCursor: true,
                                 allowMultipleSelections: true,
                                 indentOnInput: true,
-                            }}
+                             }}
                         />
                     </div>
                 ) : mode === "preview" ? (

@@ -311,7 +311,10 @@ export const MdxEditor = React.forwardRef<HTMLTextAreaElement, MdxEditorProps>((
       </div>
 
       {contentTab === "write" ? (
-        <div className="relative w-full h-[300px] md:h-[600px] border-0 rounded-none overflow-hidden bg-background">
+        <div className={cn(
+          "relative w-full h-[300px] md:h-[600px] border-0 rounded-none overflow-hidden",
+          resolvedTheme === "light" ? "bg-background" : "bg-[#101010]"
+        )}>
           <CodeMirror
             ref={smallCodeMirrorRef}
             value={value}
@@ -320,7 +323,10 @@ export const MdxEditor = React.forwardRef<HTMLTextAreaElement, MdxEditorProps>((
             extensions={[markdown({ defaultCodeLanguage: javascript() })]}
             onChange={onChange}
             placeholder={placeholder}
-            className="w-full h-full text-xs font-mono"
+            className={cn(
+              "w-full h-full text-xs font-mono",
+              resolvedTheme !== "light" && "[&_.cm-editor]:bg-[#101010]! [&_.cm-scroller]:bg-[#101010]! [&_.cm-gutters]:bg-[#101010]! [&_.cm-gutters]:border-r! [&_.cm-gutters]:border-border/30! [&_.cm-activeLine]:bg-[#161616]! [&_.cm-activeLineGutter]:bg-[#161616]!"
+            )}
             basicSetup={{
               lineNumbers: true,
               foldGutter: true,
@@ -599,7 +605,8 @@ export const MdxEditor = React.forwardRef<HTMLTextAreaElement, MdxEditorProps>((
                     contentTab === "preview" ? "flex-col lg:flex-row" : "flex-row"
                   )}>
                     <div className={cn(
-                      "flex-1 relative bg-background overflow-hidden min-h-0",
+                      "flex-1 relative overflow-hidden min-h-0",
+                      resolvedTheme === "light" ? "bg-background" : "bg-[#101010]",
                       contentTab === "preview" && "lg:w-1/2 lg:border-r border-border/60"
                     )}>
                       <CodeMirror
@@ -610,7 +617,10 @@ export const MdxEditor = React.forwardRef<HTMLTextAreaElement, MdxEditorProps>((
                         extensions={[markdown({ defaultCodeLanguage: javascript() })]}
                         onChange={onChange}
                         placeholder={placeholder}
-                        className="w-full h-full text-sm font-mono"
+                        className={cn(
+                          "w-full h-full text-sm font-mono",
+                          resolvedTheme !== "light" && "[&_.cm-editor]:bg-[#101010]! [&_.cm-scroller]:bg-[#101010]! [&_.cm-gutters]:bg-[#101010]! [&_.cm-gutters]:border-r! [&_.cm-gutters]:border-border/30! [&_.cm-activeLine]:bg-[#161616]! [&_.cm-activeLineGutter]:bg-[#161616]!"
+                        )}
                         basicSetup={{
                           lineNumbers: true,
                           foldGutter: true,
