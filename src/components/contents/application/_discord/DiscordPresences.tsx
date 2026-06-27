@@ -29,7 +29,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ColorPicker } from "@/components/vanixjnk/color-picker";
 import DiscordProfileLivePreview from "@/components/vanixjnk/discord-profile-live-preview";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 
 interface PresenceActivity {
   type: "playing" | "streaming" | "listening" | "watching" | "competing";
@@ -61,7 +61,6 @@ interface PresencePreset {
 const navItems = [
   { name: "Tài khoản", href: "/application/discord/accounts", icon: "solar:users-group-two-rounded-line-duotone" },
   { name: "Trạng thái & Rich Presence", href: "/application/discord/presences", icon: "solar:gamepad-old-line-duotone" },
-  { name: "Tự động hóa", href: "/application/discord/automations", icon: "solar:cpu-bolt-line-duotone" },
   { name: "Lịch sử hoạt động", href: "/application/discord/logs", icon: "solar:document-text-line-duotone" },
 ];
 
@@ -146,6 +145,7 @@ export default function DiscordPresences() {
   const [presets, setPresets] = useState<PresencePreset[]>(mockPresets);
   const [selectedPreset, setSelectedPreset] = useState<PresencePreset>(mockPresets[0]);
   const [isNewPresetOpen, setIsNewPresetOpen] = useState(false);
+  const [activeEditorTab, setActiveEditorTab] = useState<"profile" | "rpc" | "assets-buttons">("profile");
 
   const [presetName, setPresetName] = useState(selectedPreset.name);
   const [status, setStatus] = useState<"online" | "idle" | "dnd" | "invisible">(selectedPreset.status);
@@ -309,15 +309,6 @@ export default function DiscordPresences() {
     );
   };
 
-  const getStatusColor = (st: string) => {
-    switch (st) {
-      case "online": return "bg-[#23a55a]";
-      case "idle": return "bg-[#f0b232]";
-      case "dnd": return "bg-[#f23f43]";
-      default: return "bg-[#80848e]";
-    }
-  };
-
   const renderStatusIcon = (st: "online" | "idle" | "dnd" | "invisible", sizeClass = "size-3.5", idKey = "global") => {
     switch (st) {
       case "online":
@@ -351,7 +342,6 @@ export default function DiscordPresences() {
           </svg>
         );
       default:
-        // offline / invisible
         return (
           <svg className={sizeClass} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
@@ -530,13 +520,13 @@ export default function DiscordPresences() {
                           placeholder="300"
                           value={rotatorInterval}
                           onChange={(e) => setRotatorInterval(e.target.value)}
-                          className="h-8 text-[12px] bg-background border-border"
+                          className="text-[13px]"
                         />
                       </div>
                       <div className="space-y-1.5">
                         <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Kiểu xoay</label>
                         <Select value={rotatorMode} onValueChange={(val: any) => setRotatorMode(val)}>
-                          <SelectTrigger className="w-full h-8 text-[11px] bg-background border-border">
+                          <SelectTrigger className="w-full text-[13px]">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -591,24 +581,52 @@ export default function DiscordPresences() {
                     </div>
                   </div>
 
-                  <Tabs defaultValue="profile" className="w-full">
-                    <TabsList className="grid grid-cols-3 w-full bg-background/50 border border-border/60 p-1 h-11 rounded-lg">
-                      <TabsTrigger value="profile" className="text-xs font-bold gap-1.5 data-[state=active]:bg-background/80 data-[state=active]:text-foreground">
-                        <Icon icon="solar:user-line-duotone" className="size-4 text-vanixjnk" />
-                        Hồ sơ & Trạng thái
-                      </TabsTrigger>
-                      <TabsTrigger value="rpc" className="text-xs font-bold gap-1.5 data-[state=active]:bg-background/80 data-[state=active]:text-foreground">
-                        <Icon icon="solar:gamepad-line-duotone" className="size-4 text-vanixjnk" />
-                        Rich Presence (RPC)
-                      </TabsTrigger>
-                      <TabsTrigger value="assets-buttons" className="text-xs font-bold gap-1.5 data-[state=active]:bg-background/80 data-[state=active]:text-foreground">
-                        <Icon icon="solar:link-line-duotone" className="size-4 text-vanixjnk" />
-                        Ảnh & Nút liên kết
-                      </TabsTrigger>
-                    </TabsList>
+                  {/* Tab selection buttons matching the custom style of PubTwoFactor.tsx */}
+                  <div className="grid grid-cols-3 sm:flex items-center gap-1.5 p-1 rounded-xl bg-muted/20 border border-border/60 w-full sm:w-auto sm:self-start whitespace-nowrap">
+                    <button
+                      type="button"
+                      onClick={() => setActiveEditorTab("profile")}
+                      className={cn(
+                        "flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 shrink-0 w-full sm:w-auto cursor-pointer",
+                        activeEditorTab === "profile"
+                          ? "bg-vanixjnk/15 border border-vanixjnk/25 text-vanixjnk shadow-sm"
+                          : "border border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+                      )}
+                    >
+                      <Icon icon="solar:user-line-duotone" className="size-4" />
+                      <span>Hồ sơ & Trạng thái</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveEditorTab("rpc")}
+                      className={cn(
+                        "flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 shrink-0 w-full sm:w-auto cursor-pointer",
+                        activeEditorTab === "rpc"
+                          ? "bg-vanixjnk/15 border border-vanixjnk/25 text-vanixjnk shadow-sm"
+                          : "border border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+                      )}
+                    >
+                      <Icon icon="solar:gamepad-line-duotone" className="size-4" />
+                      <span>Rich Presence (RPC)</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveEditorTab("assets-buttons")}
+                      className={cn(
+                        "flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 shrink-0 w-full sm:w-auto cursor-pointer",
+                        activeEditorTab === "assets-buttons"
+                          ? "bg-vanixjnk/15 border border-vanixjnk/25 text-vanixjnk shadow-sm"
+                          : "border border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+                      )}
+                    >
+                      <Icon icon="solar:link-line-duotone" className="size-4" />
+                      <span>Ảnh & Nút liên kết</span>
+                    </button>
+                  </div>
 
-                    {/* Tab 1: Profile & Status */}
-                    <TabsContent value="profile" className="mt-5 space-y-4 focus-visible:outline-none">
+                  {/* Tab 1: Profile & Status */}
+                  {activeEditorTab === "profile" && (
+                    <div className="mt-5 space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-1.5">
                           <label className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Tên Preset</label>
@@ -690,10 +708,12 @@ export default function DiscordPresences() {
                           />
                         </div>
                       </div>
-                    </TabsContent>
+                    </div>
+                  )}
 
-                    {/* Tab 2: RPC */}
-                    <TabsContent value="rpc" className="mt-5 space-y-4 focus-visible:outline-none">
+                  {/* Tab 2: RPC */}
+                  {activeEditorTab === "rpc" && (
+                    <div className="mt-5 space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-1.5">
                           <label className="text-[10px] font-black uppercase tracking-wider text-muted-foreground font-mono">Loại hoạt động</label>
@@ -751,10 +771,12 @@ export default function DiscordPresences() {
                           />
                         </div>
                       </div>
-                    </TabsContent>
+                    </div>
+                  )}
 
-                    {/* Tab 3: Assets & Buttons */}
-                    <TabsContent value="assets-buttons" className="mt-5 space-y-5 focus-visible:outline-none">
+                  {/* Tab 3: Assets & Buttons */}
+                  {activeEditorTab === "assets-buttons" && (
+                    <div className="mt-5 space-y-5 font-mono">
                       {/* Assets */}
                       <div className="space-y-3">
                         <h4 className="text-[10px] font-black text-foreground uppercase tracking-wider flex items-center gap-1.5 border-b border-border/40 pb-1.5">
@@ -812,8 +834,8 @@ export default function DiscordPresences() {
                           </div>
                         </div>
                       </div>
-                    </TabsContent>
-                  </Tabs>
+                    </div>
+                  )}
 
                   <div className="border-t border-border pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div className="flex items-center gap-2 w-full sm:w-auto">
