@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { DataTable, DataTableColumnHeader } from "@/components/vanixjnk/data-table";
 import { ColumnDef, SortingState } from "@tanstack/react-table";
+import { trpc } from "@/lib/trpc";
 
 import AddAccountDialog from "./AddAccountDialog";
 import EditProxyDialog from "./EditProxyDialog";
@@ -125,7 +126,6 @@ export default function DiscordAccounts() {
   const pathname = usePathname();
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [accounts, setAccounts] = useState<DiscordAccount[]>(mockAccountsList);
   const [selectedAccount, setSelectedAccount] = useState<DiscordAccount | null>(null);
 
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -136,6 +136,27 @@ export default function DiscordAccounts() {
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [sorting, setSorting] = useState<SortingState>([]);
 
+  const { data: queryResult, isLoading, refetch, isFetching } = trpc.application.discord.getAccountsList.useQuery(
+    {
+      search: debouncedSearch,
+      page: pagination.pageIndex + 1,
+      limit: pagination.pageSize,
+      sortField: sorting[0]?.id || undefined,
+      sortOrder: sorting[0]?.desc ? "desc" : "asc",
+    },
+    {
+      placeholderData: (prev) => prev,
+    }
+  );
+
+  const accounts = (queryResult?.data?.items || []) as any[];
+  const totalAccounts = queryResult?.data?.total || 0;
+  const stats = {
+    total: queryResult?.data?.stats?.total || 0,
+    active: queryResult?.data?.stats?.active || 0,
+    proxyActive: queryResult?.data?.stats?.proxyActive || 0,
+  };
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchTerm);
@@ -144,51 +165,21 @@ export default function DiscordAccounts() {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  const filteredAccounts = React.useMemo(() => {
-    return accounts.filter((acc) => {
-      const query = debouncedSearch.toLowerCase();
-      return (
-        acc.username.toLowerCase().includes(query) ||
-        (acc.globalName && acc.globalName.toLowerCase().includes(query)) ||
-        (acc.discordId && acc.discordId.includes(query))
-      );
-    });
-  }, [accounts, debouncedSearch]);
-
-  const stats = React.useMemo(() => {
-    return {
-      total: accounts.length,
-      active: accounts.filter((a) => a.status === "active").length,
-      proxyActive: accounts.filter((a) => a.proxyStatus === "active").length,
-    };
-  }, [accounts]);
-
+  // ==================== ACTIONS ====================
   const handleStartSelfbot = (id: string) => {
-    setAccounts((prev) =>
-      prev.map((acc) => {
-        if (acc.id === id) {
-          if (acc.status === "invalid") {
-            toast.error("Không thể khởi chạy tài khoản có token không hợp lệ!");
-            return acc;
-          }
-          toast.success(`Khởi chạy selfbot cho tài khoản @${acc.username} thành công!`);
-          return { ...acc, isRunning: true };
-        }
-        return acc;
-      })
-    );
+    const acc = accounts.find((a) => a.id === id);
+    if (!acc) return;
+    if (acc.status === "invalid") {
+      toast.error("Không thể khởi chạy tài khoản có token không hợp lệ!");
+      return;
+    }
+    toast.success(`Khởi chạy selfbot cho tài khoản @${acc.username} thành công!`);
   };
 
   const handleStopSelfbot = (id: string) => {
-    setAccounts((prev) =>
-      prev.map((acc) => {
-        if (acc.id === id) {
-          toast.info(`Đã ngắt kết nối selfbot tài khoản @${acc.username}`);
-          return { ...acc, isRunning: false };
-        }
-        return acc;
-      })
-    );
+    const acc = accounts.find((a) => a.id === id);
+    if (!acc) return;
+    toast.info(`Đã ngắt kết nối selfbot tài khoản @${acc.username}`);
   };
 
   const handleCheckProxy = (acc: DiscordAccount) => {
@@ -210,30 +201,16 @@ export default function DiscordAccounts() {
     );
   };
 
-  const handleAddAccountSuccess = (newAcc: DiscordAccount) => {
-    setAccounts((prev) => [newAcc, ...prev]);
+  const handleAddAccountSuccess = () => {
+    refetch();
   };
 
-  const handleSaveProxySuccess = (proxyValue: string) => {
-    if (!selectedAccount) return;
-    setAccounts((prev) =>
-      prev.map((acc) => {
-        if (acc.id === selectedAccount.id) {
-          return {
-            ...acc,
-            proxy: proxyValue || null,
-            proxyStatus: proxyValue ? "active" : "unknown"
-          };
-        }
-        return acc;
-      })
-    );
+  const handleSaveProxySuccess = () => {
+    refetch();
   };
 
   const handleDeleteAccountConfirm = () => {
-    if (!selectedAccount) return;
-    setAccounts((prev) => prev.filter((acc) => acc.id !== selectedAccount.id));
-    setIsDeleteOpen(false);
+    refetch();
   };
 
   const columns = React.useMemo<ColumnDef<DiscordAccount>[]>(() => [
@@ -443,7 +420,7 @@ export default function DiscordAccounts() {
         );
       },
     },
-  ], [pagination, sorting, accounts]);
+  ], [pagination, sorting]);
 
   return (
     <div className="flex flex-col w-full flex-1">
@@ -584,13 +561,13 @@ export default function DiscordAccounts() {
 
             <DataTable
               columns={columns}
-              data={filteredAccounts}
+              data={accounts}
               pagination={pagination}
               onPaginationChange={setPagination}
               sorting={sorting}
               onSortingChange={setSorting}
-              pageCount={Math.ceil(filteredAccounts.length / pagination.pageSize)}
-              isLoading={false}
+              pageCount={Math.max(1, Math.ceil(totalAccounts / pagination.pageSize))}
+              isLoading={isLoading || isFetching}
               toolbarInput={
                 <div className="relative flex-1">
                   <Icon

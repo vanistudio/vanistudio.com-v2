@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { trpc } from "@/lib/trpc";
 import {
   Dialog,
   DialogContent,
@@ -33,6 +34,18 @@ export default function DeleteAccountDialog({
 }: DeleteAccountDialogProps) {
   const [isPending, setIsPending] = useState(false);
 
+  const deleteAccountMutation = trpc.application.discord.deleteAccount.useMutation({
+    onSuccess: () => {
+      onConfirm();
+      handleOpenChange(false);
+      toast.success(`Đã xóa tài khoản Discord @${account?.username} thành công!`);
+    },
+    onError: (error) => {
+      setIsPending(false);
+      toast.error(error.message || "Lỗi khi xóa tài khoản");
+    },
+  });
+
   const handleOpenChange = (val: boolean) => {
     onOpenChange(val);
     if (!val) {
@@ -43,22 +56,7 @@ export default function DeleteAccountDialog({
   const handleDelete = () => {
     if (!account) return;
     setIsPending(true);
-    toast.promise(
-      new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(true);
-        }, 1200);
-      }),
-      {
-        loading: `Đang xóa tài khoản Discord @${account.username}...`,
-        success: () => {
-          onConfirm();
-          handleOpenChange(false);
-          return "Đã xóa tài khoản Discord thành công!";
-        },
-        error: "Lỗi khi xóa tài khoản",
-      }
-    );
+    deleteAccountMutation.mutate({ accountId: account.id });
   };
 
   return (

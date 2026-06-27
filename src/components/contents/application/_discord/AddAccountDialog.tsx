@@ -5,6 +5,7 @@ import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { trpc } from "@/lib/trpc";
 import {
   Dialog,
   DialogContent,
@@ -17,7 +18,7 @@ import {
 interface AddAccountDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSuccess: (newAcc: any) => void;
+  onSuccess: () => void;
 }
 
 export default function AddAccountDialog({
@@ -28,7 +29,17 @@ export default function AddAccountDialog({
   const [newToken, setNewToken] = useState("");
   const [newProxy, setNewProxy] = useState("");
   const [newGroup, setNewGroup] = useState("Mặc định");
-  const [isLoadingAdd, setIsLoadingAdd] = useState(false);
+
+  const createAccountMutation = trpc.application.discord.createAccount.useMutation({
+    onSuccess: () => {
+      onSuccess();
+      handleOpenChange(false);
+      toast.success("Đã liên kết tài khoản Discord thành công!");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Xác thực Discord thất bại");
+    },
+  });
 
   const handleOpenChange = (val: boolean) => {
     onOpenChange(val);
@@ -36,7 +47,7 @@ export default function AddAccountDialog({
       setNewToken("");
       setNewProxy("");
       setNewGroup("Mặc định");
-      setIsLoadingAdd(false);
+      createAccountMutation.reset();
     }
   };
 
@@ -47,47 +58,10 @@ export default function AddAccountDialog({
       return;
     }
 
-    setIsLoadingAdd(true);
-    toast.promise(
-      new Promise((resolve, reject) => {
-        setTimeout(() => {
-          if (newToken.length < 20) {
-            reject(new Error("Xác thực Discord thất bại: Token không hợp lệ"));
-          } else {
-            resolve({
-              id: String(Date.now()),
-              discordId: String(Math.floor(100000000000000000 + Math.random() * 900000000000000000)),
-              username: "new_user_" + Math.floor(1000 + Math.random() * 9000),
-              globalName: "Người Dùng Mới",
-              avatar: null,
-              banner: null,
-              accentColor: "#5865F2",
-              status: "active" as const,
-              proxy: newProxy || null,
-              proxyStatus: newProxy ? ("active" as const) : ("unknown" as const),
-              nitroType: "None" as const,
-              badges: ["Active Developer"],
-              connections: [],
-              guildsCount: 0,
-              isRunning: false,
-              createdAt: new Date().toISOString(),
-            });
-          }
-        }, 1500);
-      }),
-      {
-        loading: "Đang xác thực Token Discord...",
-        success: (newAcc: any) => {
-          onSuccess(newAcc);
-          handleOpenChange(false);
-          return `Đã liên kết tài khoản Discord @${newAcc.username} thành công!`;
-        },
-        error: (err) => {
-          setIsLoadingAdd(false);
-          return err.message;
-        },
-      }
-    );
+    createAccountMutation.mutate({
+      token: newToken,
+      proxy: newProxy || null,
+    });
   };
 
   return (
@@ -164,17 +138,17 @@ export default function AddAccountDialog({
               variant="outline"
               onClick={() => handleOpenChange(false)}
               className="cursor-pointer"
-              disabled={isLoadingAdd}
+              disabled={createAccountMutation.isPending}
             >
               Hủy
             </Button>
             <Button
               type="submit"
               variant="vanixjnk"
-              disabled={isLoadingAdd}
+              disabled={createAccountMutation.isPending}
               className="cursor-pointer"
             >
-              {isLoadingAdd ? (
+              {createAccountMutation.isPending ? (
                 <Icon icon="solar:restart-line-duotone" className="mr-1.5 size-4 animate-spin" />
               ) : (
                 <Icon icon="solar:add-circle-line-duotone" className="mr-1.5 size-4" />

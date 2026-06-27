@@ -5,6 +5,7 @@ import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { trpc } from "@/lib/trpc";
 import {
   Dialog,
   DialogContent,
@@ -24,7 +25,7 @@ interface EditProxyDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   account: DiscordAccount | null;
-  onSuccess: (proxyValue: string) => void;
+  onSuccess: () => void;
 }
 
 export default function EditProxyDialog({
@@ -34,7 +35,17 @@ export default function EditProxyDialog({
   onSuccess,
 }: EditProxyDialogProps) {
   const [proxy, setProxy] = useState("");
-  const [isPending, setIsPending] = useState(false);
+
+  const updateProxyMutation = trpc.application.discord.updateProxy.useMutation({
+    onSuccess: () => {
+      onSuccess();
+      handleOpenChange(false);
+      toast.success("Cập nhật Proxy thành công!");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Lỗi kết nối proxy");
+    },
+  });
 
   useEffect(() => {
     if (account) {
@@ -45,7 +56,7 @@ export default function EditProxyDialog({
   const handleOpenChange = (val: boolean) => {
     onOpenChange(val);
     if (!val) {
-      setIsPending(false);
+      updateProxyMutation.reset();
     }
   };
 
@@ -53,23 +64,10 @@ export default function EditProxyDialog({
     e.preventDefault();
     if (!account) return;
 
-    setIsPending(true);
-    toast.promise(
-      new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(proxy);
-        }, 1200);
-      }),
-      {
-        loading: `Đang lưu cấu hình proxy cho @${account.username}...`,
-        success: (savedProxy: any) => {
-          onSuccess(savedProxy);
-          handleOpenChange(false);
-          return "Cập nhật Proxy thành công!";
-        },
-        error: "Lỗi kết nối proxy",
-      }
-    );
+    updateProxyMutation.mutate({
+      accountId: account.id,
+      proxy: proxy || null,
+    });
   };
 
   return (
@@ -110,17 +108,17 @@ export default function EditProxyDialog({
               variant="outline"
               onClick={() => handleOpenChange(false)}
               className="cursor-pointer"
-              disabled={isPending}
+              disabled={updateProxyMutation.isPending}
             >
               Hủy
             </Button>
             <Button
               type="submit"
               variant="vanixjnk"
-              disabled={isPending}
+              disabled={updateProxyMutation.isPending}
               className="cursor-pointer"
             >
-              {isPending && (
+              {updateProxyMutation.isPending && (
                 <Icon
                   icon="solar:restart-line-duotone"
                   className="mr-1.5 size-4 animate-spin"
