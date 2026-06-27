@@ -56,7 +56,7 @@ export const TreeFolderRenderer = ({ name, defaultOpen, openable = true, isRoot 
           alt=""
           className="size-4 shrink-0 object-contain select-none"
         />
-        <span className="text-foreground font-semibold group-hover:text-vanixjnk transition-colors">{name}</span>
+        <span className="text-foreground font-semibold group-hover:text-foreground transition-colors">{name}</span>
       </button>
       <AnimatePresence initial={false}>
         {isOpen && (
