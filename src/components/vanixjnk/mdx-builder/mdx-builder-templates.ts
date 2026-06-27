@@ -151,7 +151,6 @@ export const UI_COMPONENTS_TEMPLATES: MdxTemplate[] = [
     description: "Đường phân tách ngang thanh lịch",
     template: `<Separator className="my-4" />\n`
   },
-  // === Mintlify-style Components ===
   {
     name: "Cây thư mục (Tree)",
     icon: "solar:folder-with-files-line-duotone",

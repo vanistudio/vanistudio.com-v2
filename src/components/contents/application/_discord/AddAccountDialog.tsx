@@ -10,6 +10,7 @@ import { useTheme } from "next-themes";
 import CodeMirror from "@uiw/react-codemirror";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { javascript } from "@codemirror/lang-javascript";
+import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -263,7 +264,10 @@ export default function AddAccountDialog({
                   </div>
                 </div>
               ) : (
-                <div className="flex-1 rounded-lg border bg-card overflow-hidden flex flex-col min-h-0">
+                <div className={cn(
+                  "flex-1 rounded-lg border overflow-hidden flex flex-col min-h-0",
+                  resolvedTheme === "light" ? "bg-card" : "bg-[#101010]"
+                )}>
                   <div className="flex items-center gap-3 px-3 py-1.5 border-b bg-muted/40 shrink-0 justify-end">
                     <Button
                       type="button"
@@ -291,7 +295,10 @@ export default function AddAccountDialog({
                         indentOnInput: false,
                         highlightActiveLine: false,
                       }}
-                      className="text-xs font-mono"
+                      className={cn(
+                        "text-xs font-mono",
+                        resolvedTheme !== "light" && "[&_.cm-editor]:bg-[#101010]! [&_.cm-scroller]:bg-[#101010]! [&_.cm-gutters]:bg-[#101010]! [&_.cm-gutters]:border-r! [&_.cm-gutters]:border-border/30! [&_.cm-activeLine]:bg-[#161616]! [&_.cm-activeLineGutter]:bg-[#161616]!"
+                      )}
                     />
                   </div>
                 </div>
