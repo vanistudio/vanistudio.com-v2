@@ -266,4 +266,17 @@ export const discordRouter = router({
         });
       }
     }),
+
+  generateCallbackState: publicProcedure.mutation(async () => {
+    const session = await ensureAuthenticated();
+    const result = discordService.generateCallbackState(session.user.id);
+    return result;
+  }),
+
+  checkCallbackResult: publicProcedure
+    .input(z.object({ state: z.string() }))
+    .query(async ({ input }) => {
+      const session = await ensureAuthenticated();
+      return await discordService.checkCallbackResult(input.state, session.user.id);
+    }),
 });

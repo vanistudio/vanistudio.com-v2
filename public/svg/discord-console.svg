@@ -1,0 +1,320 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="450" viewBox="0 0 720 450" role="img" aria-labelledby="title desc">
+  <title id="title">DevTools Console Infographic</title>
+  <desc id="desc">A realistic mockup of Chrome Developer Tools Console tab embedded inside an SVG infographic.</desc>
+  <defs>
+    <style><![CDATA[
+      :root { color-scheme: light dark; }
+      .frame { fill: light-dark(#fafafa, #0c0c0c); stroke: light-dark(#e8e8e8, oklch(27% 0 0)); stroke-width: 1; }
+    ]]></style>
+    <clipPath id="clip">
+      <rect x="1" y="1" width="718" height="448" rx="9"/>
+    </clipPath>
+  </defs>
+
+  <rect class="frame" x="0.5" y="0.5" width="719" height="449" rx="9.5"/>
+  <foreignObject x="1" y="1" width="718" height="448" clip-path="url(#clip)">
+    <div xmlns="http://www.w3.org/1999/xhtml" class="svg-root">
+      <style><![CDATA[
+        :root {
+          color-scheme: light dark;
+          --font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+          --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+          
+          /* User Provided Theme Variables */
+          --bg-background: light-dark(#fafafa, #0c0c0c);
+          --bg-surface: light-dark(#ffffff, #141414);
+          --bg-pane: light-dark(oklch(96.19% 0 0), oklch(23.76% 0 0));
+          --bg-secondary: light-dark(oklch(93.89% 0 0), oklch(23.76% 0 0));
+          --fg-foreground: light-dark(oklch(20.44% 0 0), oklch(94.66% 0 0));
+          --fg-foreground-secondary: light-dark(oklch(51.02% 0 0), oklch(70.8% 0 0));
+          --border-border: light-dark(oklch(85% 0 0), oklch(27% 0 0));
+          --border-border-pane: light-dark(oklch(83% 0 0), oklch(25% 0 0));
+
+          /* Console Specific Colors */
+          --console-err-bg: color-mix(in oklch, #ef4444 10%, transparent);
+          --console-err-border: color-mix(in oklch, #ef4444 30%, transparent);
+          --console-err-text: light-dark(#dc2626, #fca5a5);
+          
+          --console-warn-bg: color-mix(in oklch, #eab308 12%, transparent);
+          --console-warn-border: color-mix(in oklch, #eab308 35%, transparent);
+          --console-warn-text: light-dark(#b45309, #fde047);
+
+          /* Syntax Highlighting */
+          --syn-key: color-mix(in oklch, var(--fg-foreground) 40%, #a855f7 60%);
+          --syn-str: color-mix(in oklch, var(--fg-foreground) 40%, #eab308 60%);
+          --syn-num: color-mix(in oklch, var(--fg-foreground) 40%, #3b82f6 60%);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        .svg-root {
+          width: 718px;
+          height: 448px;
+          box-sizing: border-box;
+          display: grid;
+          place-items: center;
+          padding: 18px 24px;
+          background: var(--bg-background);
+          color: var(--fg-foreground);
+          font-family: var(--font-body);
+          -webkit-font-smoothing: antialiased;
+        }
+
+        .embed {
+          width: 100%;
+          height: 100%;
+          container-type: inline-size;
+          overflow: hidden;
+        }
+
+        .stage {
+          width: 100%;
+          height: 100%;
+          position: relative;
+        }
+
+        .card {
+          position: absolute;
+          inset: 0;
+          background: var(--bg-surface);
+          border: 1px solid var(--border-border);
+          border-radius: 8px;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 10px 30px -10px rgba(0,0,0,0.2);
+        }
+
+        /* Top Toolbar - Tabs */
+        .toolbar {
+          display: flex;
+          align-items: center;
+          height: 32px;
+          background: var(--bg-pane);
+          border-bottom: 1px solid var(--border-border-pane);
+          padding: 0 8px;
+          gap: 4px;
+          flex-shrink: 0;
+        }
+
+        .tab {
+          font-size: 11.5px;
+          padding: 0 12px;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          color: var(--fg-foreground-secondary);
+          cursor: default;
+          border-bottom: 2px solid transparent;
+          font-weight: 500;
+        }
+
+        .tab.active {
+          color: var(--fg-foreground);
+          border-bottom-color: #3b82f6; 
+        }
+
+        .icon {
+          width: 14px;
+          height: 14px;
+          fill: currentColor;
+          opacity: 0.7;
+          display: grid;
+          place-items: center;
+          margin-right: 6px;
+        }
+
+        .divider {
+          width: 1px;
+          height: 16px;
+          background: var(--border-border-pane);
+          margin: 0 4px;
+        }
+
+        /* Console Sub-toolbar */
+        .sub-toolbar {
+          display: flex;
+          align-items: center;
+          height: 28px;
+          background: var(--bg-surface);
+          border-bottom: 1px solid var(--border-border-pane);
+          padding: 0 8px;
+          font-size: 11px;
+          color: var(--fg-foreground-secondary);
+          flex-shrink: 0;
+          gap: 12px;
+        }
+
+        .sub-toolbar .input-mock {
+          border: 1px solid var(--border-border-pane);
+          background: var(--bg-pane);
+          padding: 2px 6px;
+          border-radius: 3px;
+          width: 120px;
+          color: var(--fg-foreground-secondary);
+        }
+
+        /* Console Body */
+        .console-body {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          font-family: var(--font-mono);
+          font-size: 11px;
+          line-height: 1.5;
+          overflow: hidden;
+          background: var(--bg-surface);
+        }
+
+        .log-row {
+          display: flex;
+          padding: 4px 12px;
+          border-bottom: 1px solid var(--border-border-pane);
+          position: relative;
+        }
+
+        .log-row.nav { color: var(--fg-foreground-secondary); }
+        
+        .log-row.warn {
+          background: var(--console-warn-bg);
+          border-bottom: 1px solid var(--console-warn-border);
+          border-top: 1px solid var(--console-warn-border);
+          color: var(--console-warn-text);
+          margin-top: -1px;
+        }
+
+        .log-row.err {
+          background: var(--console-err-bg);
+          border-bottom: 1px solid var(--console-err-border);
+          border-top: 1px solid var(--console-err-border);
+          color: var(--console-err-text);
+          margin-top: -1px;
+        }
+
+        .log-icon {
+          margin-right: 8px;
+          font-size: 10px;
+          margin-top: 2px;
+          flex-shrink: 0;
+        }
+
+        .log-content { flex: 1; word-wrap: break-word; }
+        
+        .source-link {
+          float: right;
+          color: var(--fg-foreground-secondary);
+          text-decoration: underline;
+          text-decoration-style: dotted;
+          margin-left: 12px;
+        }
+
+        /* Syntax in Console */
+        .obj-arrow { display: inline-block; transform: rotate(0deg); opacity: 0.6; font-size: 9px; margin-right: 4px; }
+        .obj-arrow.open { transform: rotate(90deg); }
+        .key { color: var(--syn-key); }
+        .str { color: var(--syn-str); }
+        .num { color: var(--syn-num); }
+        
+        .prompt-row {
+          display: flex;
+          padding: 6px 12px;
+          align-items: center;
+        }
+        .prompt-icon { color: #3b82f6; font-weight: bold; margin-right: 12px; font-size: 12px; }
+        .cursor { display: inline-block; width: 6px; height: 14px; background: var(--fg-foreground); opacity: 0.8; animation: blink 1s step-end infinite; }
+
+        @keyframes blink { 50% { opacity: 0; } }
+      ]]></style>
+
+      <div class="embed">
+        <div class="stage">
+          <div class="card">
+            
+            <div class="toolbar">
+              <div class="icon">
+                <svg viewBox="0 0 16 16"><path d="M4 4h8v8H4z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 12l3 3" stroke="currentColor" stroke-width="1.5"/></svg>
+              </div>
+              <div class="divider"></div>
+              <div class="tab">Elements</div>
+              <div class="tab active">Console</div>
+              <div class="tab">Sources</div>
+              <div class="tab">Network</div>
+              <div class="tab">Performance</div>
+              <div class="tab">Application</div>
+              <div style="flex:1"></div>
+              <div class="icon"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="14" cy="8" r="1.5" fill="currentColor"/><circle cx="2" cy="8" r="1.5" fill="currentColor"/></svg></div>
+            </div>
+
+            <div class="sub-toolbar">
+              <div class="icon"><svg viewBox="0 0 16 16"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.5"/></svg></div>
+              <div class="divider" style="margin: 0;"></div>
+              <div><span style="opacity: 0.6">▼</span> top</div>
+              <div class="divider" style="margin: 0;"></div>
+              <div><span class="icon" style="display:inline-block; margin-right:0;"><svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 10l4 4" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
+              <div class="input-mock">Filter</div>
+              <div class="divider" style="margin: 0;"></div>
+              <div>Default levels <span style="opacity: 0.6">▼</span></div>
+              <div style="flex:1"></div>
+              <div class="icon"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5"/></svg></div>
+            </div>
+
+            <div class="console-body">
+              
+              <div class="log-row nav">
+                <div class="log-content">Navigated to https://docs.tempo.xyz/</div>
+              </div>
+
+              <div class="log-row">
+                <div class="log-content">
+                  <span class="obj-arrow open">▶</span> Object { <span class="key">user</span>: <span class="str">"Vani"</span>, <span class="key">role</span>: <span class="str">"Fullstack Dev"</span>, <span class="key">stack</span>: <span class="str">"WPF, Web, Discord Bots"</span> }
+                  <span class="source-link">app.js:42</span>
+                </div>
+              </div>
+              
+              <div class="log-row">
+                <div class="log-content" style="padding-left: 16px;">
+                  &#160;&#160;<span class="key">user</span>: <span class="str">"Vani"</span><br/>
+                  &#160;&#160;<span class="key">role</span>: <span class="str">"Fullstack Dev"</span><br/>
+                  &#160;&#160;<span class="key">stack</span>: <span class="str">"WPF, Web, Discord Bots"</span><br/>
+                  &#160;&#160;<span class="obj-arrow">▶</span> <span class="key">[[Prototype]]</span>: Object
+                </div>
+              </div>
+
+              <div class="log-row warn">
+                <div class="log-icon">⚠️</div>
+                <div class="log-content">
+                  Third-party cookie will be blocked in future Chrome versions as part of Privacy Sandbox.
+                  <span class="source-link">third_party.js:12</span>
+                </div>
+              </div>
+
+              <div class="log-row err">
+                <div class="log-icon">❌</div>
+                <div class="log-content">
+                  Uncaught (in promise) TypeError: Failed to fetch data from API endpoint.
+                  <br/>
+                  &#160;&#160;&#160;&#160;at fetchData (<span class="source-link" style="float:none;">api.js:104</span>)
+                  <br/>
+                  &#160;&#160;&#160;&#160;at async init (<span class="source-link" style="float:none;">main.js:22</span>)
+                </div>
+              </div>
+
+              <div class="log-row">
+                <div class="log-content" style="color: var(--fg-foreground-secondary);">
+                  &gt; <span style="font-style: italic;">[Violation] 'setTimeout' handler took 64ms</span>
+                  <span class="source-link">vendor.js:812</span>
+                </div>
+              </div>
+
+              <div class="prompt-row">
+                <div class="prompt-icon">❯</div>
+                <div class="cursor"></div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </foreignObject>
+</svg>
