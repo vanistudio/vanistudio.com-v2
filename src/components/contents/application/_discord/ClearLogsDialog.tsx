@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,29 +16,17 @@ interface ClearLogsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
+  isPending?: boolean;
 }
 
 export default function ClearLogsDialog({
   open,
   onOpenChange,
   onConfirm,
+  isPending = false,
 }: ClearLogsDialogProps) {
-  const [isPending, setIsPending] = useState(false);
-
-  const handleOpenChange = (val: boolean) => {
-    onOpenChange(val);
-    if (!val) {
-      setIsPending(false);
-    }
-  };
-
-  const handleClear = () => {
-    setIsPending(true);
-    onConfirm();
-  };
-
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[400px]">
         <DialogHeader className="flex flex-col items-center text-center">
           <div className="flex items-center justify-center size-12 rounded-xl text-rose-500 bg-rose-500/10 border border-rose-500/25 mb-3">
@@ -48,14 +36,14 @@ export default function ClearLogsDialog({
           <DialogDescription>
             Hành động này sẽ xóa{" "}
             <strong className="text-foreground">toàn bộ lịch sử hoạt động</strong>{" "}
-            của tất cả selfbot khỏi hệ thống. Bạn không thể hoàn tác hành động này.
+            của tài khoản đã chọn khỏi hệ thống. Bạn không thể hoàn tác hành động này.
           </DialogDescription>
         </DialogHeader>
 
         <DialogFooter>
           <Button
             variant="outline"
-            onClick={() => handleOpenChange(false)}
+            onClick={() => onOpenChange(false)}
             className="cursor-pointer"
             disabled={isPending}
           >
@@ -63,7 +51,7 @@ export default function ClearLogsDialog({
           </Button>
           <Button
             variant="danger"
-            onClick={handleClear}
+            onClick={onConfirm}
             className="cursor-pointer"
             disabled={isPending}
           >

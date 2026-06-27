@@ -238,4 +238,32 @@ export const discordRouter = router({
         });
       }
     }),
+
+  refreshToken: publicProcedure
+    .input(z.object({ accountId: z.string() }))
+    .mutation(async ({ input }) => {
+      const session = await ensureAuthenticated();
+      try {
+        return await discordService.refreshToken(input.accountId, session.user.id);
+      } catch (error: any) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: error.message || "Kiểm tra token thất bại",
+        });
+      }
+    }),
+
+  getCurrentPresence: publicProcedure
+    .input(z.object({ accountId: z.string() }))
+    .query(async ({ input }) => {
+      const session = await ensureAuthenticated();
+      try {
+        return await discordService.getCurrentPresence(input.accountId, session.user.id);
+      } catch (error: any) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: error.message || "Không thể lấy trạng thái hiện tại",
+        });
+      }
+    }),
 });

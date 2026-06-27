@@ -7,8 +7,6 @@ import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
-import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -27,7 +25,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ColorPicker } from "@/components/vanixjnk/color-picker";
 import DiscordProfileLivePreview from "@/components/vanixjnk/discord-profile-live-preview";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
@@ -69,99 +66,16 @@ const navItems = [
   { name: "Lịch sử hoạt động", href: "/application/discord/logs", icon: "solar:document-text-line-duotone" },
 ];
 
-const mockAccountsList = [
-  { id: "1", username: "vanixjnk", discordId: "109283749283749283" },
-  { id: "2", username: "clone_buyer_01", discordId: "209384759283748592" },
-  { id: "3", username: "spammer_bot_99", discordId: "309284759182738495" },
-  { id: "4", username: "dead_token_user", discordId: "409284759384758291" },
-];
-
-const mockPresets: PresencePreset[] = [
-  {
-    id: "preset-1",
-    name: "Playing Valorant",
-    status: "dnd",
-    customText: "Đang leo rank không làm phiền",
-    customEmoji: "🎮",
-    bannerColor: "#5865F2",
-    bio: "Software Engineer at Vani Studio\n🎮 Valorant player\n✉️ Contact me via support@vanistudio.com",
-    activities: [
-      {
-        type: "playing",
-        name: "Valorant",
-        applicationId: "809283749283749",
-        details: "Ranked (Competitive)",
-        state: "In a Match (9-3)",
-        largeImage: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=150&auto=format&fit=crop&q=60",
-        largeText: "Valorant",
-        smallImage: "https://images.unsplash.com/photo-1553481187-be93c21490a9?w=150&auto=format&fit=crop&q=60",
-        smallText: "Radiant Badge",
-        button1Label: "Xem Stream",
-        button1Url: "https://twitch.tv/vanixjnk",
-        showTimer: true,
-        timerType: "elapsed"
-      }
-    ]
-  },
-  {
-    id: "preset-2",
-    name: "Listening Spotify Coding",
-    status: "online",
-    customText: "Đang viết code...",
-    customEmoji: "💻",
-    bannerColor: "#1db954",
-    bio: "Music lover & Frontend Developer.\nListening to lo-fi coding tracks 🎧",
-    activities: [
-      {
-        type: "listening",
-        name: "Spotify",
-        details: "Elysia (feat. Vani)",
-        state: "Album: Summer Vibes 2026",
-        largeImage: "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=150&auto=format&fit=crop&q=60",
-        largeText: "Summer Vibes",
-        button1Label: "Nghe cùng",
-        button1Url: "https://open.spotify.com/track/123"
-      }
-    ]
-  },
-  {
-    id: "preset-3",
-    name: "Streaming League of Legends",
-    status: "online",
-    customText: "Đang leo Thách Đấu",
-    customEmoji: "🏆",
-    bannerColor: "#f59e0b",
-    bio: "Grandmaster League player 🏆\nStreaming every day at 8 PM!",
-    activities: [
-      {
-        type: "streaming",
-        name: "League of Legends",
-        details: "Chung Kết Thế Giới",
-        state: "T1 vs WBG",
-        largeImage: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=150&auto=format&fit=crop&q=60",
-        largeText: "Challenger Lobby",
-        button1Label: "Xem ngay",
-        button1Url: "https://youtube.com",
-        streamUrl: "https://twitch.tv/vanistudio"
-      }
-    ]
-  }
-];
-
-
 export default function DiscordPresences() {
   const pathname = usePathname();
 
-  // Load presets from backend
   const { data: presetsData, isLoading, refetch } = trpc.application.discord.getPresets.useQuery();
   const presets = (presetsData || []) as any[];
 
-  // Load accounts for selector
   const { data: accountsData } = trpc.application.discord.getAccounts.useQuery();
   const accounts = (accountsData || []) as any[];
   const [selectedAccountId, setSelectedAccountId] = useState<string>("");
 
-  // Mutations
   const createPresetMutation = trpc.application.discord.createPreset.useMutation({
     onSuccess: () => {
       refetch();
@@ -194,7 +108,6 @@ export default function DiscordPresences() {
   const [status, setStatus] = useState<"online" | "idle" | "dnd" | "invisible">("online");
   const [customText, setCustomText] = useState("");
   const [customEmoji, setCustomEmoji] = useState("");
-  const [bannerColor, setBannerColor] = useState("#5865F2");
   const [bio, setBio] = useState("");
 
   const [activityType, setActivityType] = useState<"playing" | "streaming" | "listening" | "watching" | "competing">(
@@ -218,10 +131,6 @@ export default function DiscordPresences() {
   const [timerValue, setTimerValue] = useState<number>(30);
   const [streamUrl, setStreamUrl] = useState<string>("");
 
-  const [rotatorInterval, setRotatorInterval] = useState("300");
-  const [rotatorMode, setRotatorMode] = useState<"sequential" | "random">("sequential");
-  const [rotatorActive, setRotatorActive] = useState(false);
-  const [selectedForRotation, setSelectedForRotation] = useState<string[]>([mockPresets[0].id, mockPresets[1].id]);
   const [selectedAccountsToApply, setSelectedAccountsToApply] = useState<string[]>([]);
 
   const [newPresetName, setNewPresetName] = useState("");
@@ -229,11 +138,10 @@ export default function DiscordPresences() {
   const handleSelectPreset = (preset: PresencePreset) => {
     setSelectedPreset(preset);
     setPresetName(preset.name);
-    setStatus(preset.status);
-    setCustomText(preset.customText || "");
-    setCustomEmoji(preset.customEmoji || "");
-    setBannerColor(preset.bannerColor || "#5865F2");
-    setBio(preset.bio || "Software Engineer at Vani Studio");
+    setStatus((preset as any).status ?? (preset as any).onlineStatus ?? "online");
+    setCustomText((preset as any).customText || (preset as any).customStatusText || "");
+    setCustomEmoji((preset as any).customEmoji || (preset as any).customStatusEmoji || "");
+    setBio((preset as any).bio || "");
 
     const act = preset.activities[0] || { type: "playing", name: "" };
     setActivityType(act.type);
@@ -309,43 +217,21 @@ export default function DiscordPresences() {
     deletePresetMutation.mutate({ id });
   };
 
-  const toggleRotationItem = (id: string) => {
-    setSelectedForRotation((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
-  };
-
-  const handleToggleRotator = (val: boolean) => {
-    if (val && selectedForRotation.length === 0) {
-      toast.error("Vui lòng chọn ít nhất 1 Preset để bắt đầu vòng xoay!");
-      return;
-    }
-    setRotatorActive(val);
-    if (val) {
-      toast.success("Bắt đầu vòng xoay trạng thái tự động cho tất cả các token hoạt động!");
-    } else {
-      toast.info("Đã dừng vòng xoay trạng thái tự động.");
-    }
-  };
-
   const handleApplyPresetToAccounts = () => {
     if (selectedAccountsToApply.length === 0) {
       toast.error("Vui lòng chọn ít nhất 1 tài khoản để cập nhật!");
       return;
     }
-    const accountNames = mockAccountsList
-      .filter((a) => selectedAccountsToApply.includes(a.id))
-      .map((a) => `@${a.username}`)
+    if (!selectedPreset) {
+      toast.error("Vui lòng chọn một preset!");
+      return;
+    }
+    const accountNames = accounts
+      .filter((a: any) => selectedAccountsToApply.includes(a.id))
+      .map((a: any) => `@${a.username}`)
       .join(", ");
 
-    toast.promise(
-      new Promise((resolve) => setTimeout(resolve, 1500)),
-      {
-        loading: `Đang gửi yêu cầu cập nhật Rich Presence tới ${selectedAccountsToApply.length} tài khoản...`,
-        success: `Đã cập nhật thành công Presence "${presetName}" cho các tài khoản: ${accountNames}!`,
-        error: "Có lỗi xảy ra khi cập nhật."
-      }
-    );
+    toast.success(`Đã gửi yêu cầu cập nhật Presence "${selectedPreset.name}" cho ${selectedAccountsToApply.length} tài khoản: ${accountNames}! (Tính năng Gateway đang phát triển)`);
   };
 
   const renderStatusIcon = (st: "online" | "idle" | "dnd" | "invisible", sizeClass = "size-3.5", idKey = "global") => {
@@ -535,88 +421,59 @@ export default function DiscordPresences() {
                     </div>
                   </Card>
 
-
-                  <Card className="bg-card/30! border-border shadow-sm rounded-xl p-5 flex flex-col gap-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Icon icon="solar:restart-line-duotone" className="size-5 text-emerald-500" />
-                        <h3 className="text-sm font-extrabold text-foreground">Xoay vòng (Rotator)</h3>
-                      </div>
-                      <Switch checked={rotatorActive} onCheckedChange={handleToggleRotator} />
-                    </div>
-
-                    <p className="text-[11px] text-muted-foreground leading-normal">
-                      Tự động xoay vòng các trạng thái hoạt động dựa trên các presets được tích chọn.
-                    </p>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Thời gian (giây)</label>
-                        <Input
-                          type="number"
-                          placeholder="300"
-                          value={rotatorInterval}
-                          onChange={(e) => setRotatorInterval(e.target.value)}
-                          className="text-[13px]"
-                        />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Kiểu xoay</label>
-                        <Select value={rotatorMode} onValueChange={(val: any) => setRotatorMode(val)}>
-                          <SelectTrigger className="w-full text-[13px]">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="sequential" className="text-xs">Tuần tự</SelectItem>
-                            <SelectItem value="random" className="text-xs">Ngẫu nhiên</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground font-medium">
-                        Chọn Preset xoay vòng:
-                      </label>
-                      <div className="flex flex-col gap-1 max-h-[140px] overflow-y-auto border border-border rounded-lg p-1.5 bg-background">
-                        {presets.map((p) => {
-                          const isChecked = selectedForRotation.includes(p.id);
-                          return (
-                            <div
-                              key={p.id}
-                              onClick={() => toggleRotationItem(p.id)}
-                              className={`flex items-center justify-between p-2 rounded-md cursor-pointer transition-all ${isChecked
-                                  ? "bg-vanixjnk/10 text-vanixjnk"
-                                  : "hover:bg-muted/45 text-muted-foreground hover:text-foreground"
-                                }`}
-                            >
-                              <div className="flex items-center gap-2 min-w-0">
-                                {renderStatusIcon(p.status, "size-3.5", `rotator-list-${p.id}`)}
-                                <span className="text-xs font-bold truncate">{p.name}</span>
-                              </div>
-                              <Checkbox
-                                checked={isChecked}
-                                onCheckedChange={() => toggleRotationItem(p.id)}
-                                className="size-4 pointer-events-none data-[state=checked]:bg-vanixjnk data-[state=checked]:border-vanixjnk"
-                              />
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </Card>
                 </div>
 
 
                 <Card className="bg-card/30! border-border shadow-sm rounded-xl p-6 flex flex-col gap-6">
-                  <div className="flex items-center justify-between border-b border-border/60 pb-3">
-                    <div className="flex items-center gap-2">
-                      <Icon icon="solar:pen-new-round-line-duotone" className="size-5 text-vanixjnk" />
-                      <h3 className="text-sm font-extrabold text-foreground">
-                        Thiết lập Preset: <span className="text-vanixjnk">{selectedPreset?.name || "Chưa chọn"}</span>
-                      </h3>
+                    <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                      <div className="flex items-center gap-2">
+                        <Icon icon="solar:pen-new-round-line-duotone" className="size-5 text-vanixjnk" />
+                        <h3 className="text-sm font-extrabold text-foreground">
+                          Thiết lập Preset: <span className="text-vanixjnk">{selectedPreset?.name || "Chưa chọn"}</span>
+                        </h3>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Select value={selectedAccountId} onValueChange={(val: string) => setSelectedAccountId(val)}>
+                          <SelectTrigger className="w-auto h-8 text-[11px] bg-background border-border/80">
+                            <SelectValue placeholder="Chọn tài khoản" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {accounts.map((a: any) => (
+                              <SelectItem key={a.id} value={a.id} className="text-xs">
+                                @{a.username || "unknown"}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Button
+                          variant="outline"
+                          size="xs"
+                          className="h-8 text-[11px] font-semibold"
+                          onClick={() => {
+                            if (!selectedAccountId) {
+                              toast.error("Vui lòng chọn một tài khoản!");
+                              return;
+                            }
+                            toast.promise(
+                              (async () => {
+                                const res = await (trpc as any).application.discord.getCurrentPresence.fetch({ accountId: selectedAccountId });
+                                if (res.status) setStatus(res.status as any);
+                                if (res.customStatus) {
+                                  if (res.customStatus.text) setCustomText(res.customStatus.text);
+                                  if (res.customStatus.emoji) setCustomEmoji(res.customStatus.emoji);
+                                }
+                                if (res.bio) setBio(res.bio);
+                                return res;
+                              })(),
+                              { loading: "Đang lấy dữ liệu...", success: "Đã lấy trạng thái!", error: "Lỗi" }
+                            );
+                          }}
+                        >
+                          <Icon icon="solar:download-square-line-duotone" className="size-3.5 mr-1" />
+                          Lấy từ Discord
+                        </Button>
+                      </div>
                     </div>
-                  </div>
 
 
                   <div className="grid grid-cols-3 sm:flex items-center gap-1.5 p-1 rounded-xl bg-muted/20 border border-border/60 w-full sm:w-auto sm:self-start whitespace-nowrap">
@@ -730,11 +587,7 @@ export default function DiscordPresences() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-black uppercase tracking-wider text-muted-foreground font-mono">Màu nền Banner</label>
-                          <ColorPicker value={bannerColor} onChange={setBannerColor} />
-                        </div>
+                      <div className="grid grid-cols-1 gap-4">
                         <div className="space-y-1.5">
                           <label className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Giới thiệu (Bio)</label>
                           <Input
@@ -860,7 +713,13 @@ export default function DiscordPresences() {
                               <label className="text-xs font-bold text-foreground">Hiển thị thời gian</label>
                               <span className="text-[10px] text-muted-foreground">Thời gian trôi qua/còn lại</span>
                             </div>
-                            <Switch checked={showTimer} onCheckedChange={setShowTimer} />
+                            <button
+                              type="button"
+                              onClick={() => setShowTimer(!showTimer)}
+                              className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 ${showTimer ? "bg-vanixjnk" : "bg-muted"}`}
+                            >
+                              <span className={`pointer-events-none block h-4 w-4 rounded-full bg-white shadow-lg transition-transform duration-200 ${showTimer ? "translate-x-4" : "translate-x-0"}`} />
+                            </button>
                           </div>
 
                           {showTimer && (
@@ -971,7 +830,7 @@ export default function DiscordPresences() {
                         <PopoverContent className="w-64 p-3 flex flex-col gap-2" align="start">
                           <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground font-medium">Chọn tài khoản</span>
                           <div className="flex flex-col gap-1 max-h-[160px] overflow-y-auto border border-border rounded-lg p-1.5 bg-background">
-                            {mockAccountsList.map((acc) => {
+                            {accounts.map((acc: any) => {
                               const isChecked = selectedAccountsToApply.includes(acc.id);
                               return (
                                 <div
@@ -984,10 +843,9 @@ export default function DiscordPresences() {
                                   className="flex items-center justify-between p-1.5 rounded hover:bg-muted/45 cursor-pointer"
                                 >
                                   <span className="text-xs font-semibold truncate">@{acc.username}</span>
-                                  <Checkbox
-                                    checked={isChecked}
-                                    className="pointer-events-none"
-                                  />
+                                  <span className={`size-4 rounded border flex items-center justify-center text-[10px] transition-colors ${isChecked ? "bg-vanixjnk border-vanixjnk text-white" : "border-muted-foreground/30"}`}>
+                                    {isChecked ? "✓" : ""}
+                                  </span>
                                 </div>
                               );
                             })}
@@ -996,7 +854,7 @@ export default function DiscordPresences() {
                             <Button
                               variant="ghost"
                               size="xs"
-                              onClick={() => setSelectedAccountsToApply(mockAccountsList.map(a => a.id))}
+                              onClick={() => setSelectedAccountsToApply(accounts.map((a: any) => a.id))}
                               className="text-[10px]"
                             >
                               Tất cả
@@ -1042,7 +900,6 @@ export default function DiscordPresences() {
                   status={status}
                   customEmoji={customEmoji}
                   customText={customText}
-                  bannerColor={bannerColor}
                   bio={bio}
                   activityType={activityType}
                   activityName={activityName}

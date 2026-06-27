@@ -205,7 +205,7 @@ export default function DiscordLogs() {
               />
             ) : (
               <div className="size-9 rounded-full text-white border border-border flex items-center justify-center font-bold text-sm bg-vanixjnk/15 text-vanixjnk">
-                {log.username.charAt(0).toUpperCase()}
+                {log.username?.charAt(0)?.toUpperCase() || "?"}
               </div>
             )}
             <div className="flex flex-col min-w-0">
@@ -256,20 +256,30 @@ export default function DiscordLogs() {
       cell: ({ row }) => {
         const log = row.original;
         return (
-          <div className="flex items-center gap-1.5">
-            <Button
-              variant="outline"
-              size="xs"
-              onClick={() => {
-                setSelectedLog(log);
-                setIsDetailsOpen(true);
-              }}
-              className="cursor-pointer"
-            >
-              <Icon icon="solar:document-text-line-duotone" className="size-3.5 mr-1 text-vanixjnk" />
-              Chi tiết
-            </Button>
-          </div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-8"
+              >
+                <Icon icon="solar:menu-dots-bold-duotone" className="size-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-36 p-1 flex flex-col gap-0.5" align="end">
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-xs h-8 px-2"
+                onClick={() => {
+                  setSelectedLog(log);
+                  setIsDetailsOpen(true);
+                }}
+              >
+                <Icon icon="solar:document-text-line-duotone" className="mr-2 size-3.5 text-vanixjnk" />
+                Xem chi tiết
+              </Button>
+            </PopoverContent>
+          </Popover>
         );
       },
     },
@@ -446,6 +456,7 @@ export default function DiscordLogs() {
         open={isClearOpen}
         onOpenChange={setIsClearOpen}
         onConfirm={handleClearLogs}
+        isPending={clearLogsMutation.isPending}
       />
     </div>
   );

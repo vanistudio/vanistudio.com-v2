@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "@iconify/react";
@@ -18,115 +18,17 @@ import EditProxyDialog from "./EditProxyDialog";
 import DeleteAccountDialog from "./DeleteAccountDialog";
 import AccountDetailsDialog from "./AccountDetailsDialog";
 
-interface DiscordAccount {
-  id: string;
-  discordId: string;
-  username: string;
-  globalName: string;
-  avatar: string | null;
-  banner: string | null;
-  accentColor: string | null;
-  status: "active" | "invalid" | "rate_limited" | "phone_lock" | "suspended";
-  proxy: string | null;
-  proxyStatus: "active" | "dead" | "unknown";
-  nitroType: "None" | "Nitro Classic" | "Nitro Basic" | "Nitro Boost";
-  badges: string[];
-  connections: Array<{ type: string; name: string }>;
-  guildsCount: number;
-  isRunning: boolean;
-  createdAt: string;
-}
-
 const navItems = [
   { name: "Tài khoản", href: "/application/discord/accounts", icon: "solar:users-group-two-rounded-line-duotone" },
   { name: "Trạng thái & Rich Presence", href: "/application/discord/presences", icon: "solar:gamepad-old-line-duotone" },
   { name: "Lịch sử hoạt động", href: "/application/discord/logs", icon: "solar:document-text-line-duotone" },
 ];
 
-const mockAccountsList: DiscordAccount[] = [
-  {
-    id: "1",
-    discordId: "109283749283749283",
-    username: "vanixjnk",
-    globalName: "Vani Dev",
-    avatar: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=60",
-    banner: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=60",
-    accentColor: "#5865F2",
-    status: "active",
-    proxy: "socks5://us-proxies.com:1080",
-    proxyStatus: "active",
-    nitroType: "Nitro Boost",
-    badges: ["Active Developer", "HypeSquad Balance", "Early Supporter"],
-    connections: [
-      { type: "spotify", name: "Listening to Spotify" },
-      { type: "github", name: "vanixjnk" },
-      { type: "steam", name: "VaniPlay" }
-    ],
-    guildsCount: 38,
-    isRunning: true,
-    createdAt: "2026-06-01T12:00:00Z"
-  },
-  {
-    id: "2",
-    discordId: "209384759283748592",
-    username: "clone_buyer_01",
-    globalName: "Alex Trader",
-    avatar: null,
-    banner: null,
-    accentColor: "#F47525",
-    status: "active",
-    proxy: "socks5://buyer:pass123@192.168.1.50:9090",
-    proxyStatus: "active",
-    nitroType: "None",
-    badges: ["HypeSquad Bravery"],
-    connections: [],
-    guildsCount: 12,
-    isRunning: false,
-    createdAt: "2026-06-15T08:30:00Z"
-  },
-  {
-    id: "3",
-    discordId: "309284759182738495",
-    username: "spammer_bot_99",
-    globalName: "Bot Spammer",
-    avatar: "https://images.unsplash.com/photo-1614680376593-902f74fa0d41?w=150&auto=format&fit=crop&q=60",
-    banner: null,
-    accentColor: null,
-    status: "rate_limited",
-    proxy: "socks5://dead-proxy.net:8888",
-    proxyStatus: "dead",
-    nitroType: "Nitro Basic",
-    badges: [],
-    connections: [{ type: "github", name: "spambot99" }],
-    guildsCount: 154,
-    isRunning: false,
-    createdAt: "2026-06-20T10:15:00Z"
-  },
-  {
-    id: "4",
-    discordId: "409284759384758291",
-    username: "dead_token_user",
-    globalName: "Old Friend",
-    avatar: null,
-    banner: null,
-    accentColor: null,
-    status: "invalid",
-    proxy: null,
-    proxyStatus: "unknown",
-    nitroType: "None",
-    badges: [],
-    connections: [],
-    guildsCount: 2,
-    isRunning: false,
-    createdAt: "2026-06-25T14:22:00Z"
-  }
-];
-
 export default function DiscordAccounts() {
   const pathname = usePathname();
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [selectedAccount, setSelectedAccount] = useState<DiscordAccount | null>(null);
+  const [selectedAccount, setSelectedAccount] = useState<any>(null);
 
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditProxyOpen, setIsEditProxyOpen] = useState(false);
@@ -165,7 +67,6 @@ export default function DiscordAccounts() {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // ==================== ACTIONS ====================
   const handleStartSelfbot = (id: string) => {
     const acc = accounts.find((a) => a.id === id);
     if (!acc) return;
@@ -182,23 +83,8 @@ export default function DiscordAccounts() {
     toast.info(`Đã ngắt kết nối selfbot tài khoản @${acc.username}`);
   };
 
-  const handleCheckProxy = (acc: DiscordAccount) => {
-    toast.promise(
-      new Promise((resolve, reject) => {
-        setTimeout(() => {
-          if (acc.proxyStatus === "dead") {
-            reject(new Error("Proxy không thể kết nối (Timeout)"));
-          } else {
-            resolve({ ping: Math.floor(Math.random() * 150) + 50 });
-          }
-        }, 1200);
-      }),
-      {
-        loading: `Đang kiểm tra kết nối proxy của @${acc.username}...`,
-        success: (data: any) => `Proxy hoạt động tốt! Ping: ${data.ping}ms`,
-        error: (err) => err.message || "Lỗi kiểm tra proxy",
-      }
-    );
+  const handleCheckProxy = (acc: any) => {
+    toast.info(`Kiểm tra proxy cho @${acc.username}: Tính năng đang được phát triển`);
   };
 
   const handleAddAccountSuccess = () => {
@@ -213,7 +99,23 @@ export default function DiscordAccounts() {
     refetch();
   };
 
-  const columns = React.useMemo<ColumnDef<DiscordAccount>[]>(() => [
+  const refreshTokenMutation = trpc.application.discord.refreshToken.useMutation({
+    onSuccess: (data, variables) => {
+      refetch();
+      toast.success(`Đã cập nhật thông tin @${data?.username || "unknown"}`);
+    },
+    onError: (error) => {
+      toast.error(error.message || "Kiểm tra token thất bại");
+    },
+  });
+
+  const handleRefreshToken = (acc: any) => {
+    toast.promise(refreshTokenMutation.mutateAsync({ accountId: acc.id }), {
+      loading: `Đang kiểm tra token @${acc.username || "unknown"}...`,
+    });
+  };
+
+  const columns = React.useMemo<ColumnDef<any>[]>(() => [
     {
       id: "index",
       header: "#",
@@ -243,19 +145,14 @@ export default function DiscordAccounts() {
                 className="size-9 rounded-full text-white border border-border flex items-center justify-center font-bold text-sm bg-vanixjnk/15 text-vanixjnk"
                 style={{ backgroundColor: acc.avatar ? undefined : color + "33" }}
               >
-                {acc.globalName.charAt(0).toUpperCase()}
+                {acc.globalName?.charAt(0)?.toUpperCase() || acc.username?.charAt(0)?.toUpperCase() || "?"}
               </div>
             )}
             <div className="flex flex-col min-w-0">
               <span className="font-bold text-foreground truncate flex items-center gap-1.5 text-xs">
-                {acc.globalName}
-                {acc.nitroType !== "None" && (
-                  <span title={acc.nitroType}>
-                    <Icon icon="solar:crown-bold-duotone" className="text-amber-500 size-3.5" />
-                  </span>
-                )}
+                {acc.globalName || acc.username || "Unknown"}
               </span>
-              <span className="text-[10px] text-muted-foreground">@{acc.username}</span>
+              <span className="text-[10px] text-muted-foreground">@{acc.username || "unknown"}</span>
             </div>
           </div>
         );
@@ -280,7 +177,7 @@ export default function DiscordAccounts() {
         return acc.proxy ? (
           <div className="flex items-center gap-2">
             <span className="text-[11px] text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border font-mono">
-              {acc.proxy.split("@")[1] || acc.proxy}
+              {acc.proxy?.split("@")[1] || acc.proxy || "?"}
             </span>
             <Badge
               variant={acc.proxyStatus === "active" ? "success" : "destructive"}
@@ -351,72 +248,80 @@ export default function DiscordAccounts() {
       cell: ({ row }) => {
         const acc = row.original;
         return (
-          <div className="flex items-center gap-1.5">
-            {acc.isRunning ? (
+          <Popover>
+            <PopoverTrigger asChild>
               <Button
-                variant="warning"
-                size="xs"
-                onClick={() => handleStopSelfbot(acc.id)}
-                title="Dừng chạy Gateway"
-                className="cursor-pointer"
+                variant="ghost"
+                size="icon"
+                className="size-8"
               >
-                <Icon icon="solar:pause-line-duotone" className="size-3.5 mr-1" />
-                Dừng
+                <Icon icon="solar:menu-dots-bold-duotone" className="size-4" />
               </Button>
-            ) : (
-              <Button
-                variant="success"
-                size="xs"
-                onClick={() => handleStartSelfbot(acc.id)}
-                title="Khởi chạy Gateway"
-                className="cursor-pointer"
-              >
-                <Icon icon="solar:play-line-duotone" className="size-3.5 mr-1" />
-                Chạy
-              </Button>
-            )}
-
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" size="icon-xs" className="cursor-pointer">
-                  <Icon icon="solar:menu-dots-bold" className="size-3.5 text-muted-foreground" />
+            </PopoverTrigger>
+            <PopoverContent className="w-36 p-1 flex flex-col gap-0.5" align="end">
+              {acc.isRunning ? (
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-xs h-8 px-2"
+                  onClick={() => handleStopSelfbot(acc.id)}
+                >
+                  <Icon icon="solar:pause-line-duotone" className="mr-2 size-3.5 text-amber-500" />
+                  Dừng
                 </Button>
-              </PopoverTrigger>
-              <PopoverContent align="end" className="w-40 p-1">
-                <button
-                  onClick={() => {
-                    setSelectedAccount(acc);
-                    setIsDetailsOpen(true);
-                  }}
-                  className="flex items-center gap-2 w-full px-2.5 py-1.5 text-xs text-foreground font-semibold hover:bg-muted rounded-md transition-colors text-left cursor-pointer"
+              ) : (
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-xs h-8 px-2"
+                  onClick={() => handleStartSelfbot(acc.id)}
                 >
-                  <Icon icon="solar:user-id-line-duotone" className="size-4 text-vanixjnk" />
-                  Xem chi tiết
-                </button>
-                <button
-                  onClick={() => {
-                    setSelectedAccount(acc);
-                    setIsEditProxyOpen(true);
-                  }}
-                  className="flex items-center gap-2 w-full px-2.5 py-1.5 text-xs text-foreground font-semibold hover:bg-muted rounded-md transition-colors text-left cursor-pointer"
-                >
-                  <Icon icon="solar:server-square-line-duotone" className="size-4 text-emerald-500" />
-                  Gán Proxy
-                </button>
-                <div className="h-px bg-border my-1" />
-                <button
-                  onClick={() => {
-                    setSelectedAccount(acc);
-                    setIsDeleteOpen(true);
-                  }}
-                  className="flex items-center gap-2 w-full px-2.5 py-1.5 text-xs text-red-500 font-bold hover:bg-red-500/10 rounded-md transition-colors text-left cursor-pointer"
-                >
-                  <Icon icon="solar:trash-bin-trash-line-duotone" className="size-4 text-red-500" />
-                  Xóa tài khoản
-                </button>
-              </PopoverContent>
-            </Popover>
-          </div>
+                  <Icon icon="solar:play-line-duotone" className="mr-2 size-3.5 text-emerald-500" />
+                  Chạy
+                </Button>
+              )}
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-xs h-8 px-2"
+                onClick={() => {
+                  setSelectedAccount(acc);
+                  setIsDetailsOpen(true);
+                }}
+              >
+                <Icon icon="solar:user-id-line-duotone" className="mr-2 size-3.5 text-vanixjnk" />
+                Xem chi tiết
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-xs h-8 px-2"
+                onClick={() => {
+                  setSelectedAccount(acc);
+                  setIsEditProxyOpen(true);
+                }}
+              >
+                <Icon icon="solar:server-square-line-duotone" className="mr-2 size-3.5 text-sky-500" />
+                Gán Proxy
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-xs h-8 px-2"
+                onClick={() => handleRefreshToken(acc)}
+                disabled={refreshTokenMutation.isPending}
+              >
+                <Icon icon="solar:refresh-square-line-duotone" className="mr-2 size-3.5 text-blue-500" />
+                Kiểm tra token
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-xs h-8 px-2 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10"
+                onClick={() => {
+                  setSelectedAccount(acc);
+                  setIsDeleteOpen(true);
+                }}
+              >
+                <Icon icon="solar:trash-bin-trash-line-duotone" className="mr-2 size-3.5" />
+                Xóa tài khoản
+              </Button>
+            </PopoverContent>
+          </Popover>
         );
       },
     },

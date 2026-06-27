@@ -1,4 +1,5 @@
 import { discordRepository } from "@/server/repositories/discord.repository";
+import { checkDiscordToken } from "@/server/io/_others/discord.io";
 
 export class DiscordService {
   async getAccounts(userId: string) {
@@ -32,17 +33,25 @@ export class DiscordService {
     token: string;
     proxy?: string | null;
   }) {
+    const info = await checkDiscordToken(data.token);
+
     return await discordRepository.createAccount({
       userId: data.userId,
       token: data.token,
+      discordId: info.id,
+      username: info.username,
+      discriminator: info.discriminator,
+      globalName: info.globalName,
+      avatar: info.avatarUrl,
+      banner: info.bannerUrl,
+      accentColor: typeof info.accentColor === "number" ? `#${info.accentColor.toString(16).padStart(6, "0")}` : null,
+      phone: info.phone,
+      hasMfa: info.mfaEnabled,
+      verified: info.verified ?? false,
+      nitroType: info.nitroType,
       proxy: data.proxy || null,
       proxyStatus: data.proxy ? "unknown" : "unknown",
       status: "active",
-      nitroType: "None",
-      badges: [],
-      connections: [],
-      guildsCount: 0,
-      isRunning: false,
     } as any);
   }
 
@@ -143,6 +152,45 @@ export class DiscordService {
     const account = await discordRepository.getAccountById(accountId, userId);
     if (!account) throw new Error("Không tìm thấy tài khoản");
     await discordRepository.clearLogs(accountId);
+  }
+
+  async refreshToken(accountId: string, userId: string) {
+    const account = await discordRepository.getAccountById(accountId, userId);
+    if (!account) throw new Error("Không tìm thấy tài khoản");
+    if (!account.token) throw new Error("Tài khoản không có token");
+
+    const info = await checkDiscordToken(account.token);
+
+    return await discordRepository.updateAccount(accountId, userId, {
+      discordId: info.id,
+      username: info.username,
+      discriminator: info.discriminator,
+      globalName: info.globalName,
+      avatar: info.avatarUrl,
+      banner: info.bannerUrl,
+      accentColor: typeof info.accentColor === "number" ? `#${info.accentColor.toString(16).padStart(6, "0")}` : null,
+      phone: info.phone,
+      hasMfa: info.mfaEnabled,
+      verified: info.verified ?? false,
+      nitroType: info.nitroType,
+    } as any);
+  }
+
+  async getCurrentPresence(accountId: string, userId: string) {
+    const account = await discordRepository.getAccountById(accountId, userId);
+    if (!account) throw new Error("Không tìm thấy tài khoản");
+    if (!account.token) throw new Error("Tài khoản không có token");
+
+    const info = await checkDiscordToken(account.token);
+
+    return {
+      status: info.settings?.status || "online",
+      customStatus: info.settings?.customStatus || null,
+      bio: info.bio || "",
+      username: info.username,
+      globalName: info.globalName,
+      avatarUrl: info.avatarUrl,
+    };
   }
 }
 
