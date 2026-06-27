@@ -208,130 +208,120 @@ export default function AddAccountDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[1200px]">
-        <form onSubmit={handleAddAccountSubmit}>
-          <DialogHeader className="flex flex-col items-center text-center">
-            <div className="flex items-center justify-center size-12 rounded-xl text-vanixjnk bg-vanixjnk/10 border border-vanixjnk/25 mb-3">
-              <Icon icon="solar:user-plus-line-duotone" className="text-2xl" />
+      <DialogContent className="sm:max-w-[1100px] max-h-[90vh] overflow-hidden flex flex-col">
+        <DialogHeader className="shrink-0 text-left pb-1">
+          <DialogTitle className="flex items-center gap-2.5">
+            <div className="flex items-center justify-center size-9 rounded-lg bg-vanixjnk/10 text-vanixjnk border border-vanixjnk/20">
+              <Icon icon="solar:user-plus-line-duotone" className="text-lg" />
             </div>
-            <DialogTitle>Thêm tài khoản Discord</DialogTitle>
-            <DialogDescription>
-              Lấy Token Discord User và liên kết tài khoản selfbot vào hệ thống. Token được mã hóa AES-256-GCM trước khi gửi.
-            </DialogDescription>
-          </DialogHeader>
+            Thêm tài khoản Discord
+          </DialogTitle>
+          <DialogDescription>
+            Lấy Token Discord User và liên kết tài khoản selfbot. Token được mã hóa AES-256-GCM trước khi gửi.
+          </DialogDescription>
+        </DialogHeader>
 
-          <div className="py-4 space-y-5">
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div className="flex flex-col gap-3">
-                <p className="text-sm">
-                  <span className="font-semibold">Step 1:</span> Mở DevTools (
-                  <kbd className="pointer-events-none inline-flex h-5 w-fit min-w-5 items-center justify-center gap-1 rounded-sm bg-muted px-1 font-sans text-xs font-medium text-muted-foreground select-none">
-                    Ctrl
-                  </kbd>{" "}
-                  +{" "}
-                  <kbd className="pointer-events-none inline-flex h-5 w-fit min-w-5 items-center justify-center gap-1 rounded-sm bg-muted px-1 font-sans text-xs font-medium text-muted-foreground select-none">
-                    Shift
-                  </kbd>{" "}
-                  +{" "}
-                  <kbd className="pointer-events-none inline-flex h-5 w-fit min-w-5 items-center justify-center gap-1 rounded-sm bg-muted px-1 font-sans text-xs font-medium text-muted-foreground select-none">
-                    I
-                  </kbd>
-                  ) trong Discord.
-                </p>
-                <div
-                  aria-label="Discord DevTools screenshot"
-                  className="flex w-full items-center justify-center rounded-lg border border-dashed border-muted-foreground/40 text-muted-foreground/60 overflow-hidden"
-                  style={{ height: "300px" }}
-                >
-                  <img
-                    src="/svg/discord-console.svg"
-                    alt="Discord DevTools Console"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-3">
-                <p className="text-sm">
-                  <span className="font-semibold">Step 2:</span> Nhấn nút bên dưới để khởi tạo, sau đó copy script và dán vào tab <strong>Console</strong> của Discord.
-                </p>
-
-                {callbackStatus === "idle" ? (
-                  <div className="flex items-center justify-center rounded-xl border border-dashed border-muted-foreground/40 p-8" style={{ minHeight: "260px" }}>
-                    <div className="flex flex-col items-center gap-3">
-                      <Icon icon="solar:play-circle-line-duotone" className="size-10 text-muted-foreground/40" />
-                      <p className="text-xs text-muted-foreground">Nhấn nút bên dưới để tạo script</p>
-                    </div>
-                  </div>
-                ) : callbackStatus === "generating" ? (
-                  <div className="flex items-center justify-center rounded-xl border border-dashed border-muted-foreground/40 p-8" style={{ minHeight: "260px" }}>
-                    <div className="flex flex-col items-center gap-3">
-                      <Icon icon="solar:restart-line-duotone" className="size-8 animate-spin text-vanixjnk" />
-                      <span className="text-xs font-semibold text-muted-foreground">Đang tạo phiên kết nối...</span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="rounded-xl border bg-card overflow-hidden flex flex-col">
-                    <div className="flex items-center justify-between border-b bg-muted/40 px-3 py-1.5">
-                      <span className="text-xs font-medium text-muted-foreground">JavaScript</span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={copyScript}
-                        className="h-7 gap-1.5 text-xs cursor-pointer"
-                      >
-                        <Icon icon="solar:copy-line-duotone" className="size-3.5" />
-                        Sao chép &amp; Dán vào Console
-                      </Button>
-                    </div>
-                    <div className="overflow-hidden" style={{ maxHeight: "214px" }}>
-                      <CodeMirror
-                        value={extractScript}
-                        height="214px"
-                        theme={resolvedTheme === "light" ? "light" : oneDark}
-                        extensions={[javascript()]}
-                        readOnly
-                        basicSetup={{
-                          lineNumbers: true,
-                          foldGutter: false,
-                          dropCursor: false,
-                          allowMultipleSelections: false,
-                          indentOnInput: false,
-                          highlightActiveLine: false,
-                        }}
-                        className="text-xs font-mono"
-                      />
-                    </div>
-                    <div className="flex items-center gap-2 px-3 py-2 border-t bg-emerald-500/5 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">
-                      <Icon icon="solar:refresh-line-duotone" className="size-3.5 animate-spin" />
-                      Đang chờ gửi token từ Discord...
-                    </div>
-                  </div>
-                )}
-
-                {callbackStatus === "idle" && (
-                  <Button
-                    type="button"
-                    variant="vanixjnk"
-                    onClick={handleInitScript}
-                    className="w-full gap-2 cursor-pointer"
-                    size="sm"
-                  >
-                    <Icon icon="solar:magic-stick-3-line-duotone" className="size-4" />
-                    Khởi tạo &amp; Sao chép script
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            <div className="border-t border-border/60 pt-4">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-3">
-                Hoặc nhập Token thủ công
+        <div className="flex-1 overflow-y-auto px-0.5">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 py-3">
+            {/* ---- Col 1: DevTools Screenshot ---- */}
+            <div className="flex flex-col gap-3">
+              <p className="text-sm">
+                <span className="font-semibold">Step 1:</span>{" "}
+                Mở DevTools (
+                <kbd className="inline-flex h-5 w-fit items-center rounded-sm bg-muted px-1.5 font-mono text-[11px] text-muted-foreground">Ctrl</kbd>
+                {" + "}
+                <kbd className="inline-flex h-5 w-fit items-center rounded-sm bg-muted px-1.5 font-mono text-[11px] text-muted-foreground">Shift</kbd>
+                {" + "}
+                <kbd className="inline-flex h-5 w-fit items-center rounded-sm bg-muted px-1.5 font-mono text-[11px] text-muted-foreground">I</kbd>
+                ) trong Discord, chọn tab <strong>Console</strong>.
               </p>
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center justify-between">
-                  <span>Discord Token (Bắt buộc)</span>
+              <div className="rounded-lg border bg-black overflow-hidden" style={{ minHeight: "220px" }}>
+                <img
+                  src="/svg/discord-console.svg"
+                  alt="Discord DevTools Console"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            </div>
+
+            {/* ---- Col 2: Script ---- */}
+            <div className="flex flex-col gap-3">
+              <p className="text-sm">
+                <span className="font-semibold">Step 2:</span>{" "}
+                Nhấn nút khởi tạo, copy script rồi dán vào tab <strong>Console</strong> của Discord.
+              </p>
+
+              {callbackStatus === "idle" ? (
+                <div className="flex-1 flex items-center justify-center rounded-lg border border-dashed border-muted-foreground/25">
+                  <div className="flex flex-col items-center gap-3 py-8">
+                    <Icon icon="solar:play-circle-line-duotone" className="size-10 text-muted-foreground/30" />
+                    <p className="text-xs text-muted-foreground">Nhấn nút bên dưới để tạo script</p>
+                  </div>
+                </div>
+              ) : callbackStatus === "generating" ? (
+                <div className="flex-1 flex items-center justify-center rounded-lg border border-dashed border-muted-foreground/25">
+                  <div className="flex flex-col items-center gap-3 py-8">
+                    <Icon icon="solar:restart-line-duotone" className="size-8 animate-spin text-vanixjnk" />
+                    <span className="text-xs font-semibold text-muted-foreground">Đang tạo phiên kết nối...</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-1 rounded-lg border bg-card overflow-hidden flex flex-col min-h-[220px]">
+                  <div className="flex items-center gap-3 px-3 py-1.5 border-b bg-muted/40 shrink-0 justify-end">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={copyScript}
+                      className="h-7 gap-1.5 text-xs cursor-pointer"
+                    >
+                      <Icon icon="solar:copy-line-duotone" className="size-3.5" />
+                      Sao chép
+                    </Button>
+                  </div>
+                  <div className="overflow-y-auto" style={{ maxHeight: "285px" }}>
+                    <CodeMirror
+                      value={extractScript}
+                      height="100%"
+                      theme={resolvedTheme === "light" ? "light" : oneDark}
+                      extensions={[javascript()]}
+                      readOnly
+                      basicSetup={{
+                        lineNumbers: true,
+                        foldGutter: false,
+                        dropCursor: false,
+                        allowMultipleSelections: false,
+                        indentOnInput: false,
+                        highlightActiveLine: false,
+                      }}
+                      className="text-xs font-mono"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {callbackStatus === "idle" && (
+                <Button
+                  type="button"
+                  variant="vanixjnk"
+                  onClick={handleInitScript}
+                  className="w-full gap-2 cursor-pointer shrink-0"
+                  size="sm"
+                >
+                  <Icon icon="solar:magic-stick-3-line-duotone" className="size-4" />
+                  Khởi tạo &amp; Sao chép script
+                </Button>
+              )}
+            </div>
+          </div>
+          <div className="border-t border-border/60 pt-4 pb-1">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-3">
+              Hoặc nhập Token thủ công
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="space-y-1.5 md:col-span-3">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Discord Token <span className="text-red-500">*</span>
                 </label>
                 <Input
                   placeholder="Dán token Discord..."
@@ -341,67 +331,65 @@ export default function AddAccountDialog({
                   required={callbackStatus !== "waiting"}
                 />
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-                <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                    Proxy SOCKS5/HTTP (Tùy chọn)
-                  </label>
-                  <Input
-                    placeholder="socks5://user:pass@ip:port"
-                    value={newProxy}
-                    onChange={(e) => setNewProxy(e.target.value)}
-                    className="h-9 text-[13px]"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                    Nhóm tài khoản (Phân loại)
-                  </label>
-                  <Input
-                    placeholder="Farm Spammer, Nick Chính..."
-                    value={newGroup}
-                    onChange={(e) => setNewGroup(e.target.value)}
-                    className="h-9 text-[13px]"
-                  />
-                </div>
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Proxy (Tùy chọn)
+                </label>
+                <Input
+                  placeholder="socks5://user:pass@ip:port"
+                  value={newProxy}
+                  onChange={(e) => setNewProxy(e.target.value)}
+                  className="h-9 text-[13px]"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Nhóm
+                </label>
+                <Input
+                  placeholder="Mặc định"
+                  value={newGroup}
+                  onChange={(e) => setNewGroup(e.target.value)}
+                  className="h-9 text-[13px]"
+                />
               </div>
             </div>
-
-            <div className="p-3.5 rounded-lg border border-yellow-500/25 bg-yellow-500/10 flex gap-3 text-xs leading-relaxed text-yellow-600 dark:text-yellow-400">
-              <Icon icon="solar:danger-triangle-line-duotone" className="size-5 shrink-0 mt-0.5" />
-              <p>
-                <strong>Chú ý:</strong> Sử dụng selfbot có nguy cơ bị Discord quét và khóa tài khoản. Hãy gắn kèm Proxy riêng biệt cho mỗi token để giảm thiểu rủi ro bị quét chéo IP.
-              </p>
-            </div>
           </div>
+          <div className="p-3 rounded-lg border border-yellow-500/20 bg-yellow-500/5 flex gap-3 text-xs leading-relaxed text-yellow-600 dark:text-yellow-400 mt-4">
+            <Icon icon="solar:danger-triangle-line-duotone" className="size-5 shrink-0 mt-0.5" />
+            <p>
+              <strong>Chú ý:</strong> Sử dụng selfbot có nguy cơ bị Discord quét và khóa tài khoản. Hãy gắn kèm Proxy riêng biệt cho mỗi token để giảm thiểu rủi ro bị quét chéo IP.
+            </p>
+          </div>
+        </div>
 
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => handleOpenChange(false)}
-              className="cursor-pointer"
-              disabled={createAccountMutation.isPending}
-            >
-              Hủy
-            </Button>
-            <Button
-              type="submit"
-              variant="vanixjnk"
-              disabled={createAccountMutation.isPending || !newToken}
-              className="cursor-pointer"
-            >
-              {createAccountMutation.isPending ? (
-                <Icon icon="solar:restart-line-duotone" className="mr-1.5 size-4 animate-spin" />
-              ) : (
-                <Icon icon="solar:add-circle-line-duotone" className="mr-1.5 size-4" />
-              )}
-              <span>Thêm tài khoản</span>
-            </Button>
-          </DialogFooter>
-        </form>
+        <DialogFooter className="shrink-0 border-t border-border/40 pt-3 pb-0">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => handleOpenChange(false)}
+            className="cursor-pointer"
+            disabled={createAccountMutation.isPending}
+          >
+            Hủy
+          </Button>
+          <Button
+            type="submit"
+            onClick={handleAddAccountSubmit}
+            variant="vanixjnk"
+            size="sm"
+            disabled={createAccountMutation.isPending || !newToken}
+            className="cursor-pointer gap-1.5"
+          >
+            {createAccountMutation.isPending ? (
+              <Icon icon="solar:restart-line-duotone" className="size-4 animate-spin" />
+            ) : (
+              <Icon icon="solar:add-circle-line-duotone" className="size-4" />
+            )}
+            Thêm tài khoản
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
