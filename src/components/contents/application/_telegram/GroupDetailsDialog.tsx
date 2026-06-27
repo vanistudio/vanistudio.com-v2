@@ -196,25 +196,6 @@ export default function GroupDetailsDialog({
                       <Icon icon="solar:copy-line-duotone" className="size-4" />
                     </Button>
                   </div>
-
-                  {qrCodeUrl && (
-                    <div className="flex flex-col items-center gap-2.5 p-4 rounded-xl border bg-white dark:bg-zinc-950 max-w-[280px] mx-auto shadow-sm">
-                      <img
-                        src={qrCodeUrl}
-                        alt="QR Code"
-                        className="size-48 object-contain rounded border bg-white"
-                      />
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full text-xs font-semibold gap-1.5 cursor-pointer"
-                        onClick={handleDownloadQR}
-                      >
-                        <Icon icon="solar:download-line-duotone" className="size-3.5" />
-                        Tải ảnh QR
-                      </Button>
-                    </div>
-                  )}
                 </div>
               ) : (
                 <div className="p-3 rounded-lg border border-dashed text-center text-xs text-muted-foreground">
