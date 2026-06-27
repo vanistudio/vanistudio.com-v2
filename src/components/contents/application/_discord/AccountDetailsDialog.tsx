@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
@@ -39,257 +40,318 @@ interface AccountDetailsDialogProps {
   account: DiscordAccount | null;
 }
 
+const DISCORD_BADGE_ICONS: Record<string, string> = {
+  "Discord Staff": "https://raw.githubusercontent.com/mezotv/discord-badges/main/assets/discordstaff.svg",
+  "Discord Partner": "https://raw.githubusercontent.com/mezotv/discord-badges/main/assets/discordpartner.svg",
+  "HypeSquad Events": "https://raw.githubusercontent.com/mezotv/discord-badges/main/assets/hypesquadevents.svg",
+  "Bug Hunter Level 1": "https://raw.githubusercontent.com/mezotv/discord-badges/main/assets/discordbughunter1.svg",
+  "HypeSquad Bravery": "https://raw.githubusercontent.com/mezotv/discord-badges/main/assets/hypesquadbravery.svg",
+  "HypeSquad Brilliance": "https://raw.githubusercontent.com/mezotv/discord-badges/main/assets/hypesquadbrilliance.svg",
+  "HypeSquad Balance": "https://raw.githubusercontent.com/mezotv/discord-badges/main/assets/hypesquadbalance.svg",
+  "Early Supporter": "https://raw.githubusercontent.com/mezotv/discord-badges/main/assets/discordearlysupporter.svg",
+  "Bug Hunter Level 2": "https://raw.githubusercontent.com/mezotv/discord-badges/main/assets/discordbughunter2.svg",
+  "Verified Developer": "https://raw.githubusercontent.com/mezotv/discord-badges/main/assets/discordbotdev.svg",
+  "Certified Moderator Alumni": "https://raw.githubusercontent.com/mezotv/discord-badges/main/assets/discordmod.svg",
+  "Bot HTTP Interactions": "https://raw.githubusercontent.com/mezotv/discord-badges/main/assets/supportscommands.svg",
+  "Active Developer": "https://raw.githubusercontent.com/mezotv/discord-badges/main/assets/activedeveloper.svg",
+};
+
+const getCreationDate = (id: string): string => {
+  try {
+    const idBig = BigInt(id);
+    const timestamp = Number((idBig / BigInt(4194304)) + BigInt(1420070400000));
+    return new Date(timestamp).toLocaleDateString("vi-VN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return "Không rõ";
+  }
+};
+
+const getAccentColorStyle = (accentColor: string | null) => {
+  if (!accentColor) return {};
+  return { backgroundColor: accentColor };
+};
+
+const getConnectionIcon = (type: string) => {
+  switch (type.toLowerCase()) {
+    case "github":
+      return "bxl:github";
+    case "youtube":
+      return "bxl:youtube";
+    case "steam":
+      return "bxl:steam";
+    case "twitch":
+      return "bxl:twitch";
+    case "spotify":
+      return "bxl:spotify";
+    case "twitter":
+      return "bxl:twitter";
+    case "facebook":
+      return "bxl:facebook";
+    case "reddit":
+      return "bxl:reddit";
+    case "xbox":
+      return "bxl:xbox";
+    case "playstation":
+      return "bxl:playstation";
+    default:
+      return "solar:link-line-duotone";
+  }
+};
+
 export default function AccountDetailsDialog({
   open,
   onOpenChange,
   account,
 }: AccountDetailsDialogProps) {
-  const [activeTab, setActiveTab] = useState<"guilds" | "dms">("guilds");
-
-  useEffect(() => {
-    if (!open) {
-      setActiveTab("guilds");
-    }
-  }, [open]);
-
   if (!account) return null;
-
-  const mockGuilds = [
-    { id: "g1", name: "Vani Studio Official", memberCount: 1420, icon: null },
-    { id: "g2", name: "Discord API Developers", memberCount: 420910, icon: null },
-    { id: "g3", name: "MMO Bot Farm Group", memberCount: 320, icon: null },
-    { id: "g4", name: "Genshin Impact VietNam", memberCount: 15400, icon: null },
-  ];
-
-  const mockDms = [
-    { id: "d1", name: "heloworld_user", lastMsg: "Check proxy hộ tôi với", time: "10 phút trước" },
-    { id: "d2", name: "vani_support", lastMsg: "Token này đang hoạt động tốt nha bạn", time: "1 giờ trước" },
-    { id: "d3", name: "spammer_bot_99", lastMsg: "Đã hoàn thành cấu hình tự động", time: "Hôm qua" },
-  ];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[480px]">
+      <DialogContent className="sm:max-w-[650px] w-[95vw] max-h-[85vh] flex flex-col gap-4">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Icon icon="solar:user-id-line-duotone" className="text-xl text-vanixjnk" />
-            <span>Chi tiết tài khoản Discord</span>
+          <DialogTitle className="flex items-center gap-2 text-xl">
+            <div className="size-8 rounded-full bg-vanixjnk/10 text-vanixjnk flex items-center justify-center shrink-0">
+              <Icon icon="ic:baseline-discord" className="size-5" />
+            </div>
+            Chi tiết tài khoản Discord
           </DialogTitle>
-          <DialogDescription>
-            Thông tin chi tiết và thống kê thời gian thực của tài khoản selfbot.
+          <DialogDescription className="text-left mt-1 text-[13px]">
+            Thông tin chi tiết về profile, Nitro, cấu hình thanh toán và danh sách liên kết.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-5 py-2">
-          <div className="flex items-center gap-4 p-4 rounded-xl border bg-muted/30">
-            {account.avatar ? (
-              <img
-                src={account.avatar}
-                alt={account.username}
-                className="size-14 rounded-full object-cover border border-vanixjnk/20 bg-neutral-900"
-              />
+        <div className="flex-1 overflow-y-auto px-2 space-y-5 max-h-[55vh]">
+          <div className="rounded-xl overflow-hidden border border-border bg-card/60 relative shrink-0">
+            {account.banner ? (
+              <div className="w-full relative aspect-[3/1] overflow-hidden bg-muted">
+                <img
+                  src={account.banner}
+                  alt="Banner"
+                  className="size-full object-cover"
+                />
+              </div>
             ) : (
-              <div className="size-14 rounded-full bg-vanixjnk/10 text-vanixjnk border border-vanixjnk/20 flex items-center justify-center">
-                <Icon icon="solar:user-bold-duotone" className="size-7 text-vanixjnk/75" />
-              </div>
+              <div
+                className={cn(
+                  "w-full aspect-[3/1] relative bg-cover bg-center",
+                  !account.accentColor ? "bg-primary/20" : ""
+                )}
+                style={getAccentColorStyle(account.accentColor)}
+              />
             )}
-            <div className="flex-1 min-w-0">
-              <h4 className="font-bold text-foreground truncate text-base">
-                {account.globalName}
-              </h4>
-              <p className="text-xs text-muted-foreground font-mono mt-0.5">ID: {account.discordId}</p>
-              <p className="text-xs text-vanixjnk font-medium mt-0.5">@{account.username}</p>
-            </div>
-            <div className="text-right">
-              <Badge
-                variant={account.status === "active" ? "success" : "destructive"}
-                className="text-[10px] font-bold"
-              >
-                {account.status === "active" ? "Đang hoạt động" : "Lỗi xác thực"}
-              </Badge>
-            </div>
-          </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-3 rounded-xl border flex flex-col gap-1">
-              <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                Cổng Gateway
-              </span>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <div
-                  className={cn(
-                    "size-2 rounded-full",
-                    account.isRunning ? "bg-emerald-500 animate-pulse" : "bg-muted-foreground"
-                  )}
+            <div className="px-4 relative z-10 -mt-10">
+              <div className="relative size-20 rounded-full border-4 border-card bg-muted shrink-0 shadow-md overflow-hidden">
+                <img
+                  src={account.avatar || "https://cdn.discordapp.com/embed/avatars/0.png"}
+                  alt={account.username}
+                  className="size-full object-cover rounded-full"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "https://cdn.discordapp.com/embed/avatars/0.png";
+                  }}
                 />
-                <span className="text-xs font-bold text-foreground">
-                  {account.isRunning ? "Đang kết nối" : "Ngoại tuyến / Tắt"}
-                </span>
               </div>
             </div>
 
-            <div className="p-3 rounded-xl border flex flex-col gap-1">
-              <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                Gói tài khoản
-              </span>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <Icon
-                  icon={
-                    account.nitroType !== "None"
-                      ? "solar:star-fall-minimalistic-line-duotone"
-                      : "solar:user-line-duotone"
-                  }
-                  className={cn(
-                    "size-4",
-                    account.nitroType !== "None" ? "text-amber-500 animate-bounce" : "text-muted-foreground"
-                  )}
-                />
-                <span className="text-xs font-bold text-foreground">
-                  {account.nitroType !== "None" ? account.nitroType : "Tài khoản thường"}
-                </span>
-              </div>
-            </div>
-
-            <div className="p-3 rounded-xl border flex flex-col gap-1">
-              <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                Máy chủ tham gia
-              </span>
-              <div className="flex items-baseline gap-1.5 mt-0.5">
-                <span className="text-lg font-extrabold text-foreground">
-                  {account.guildsCount}
-                </span>
-                <span className="text-[10px] text-muted-foreground">guilds</span>
-              </div>
-            </div>
-
-            <div className="p-3 rounded-xl border flex flex-col gap-1">
-              <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                Trò chuyện cá nhân
-              </span>
-              <div className="flex items-baseline gap-1.5 mt-0.5">
-                <span className="text-lg font-extrabold text-foreground">
-                  {mockDms.length}
-                </span>
-                <span className="text-[10px] text-muted-foreground">hội thoại</span>
-              </div>
-            </div>
-
-            <div className="p-3 rounded-xl border flex flex-col gap-1">
-              <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                Danh hiệu (Badges)
-              </span>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="text-xs font-bold text-foreground truncate max-w-full">
-                  {account.badges.join(", ") || "Không có"}
-                </span>
-              </div>
-            </div>
-
-            <div className="p-3 rounded-xl border flex flex-col gap-1">
-              <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                Kết nối liên kết
-              </span>
-              <div className="flex items-baseline gap-1.5 mt-0.5">
-                <span className="text-lg font-extrabold text-foreground">
-                  {account.connections.length}
-                </span>
-                <span className="text-[10px] text-muted-foreground">liên kết</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-3.5 border rounded-xl p-3 bg-muted/10">
-            <div className="flex gap-4 border-b border-border/60 pb-1.5">
-              <button
-                type="button"
-                className={cn(
-                  "pb-1.5 px-0.5 text-xs font-bold border-b-2 transition-all cursor-pointer",
-                  activeTab === "guilds"
-                    ? "border-vanixjnk text-vanixjnk"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
-                )}
-                onClick={() => setActiveTab("guilds")}
-              >
-                Máy chủ ({account.guildsCount})
-              </button>
-              <button
-                type="button"
-                className={cn(
-                  "pb-1.5 px-0.5 text-xs font-bold border-b-2 transition-all cursor-pointer",
-                  activeTab === "dms"
-                    ? "border-vanixjnk text-vanixjnk"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
-                )}
-                onClick={() => setActiveTab("dms")}
-              >
-                Trò chuyện ({mockDms.length})
-              </button>
-            </div>
-
-            <div className="max-h-[160px] overflow-y-auto pr-1 space-y-1.5 scrollbar-thin">
-              {activeTab === "guilds" ? (
-                mockGuilds.length > 0 ? (
-                  mockGuilds.map((g) => (
-                    <div
-                      key={g.id}
-                      className="flex items-center justify-between p-2 rounded-lg border bg-muted/20 text-xs"
-                    >
-                      <div className="flex flex-col min-w-0">
-                        <span className="font-semibold text-foreground truncate">{g.name}</span>
-                        <span className="text-[10px] text-muted-foreground mt-0.5">
-                          {g.memberCount.toLocaleString()} thành viên
-                        </span>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center py-4 text-xs text-muted-foreground">
-                    Không tìm thấy máy chủ nào
+            <div className="px-4 pb-4 pt-2 flex flex-col gap-2">
+              <div className="flex items-center justify-between gap-4 flex-wrap">
+                <div className="flex flex-col min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="text-base font-bold text-foreground truncate">
+                      {account.globalName || account.username}
+                    </h3>
+                    <Badge variant="secondary" className="text-[8px] font-bold px-1.5 py-0">
+                      User
+                    </Badge>
+                    {account.status === "active" ? (
+                      <Badge variant="success" className="text-[8px] font-bold px-1.5 py-0">
+                        Hoạt động
+                      </Badge>
+                    ) : (
+                      <Badge variant="destructive" className="text-[8px] font-bold px-1.5 py-0">
+                        Lỗi xác thực
+                      </Badge>
+                    )}
                   </div>
-                )
-              ) : mockDms.length > 0 ? (
-                mockDms.map((d) => (
-                  <div
-                    key={d.id}
-                    className="flex items-center justify-between p-2 rounded-lg border bg-muted/20 text-xs"
+                  <p className="text-[10px] text-muted-foreground font-mono truncate mt-0.5">
+                    @{account.username} <span className="text-[8px] opacity-60">({account.discordId})</span>
+                  </p>
+                </div>
+
+                {((account.badges && account.badges.length > 0) || (account.nitroType && account.nitroType !== "None")) && (
+                  <div className="flex flex-wrap items-center gap-1.5 shrink-0 bg-background/30 p-1.5 rounded-lg border border-border/40">
+                    {account.nitroType && account.nitroType !== "None" && (
+                      <div title={`Discord Nitro (${account.nitroType})`}>
+                        <img
+                          src="https://raw.githubusercontent.com/mezotv/discord-badges/main/assets/discordnitro.svg"
+                          alt="Discord Nitro"
+                          className="size-5 object-contain"
+                        />
+                      </div>
+                    )}
+                    {account.badges?.map((badge: string, i: number) => {
+                      const iconUrl = DISCORD_BADGE_ICONS[badge];
+                      if (iconUrl) {
+                        return (
+                          <div key={i} title={badge}>
+                            <img
+                              src={iconUrl}
+                              alt={badge}
+                              className="size-5 object-contain"
+                            />
+                          </div>
+                        );
+                      }
+                      return (
+                        <Badge key={i} variant="outline" className="text-[9px] font-semibold py-0.5 px-1.5 border-none text-foreground/80 bg-transparent hover:bg-transparent">
+                          {badge}
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Card className="p-4 bg-background/20 border-border/50 flex flex-col gap-2.5">
+              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+                <Icon icon="solar:user-line-duotone" />
+                Thông tin cơ bản
+              </span>
+              <div className="text-xs flex flex-col gap-1.5">
+                <div className="flex justify-between py-1 border-b border-border/10">
+                  <span className="text-muted-foreground">Discord ID:</span>
+                  <span className="font-semibold text-foreground">{account.discordId}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/10">
+                  <span className="text-muted-foreground">Ngày tạo:</span>
+                  <span className="font-semibold text-foreground">{getCreationDate(account.discordId)}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/10">
+                  <span className="text-muted-foreground">Trạng thái xác thực:</span>
+                  <span className="font-bold text-foreground">
+                    {account.status === "active" ? (
+                      <span className="text-emerald-500">Đang hoạt động</span>
+                    ) : (
+                      <span className="text-red-500">Lỗi / Bị khóa</span>
+                    )}
+                  </span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/10">
+                  <span className="text-muted-foreground">Khởi tạo ở hệ thống:</span>
+                  <span className="font-semibold text-foreground">
+                    {new Date(account.createdAt).toLocaleDateString("vi-VN", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })}
+                  </span>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="p-4 bg-background/20 border-border/50 flex flex-col gap-2.5">
+              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+                <Icon icon="solar:settings-line-duotone" />
+                Cấu hình kết nối & Gateway
+              </span>
+              <div className="text-xs flex flex-col gap-1.5">
+                <div className="flex justify-between py-1 border-b border-border/10">
+                  <span className="text-muted-foreground">Cổng kết nối Gateway:</span>
+                  <span className="font-bold text-foreground flex items-center gap-1">
+                    {account.isRunning ? (
+                      <>
+                        <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-emerald-500">Đang hoạt động (Live)</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="size-2 rounded-full bg-gray-500" />
+                        <span className="text-muted-foreground">Ngoại tuyến (Offline)</span>
+                      </>
+                    )}
+                  </span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/10">
+                  <span className="text-muted-foreground">Trạng thái Proxy:</span>
+                  <span className="font-bold text-foreground">
+                    {account.proxy ? (
+                      account.proxyStatus === "active" ? (
+                        <span className="text-emerald-500">Hoạt động (Live)</span>
+                      ) : (
+                        <span className="text-red-500">Hỏng (Dead)</span>
+                      )
+                    ) : (
+                      <span className="text-muted-foreground">Không sử dụng</span>
+                    )}
+                  </span>
+                </div>
+                <div className="flex flex-col py-1 border-b border-border/10 gap-1">
+                  <span className="text-muted-foreground">Địa chỉ Proxy:</span>
+                  <span className="font-mono text-[10px] text-foreground break-all bg-background/20 p-1.5 rounded border border-border/30">
+                    {account.proxy || "Không dùng proxy"}
+                  </span>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          <Card className="p-4 bg-background/20 border-border/50 flex flex-col gap-3">
+            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+              <Icon icon="solar:card-recieved-line-duotone" />
+              Gói dịch vụ & Thanh toán
+            </span>
+            <div className="text-xs flex flex-col gap-2">
+              <div className="flex justify-between items-center py-1 border-b border-border/10">
+                <span className="text-muted-foreground">Đăng ký Nitro:</span>
+                <div className="flex items-center gap-1.5">
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      "text-[9px] font-bold",
+                      account.nitroType === "None"
+                        ? "border-border text-foreground"
+                        : "bg-vanixjnk/15 text-vanixjnk border-vanixjnk/25 hover:bg-vanixjnk/15"
+                    )}
                   >
-                    <div className="flex flex-col min-w-0">
-                      <span className="font-semibold text-foreground truncate">@{d.name}</span>
-                      <span className="text-[10px] text-muted-foreground mt-0.5 truncate max-w-[200px]">
-                        {d.lastMsg}
+                    {account.nitroType !== "None" ? account.nitroType : "Không có"}
+                  </Badge>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          {account.connections && account.connections.length > 0 && (
+            <div className="flex flex-col gap-2">
+              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+                <Icon icon="solar:share-line-duotone" />
+                Liên kết tài khoản ({account.connections.length})
+              </span>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {account.connections.map((conn, i) => (
+                  <div key={i} className="p-2 rounded-lg border border-border/60 bg-background/20 flex items-center gap-2 text-xs">
+                    <Icon icon={getConnectionIcon(conn.type)} className="size-4 shrink-0 text-foreground/80" />
+                    <div className="flex flex-col min-w-0 flex-grow">
+                      <span className="font-bold text-foreground truncate" title={conn.name}>
+                        {conn.name}
+                      </span>
+                      <span className="text-[9px] text-muted-foreground uppercase tracking-tight truncate">
+                        {conn.type}
                       </span>
                     </div>
-                    <span className="text-[9px] text-muted-foreground font-medium shrink-0">
-                      {d.time}
-                    </span>
                   </div>
-                ))
-              ) : (
-                <div className="text-center py-4 text-xs text-muted-foreground">
-                  Không tìm thấy cuộc trò chuyện nào
-                </div>
-              )}
+                ))}
+              </div>
             </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-              Proxy kết nối
-            </label>
-            <div className="p-3 rounded-xl border flex items-center justify-between text-xs">
-              <span className="font-mono text-muted-foreground break-all max-w-[70%]">
-                {account.proxy || "Không dùng proxy"}
-              </span>
-              {account.proxy && (
-                <Badge
-                  variant={account.proxyStatus === "active" ? "success" : "destructive"}
-                  className="text-[9px] font-bold"
-                >
-                  {account.proxyStatus === "active" ? "Live" : "Dead"}
-                </Badge>
-              )}
-            </div>
-          </div>
+          )}
         </div>
 
         <DialogFooter>

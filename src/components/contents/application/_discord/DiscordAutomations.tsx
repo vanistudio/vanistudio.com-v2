@@ -18,6 +18,19 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Card } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface AutomationAction {
   id: string;
@@ -400,16 +413,17 @@ export default function DiscordAutomations() {
 
                       <div className="space-y-1.5">
                         <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Sự kiện kích hoạt</label>
-                        <select
-                          value={triggerType}
-                          onChange={(e: any) => setTriggerType(e.target.value)}
-                          className="w-full h-9 rounded-lg border border-border bg-background px-3 py-1 text-[13px] font-semibold text-foreground focus-visible:outline-none"
-                        >
-                          <option value="dm_received">Khi nhận tin nhắn riêng (DM)</option>
-                          <option value="mention_received">Khi bị tag tên (@mention)</option>
-                          <option value="cron">Hẹn giờ cố định (Cron Job)</option>
-                          <option value="interval">Lặp lại định kỳ (Interval)</option>
-                        </select>
+                        <Select value={triggerType} onValueChange={(val: any) => setTriggerType(val)}>
+                          <SelectTrigger className="w-full h-9 text-[13px] bg-background border-border">
+                            <SelectValue placeholder="Chọn sự kiện kích hoạt" />
+                          </SelectTrigger>
+                          <SelectContent position="popper" align="start">
+                            <SelectItem value="dm_received" className="text-[13px]">Khi nhận tin nhắn riêng (DM)</SelectItem>
+                            <SelectItem value="mention_received" className="text-[13px]">Khi bị tag tên (@mention)</SelectItem>
+                            <SelectItem value="cron" className="text-[13px]">Hẹn giờ cố định (Cron Job)</SelectItem>
+                            <SelectItem value="interval" className="text-[13px]">Lặp lại định kỳ (Interval)</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
 
                       {triggerType === "dm_received" && (
@@ -479,21 +493,28 @@ export default function DiscordAutomations() {
                           2. Chuỗi hành động thực thi (Actions Chain)
                         </h4>
 
-                        <select
-                          onChange={(e) => {
-                            if (e.target.value) {
-                              handleAddAction(e.target.value as any);
-                              e.target.value = "";
-                            }
-                          }}
-                          className="rounded-lg border border-border bg-background px-2.5 py-1 text-xs font-bold text-foreground focus-visible:outline-none"
-                        >
-                          <option value="">+ Thêm hành động</option>
-                          <option value="auto_reply">Phản hồi tự động</option>
-                          <option value="change_status">Thay đổi trạng thái (Preset)</option>
-                          <option value="send_message">Gửi tin nhắn kênh cụ thể</option>
-                          <option value="send_webhook">Bắn tin nhắn qua Webhook</option>
-                        </select>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="sm" className="h-8 text-xs font-bold gap-1 bg-background border-border cursor-pointer">
+                              <Icon icon="solar:add-circle-line-duotone" className="size-3.5" />
+                              Thêm hành động
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-56">
+                            <DropdownMenuItem onClick={() => handleAddAction("auto_reply")} className="text-[13px] cursor-pointer">
+                              Phản hồi tự động
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleAddAction("change_status")} className="text-[13px] cursor-pointer">
+                              Thay đổi trạng thái (Preset)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleAddAction("send_message")} className="text-[13px] cursor-pointer">
+                              Gửi tin nhắn kênh cụ thể
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleAddAction("send_webhook")} className="text-[13px] cursor-pointer">
+                              Bắn tin nhắn qua Webhook
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
 
                       {actions.length === 0 ? (
@@ -544,16 +565,19 @@ export default function DiscordAutomations() {
                               {act.type === "change_status" && (
                                 <div className="space-y-1.5">
                                   <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Chọn Preset Trạng Thái</label>
-                                  <select
+                                  <Select
                                     value={act.config.presetId || ""}
-                                    onChange={(e) => handleUpdateActionConfig(act.id, "presetId", e.target.value)}
-                                    className="w-full h-9 rounded-lg border border-border bg-background px-3 py-1 text-[13px] font-semibold text-foreground focus-visible:outline-none"
+                                    onValueChange={(val) => handleUpdateActionConfig(act.id, "presetId", val)}
                                   >
-                                    <option value="">-- Chọn Preset --</option>
-                                    <option value="preset-1">Playing Valorant</option>
-                                    <option value="preset-2">Listening Spotify Coding</option>
-                                    <option value="preset-3">Streaming League of Legends</option>
-                                  </select>
+                                    <SelectTrigger className="w-full h-9 text-[13px] bg-background border-border">
+                                      <SelectValue placeholder="-- Chọn Preset --" />
+                                    </SelectTrigger>
+                                    <SelectContent position="popper" align="start">
+                                      <SelectItem value="preset-1" className="text-[13px]">Playing Valorant</SelectItem>
+                                      <SelectItem value="preset-2" className="text-[13px]">Listening Spotify Coding</SelectItem>
+                                      <SelectItem value="preset-3" className="text-[13px]">Streaming League of Legends</SelectItem>
+                                    </SelectContent>
+                                  </Select>
                                 </div>
                               )}
 

@@ -200,7 +200,7 @@ export default function PubCheckLiveUid() {
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-2.5 max-h-[450px] overflow-y-auto pr-1.5 scrollbar-thin">
+                  <div className="flex flex-col gap-2.5 max-h-[450px] overflow-y-auto pr-1.5">
                     {checkedResults.map((item, idx) => (
                       <div
                         key={idx}

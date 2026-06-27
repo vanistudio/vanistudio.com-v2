@@ -38,6 +38,8 @@ interface DiscordAccount {
 
 const navItems = [
   { name: "Tài khoản", href: "/application/discord/accounts", icon: "solar:users-group-two-rounded-line-duotone" },
+  { name: "Trạng thái & Rich Presence", href: "/application/discord/presences", icon: "solar:gamepad-old-line-duotone" },
+  { name: "Tự động hóa", href: "/application/discord/automations", icon: "solar:cpu-bolt-line-duotone" },
   { name: "Lịch sử hoạt động", href: "/application/discord/logs", icon: "solar:document-text-line-duotone" },
 ];
 

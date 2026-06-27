@@ -255,7 +255,7 @@ export default function AccountDetailsDialog({
                         </button>
                       </div>
 
-                      <div className="max-h-[220px] overflow-y-auto pr-1 space-y-1.5 scrollbar-thin">
+                      <div className="max-h-[220px] overflow-y-auto pr-1 space-y-1.5">
                         {activeTab === "groups" ? (
                           detailStats.groups?.length > 0 ? (
                             detailStats.groups.map((g: any) => {
