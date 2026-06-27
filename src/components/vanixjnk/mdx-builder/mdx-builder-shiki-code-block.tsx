@@ -34,7 +34,7 @@ export const ShikiCodeBlock = ({ code, lang }: { code: string; lang: string }) =
     getHighlighterInstance().then(async (highlighter) => {
       if (!isMounted) return;
       try {
-        const cleanLang = lang.toLowerCase().trim();
+        const cleanLang = lang.toLowerCase().trim().split(/\s+/)[0];
         const supportedLangs = highlighter.getLoadedLanguages();
         
         if (cleanLang && cleanLang !== "text" && !supportedLangs.includes(cleanLang)) {
