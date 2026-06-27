@@ -298,7 +298,7 @@ export default function DiscordPresences() {
       .filter((a) => selectedAccountsToApply.includes(a.id))
       .map((a) => `@${a.username}`)
       .join(", ");
-      
+
     toast.promise(
       new Promise((resolve) => setTimeout(resolve, 1500)),
       {
@@ -315,6 +315,54 @@ export default function DiscordPresences() {
       case "idle": return "bg-[#f0b232]";
       case "dnd": return "bg-[#f23f43]";
       default: return "bg-[#80848e]";
+    }
+  };
+
+  const renderStatusIcon = (st: "online" | "idle" | "dnd" | "invisible", sizeClass = "size-3.5", idKey = "global") => {
+    switch (st) {
+      case "online":
+        return (
+          <svg className={sizeClass} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" fill="#23a55a" />
+          </svg>
+        );
+      case "idle":
+        return (
+          <svg className={sizeClass} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <mask id={`idle-mask-${idKey}`}>
+                <circle cx="12" cy="12" r="10" fill="white" />
+                <circle cx="7" cy="7" r="8" fill="black" />
+              </mask>
+            </defs>
+            <circle cx="12" cy="12" r="10" fill="#f0b232" mask={`url(#idle-mask-${idKey})`} />
+          </svg>
+        );
+      case "dnd":
+        return (
+          <svg className={sizeClass} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <mask id={`dnd-mask-${idKey}`}>
+                <circle cx="12" cy="12" r="10" fill="white" />
+                <rect x="3" y="10" width="18" height="4" rx="2" fill="black" />
+              </mask>
+            </defs>
+            <circle cx="12" cy="12" r="10" fill="#f23f43" mask={`url(#dnd-mask-${idKey})`} />
+          </svg>
+        );
+      default:
+        // offline / invisible
+        return (
+          <svg className={sizeClass} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <mask id={`invisible-mask-${idKey}`}>
+                <circle cx="12" cy="12" r="10" fill="white" />
+                <circle cx="12" cy="12" r="5.2" fill="black" />
+              </mask>
+            </defs>
+            <circle cx="12" cy="12" r="10" fill="#80848e" mask={`url(#invisible-mask-${idKey})`} />
+          </svg>
+        );
     }
   };
 
@@ -363,7 +411,7 @@ export default function DiscordPresences() {
 
       <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
         <div className="border-l border-r border-dashed border-primary/20 bg-card/10 flex-1 flex flex-col">
-          
+
           <div className="px-6 py-4 border-b border-border/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-2">
               {navItems.map((item) => {
@@ -372,11 +420,10 @@ export default function DiscordPresences() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-sm font-semibold transition-all duration-200 ${
-                      active
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-sm font-semibold transition-all duration-200 ${active
                         ? "bg-vanixjnk/15 border-vanixjnk/25 text-vanixjnk shadow-sm"
                         : "border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground"
-                    }`}
+                      }`}
                   >
                     <Icon
                       icon={item.icon}
@@ -389,159 +436,152 @@ export default function DiscordPresences() {
             </div>
           </div>
 
-          <div className="p-6 space-y-6 flex-1">
+          <div className="p-6 flex-1 flex flex-col">
+            <div className="mb-6 pb-4 border-b border-border/60">
+              <h3 className="text-base font-bold text-foreground">Trạng thái & Rich Presence (RPC)</h3>
+              <p className="text-xs text-muted-foreground mt-0.5 font-medium">
+                Cấu hình trạng thái Online, Custom Status và Game RPC hiển thị trên Profile của selfbots.
+              </p>
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-              
-              {/* Left Column: Management & Configuration */}
               <div className="lg:col-span-8 flex flex-col gap-6">
-                
-                {/* Unified Card: Presets & Rotator Hub */}
-                <Card className="border border-border/60 bg-background/50 backdrop-blur-sm rounded-lg overflow-hidden">
-                  <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-border/60">
-                    
-                    {/* Left: Presets list */}
-                    <div className="p-5 flex flex-col gap-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Icon icon="solar:folder-with-files-line-duotone" className="size-5 text-vanixjnk" />
-                          <h3 className="text-sm font-extrabold text-foreground">Danh sách Presets ({presets.length})</h3>
-                        </div>
-                        <Button
-                          variant="vanixjnk"
-                          size="xs"
-                          onClick={() => setIsNewPresetOpen(true)}
-                          className="cursor-pointer h-8 text-[11px]"
-                        >
-                          <Icon icon="solar:add-circle-line-duotone" className="size-3.5 mr-1" />
-                          Tạo mới
-                        </Button>
+
+                {/* Top side-by-side Presets & Rotator cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Presets List Card */}
+                  <Card className="bg-card/30! border-border shadow-sm rounded-xl p-5 flex flex-col gap-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Icon icon="solar:folder-with-files-line-duotone" className="size-5 text-vanixjnk" />
+                        <h3 className="text-sm font-extrabold text-foreground">Presets ({presets.length})</h3>
                       </div>
+                      <Button
+                        variant="vanixjnk"
+                        size="xs"
+                        onClick={() => setIsNewPresetOpen(true)}
+                        className="cursor-pointer h-8 text-[11px]"
+                      >
+                        <Icon icon="solar:add-circle-line-duotone" className="size-3.5 mr-1" />
+                        Tạo mới
+                      </Button>
+                    </div>
 
-                      <div className="flex flex-col gap-1.5 max-h-[220px] overflow-y-auto pr-1">
-                        {presets.map((preset) => {
-                          const isSelected = preset.id === selectedPreset.id;
-                          const actName = preset.activities[0]?.name || "Không có Game";
-                          const typeText = preset.activities[0] ? getActivityTypeLabel(preset.activities[0].type) : "";
+                    <div className="flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-1">
+                      {presets.map((preset) => {
+                        const isSelected = preset.id === selectedPreset.id;
+                        const actName = preset.activities[0]?.name || "Không có Game";
+                        const typeText = preset.activities[0] ? getActivityTypeLabel(preset.activities[0].type) : "";
 
+                        return (
+                          <div
+                            key={preset.id}
+                            onClick={() => handleSelectPreset(preset)}
+                            className={`flex items-start gap-3 w-full text-left p-3 rounded-xl border transition-all duration-200 relative group cursor-pointer ${isSelected
+                                ? "bg-vanixjnk/15 border-vanixjnk/25 text-vanixjnk shadow-sm"
+                                : "bg-muted/30 border-transparent text-muted-foreground hover:bg-muted/70 hover:text-foreground"
+                              }`}
+                          >
+                            <div className="mt-0.5 shrink-0">
+                              {renderStatusIcon(preset.status, "size-4.5", `preset-list-${preset.id}`)}
+                            </div>
+                            <div className="flex flex-col gap-0.5 min-w-0 w-full pr-6">
+                              <span className={`text-[13px] font-bold whitespace-normal md:whitespace-nowrap md:truncate md:block ${isSelected ? "text-vanixjnk" : "text-foreground"}`}>
+                                {preset.name}
+                              </span>
+                              <span className="text-[10px] font-medium text-muted-foreground/80 whitespace-normal md:whitespace-nowrap md:truncate md:block font-mono">
+                                {typeText} {actName}
+                              </span>
+                            </div>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeletePreset(preset.id);
+                              }}
+                              className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-500 p-1 transition-all cursor-pointer"
+                            >
+                              <Icon icon="solar:trash-bin-trash-line-duotone" className="size-4" />
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </Card>
+
+                  {/* Rotator Card */}
+                  <Card className="bg-card/30! border-border shadow-sm rounded-xl p-5 flex flex-col gap-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Icon icon="solar:restart-line-duotone" className="size-5 text-emerald-500" />
+                        <h3 className="text-sm font-extrabold text-foreground">Xoay vòng (Rotator)</h3>
+                      </div>
+                      <Switch checked={rotatorActive} onCheckedChange={handleToggleRotator} />
+                    </div>
+
+                    <p className="text-[11px] text-muted-foreground leading-normal">
+                      Tự động xoay vòng các trạng thái hoạt động dựa trên các presets được tích chọn.
+                    </p>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Thời gian (giây)</label>
+                        <Input
+                          type="number"
+                          placeholder="300"
+                          value={rotatorInterval}
+                          onChange={(e) => setRotatorInterval(e.target.value)}
+                          className="h-8 text-[12px] bg-background border-border"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Kiểu xoay</label>
+                        <Select value={rotatorMode} onValueChange={(val: any) => setRotatorMode(val)}>
+                          <SelectTrigger className="w-full h-8 text-[11px] bg-background border-border">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="sequential" className="text-xs">Tuần tự</SelectItem>
+                            <SelectItem value="random" className="text-xs">Ngẫu nhiên</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground font-medium">
+                        Chọn Preset xoay vòng:
+                      </label>
+                      <div className="flex flex-col gap-1 max-h-[140px] overflow-y-auto border border-border rounded-lg p-1.5 bg-background">
+                        {presets.map((p) => {
+                          const isChecked = selectedForRotation.includes(p.id);
                           return (
                             <div
-                              key={preset.id}
-                              onClick={() => handleSelectPreset(preset)}
-                              className={`p-3 rounded-lg border cursor-pointer transition-all duration-200 flex items-center justify-between group ${
-                                isSelected
-                                  ? "bg-vanixjnk/10 border-vanixjnk/30 shadow-[0_0_12px_rgba(114,137,218,0.05)]"
-                                  : "bg-background/40 border-border/50 hover:bg-muted/30 hover:border-border"
-                              }`}
+                              key={p.id}
+                              onClick={() => toggleRotationItem(p.id)}
+                              className={`flex items-center justify-between p-2 rounded-md cursor-pointer transition-all ${isChecked
+                                  ? "bg-vanixjnk/10 text-vanixjnk"
+                                  : "hover:bg-muted/45 text-muted-foreground hover:text-foreground"
+                                }`}
                             >
-                              <div className="flex items-center gap-2.5 min-w-0">
-                                <div className={`size-3 rounded-full shrink-0 ${getStatusColor(preset.status)}`} />
-                                <div className="flex flex-col min-w-0">
-                                  <span className="font-bold text-xs text-foreground truncate">{preset.name}</span>
-                                  <span className="text-[10px] text-muted-foreground truncate">
-                                    {typeText} {actName}
-                                  </span>
-                                </div>
+                              <div className="flex items-center gap-2 min-w-0">
+                                {renderStatusIcon(p.status, "size-3.5", `rotator-list-${p.id}`)}
+                                <span className="text-xs font-bold truncate">{p.name}</span>
                               </div>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDeletePreset(preset.id);
-                                }}
-                                className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-500 p-1 transition-all cursor-pointer"
-                              >
-                                <Icon icon="solar:trash-bin-trash-line-duotone" className="size-4" />
-                              </button>
+                              <Checkbox
+                                checked={isChecked}
+                                onCheckedChange={() => toggleRotationItem(p.id)}
+                                className="size-4 pointer-events-none data-[state=checked]:bg-vanixjnk data-[state=checked]:border-vanixjnk"
+                              />
                             </div>
                           );
                         })}
                       </div>
                     </div>
+                  </Card>
+                </div>
 
-                    {/* Right: Rotator */}
-                    <div className="p-5 flex flex-col gap-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Icon icon="solar:restart-line-duotone" className="size-5 text-emerald-500" />
-                          <h3 className="text-sm font-extrabold text-foreground">Xoay vòng tự động (Rotator)</h3>
-                        </div>
-                        <Switch checked={rotatorActive} onCheckedChange={handleToggleRotator} />
-                      </div>
-
-                      <p className="text-[11px] text-muted-foreground leading-normal">
-                        Tự động xoay vòng các trạng thái hoạt động dựa trên các presets được tích chọn.
-                      </p>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Thời gian (giây)</label>
-                          <Input
-                            type="number"
-                            placeholder="300"
-                            value={rotatorInterval}
-                            onChange={(e) => setRotatorInterval(e.target.value)}
-                            className="h-8 text-[12px] bg-background"
-                          />
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Chế độ xoay</label>
-                          <div className="flex rounded-lg border border-border overflow-hidden h-8">
-                            <button
-                              onClick={() => setRotatorMode("sequential")}
-                              className={`flex-1 text-[11px] font-bold transition-all text-center cursor-pointer ${
-                                rotatorMode === "sequential"
-                                  ? "bg-vanixjnk/15 text-vanixjnk font-black"
-                                  : "bg-background text-muted-foreground hover:bg-muted/40"
-                              }`}
-                            >
-                              Tuần tự
-                            </button>
-                            <button
-                              onClick={() => setRotatorMode("random")}
-                              className={`flex-1 text-[11px] font-bold transition-all text-center cursor-pointer ${
-                                rotatorMode === "random"
-                                  ? "bg-vanixjnk/15 text-vanixjnk font-black"
-                                  : "bg-background text-muted-foreground hover:bg-muted/40"
-                              }`}
-                            >
-                              Ngẫu nhiên
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                          Chọn Preset xoay vòng:
-                        </label>
-                        <div className="flex flex-wrap gap-2 max-h-[85px] overflow-y-auto border border-border/60 rounded-lg p-2 bg-background">
-                          {presets.map((p) => {
-                            const isChecked = selectedForRotation.includes(p.id);
-                            return (
-                              <div
-                                key={p.id}
-                                onClick={() => toggleRotationItem(p.id)}
-                                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-[11px] font-bold cursor-pointer transition-all ${
-                                  isChecked
-                                    ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-500"
-                                    : "bg-background border-border/80 text-muted-foreground hover:bg-muted/40"
-                                }`}
-                              >
-                                <Checkbox
-                                  checked={isChecked}
-                                  className="size-3.5 pointer-events-none data-[state=checked]:bg-emerald-500 data-[state=checked]:border-emerald-500"
-                                />
-                                <span className="truncate max-w-[100px]">{p.name}</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-
-                {/* Editor Card: Tabbed Presence Config */}
-                <Card className="border border-border bg-card/10 rounded-lg p-6 flex flex-col gap-6">
+                {/* Editor Card */}
+                <Card className="bg-card/30! border-border shadow-sm rounded-xl p-6 flex flex-col gap-6">
                   <div className="flex items-center justify-between border-b border-border/60 pb-3">
                     <div className="flex items-center gap-2">
                       <Icon icon="solar:pen-new-round-line-duotone" className="size-5 text-vanixjnk" />
@@ -554,15 +594,15 @@ export default function DiscordPresences() {
                   <Tabs defaultValue="profile" className="w-full">
                     <TabsList className="grid grid-cols-3 w-full bg-background/50 border border-border/60 p-1 h-11 rounded-lg">
                       <TabsTrigger value="profile" className="text-xs font-bold gap-1.5 data-[state=active]:bg-background/80 data-[state=active]:text-foreground">
-                        <Icon icon="solar:user-bold-duotone" className="size-4 text-vanixjnk" />
+                        <Icon icon="solar:user-line-duotone" className="size-4 text-vanixjnk" />
                         Hồ sơ & Trạng thái
                       </TabsTrigger>
                       <TabsTrigger value="rpc" className="text-xs font-bold gap-1.5 data-[state=active]:bg-background/80 data-[state=active]:text-foreground">
-                        <Icon icon="solar:gamepad-bold-duotone" className="size-4 text-vanixjnk" />
+                        <Icon icon="solar:gamepad-line-duotone" className="size-4 text-vanixjnk" />
                         Rich Presence (RPC)
                       </TabsTrigger>
                       <TabsTrigger value="assets-buttons" className="text-xs font-bold gap-1.5 data-[state=active]:bg-background/80 data-[state=active]:text-foreground">
-                        <Icon icon="solar:link-bold-duotone" className="size-4 text-vanixjnk" />
+                        <Icon icon="solar:link-line-duotone" className="size-4 text-vanixjnk" />
                         Ảnh & Nút liên kết
                       </TabsTrigger>
                     </TabsList>
@@ -587,25 +627,25 @@ export default function DiscordPresences() {
                             <SelectContent>
                               <SelectItem value="online">
                                 <div className="flex items-center gap-2 text-[13px]">
-                                  <div className="size-2.5 rounded-full bg-[#23a55a]" />
+                                  {renderStatusIcon("online", "size-3.5", "sel-online")}
                                   <span>Trực tuyến (Online)</span>
                                 </div>
                               </SelectItem>
                               <SelectItem value="idle">
                                 <div className="flex items-center gap-2 text-[13px]">
-                                  <div className="size-2.5 rounded-full bg-[#f0b232]" />
+                                  {renderStatusIcon("idle", "size-3.5", "sel-idle")}
                                   <span>Trạng thái chờ (Idle)</span>
                                 </div>
                               </SelectItem>
                               <SelectItem value="dnd">
                                 <div className="flex items-center gap-2 text-[13px]">
-                                  <div className="size-2.5 rounded-full bg-[#f23f43]" />
+                                  {renderStatusIcon("dnd", "size-3.5", "sel-dnd")}
                                   <span>Không làm phiền (DnD)</span>
                                 </div>
                               </SelectItem>
                               <SelectItem value="invisible">
                                 <div className="flex items-center gap-2 text-[13px]">
-                                  <div className="size-2.5 rounded-full bg-[#80848e]" />
+                                  {renderStatusIcon("invisible", "size-3.5", "sel-inv")}
                                   <span>Ẩn danh (Invisible)</span>
                                 </div>
                               </SelectItem>
@@ -718,7 +758,7 @@ export default function DiscordPresences() {
                       {/* Assets */}
                       <div className="space-y-3">
                         <h4 className="text-[10px] font-black text-foreground uppercase tracking-wider flex items-center gap-1.5 border-b border-border/40 pb-1.5">
-                          <Icon icon="solar:gallery-bold" className="size-4 text-vanixjnk" />
+                          <Icon icon="solar:gallery-line-duotone" className="size-4 text-vanixjnk" />
                           Hình ảnh hiển thị (Assets)
                         </h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -747,12 +787,12 @@ export default function DiscordPresences() {
                       {/* Buttons */}
                       <div className="space-y-3">
                         <h4 className="text-[10px] font-black text-foreground uppercase tracking-wider flex items-center gap-1.5 border-b border-border/40 pb-1.5">
-                          <Icon icon="solar:link-bold" className="size-4 text-vanixjnk" />
+                          <Icon icon="solar:link-line-duotone" className="size-4 text-vanixjnk" />
                           Nút liên kết (Buttons)
                         </h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-1.5">
-                            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground font-mono font-mono">Button 1 Label</label>
+                            <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground font-mono">Button 1 Label</label>
                             <Input placeholder="Ví dụ: Tham gia Discord" value={btn1Label} onChange={(e) => setBtn1Label(e.target.value)} className="h-9 text-[13px] bg-background border-border/80" />
                           </div>
                           <div className="space-y-1.5">
@@ -785,7 +825,7 @@ export default function DiscordPresences() {
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-64 p-3 flex flex-col gap-2" align="start">
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Chọn tài khoản</span>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground font-medium">Chọn tài khoản</span>
                           <div className="flex flex-col gap-1 max-h-[160px] overflow-y-auto border border-border rounded-lg p-1.5 bg-background">
                             {mockAccountsList.map((acc) => {
                               const isChecked = selectedAccountsToApply.includes(acc.id);
@@ -852,41 +892,30 @@ export default function DiscordPresences() {
                   </div>
                 </Card>
               </div>
+              <div className="lg:col-span-4 flex flex-col gap-4 lg:sticky lg:top-[88px]">
 
-              {/* Right Column: Live Preview */}
-              <div className="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-6">
-                <div className="w-full flex flex-col gap-4">
-                  <div className="flex items-center justify-between border-b border-border/60 pb-3">
-                    <h3 className="text-sm font-extrabold text-foreground flex items-center gap-1.5">
-                      <Icon icon="solar:monitor-play-line-duotone" className="size-4 text-vanixjnk" />
-                      Live Preview (Xem thử)
-                    </h3>
-                  </div>
-
-                  <DiscordProfileLivePreview
-                    status={status}
-                    customEmoji={customEmoji}
-                    customText={customText}
-                    bannerColor={bannerColor}
-                    bio={bio}
-                    activityType={activityType}
-                    activityName={activityName}
-                    details={details}
-                    state={state}
-                    largeImage={largeImage}
-                    largeText={largeText}
-                    smallImage={smallImage}
-                    smallText={smallText}
-                    btn1Label={btn1Label}
-                    btn1Url={btn1Url}
-                    btn2Label={btn2Label}
-                    btn2Url={btn2Url}
-                    displayName="Vani Dev"
-                    username="vanixjnk"
-                  />
-                </div>
+                <DiscordProfileLivePreview
+                  status={status}
+                  customEmoji={customEmoji}
+                  customText={customText}
+                  bannerColor={bannerColor}
+                  bio={bio}
+                  activityType={activityType}
+                  activityName={activityName}
+                  details={details}
+                  state={state}
+                  largeImage={largeImage}
+                  largeText={largeText}
+                  smallImage={smallImage}
+                  smallText={smallText}
+                  btn1Label={btn1Label}
+                  btn1Url={btn1Url}
+                  btn2Label={btn2Label}
+                  btn2Url={btn2Url}
+                  displayName="Vani Dev"
+                  username="vanixjnk"
+                />
               </div>
-
             </div>
           </div>
         </div>

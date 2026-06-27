@@ -180,38 +180,23 @@ export function DiscordProfileLivePreview({
             case "idle":
                 return (
                     <svg width="24" height="24" viewBox="0 0 24 24">
-                        <defs>
-                            <mask id={idleMaskId}>
-                                <circle cx="12" cy="12" r="8" fill="white" />
-                                <circle cx="8" cy="8" r="6.5" fill="black" />
-                            </mask>
-                        </defs>
-                        <circle cx="12" cy="12" r="8" fill="#f0b232" mask={`url(#${idleMaskId})`} />
+                        <circle cx="12" cy="12" r="8" fill="#f0b232" />
+                        <circle cx="8" cy="8" r="6.5" fill={t.cardBg} />
                     </svg>
                 )
             case "dnd":
                 return (
                     <svg width="24" height="24" viewBox="0 0 24 24">
-                        <defs>
-                            <mask id={dndMaskId}>
-                                <circle cx="12" cy="12" r="8" fill="white" />
-                                <rect x="5" y="10.5" width="14" height="3" rx="1.5" fill="black" />
-                            </mask>
-                        </defs>
-                        <circle cx="12" cy="12" r="8" fill="#f23f43" mask={`url(#${dndMaskId})`} />
+                        <circle cx="12" cy="12" r="8" fill="#f23f43" />
+                        <rect x="5" y="10.5" width="14" height="3" rx="1.5" fill={t.cardBg} />
                     </svg>
                 )
             default:
                 // offline/invisible
                 return (
                     <svg width="24" height="24" viewBox="0 0 24 24">
-                        <defs>
-                            <mask id={offlineMaskId}>
-                                <circle cx="12" cy="12" r="8" fill="white" />
-                                <circle cx="12" cy="12" r="4.5" fill="black" />
-                            </mask>
-                        </defs>
-                        <circle cx="12" cy="12" r="8" fill="#80848e" mask={`url(#${offlineMaskId})`} />
+                        <circle cx="12" cy="12" r="8" fill="#80848e" />
+                        <circle cx="12" cy="12" r="4.5" fill={t.cardBg} />
                     </svg>
                 )
         }
