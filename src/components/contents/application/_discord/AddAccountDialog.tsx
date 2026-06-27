@@ -223,7 +223,6 @@ export default function AddAccountDialog({
 
         <div className="flex-1 overflow-y-auto px-0.5">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 py-3 md:h-[340px]">
-            {/* ---- Col 1: DevTools Screenshot ---- */}
             <div className="flex flex-col gap-3 h-full overflow-hidden">
               <p className="text-sm shrink-0">
                 <span className="font-semibold">Step 1:</span>{" "}
@@ -243,8 +242,6 @@ export default function AddAccountDialog({
                 />
               </div>
             </div>
-
-            {/* ---- Col 2: Script ---- */}
             <div className="flex flex-col gap-3 h-full overflow-hidden">
               <p className="text-sm shrink-0">
                 <span className="font-semibold">Step 2:</span>{" "}
