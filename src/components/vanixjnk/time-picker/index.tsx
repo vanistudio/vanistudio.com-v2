@@ -19,7 +19,7 @@ import { Icon } from "@iconify/react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface TimePickerProps {
-    value?: string | null; // e.g. "08:30"
+    value?: string | null;
     onChange: (time: string | null) => void;
     className?: string;
     placeholder?: string;
@@ -36,7 +36,6 @@ export function TimePicker({
     const [isOpen, setIsOpen] = React.useState(false);
     const isMobile = useIsMobile();
 
-    // Split "HH:mm" into hours and minutes
     const initialTime = React.useMemo(() => {
         if (!value) return { hour: 8, minute: 0 };
         const parts = value.split(":");
