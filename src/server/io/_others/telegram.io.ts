@@ -1,7 +1,6 @@
 import { TelegramClient } from "telegram";
 import { StringSession } from "telegram/sessions";
 
-// Parse proxy string (e.g. socks5://username:password@ip:port or ip:port or ip:port:user:pass)
 export function parseProxy(proxyStr: string) {
   try {
     let protocol = "socks5";

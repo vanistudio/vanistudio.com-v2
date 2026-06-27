@@ -201,7 +201,7 @@ export class DiscordService {
 
     const key = cryptoLib.randomBytes(32);
     const keyBase64 = key.toString("base64");
-    const expires = Date.now() + 180000; // 3 phút
+    const expires = Date.now() + 180000;
 
     const payload = JSON.stringify({ u: userId, k: keyBase64, e: expires });
     const payloadB64 = Buffer.from(payload).toString("base64url");

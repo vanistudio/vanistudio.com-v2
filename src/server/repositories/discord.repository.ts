@@ -132,8 +132,6 @@ export class DiscordRepository {
       .where(and(eq(discordAccounts.id, id), eq(discordAccounts.userId, userId)));
   }
 
-  // ==================== PRESETS ====================
-
   async getPresets(userId: string): Promise<DiscordPresencePreset[]> {
     return await db
       .select()
