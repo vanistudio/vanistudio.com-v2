@@ -9,7 +9,7 @@ function getHighlighterInstance() {
   if (!highlighterPromise) {
     highlighterPromise = import("shiki").then((shiki) =>
       shiki.createHighlighter({
-        themes: ["github-dark", "github-light"],
+        themes: ["vesper", "github-light"],
         langs: [
           "javascript", "typescript", "jsx", "tsx",
           "rust", "go", "python", "html", "css",
@@ -26,7 +26,7 @@ function getHighlighterInstance() {
 export const ShikiCodeBlock = ({ code, lang }: { code: string; lang: string }) => {
   const { resolvedTheme } = useTheme();
   const [highlightedHtml, setHighlightedHtml] = useState<string>("");
-  const activeTheme = resolvedTheme === "light" ? "github-light" : "github-dark";
+  const activeTheme = resolvedTheme === "light" ? "github-light" : "vesper";
 
   useEffect(() => {
     let isMounted = true;
