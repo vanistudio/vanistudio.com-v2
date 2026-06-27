@@ -560,7 +560,6 @@ export const renderMdxComponent = (tagName: string, props: any, children: any, k
       return <TooltipContent key={key} className={itemClassName} {...otherProps}>{children}</TooltipContent>;
     case "TooltipProvider":
       return <TooltipProvider key={key} className={itemClassName} {...otherProps}>{children}</TooltipProvider>;
-    // === Mintlify-style Components ===
     case "Tree":
       return (
         <div key={key} className="not-prose my-4">
@@ -568,7 +567,7 @@ export const renderMdxComponent = (tagName: string, props: any, children: any, k
         </div>
       );
     case "Tree.Folder":
-      return <TreeFolderRenderer key={key} name={props.name || "folder"} defaultOpen={props.defaultOpen} openable={props.openable}>{children}</TreeFolderRenderer>;
+      return <TreeFolderRenderer key={key} name={props.name || "folder"} defaultOpen={props.defaultOpen} openable={props.openable} isRoot={props.isRoot}>{children}</TreeFolderRenderer>;
     case "Tree.File":
       return <TreeFileRenderer key={key} name={props.name || "file"} />;
     case "Step": {
