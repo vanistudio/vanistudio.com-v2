@@ -17,7 +17,7 @@ import { UI_COMPONENTS_TEMPLATES } from "./mdx-builder-templates";
 import { MdxRenderer } from "./mdx-builder-parser";
 import { MdxTemplate } from "./mdx-builder-types";
 
-export { MdxRenderer };
+export { MdxRenderer, UI_COMPONENTS_TEMPLATES };
 export type { MdxRendererProps } from "./mdx-builder-parser";
 export type { MdxTemplate };
 
