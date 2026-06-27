@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -35,22 +34,7 @@ export default function ClearLogsDialog({
 
   const handleClear = () => {
     setIsPending(true);
-    toast.promise(
-      new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(true);
-        }, 1200);
-      }),
-      {
-        loading: "Đang xóa lịch sử hoạt động...",
-        success: () => {
-          onConfirm();
-          handleOpenChange(false);
-          return "Đã xóa toàn bộ lịch sử hoạt động!";
-        },
-        error: "Lỗi khi xóa lịch sử hoạt động",
-      }
-    );
+    onConfirm();
   };
 
   return (

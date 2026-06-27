@@ -13,7 +13,7 @@ import { DataTable, DataTableColumnHeader } from "@/components/vanixjnk/data-tab
 import { ColumnDef, SortingState } from "@tanstack/react-table";
 import { useSetting } from "@/contexts/SettingContext";
 import { formatWithSiteTimezone } from "@/helpers/administrator/timezone.helper";
-
+import { trpc } from "@/lib/trpc";
 import LogDetailsDialog from "./LogDetailsDialog";
 import ClearLogsDialog from "./ClearLogsDialog";
 
@@ -22,8 +22,8 @@ interface DiscordLog {
   accountId: string;
   username: string;
   avatar: string | null;
-  actionType: "change_avatar" | "change_bio" | "rpc_update" | "auto_reply" | "trigger_fired" | "token_expired";
-  status: "success" | "failed" | "warning";
+  actionType: string;
+  status: string;
   message: string;
   details: string;
   createdAt: string;
@@ -35,85 +35,26 @@ const navItems = [
   { name: "Lịch sử hoạt động", href: "/application/discord/logs", icon: "solar:document-text-line-duotone" },
 ];
 
-const mockAccountsList = [
-  { id: "1", username: "vanixjnk", discordId: "109283749283749283" },
-  { id: "2", username: "clone_buyer_01", discordId: "209384759283748592" },
-  { id: "3", username: "spammer_bot_99", discordId: "309284759182738495" },
-  { id: "4", username: "dead_token_user", discordId: "409284759384758291" },
-];
-
-const mockLogs: DiscordLog[] = [
-  {
-    id: "log-1",
-    accountId: "1",
-    username: "vanixjnk",
-    avatar: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=60",
-    actionType: "auto_reply",
-    status: "success",
-    message: "Tự động phản hồi tin nhắn của @heloworld_user",
-    details: '{\n  "channelId": "109283749283749283",\n  "triggerKeyword": "hi",\n  "repliedText": "Chào bạn, mình đang offline. Liên hệ Telegram @vani_support..."\n}',
-    createdAt: "2026-06-26T13:30:00Z"
-  },
-  {
-    id: "log-2",
-    accountId: "1",
-    username: "vanixjnk",
-    avatar: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=60",
-    actionType: "rpc_update",
-    status: "success",
-    message: "Cập nhật Rich Presence: Playing Valorant",
-    details: '{\n  "applicationId": "809283749283749",\n  "game": "Valorant",\n  "state": "In a Match (9-3)"\n}',
-    createdAt: "2026-06-26T13:00:00Z"
-  },
-  {
-    id: "log-3",
-    accountId: "3",
-    username: "spammer_bot_99",
-    avatar: "https://images.unsplash.com/photo-1614680376593-902f74fa0d41?w=150&auto=format&fit=crop&q=60",
-    actionType: "trigger_fired",
-    status: "failed",
-    message: "Gửi tin nhắn quảng cáo định kỳ thất bại (Rate Limited)",
-    details: '{\n  "channelId": "109283749283749283",\n  "retryAfter": "42300ms",\n  "errorCode": 429\n}',
-    createdAt: "2026-06-26T12:45:00Z"
-  },
-  {
-    id: "log-4",
-    accountId: "4",
-    username: "dead_token_user",
-    avatar: null,
-    actionType: "token_expired",
-    status: "failed",
-    message: "Xác thực token thất bại: Unauthorized (Token đã hết hạn)",
-    details: '{\n  "reason": "Token invalid or reset password",\n  "status": 401\n}',
-    createdAt: "2026-06-25T14:22:00Z"
-  },
-  {
-    id: "log-5",
-    accountId: "2",
-    username: "clone_buyer_01",
-    avatar: null,
-    actionType: "change_bio",
-    status: "success",
-    message: "Thay đổi thông tin tiểu sử thành công",
-    details: '{\n  "oldBio": "",\n  "newBio": "Contact for business: vanistudio.com"\n}',
-    createdAt: "2026-06-24T09:15:00Z"
-  }
-];
-
 export default function DiscordLogs() {
   const pathname = usePathname();
   const setting = useSetting();
   const siteTimezone = setting?.siteTimezone || "Asia/Ho_Chi_Minh";
 
-  const [logs, setLogs] = useState<DiscordLog[]>(mockLogs);
-  const [selectedLog, setSelectedLog] = useState<DiscordLog | null>(null);
+  const { data: accountsData } = trpc.application.discord.getAccounts.useQuery();
+  const accounts = accountsData || [];
+  const [accountId, setAccountId] = useState<string>("");
 
+  useEffect(() => {
+    if (!accountId && accounts.length > 0) {
+      setAccountId(accounts[0].id);
+    }
+  }, [accounts, accountId]);
+
+  const [selectedLog, setSelectedLog] = useState<DiscordLog | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isClearOpen, setIsClearOpen] = useState(false);
-
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -125,28 +66,47 @@ export default function DiscordLogs() {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  const filteredLogs = useMemo(() => {
-    return logs.filter((log) => {
-      const query = debouncedSearch.toLowerCase();
-      return (
-        log.username.toLowerCase().includes(query) ||
-        log.message.toLowerCase().includes(query)
-      );
-    });
-  }, [logs, debouncedSearch]);
+  const { data: queryResult, isLoading, refetch, isFetching } = trpc.application.discord.getLogs.useQuery(
+    {
+      accountId: accountId || "",
+      search: debouncedSearch,
+      page: pagination.pageIndex + 1,
+      limit: pagination.pageSize,
+      sortField: sorting[0]?.id || undefined,
+      sortOrder: sorting[0]?.desc ? "desc" : "asc",
+    },
+    {
+      enabled: !!accountId,
+      placeholderData: (prev) => prev,
+    }
+  );
+
+  const logs = (queryResult?.data?.items || []) as any[];
+  const totalLogs = queryResult?.data?.total || 0;
 
   const stats = useMemo(() => {
+    const items: any[] = logs;
     return {
-      auto: logs.filter((l) => l.actionType === "auto_reply" || l.actionType === "trigger_fired").length,
-      profile: logs.filter((l) => l.actionType === "rpc_update" || l.actionType === "change_avatar" || l.actionType === "change_bio").length,
-      errors: logs.filter((l) => l.status === "failed" || l.status === "warning").length,
+      auto: items.filter((l: any) => l.actionType === "auto_reply" || l.actionType === "trigger_fired").length,
+      profile: items.filter((l: any) => l.actionType === "rpc_update" || l.actionType === "change_avatar" || l.actionType === "change_bio").length,
+      errors: items.filter((l: any) => l.status === "failed" || l.status === "warning").length,
     };
   }, [logs]);
 
+  const clearLogsMutation = trpc.application.discord.clearLogs.useMutation({
+    onSuccess: () => {
+      refetch();
+      setIsClearOpen(false);
+      toast.success("Đã xóa toàn bộ lịch sử hoạt động!");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Lỗi khi xóa lịch sử hoạt động");
+    },
+  });
+
   const handleClearLogs = () => {
-    setLogs([]);
-    setIsClearOpen(false);
-    toast.success("Đã xóa toàn bộ lịch sử hoạt động!");
+    if (!accountId) return;
+    clearLogsMutation.mutate({ accountId });
   };
 
   const getActionBadge = (action: string) => {
@@ -427,9 +387,7 @@ export default function DiscordLogs() {
                     <Button
                       variant="ghost"
                       className="w-full justify-start text-xs h-8 px-2 cursor-pointer"
-                      onClick={() => {
-                        toast.success("Đang tải lại dữ liệu nhật ký...");
-                      }}
+                      onClick={() => refetch()}
                     >
                       <Icon icon="solar:restart-line-duotone" className="mr-2 size-3.5 text-sky-500" />
                       Tải lại (Refresh)
@@ -449,13 +407,13 @@ export default function DiscordLogs() {
 
             <DataTable
               columns={columns}
-              data={filteredLogs}
+              data={logs}
               pagination={pagination}
               onPaginationChange={setPagination}
               sorting={sorting}
               onSortingChange={setSorting}
-              pageCount={Math.ceil(filteredLogs.length / pagination.pageSize)}
-              isLoading={false}
+              pageCount={Math.max(1, Math.ceil(totalLogs / pagination.pageSize))}
+              isLoading={isLoading || isFetching}
               toolbarInput={
                 <div className="relative flex-1">
                   <Icon

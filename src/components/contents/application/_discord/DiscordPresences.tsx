@@ -30,6 +30,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { ColorPicker } from "@/components/vanixjnk/color-picker";
 import DiscordProfileLivePreview from "@/components/vanixjnk/discord-profile-live-preview";
 import { cn } from "@/lib/utils";
+import { trpc } from "@/lib/trpc";
 
 interface PresenceActivity {
   type: "playing" | "streaming" | "listening" | "watching" | "competing";
@@ -150,38 +151,72 @@ const mockPresets: PresencePreset[] = [
 
 export default function DiscordPresences() {
   const pathname = usePathname();
-  const [presets, setPresets] = useState<PresencePreset[]>(mockPresets);
-  const [selectedPreset, setSelectedPreset] = useState<PresencePreset>(mockPresets[0]);
+
+  // Load presets from backend
+  const { data: presetsData, isLoading, refetch } = trpc.application.discord.getPresets.useQuery();
+  const presets = (presetsData || []) as any[];
+
+  // Load accounts for selector
+  const { data: accountsData } = trpc.application.discord.getAccounts.useQuery();
+  const accounts = (accountsData || []) as any[];
+  const [selectedAccountId, setSelectedAccountId] = useState<string>("");
+
+  // Mutations
+  const createPresetMutation = trpc.application.discord.createPreset.useMutation({
+    onSuccess: () => {
+      refetch();
+      toast.success("Đã tạo preset mới!");
+    },
+    onError: (err) => toast.error(err.message || "Tạo preset thất bại"),
+  });
+
+  const updatePresetMutation = trpc.application.discord.updatePreset.useMutation({
+    onSuccess: () => {
+      refetch();
+      toast.success("Đã cập nhật preset!");
+    },
+    onError: (err) => toast.error(err.message || "Cập nhật preset thất bại"),
+  });
+
+  const deletePresetMutation = trpc.application.discord.deletePreset.useMutation({
+    onSuccess: () => {
+      refetch();
+      toast.success("Đã xóa preset!");
+    },
+    onError: (err) => toast.error(err.message || "Xóa preset thất bại"),
+  });
+
+  const [selectedPreset, setSelectedPreset] = useState<PresencePreset | null>(null);
   const [isNewPresetOpen, setIsNewPresetOpen] = useState(false);
   const [activeEditorTab, setActiveEditorTab] = useState<"profile" | "rpc" | "assets-buttons">("profile");
 
-  const [presetName, setPresetName] = useState(selectedPreset.name);
-  const [status, setStatus] = useState<"online" | "idle" | "dnd" | "invisible">(selectedPreset.status);
-  const [customText, setCustomText] = useState(selectedPreset.customText || "");
-  const [customEmoji, setCustomEmoji] = useState(selectedPreset.customEmoji || "");
-  const [bannerColor, setBannerColor] = useState(selectedPreset.bannerColor || "#5865F2");
-  const [bio, setBio] = useState(selectedPreset.bio || "Software Engineer at Vani Studio");
+  const [presetName, setPresetName] = useState("");
+  const [status, setStatus] = useState<"online" | "idle" | "dnd" | "invisible">("online");
+  const [customText, setCustomText] = useState("");
+  const [customEmoji, setCustomEmoji] = useState("");
+  const [bannerColor, setBannerColor] = useState("#5865F2");
+  const [bio, setBio] = useState("");
 
   const [activityType, setActivityType] = useState<"playing" | "streaming" | "listening" | "watching" | "competing">(
-    selectedPreset.activities[0]?.type || "playing"
+    "playing"
   );
-  const [activityName, setActivityName] = useState(selectedPreset.activities[0]?.name || "");
-  const [appId, setAppId] = useState(selectedPreset.activities[0]?.applicationId || "");
-  const [details, setDetails] = useState(selectedPreset.activities[0]?.details || "");
-  const [state, setState] = useState(selectedPreset.activities[0]?.state || "");
-  const [largeImage, setLargeImage] = useState(selectedPreset.activities[0]?.largeImage || "");
-  const [largeText, setLargeText] = useState(selectedPreset.activities[0]?.largeText || "");
-  const [smallImage, setSmallImage] = useState(selectedPreset.activities[0]?.smallImage || "");
-  const [smallText, setSmallText] = useState(selectedPreset.activities[0]?.smallText || "");
-  const [btn1Label, setBtn1Label] = useState(selectedPreset.activities[0]?.button1Label || "");
-  const [btn1Url, setBtn1Url] = useState(selectedPreset.activities[0]?.button1Url || "");
-  const [btn2Label, setBtn2Label] = useState(selectedPreset.activities[0]?.button2Label || "");
-  const [btn2Url, setBtn2Url] = useState(selectedPreset.activities[0]?.button2Url || "");
+  const [activityName, setActivityName] = useState("");
+  const [appId, setAppId] = useState("");
+  const [details, setDetails] = useState("");
+  const [state, setState] = useState("");
+  const [largeImage, setLargeImage] = useState("");
+  const [largeText, setLargeText] = useState("");
+  const [smallImage, setSmallImage] = useState("");
+  const [smallText, setSmallText] = useState("");
+  const [btn1Label, setBtn1Label] = useState("");
+  const [btn1Url, setBtn1Url] = useState("");
+  const [btn2Label, setBtn2Label] = useState("");
+  const [btn2Url, setBtn2Url] = useState("");
 
-  const [showTimer, setShowTimer] = useState<boolean>(selectedPreset.activities[0]?.showTimer || false);
-  const [timerType, setTimerType] = useState<"elapsed" | "remaining">(selectedPreset.activities[0]?.timerType || "elapsed");
-  const [timerValue, setTimerValue] = useState<number>(selectedPreset.activities[0]?.timerValue || 30);
-  const [streamUrl, setStreamUrl] = useState<string>(selectedPreset.activities[0]?.streamUrl || "");
+  const [showTimer, setShowTimer] = useState<boolean>(false);
+  const [timerType, setTimerType] = useState<"elapsed" | "remaining">("elapsed");
+  const [timerValue, setTimerValue] = useState<number>(30);
+  const [streamUrl, setStreamUrl] = useState<string>("");
 
   const [rotatorInterval, setRotatorInterval] = useState("300");
   const [rotatorMode, setRotatorMode] = useState<"sequential" | "random">("sequential");
@@ -221,42 +256,34 @@ export default function DiscordPresences() {
   };
 
   const handleSavePreset = () => {
-    const updated: PresencePreset = {
+    if (!selectedPreset) return;
+
+    updatePresetMutation.mutate({
       id: selectedPreset.id,
       name: presetName,
-      status,
-      customText: customText || undefined,
-      customEmoji: customEmoji || undefined,
-      bannerColor: bannerColor || undefined,
-      bio: bio || undefined,
-      activities: [
-        {
-          type: activityType,
-          name: activityName,
-          applicationId: appId || undefined,
-          details: details || undefined,
-          state: state || undefined,
-          largeImage: largeImage || undefined,
-          largeText: largeText || undefined,
-          smallImage: smallImage || undefined,
-          smallText: smallText || undefined,
-          button1Label: btn1Label || undefined,
-          button1Url: btn1Url || undefined,
-          button2Label: btn2Label || undefined,
-          button2Url: btn2Url || undefined,
-          showTimer,
-          timerType,
-          timerValue,
-          streamUrl: streamUrl || undefined,
-        }
-      ]
-    };
-
-    setPresets((prev) =>
-      prev.map((p) => (p.id === selectedPreset.id ? updated : p))
-    );
-    setSelectedPreset(updated);
-    toast.success("Đã lưu thay đổi cấu hình Presence!");
+      onlineStatus: status,
+      customStatusText: customText || null,
+      customStatusEmoji: customEmoji || null,
+      activities: [{
+        type: activityType,
+        name: activityName,
+        applicationId: appId || undefined,
+        details: details || undefined,
+        state: state || undefined,
+        largeImage: largeImage || undefined,
+        largeText: largeText || undefined,
+        smallImage: smallImage || undefined,
+        smallText: smallText || undefined,
+        button1Label: btn1Label || undefined,
+        button1Url: btn1Url || undefined,
+        button2Label: btn2Label || undefined,
+        button2Url: btn2Url || undefined,
+        showTimer,
+        timerType,
+        timerValue,
+        streamUrl: streamUrl || undefined,
+      }],
+    });
   };
 
   const handleCreatePreset = (e: React.FormEvent) => {
@@ -265,19 +292,13 @@ export default function DiscordPresences() {
       toast.error("Vui lòng điền tên Preset");
       return;
     }
-    const newP: PresencePreset = {
-      id: "preset-" + Date.now(),
+    createPresetMutation.mutate({
       name: newPresetName,
-      status: "online",
-      bannerColor: "#5865F2",
-      bio: "New Custom Profile",
-      activities: [{ type: "playing", name: "Cửa hàng" }]
-    };
-    setPresets((prev) => [...prev, newP]);
-    handleSelectPreset(newP);
+      onlineStatus: "online",
+      activities: [{ type: "playing", name: "Cửa hàng" }],
+    });
     setIsNewPresetOpen(false);
     setNewPresetName("");
-    toast.success("Đã tạo Preset mới!");
   };
 
   const handleDeletePreset = (id: string) => {
@@ -285,10 +306,7 @@ export default function DiscordPresences() {
       toast.error("Hệ thống yêu cầu tối thiểu một Presence Preset.");
       return;
     }
-    const remaining = presets.filter((p) => p.id !== id);
-    setPresets(remaining);
-    handleSelectPreset(remaining[0]);
-    toast.info("Đã xóa Presence Preset.");
+    deletePresetMutation.mutate({ id });
   };
 
   const toggleRotationItem = (id: string) => {
@@ -478,7 +496,7 @@ export default function DiscordPresences() {
 
                     <div className="flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-1">
                       {presets.map((preset) => {
-                        const isSelected = preset.id === selectedPreset.id;
+                        const isSelected = preset.id === selectedPreset?.id;
                         const actName = preset.activities[0]?.name || "Không có Game";
                         const typeText = preset.activities[0] ? getActivityTypeLabel(preset.activities[0].type) : "";
 
@@ -595,7 +613,7 @@ export default function DiscordPresences() {
                     <div className="flex items-center gap-2">
                       <Icon icon="solar:pen-new-round-line-duotone" className="size-5 text-vanixjnk" />
                       <h3 className="text-sm font-extrabold text-foreground">
-                        Thiết lập Preset: <span className="text-vanixjnk">{selectedPreset.name}</span>
+                        Thiết lập Preset: <span className="text-vanixjnk">{selectedPreset?.name || "Chưa chọn"}</span>
                       </h3>
                     </div>
                   </div>
