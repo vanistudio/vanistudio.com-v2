@@ -599,7 +599,7 @@ export const renderMdxComponent = (tagName: string, props: any, children: any, k
     case "Tab":
       return (
         <div key={key} className="not-prose p-4 border border-border/60 rounded-xl my-2">
-          {props.title && <h4 className="text-sm font-bold text-foreground mb-2">{props.title}</h4>}
+          {(props.title || props.label) && <h4 className="text-sm font-bold text-foreground mb-2">{props.title || props.label}</h4>}
           <div>{children}</div>
         </div>
       );
@@ -743,7 +743,7 @@ export const renderASTNode = (node: MdxASTNode, key: string | number, isInline =
       const tabs = (node.children || [])
         .filter(c => c.type === "tag" && c.name === "Tab")
         .map((tab, idx) => ({
-          title: (tab.props?.title as string) || `Tab ${idx + 1}`,
+          title: (tab.props?.title || tab.props?.label || tab.props?.value || `Tab ${idx + 1}`) as string,
           icon: tab.props?.icon as string | undefined,
           content: (tab.children || []).map((child, cidx) => renderASTNode(child, `mintab-${idx}-${cidx}`))
         }));
