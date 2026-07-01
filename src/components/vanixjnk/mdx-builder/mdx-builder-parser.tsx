@@ -19,6 +19,7 @@ import { ShikiCodeBlock } from "./mdx-builder-shiki-code-block";
 import { CodeGroupRenderer, parseCodeGroupBlocks } from "./mdx-builder-code-group";
 import { TreeContainer, TreeFolderRenderer, TreeFileRenderer } from "./mdx-builder-tree";
 import { MintlifyTabsRenderer } from "./mdx-builder-tabs";
+import { Workflow, WorkflowNode, WorkflowConnector } from "./mdx-builder-workflow";
 import { MdxToken, MdxASTNode } from "./mdx-builder-types";
 
 export interface MdxRendererProps {
@@ -570,6 +571,16 @@ export const renderMdxComponent = (tagName: string, props: any, children: any, k
       return <TreeFolderRenderer key={key} name={props.name || "folder"} defaultOpen={props.defaultOpen} openable={props.openable} isRoot={props.isRoot}>{children}</TreeFolderRenderer>;
     case "Tree.File":
       return <TreeFileRenderer key={key} name={props.name || "file"} />;
+    case "Workflow":
+      return (
+        <Workflow className={itemClassName} {...otherProps}>
+          {children}
+        </Workflow>
+      );
+    case "Workflow.Node":
+      return <WorkflowNode className={itemClassName} {...otherProps} />;
+    case "Workflow.Connector":
+      return <WorkflowConnector className={itemClassName} {...otherProps} />;
     case "Step": {
       const stepNumber = props._stepNumber || props.stepNumber;
       return (
@@ -588,7 +599,7 @@ export const renderMdxComponent = (tagName: string, props: any, children: any, k
     case "Tab":
       return (
         <div key={key} className="not-prose p-4 border border-border/60 rounded-xl my-2">
-          {props.title && <h4 className="text-sm font-bold text-foreground mb-2">{props.title}</h4>}
+          {(props.title || props.label) && <h4 className="text-sm font-bold text-foreground mb-2">{props.title || props.label}</h4>}
           <div>{children}</div>
         </div>
       );
@@ -698,6 +709,18 @@ export const renderASTNode = (node: MdxASTNode, key: string | number, isInline =
     return <CodeGroupRenderer key={key} blocks={blocks} />;
   }
 
+  if (tagName === "Workflow" && node.children) {
+    const isTextOnly = node.children.every(c => c.type === "text");
+    if (isTextOnly) {
+      const textContent = node.children.map(c => c.content).join("\n");
+      return (
+        <Workflow key={key} className={node.props?.className} direction={node.props?.direction}>
+          {textContent}
+        </Workflow>
+      );
+    }
+  }
+
   if (tagName === "Steps") {
     let stepIdx = 0;
     const stepsChildren = (node.children || []).map((child, idx) => {
@@ -720,7 +743,7 @@ export const renderASTNode = (node: MdxASTNode, key: string | number, isInline =
       const tabs = (node.children || [])
         .filter(c => c.type === "tag" && c.name === "Tab")
         .map((tab, idx) => ({
-          title: (tab.props?.title as string) || `Tab ${idx + 1}`,
+          title: (tab.props?.title || tab.props?.label || tab.props?.value || `Tab ${idx + 1}`) as string,
           icon: tab.props?.icon as string | undefined,
           content: (tab.children || []).map((child, cidx) => renderASTNode(child, `mintab-${idx}-${cidx}`))
         }));
