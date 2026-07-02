@@ -276,11 +276,11 @@ export async function applySecuritySettings(credentials: CloudflareCredentials):
 
   try {
     const res = await cfFetch(credentials, "/settings/security_level", "PATCH", {
-      value: "under_attack",
+      value: "high",
     });
-    results.push({ name: "Security Level → Under Attack", success: res.success, error: res.success ? undefined : res.errors[0]?.message });
+    results.push({ name: "Security Level → High", success: res.success, error: res.success ? undefined : res.errors[0]?.message });
   } catch (e: any) {
-    results.push({ name: "Security Level → Under Attack", success: false, error: e.message });
+    results.push({ name: "Security Level → High", success: false, error: e.message });
   }
 
   try {
@@ -347,6 +347,16 @@ export async function applySecuritySettings(credentials: CloudflareCredentials):
 export async function disableUnderAttackMode(credentials: CloudflareCredentials) {
   const res = await cfFetch(credentials, "/settings/security_level", "PATCH", {
     value: "high",
+  });
+  return {
+    success: res.success,
+    error: res.success ? undefined : res.errors.map((e) => e.message).join(", "),
+  };
+}
+
+export async function enableUnderAttackMode(credentials: CloudflareCredentials) {
+  const res = await cfFetch(credentials, "/settings/security_level", "PATCH", {
+    value: "under_attack",
   });
   return {
     success: res.success,
